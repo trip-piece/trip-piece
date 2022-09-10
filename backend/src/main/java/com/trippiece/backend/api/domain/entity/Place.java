@@ -1,5 +1,6 @@
 package com.trippiece.backend.api.domain.entity;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -18,7 +19,7 @@ public class Place {
     private int id;
 
     @Column(nullable = false)
-    private int type;
+    private long type;
 
     @Column(nullable = false)
     private String name;
@@ -53,4 +54,22 @@ public class Place {
 
     @Column(nullable = false)
     private boolean activated = false;
+
+    @Builder
+    public Place(int type, String name, long regionId, String locationAddress,
+                 float lat, float lng, LocalDate startDate, LocalDate endDate, String posterImage,
+                 int amount, String qrImage, boolean activated) {
+        this.type=type;
+        this.name=name;
+        this.regionId=regionId;
+        this.locationAddress=locationAddress;
+        this.lat=lat;
+        this.lng=lng;
+        this.startDate=startDate;
+        this.endDate=endDate;
+        this.posterImage=posterImage;
+        this.amount=amount;
+        this.qrImage=qrImage;
+        this.activated=activated;
+    }
 }
