@@ -20,7 +20,7 @@ public class User extends BaseEntity{
     private String walletAddress;
 
     @Column(length = 20)
-    @ColumnDefault("undefined")
+    @ColumnDefault("'undefined'")
     private String nickname;
 
     @Column
