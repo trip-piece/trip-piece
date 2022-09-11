@@ -10,12 +10,7 @@ import javax.persistence.*;
 @NoArgsConstructor
 @Entity
 @Table(name="region")
-public class Region {
-    //BaseEntity 상속으로 인해 삭제 예정 Column
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
-
+public class Region extends BaseEntity {
     @Column(nullable = false, length = 10)
     private String name;
 

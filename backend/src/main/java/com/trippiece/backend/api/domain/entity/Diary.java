@@ -14,9 +14,8 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name="diary")
 public class Diary extends BaseEntity {
-
-    @Column
-    private long content;
+    @Column(columnDefinition = "LONGTEXT")
+    private String content;
 
     @Column(nullable = false)
     private LocalDateTime createDate = LocalDateTime.now();
@@ -24,17 +23,14 @@ public class Diary extends BaseEntity {
     @Column
     private String todayPhoto;
 
-
-
-    @Column(nullable = false,columnDefinition="tinyint(2) default 0")
+    @Column(nullable = false, columnDefinition="TINYINT")
     private int fontType;
 
-    @Column(nullable = false,columnDefinition="tinyint(2) default 0")
+    @Column(nullable = false, columnDefinition="TINYINT")
     private int backgroundColor;
 
-    @Column(nullable = false,columnDefinition="tinyint(2) default 0")
+    @Column(nullable = false, columnDefinition="TINYINT")
     private int weather;
-
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
@@ -47,7 +43,8 @@ public class Diary extends BaseEntity {
     private Trip trip;
 
     @Builder
-    public Diary(long content,LocalDateTime createDate,String todayPhoto,int fontType,int backgroundColor,int weather, User user,Trip trip){
+    public Diary(String content, LocalDateTime createDate, String todayPhoto,
+                 int fontType, int backgroundColor, int weather, User user, Trip trip){
       this.content=content;
       this.createDate = createDate;
       this.todayPhoto = todayPhoto;

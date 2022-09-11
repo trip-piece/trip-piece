@@ -14,9 +14,7 @@ import java.time.LocalDate;
 @Entity
 @Table(name = "trip")
 public class Trip extends BaseEntity {
-
-    //저번에 찾아봤을 때 한글은 3씩 먹는다는 소리가 있어서 10자 생각해서 length 30 잡았습니다.
-    @Column(nullable = false, length = 30)
+    @Column(nullable = false, length = 10)
     private String title;
 
     @Column(nullable = false, columnDefinition = "DATE")
