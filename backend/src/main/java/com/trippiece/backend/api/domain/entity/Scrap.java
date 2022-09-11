@@ -3,6 +3,9 @@ package com.trippiece.backend.api.domain.entity;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -12,16 +15,16 @@ import javax.persistence.Table;
 @Getter
 @NoArgsConstructor
 @Table(name="scrap")
-public class Scrap extends BaseEntity{
-
+public class Scrap extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "user_id")
+    @OnDelete(action= OnDeleteAction.CASCADE)
     User user;
 
     @ManyToOne
     @JoinColumn(name = "diary_id")
+    @OnDelete(action= OnDeleteAction.CASCADE)
     Diary diary;
-
 
     public Scrap update(User user, Diary diary){
         this.user = user;

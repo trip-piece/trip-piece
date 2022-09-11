@@ -12,12 +12,7 @@ import javax.persistence.*;
 @NoArgsConstructor
 @Entity
 @Table(name="sticker")
-public class Sticker {
-    //BaseEntity 상속으로 인해 삭제 예정 Column
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
-
+public class Sticker extends BaseEntity {
     @Column(nullable = false)
     private int tokenId;
 

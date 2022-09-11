@@ -12,18 +12,14 @@ import javax.persistence.*;
 @NoArgsConstructor
 @Entity
 @Table(name="market")
-public class Market {
-    //BaseEntity 상속으로 인해 삭제 예정 Column
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
-
+public class Market extends BaseEntity {
     @Column(nullable = false)
     private float price;
 
-    //추후 User와 관계설정으로 수정 예정
-    @Column(nullable = false)
-    private long userId;
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    @OnDelete(action= OnDeleteAction.CASCADE)
+    private User user;
 
     @ManyToOne
     @JoinColumn(name = "sticker_id", nullable = false)
@@ -31,9 +27,9 @@ public class Market {
     private Sticker sticker;
 
     @Builder
-    public Market(float price, long userId, Sticker sticker){
+    public Market(float price, User user, Sticker sticker){
         this.price=price;
-        this.userId=userId;
+        this.user=user;
         this.sticker=sticker;
     }
 }

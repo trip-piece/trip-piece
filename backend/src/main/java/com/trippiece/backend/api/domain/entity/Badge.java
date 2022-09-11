@@ -15,25 +15,15 @@ import java.util.List;
 @Getter
 @NoArgsConstructor
 @Table(name="badge")
-public class Badge extends BaseEntity{
-    @Column(nullable = false, unique = true)
+public class Badge extends BaseEntity {
+    @Column(nullable = false, unique = true, length = 10)
     private String name;
 
-    @Column
+    @Column(nullable = false, length = 50)
     private String description;
 
-    @Column
+    @Column(nullable = false)
     private String badgeImage;
-
-    @OneToMany(mappedBy = "badge")
-    private List<MyBadge> myBadges = new ArrayList<>();
-    public void addMyBadge(MyBadge myBadge) {
-        this.myBadges.add(myBadge);
-
-        if (myBadge.getBadge() != this) {
-            myBadge.update(myBadge.getUser(), this);
-        }
-    }
 
     @Builder
     public Badge(String name, String description, String badgeImage){

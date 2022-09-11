@@ -12,9 +12,7 @@ import javax.persistence.*;
 @NoArgsConstructor
 @Entity
 @Table(name = "deco")
-public class Decoration extends BaseEntity{
-
-
+public class Decoration extends BaseEntity {
     @ManyToOne
     @JoinColumn(name="sticker_id")
     @OnDelete(action= OnDeleteAction.CASCADE)

@@ -13,15 +13,9 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @Entity
 @Table(name="place" )
-public class Place {
-
-    //BaseEntity 상속으로 인해 삭제 예정 Column
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
-
+public class Place extends BaseEntity {
     @Column(nullable = false)
-    private long type;
+    private int type;
 
     @Column(nullable = false)
     private String name;
@@ -59,7 +53,7 @@ public class Place {
     private boolean activated = false;
 
     @Builder
-    public Place(int type, String name, Region region, String locationAddress,
+    public Place (int type, String name, Region region, String locationAddress,
                  float lat, float lng, LocalDate startDate, LocalDate endDate, String posterImage,
                  int amount, String qrImage, boolean activated) {
         this.type=type;
