@@ -12,10 +12,8 @@ import javax.persistence.*;
 @NoArgsConstructor
 @Entity
 @Table(name = "deco")
-public class Decoration {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+public class Decoration extends BaseEntity{
+
 
     @ManyToOne
     @JoinColumn(name="sticker_id")

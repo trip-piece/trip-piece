@@ -13,10 +13,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @Entity
 @Table(name = "trip")
-public class Trip {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+public class Trip extends BaseEntity {
 
     //저번에 찾아봤을 때 한글은 3씩 먹는다는 소리가 있어서 10자 생각해서 length 30 잡았습니다.
     @Column(nullable = false, length = 30)
@@ -28,9 +25,10 @@ public class Trip {
     @Column(nullable = false, columnDefinition = "DATE")
     private LocalDate endDate;
 
-    //추후 User와 관계설정으로 수정 예정
-    @Column(nullable = false)
-    private long userId;
+    @ManyToOne
+    @JoinColumn(name="user_id",nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    private User user;
 
     @ManyToOne
     @JoinColumn(name = "region_id", nullable = false)
@@ -38,11 +36,11 @@ public class Trip {
     private Region region;
 
     @Builder
-    public Trip(String title, LocalDate startDate, LocalDate endDate, long userId, Region region) {
+    public Trip(String title, LocalDate startDate, LocalDate endDate, User user, Region region) {
         this.title = title;
         this.startDate = startDate;
         this.endDate = endDate;
-        this.userId = userId;
+        this.user = user;
         this.region = region;
     }
 }

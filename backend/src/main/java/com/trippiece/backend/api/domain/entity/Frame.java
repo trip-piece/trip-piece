@@ -12,10 +12,7 @@ import javax.persistence.*;
 @NoArgsConstructor
 @Entity
 @Table(name="frame")
-public class Frame {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+public class Frame extends BaseEntity {
 
     //애초에 여기 테이블을 넘어온거 자체가 공유를 한 것이기 때문에 낫널이 맞다고 생각이 듭니다만.. 쿰척쿵냐쿵
     @Column(nullable = false)

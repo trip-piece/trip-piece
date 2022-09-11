@@ -13,12 +13,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Entity
 @Table(name="diary")
-public class Diary {
-
-    //BaseEntity 상속으로 인해 삭제 예정 Column
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+public class Diary extends BaseEntity {
 
     @Column
     private long content;
@@ -41,9 +36,10 @@ public class Diary {
     private int weather;
 
 
-    //추후 User와 관계설정으로 수정 예정
-    @Column(nullable = false)
-    private long userId;
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    @OnDelete(action= OnDeleteAction.CASCADE)
+    private User user;
 
     @ManyToOne
     @JoinColumn(name = "trip_id", nullable = false)
@@ -51,14 +47,14 @@ public class Diary {
     private Trip trip;
 
     @Builder
-    public Diary(long content,LocalDateTime createDate,String todayPhoto,int fontType,int backgroundColor,int weather, long userId,Trip trip){
+    public Diary(long content,LocalDateTime createDate,String todayPhoto,int fontType,int backgroundColor,int weather, User user,Trip trip){
       this.content=content;
       this.createDate = createDate;
       this.todayPhoto = todayPhoto;
       this.fontType = fontType;
       this.backgroundColor = backgroundColor;
       this.weather = weather;
-      this.userId = userId;
+      this.user = user;
       this.trip = trip;
     }
 }
