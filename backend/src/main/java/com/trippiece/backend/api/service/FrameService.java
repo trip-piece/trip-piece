@@ -69,6 +69,17 @@ public class FrameService {
         StickerFrameResponseDto result = new StickerFrameResponseDto(stickerList, isScrapped);
         return result;
     }
+
+    //스티커 프레임 삭제
+    public int deleteFrame(final User user, final long frameId){
+        int resultCode = 200;
+        Frame frame = frameRepository.getOne(frameId);
+        if(!frame.getDiary().getUser().equals(user)) resultCode=406;
+        else {
+            frameRepository.delete(frame);
+        }
+        return resultCode;
+    }
 }
 
 
