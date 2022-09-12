@@ -22,19 +22,19 @@ public class Scrap extends BaseEntity {
     User user;
 
     @ManyToOne
-    @JoinColumn(name = "diary_id")
+    @JoinColumn(name = "frame_id")
     @OnDelete(action= OnDeleteAction.CASCADE)
-    Diary diary;
+    Frame frame;
 
-    public Scrap update(User user, Diary diary){
+    public Scrap update(User user, Frame frame){
         this.user = user;
-        this.diary = diary;
+        this.frame = frame;
         return this;
     }
 
     @Builder
-    public Scrap(User user, Diary diary){
+    public Scrap(User user, Frame frame){
         this.user = user;
-        this.diary = diary;
+        this.frame = frame;
     }
 }

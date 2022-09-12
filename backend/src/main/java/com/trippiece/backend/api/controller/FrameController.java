@@ -2,6 +2,7 @@ package com.trippiece.backend.api.controller;
 
 import com.trippiece.backend.api.domain.dto.response.FrameCountResponseDto;
 import com.trippiece.backend.api.domain.dto.response.FrameResponseDto;
+import com.trippiece.backend.api.domain.dto.response.StickerFrameResponseDto;
 import com.trippiece.backend.api.domain.entity.User;
 import com.trippiece.backend.api.service.FrameService;
 import io.swagger.annotations.Api;
@@ -43,6 +44,17 @@ public class FrameController {
         if(user == null) return new ResponseEntity<String>("로그인된 회원을 찾을 수 없습니다.", HttpStatus.NOT_FOUND);
         else{
             return new ResponseEntity<FrameCountResponseDto>(frameService.findFrameListCount(), HttpStatus.OK);
+        }
+    }
+
+    @GetMapping("/")
+    @ApiOperation(value = "스티커 프레임 상세 조회", notes = "하나의 공유된 스티커 프레임을 상세 조회한다.")
+    public ResponseEntity<?> getFrame(@PathVariable long frameId) {
+        //로그인 완료되면 token으로 User 가져올 예정
+        User user = null;
+        if(user == null) return new ResponseEntity<String>("로그인된 회원을 찾을 수 없습니다.", HttpStatus.NOT_FOUND);
+        else{
+            return new ResponseEntity<StickerFrameResponseDto>(frameService.findFrame(user, frameId), HttpStatus.OK);
         }
     }
 }
