@@ -1,5 +1,7 @@
 package com.trippiece.backend.api.service;
 
+import com.trippiece.backend.api.domain.dto.response.CountListDto;
+import com.trippiece.backend.api.domain.dto.response.FrameCountResponseDto;
 import com.trippiece.backend.api.domain.dto.response.FrameResponseDto;
 import com.trippiece.backend.api.domain.entity.Frame;
 import com.trippiece.backend.api.domain.entity.Region;
@@ -45,4 +47,19 @@ public class FrameService {
         Page<FrameResponseDto> result = new PageImpl<>(responseList.subList(start, end), pageable, responseList.size());
         return result;
     }
+
+    //지역별 공유된 스티커프레임 개수 조회
+    public FrameCountResponseDto findFrameListCount(){
+        List<Region> regionList = regionRepository.findAll();
+        List<CountListDto> countList = new ArrayList<>();
+        for(Region region : regionList){
+            countList.add(new CountListDto(region.getId(), frameRepository.findAllByRegionOrderByIdDesc(region).size()));
+        }
+        List<Frame> list = frameRepository.findAll();
+        int countAll = list.size();
+        FrameCountResponseDto result = new FrameCountResponseDto(countList, countAll);
+        return result;
+    }
 }
+
+
