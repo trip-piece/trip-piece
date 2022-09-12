@@ -90,6 +90,14 @@ public class FrameService {
                 .build();
         scrapRepository.save(scrap);
     }
+
+    //스티커 프레임 스크랩 해제
+    @Transactional
+    public void deleteFrameScrap(final User user, final long frameId){
+        Frame frame = frameRepository.getOne(frameId);
+        Scrap scrap = scrapRepository.findByFrameAndUser(user, frame);
+        scrapRepository.delete(scrap);
+    }
 }
 
 
