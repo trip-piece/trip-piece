@@ -15,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @Api(value = "스티커 프레임 공유 관련 API", tags={"Frame"})
 @RestController
@@ -60,7 +61,8 @@ public class FrameController {
 
     @ApiOperation(value = "공유된 스티커 프레임 삭제", notes = "다이어리가 아닌 공유한 스티커 프레임만 삭제한다.")
     @DeleteMapping
-    public ResponseEntity<?> deleteFrame(@RequestBody final int frameId){
+    public ResponseEntity<?> deleteFrame(@RequestBody final Map<String, Long> request){
+        long frameId = request.get("frameId");
         try{
             //로그인 완료되면 token으로 User 가져올 예정
             User user = null;
@@ -77,7 +79,8 @@ public class FrameController {
 
     @ApiOperation(value = "스티커 프레임 스크랩 등록", notes = "스티커 프레임을 스크랩한다.")
     @PostMapping
-    public ResponseEntity<?> scrapFrame(@RequestBody final int frameId){
+    public ResponseEntity<?> scrapFrame(@RequestBody final Map<String, Long> request){
+        long frameId = request.get("frameId");
         try{
             //로그인 완료되면 token으로 User 가져올 예정
             User user = null;
@@ -88,6 +91,23 @@ public class FrameController {
             }
         } catch (Exception e){
             return new ResponseEntity<String>("스티커 프레임 스크랩 실패", HttpStatus.FORBIDDEN);
+        }
+    }
+
+    @ApiOperation(value = "스티커 프레임 스크랩 해제", notes = "스크랩되었던 스티커 프레임을 다시 스크랩 해제한다.")
+    @DeleteMapping("/scrap")
+    public ResponseEntity<?> deleteFrameScrap(@RequestBody final Map<String, Long> request){
+        long frameId = request.get("frameId");
+        try{
+            //로그인 완료되면 token으로 User 가져올 예정
+            User user = null;
+            if(user == null) return new ResponseEntity<String>("로그인된 회원을 찾을 수 없습니다.", HttpStatus.NOT_FOUND);
+            else{
+                frameService.deleteFrameScrap(user, frameId);
+                return new ResponseEntity<String>("스티커 프레임 스크랩 해제 성공", HttpStatus.OK);
+            }
+        } catch (Exception e){
+            return new ResponseEntity<String>("스티커 프레임 스크랩 해제 실패", HttpStatus.FORBIDDEN);
         }
     }
 }

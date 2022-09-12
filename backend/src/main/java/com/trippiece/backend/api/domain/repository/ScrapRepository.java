@@ -9,4 +9,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ScrapRepository extends JpaRepository<Scrap, Long> {
     boolean existsByFrameAndUser(User user, Frame frame);
+    Scrap findByFrameAndUser(User user, Frame frame);
 }
