@@ -22,10 +22,16 @@ public class Frame extends BaseEntity {
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Diary diary;
 
+    @ManyToOne
+    @JoinColumn(name = "region_id", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    private Region region;
+
     @Builder
-    public Frame(String frameImage, Diary diary){
+    public Frame(String frameImage, Diary diary, Region region){
         this.frameImage = frameImage;
         this.diary = diary;
+        this.region = region;
     }
 
 }
