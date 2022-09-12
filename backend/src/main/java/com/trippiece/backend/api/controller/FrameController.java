@@ -74,4 +74,20 @@ public class FrameController {
             return new ResponseEntity<String>("스티커 프레임 삭제 실패", HttpStatus.FORBIDDEN);
         }
     }
+
+    @ApiOperation(value = "스티커 프레임 스크랩 등록", notes = "스티커 프레임을 스크랩한다.")
+    @PostMapping
+    public ResponseEntity<?> scrapFrame(@RequestBody final int frameId){
+        try{
+            //로그인 완료되면 token으로 User 가져올 예정
+            User user = null;
+            if(user == null) return new ResponseEntity<String>("로그인된 회원을 찾을 수 없습니다.", HttpStatus.NOT_FOUND);
+            else{
+                frameService.scrapFrame(user, frameId);
+                return new ResponseEntity<String>("스티커 프레임 스크랩 성공", HttpStatus.OK);
+            }
+        } catch (Exception e){
+            return new ResponseEntity<String>("스티커 프레임 스크랩 실패", HttpStatus.FORBIDDEN);
+        }
+    }
 }

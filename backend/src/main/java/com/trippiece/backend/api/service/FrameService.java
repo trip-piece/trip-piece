@@ -1,16 +1,14 @@
 package com.trippiece.backend.api.service;
 
 import com.trippiece.backend.api.domain.dto.response.*;
-import com.trippiece.backend.api.domain.entity.Decoration;
-import com.trippiece.backend.api.domain.entity.Frame;
-import com.trippiece.backend.api.domain.entity.Region;
-import com.trippiece.backend.api.domain.entity.User;
+import com.trippiece.backend.api.domain.entity.*;
 import com.trippiece.backend.api.domain.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -71,6 +69,7 @@ public class FrameService {
     }
 
     //스티커 프레임 삭제
+    @Transactional
     public int deleteFrame(final User user, final long frameId){
         int resultCode = 200;
         Frame frame = frameRepository.getOne(frameId);
@@ -79,6 +78,17 @@ public class FrameService {
             frameRepository.delete(frame);
         }
         return resultCode;
+    }
+
+    //스티커 프레임 스크랩
+    @Transactional
+    public void scrapFrame(final User user, final long frameId){
+        Frame frame = frameRepository.getOne(frameId);
+        Scrap scrap = Scrap.builder()
+                .user(user)
+                .frame(frame)
+                .build();
+        scrapRepository.save(scrap);
     }
 }
 
