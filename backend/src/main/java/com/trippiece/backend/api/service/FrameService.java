@@ -1,5 +1,6 @@
 package com.trippiece.backend.api.service;
 
+import com.trippiece.backend.api.domain.dto.CountListDto;
 import com.trippiece.backend.api.domain.dto.response.*;
 import com.trippiece.backend.api.domain.entity.*;
 import com.trippiece.backend.api.domain.repository.*;
