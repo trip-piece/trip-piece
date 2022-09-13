@@ -138,13 +138,23 @@ export default function GlobalStyle() {
           * {
             box-sizing: border-box;
           }
+          #root {
+            max-width: 550px;
+            min-width: 320px;
+            min-height: 100vh;
+            margin: 0 auto;
+            background-color: ${theme.colors.white};
+          }
           html,
           body {
             scroll-behavior: smooth;
+            width: 100%;
+            height: 100%;
           }
           body {
             line-height: 1.2;
             color: ${theme.colors.gray900};
+            background-color: ${theme.colors.mainDark};
           }
           a {
             text-decoration: none;
