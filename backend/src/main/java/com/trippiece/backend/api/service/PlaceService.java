@@ -11,6 +11,7 @@ import com.trippiece.backend.api.domain.repository.StickerRepository;
 import com.trippiece.backend.exception.CustomException;
 import com.trippiece.backend.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -19,7 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -33,6 +33,7 @@ public class PlaceService {
     private final StickerRepository stickerRepository;
     private final QRlogRepository qrlogRepository;
     private final QRService qrService;
+    private final EmailService emailService;
 
     //이벤트 스팟/축제 리스트 조회 및 검색(지역필터링, 타입필터링)
     public Page<PlaceResponseDto> findPlaceList(final long regionId, final int type, Pageable pageable){
@@ -86,8 +87,9 @@ public class PlaceService {
                 .build();
         Place place = placeRepository.save(placeBuilder);
         if(activated) {
-            String qrImage =qrService.QRMake(place);
+            String qrImage = qrService.QRMake(place);
             place.updateQRImage(qrImage);
+            emailService.sendQRCode(place, qrImage);
         }
 
         List<StickerDto> list = request.getStickerList();
@@ -112,6 +114,7 @@ public class PlaceService {
         if(activated) {
             String qrImage =qrService.QRMake(place);
             place.updateQRImage(qrImage);
+            emailService.sendQRCode(place, qrImage);
         }
 
         //원래 sticker

@@ -20,6 +20,7 @@ public class ScheduleService {
     private final PlaceRepository placeRepository;
     private final QRService qrService;
     private final PlaceService placeService;
+    private final EmailService emailService;
 
     //매일 자정에 실행
     @Scheduled(cron= "0 0 0 * * *", zone = "Asia/Seoul")
@@ -45,6 +46,7 @@ public class ScheduleService {
                 return ;
             } else {
                 placeService.updateQRImage(place.getId(), imgPath);
+                emailService.sendQRCode(place, imgPath);
             }
         }
         List<Place> notactivedPlaceList = placeRepository.findAllByActivated(false);

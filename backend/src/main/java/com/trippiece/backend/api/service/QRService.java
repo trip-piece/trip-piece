@@ -24,7 +24,7 @@ public class QRService {
         String fileName;
         try {
             QRCodeWriter qrCodeWriter = new QRCodeWriter();
-            BitMatrix bitMatrix = qrCodeWriter.encode(content, BarcodeFormat.QR_CODE, 100, 100);
+            BitMatrix bitMatrix = qrCodeWriter.encode(content, BarcodeFormat.QR_CODE, 500, 500);
             BufferedImage bufferedImage = MatrixToImageWriter.toBufferedImage(bitMatrix);
             fileName = place.getName()+"_QR";
             String imgPath = s3Service.qrUpload(place.getQrImage(), bufferedImage, fileName);

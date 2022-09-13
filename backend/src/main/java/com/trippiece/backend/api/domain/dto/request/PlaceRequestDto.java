@@ -18,6 +18,7 @@ public class PlaceRequestDto {
         private String name;
         private long regionId;
         private String locationAddress;
+        private String managerEmail;
         private float lat;
         private float lng;
         private LocalDate startDate;
@@ -35,6 +36,7 @@ public class PlaceRequestDto {
         private String name;
         private long regionId;
         private String locationAddress;
+        private String managerEmail;
         private float lat;
         private float lng;
         private LocalDate startDate;
