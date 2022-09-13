@@ -1,11 +1,13 @@
 package com.trippiece.backend.api.domain.dto.response;
 
 import com.trippiece.backend.api.domain.entity.Decoration;
+import lombok.Getter;
 
+@Getter
 public class StickerDecorationDto {
-    int tokenId;
-    float x;
-    float y;
+    private int tokenId;
+    private float x;
+    private float y;
 
     public StickerDecorationDto(Decoration decoration){
         this.tokenId=decoration.getSticker().getTokenId();

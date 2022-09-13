@@ -1,8 +1,11 @@
 package com.trippiece.backend.api.service;
 
+import com.trippiece.backend.api.domain.dto.CountListDto;
 import com.trippiece.backend.api.domain.dto.response.*;
 import com.trippiece.backend.api.domain.entity.*;
 import com.trippiece.backend.api.domain.repository.*;
+import com.trippiece.backend.exception.CustomException;
+import com.trippiece.backend.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -28,7 +31,7 @@ public class FrameService {
         if(regionList.isEmpty()) list = frameRepository.findAll();
         else {
             for(long i : regionList) {
-                Region region = regionRepository.getOne(i);
+                Region region = regionRepository.findById(i).orElseThrow(() -> new CustomException(ErrorCode.DATA_NOT_FOUND));;
                 list.addAll(frameRepository.findAllByRegionOrderByIdDesc(region));
             }
         }
@@ -57,7 +60,7 @@ public class FrameService {
 
     //스티커 프레임 상세 조회
     public StickerFrameResponseDto findFrame(final User user, final long frameId){
-        Frame frame = frameRepository.getOne(frameId);
+        Frame frame = frameRepository.findById(frameId).orElseThrow(() -> new CustomException(ErrorCode.DATA_NOT_FOUND));
         List<StickerDecorationDto> stickerList = new ArrayList<>();
         List<Decoration> decorationList = decorationRepository.findAllByDiary(frame.getDiary());
         for(Decoration decoration : decorationList) {
@@ -72,7 +75,7 @@ public class FrameService {
     @Transactional
     public int deleteFrame(final User user, final long frameId){
         int resultCode = 200;
-        Frame frame = frameRepository.getOne(frameId);
+        Frame frame = frameRepository.findById(frameId).orElseThrow(() -> new CustomException(ErrorCode.DATA_NOT_FOUND));;
         if(!frame.getDiary().getUser().equals(user)) resultCode=406;
         else {
             frameRepository.delete(frame);
@@ -83,7 +86,7 @@ public class FrameService {
     //스티커 프레임 스크랩
     @Transactional
     public void scrapFrame(final User user, final long frameId){
-        Frame frame = frameRepository.getOne(frameId);
+        Frame frame = frameRepository.findById(frameId).orElseThrow(() -> new CustomException(ErrorCode.DATA_NOT_FOUND));
         Scrap scrap = Scrap.builder()
                 .user(user)
                 .frame(frame)
@@ -94,7 +97,7 @@ public class FrameService {
     //스티커 프레임 스크랩 해제
     @Transactional
     public void deleteFrameScrap(final User user, final long frameId){
-        Frame frame = frameRepository.getOne(frameId);
+        Frame frame = frameRepository.findById(frameId).orElseThrow(() -> new CustomException(ErrorCode.DATA_NOT_FOUND));
         Scrap scrap = scrapRepository.findByFrameAndUser(user, frame);
         scrapRepository.delete(scrap);
     }

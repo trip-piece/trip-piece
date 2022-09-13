@@ -42,10 +42,13 @@ dependencies {
     //runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-jackson', version: '0.11.2'
 
     //SMTP
-    //implementation 'org.springframework.boot:spring-boot-starter-mail'
+    implementation 'org.springframework.boot:spring-boot-starter-mail'
 
     //Amazon S3 imageUpload
-    //implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.0.1.RELEASE'
+    implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.0.1.RELEASE'
+
+    //QRCode
+    implementation "com.google.zxing:javase:3.4.0"
 }
 
 tasks.named('test') {

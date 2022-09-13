@@ -1,11 +1,11 @@
-package com.trippiece.backend.api.domain.dto.response;
+package com.trippiece.backend.api.domain.dto;
 
 import lombok.Getter;
 
 @Getter
 public class CountListDto {
-    long regionId;
-    int frameCnt;
+    private long regionId;
+    private int frameCnt;
 
     public CountListDto(long regionId, int frameCnt){
         this.regionId=regionId;

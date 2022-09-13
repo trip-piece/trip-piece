@@ -6,10 +6,10 @@ import lombok.Getter;
 
 @Getter
 public class FrameResponseDto {
-    long frameId;
-    String frameImage;
-    long diaryId;
-    boolean isScrapped;
+    private long frameId;
+    private String frameImage;
+    private long diaryId;
+    private boolean isScrapped;
 
     public FrameResponseDto(Frame frame, boolean isScrapped){
         this.frameId=frame.getId();
