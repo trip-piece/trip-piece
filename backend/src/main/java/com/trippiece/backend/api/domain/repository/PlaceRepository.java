@@ -9,4 +9,5 @@ import java.util.List;
 public interface PlaceRepository extends JpaRepository<Place, Long> {
     List<Place> findAllByTypeAndActivated(int type, boolean activated);
     List<Place> findAllByRegionAndTypeAndActivated(Region region, int type, boolean activated);
+    List<Place> findAllByActivated(boolean activated);
 }

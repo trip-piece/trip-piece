@@ -46,7 +46,7 @@ public class Place extends BaseEntity {
     @Column(nullable = false)
     private int amount;
 
-    @Column(nullable = false)
+    @Column
     private String qrImage;
 
     @Column(nullable = false)
@@ -67,6 +67,23 @@ public class Place extends BaseEntity {
         this.posterImage=posterImage;
         this.amount=amount;
         this.qrImage=qrImage;
+        this.activated=activated;
+    }
+
+    @Builder
+    public Place (int type, String name, Region region, String locationAddress,
+                  float lat, float lng, LocalDate startDate, LocalDate endDate, String posterImage,
+                  int amount, boolean activated) {
+        this.type=type;
+        this.name=name;
+        this.region=region;
+        this.locationAddress=locationAddress;
+        this.lat=lat;
+        this.lng=lng;
+        this.startDate=startDate;
+        this.endDate=endDate;
+        this.posterImage=posterImage;
+        this.amount=amount;
         this.activated=activated;
     }
 
