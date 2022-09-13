@@ -39,14 +39,14 @@ public class PlaceResponseDto {
         this.regionId=place.getRegion().getId();
         this.regionName=place.getRegion().getName();
         this.type=place.getType();
-        if(this.qrImage!=null && !this.qrImage.equals("")) this.qrImage="https://" + s3Service.CLOUD_FRONT_DOMAIN_NAME + "/" + place.getQrImage();
-        else this.qrImage=place.getQrImage();
+        if(place.getQrImage()==null || place.getQrImage().equals("")) this.qrImage=null;
+        else this.qrImage="https://" + s3Service.CLOUD_FRONT_DOMAIN_NAME + "/" + place.getQrImage();
         this.stickerList=stickerList;
         this.activated=place.isActivated();
         this.name=place.getName();
         this.locationAddress=place.getLocationAddress();
-        if(this.posterImage!=null && !this.posterImage.equals("")) this.posterImage="https://" + s3Service.CLOUD_FRONT_DOMAIN_NAME + "/" + place.getPosterImage();
-        else this.posterImage=place.getPosterImage();
+        if(place.getPosterImage()==null || place.getPosterImage().equals("")) this.posterImage=null;
+        else this.posterImage="https://" + s3Service.CLOUD_FRONT_DOMAIN_NAME + "/" + place.getPosterImage();
         this.amount=place.getAmount();
     }
 }
