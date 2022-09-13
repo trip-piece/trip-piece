@@ -2,7 +2,6 @@ package com.trippiece.backend.api.domain.dto.request;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -27,13 +26,6 @@ public class TripRequestDto {
     @ApiModelProperty(name = "종료날짜", example = "2022-09-19")
     LocalDate endDate;
 
-//    @Builder
-//    public TripRequestDto(int regionId,String title,LocalDate startDate,LocalDate endDate){
-//        this.regionId = regionId;
-//        this.title = title;
-//        this.startDate = startDate;
-//        this.endDate = endDate;
-//    }
 
 
 }
