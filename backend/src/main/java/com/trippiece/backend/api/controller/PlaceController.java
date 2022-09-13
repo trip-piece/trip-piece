@@ -29,7 +29,7 @@ public class PlaceController {
 
     @PostMapping
     @ApiOperation(value = "스팟/축제 등록", notes = "이벤트가 열릴 스팟이나 축제를 등록한다.")
-    public ResponseEntity<?> addPlace(@RequestPart(value="place")PlaceRequestDto place, @RequestPart(value = "posterImage") MultipartFile posterImage) throws IOException {
+    public ResponseEntity<?> addPlace(@RequestPart(value="place")PlaceRequestDto.PlaceRegister place, @RequestPart(value = "posterImage") MultipartFile posterImage) throws IOException {
         try {
             if(posterImage==null) return new ResponseEntity<String>("PosterImage가 필요합니다.", HttpStatus.BAD_REQUEST);
             if(posterImage.getSize()>=10485760) return new ResponseEntity<String>("이미지 크기 제한은 10MB 입니다.", HttpStatus.FORBIDDEN);
@@ -45,6 +45,30 @@ public class PlaceController {
         } catch (Exception e) {
             e.printStackTrace();
             return new ResponseEntity<String>("이벤트 스팟/축제 등록 실패", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PostMapping
+    @ApiOperation(value = "스팟/축제 수정", notes = "이벤트가 열릴 스팟이나 축제의 정보를 수정한다.")
+    public ResponseEntity<?> editPlace(@RequestPart(value="place")PlaceRequestDto.PlaceEdit place, @RequestPart(value = "posterImage", required = false) MultipartFile posterImage) throws IOException {
+        try {
+            String posterImagePath = "";
+            if(posterImage!=null) {
+                if (posterImage.getSize() >= 10485760)
+                    return new ResponseEntity<String>("이미지 크기 제한은 10MB 입니다.", HttpStatus.FORBIDDEN);
+                String originFile = posterImage.getOriginalFilename();
+                String originFileExtension = originFile.substring(originFile.lastIndexOf("."));
+                if (!originFileExtension.equalsIgnoreCase(".jpg") && !originFileExtension.equalsIgnoreCase(".png")
+                        && !originFileExtension.equalsIgnoreCase(".jpeg")) {
+                    return new ResponseEntity<String>("jpg, jpeg, png의 이미지 파일만 업로드해주세요", HttpStatus.FORBIDDEN);
+                }
+                posterImagePath = s3Service.upload("", posterImage);
+            }
+            placeService.updatePlace(place, posterImagePath);
+            return new ResponseEntity<String>("이벤트 스팟/축제 수정 성공", HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<String>("이벤트 스팟/축제 수정 실패", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 

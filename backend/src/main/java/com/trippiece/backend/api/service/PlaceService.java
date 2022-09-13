@@ -19,6 +19,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -56,7 +58,7 @@ public class PlaceService {
 
     //이벤트 스팟/축제 등록
     @Transactional
-    public void insertPlace(final PlaceRequestDto request, final String posterImage){
+    public void insertPlace(final PlaceRequestDto.PlaceRegister request, final String posterImage){
         Region region = regionRepository.findById(request.getRegionId()).orElseThrow(() -> new CustomException(ErrorCode.DATA_NOT_FOUND));
         LocalDate today = LocalDate.now();
         boolean activated = (today.compareTo(request.getStartDate()) >= 0 && today.compareTo(request.getEndDate()) <= 0)? true:false;
@@ -86,6 +88,57 @@ public class PlaceService {
                     .place(place)
                     .build();
             stickerRepository.save(sticker);
+        }
+    }
+
+    //이벤트 스팟/축제 수정
+    @Transactional
+    public void updatePlace(final PlaceRequestDto.PlaceEdit request, final String posterImage){
+        Place place = placeRepository.findById(request.getPlaceId()).orElseThrow(() -> new CustomException(ErrorCode.DATA_NOT_FOUND));
+        Region region = regionRepository.findById(request.getRegionId()).orElseThrow(() -> new CustomException(ErrorCode.DATA_NOT_FOUND));
+        LocalDate today = LocalDate.now();
+        boolean activated = (today.compareTo(request.getStartDate()) >= 0 && today.compareTo(request.getEndDate()) <= 0)? true:false;
+        place.updatePlace(request, posterImage, region, activated);
+
+        if(activated) {
+            String qrImage =qrService.QRMake(place);
+            place.updateQRImage(qrImage);
+        }
+
+        //원래 sticker
+        List<Sticker> list = stickerRepository.findAllByPlace(place);
+        List<StickerDto> originStickerList = new ArrayList<>();
+        List<StickerDto> deleteStickerList = new ArrayList<>();
+        for(Sticker sticker : list) {
+            originStickerList.add(new StickerDto(sticker));
+            deleteStickerList.add(new StickerDto(sticker));
+        }
+
+        //변경된 sticker
+        List<StickerDto> newStickerList = (ArrayList<StickerDto>) request.getStickerList();
+        List<StickerDto> updateStickerList = new ArrayList<>();
+        for(StickerDto sticker : newStickerList) {
+            updateStickerList.add(sticker);
+        }
+        Collections.sort(newStickerList);
+
+        if(!newStickerList.equals(originStickerList)) {
+            updateStickerList.removeAll(originStickerList);
+            deleteStickerList.removeAll(newStickerList);
+
+            if(deleteStickerList.size()!=0) {
+                for(StickerDto stickerDto : deleteStickerList) {
+                    Sticker sticker = stickerRepository.findById(stickerDto.getId()).orElseThrow(() -> new CustomException(ErrorCode.DATA_NOT_FOUND));
+                    stickerRepository.delete(sticker);
+                }
+            }
+
+            if(updateStickerList.size()!=0) {
+                for(StickerDto stickerDto : updateStickerList) {
+                    Sticker sticker = stickerRepository.findById(stickerDto.getId()).orElseThrow(() -> new CustomException(ErrorCode.DATA_NOT_FOUND));
+                    stickerRepository.save(new Sticker(sticker.getTokenId(), place));
+                }
+            }
         }
     }
 

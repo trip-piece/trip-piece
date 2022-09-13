@@ -9,18 +9,38 @@ import lombok.Setter;
 import java.time.LocalDate;
 import java.util.List;
 
-@Getter
-@Setter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class PlaceRequestDto {
-    private String name;
-    private long regionId;
-    private String locationAddress;
-    private float lat;
-    private float lng;
-    private LocalDate startDate;
-    private LocalDate endDate;
-    private int type;
-    private int amount;
-    private List<StickerDto> stickerList;
+
+    @Getter
+    @Setter
+    @NoArgsConstructor(access = AccessLevel.PROTECTED)
+    public static class PlaceRegister {
+        private String name;
+        private long regionId;
+        private String locationAddress;
+        private float lat;
+        private float lng;
+        private LocalDate startDate;
+        private LocalDate endDate;
+        private int type;
+        private int amount;
+        private List<StickerDto> stickerList;
+    }
+
+    @Getter
+    @Setter
+    @NoArgsConstructor(access = AccessLevel.PROTECTED)
+    public static class PlaceEdit {
+        private long placeId;
+        private String name;
+        private long regionId;
+        private String locationAddress;
+        private float lat;
+        private float lng;
+        private LocalDate startDate;
+        private LocalDate endDate;
+        private int type;
+        private int amount;
+        private List<StickerDto> stickerList;
+    }
 }

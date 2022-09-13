@@ -1,5 +1,6 @@
 package com.trippiece.backend.api.domain.entity;
 
+import com.trippiece.backend.api.domain.dto.request.PlaceRequestDto;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -54,24 +55,6 @@ public class Place extends BaseEntity {
 
     @Builder
     public Place (int type, String name, Region region, String locationAddress,
-                 float lat, float lng, LocalDate startDate, LocalDate endDate, String posterImage,
-                 int amount, String qrImage, boolean activated) {
-        this.type=type;
-        this.name=name;
-        this.region=region;
-        this.locationAddress=locationAddress;
-        this.lat=lat;
-        this.lng=lng;
-        this.startDate=startDate;
-        this.endDate=endDate;
-        this.posterImage=posterImage;
-        this.amount=amount;
-        this.qrImage=qrImage;
-        this.activated=activated;
-    }
-
-    @Builder
-    public Place (int type, String name, Region region, String locationAddress,
                   float lat, float lng, LocalDate startDate, LocalDate endDate, String posterImage,
                   int amount, boolean activated) {
         this.type=type;
@@ -85,6 +68,20 @@ public class Place extends BaseEntity {
         this.posterImage=posterImage;
         this.amount=amount;
         this.activated=activated;
+    }
+
+    public void updatePlace(PlaceRequestDto.PlaceEdit request, String posterImage, Region region, boolean activated) {
+        if(this.type!=request.getType()) this.type= request.getType();
+        if(!this.name.equals(request.getName())) this.type= request.getType();
+        if(this.region.getId()!=request.getRegionId()) this.region=region;
+        if(!this.locationAddress.equals(request.getLocationAddress())) this.locationAddress=request.getLocationAddress();
+        if(this.lat!= request.getLat()) this.lat= request.getLat();
+        if(this.lng!= request.getLng()) this.lng= request.getLng();
+        if(!this.startDate.equals(request.getStartDate())) this.startDate=request.getStartDate();
+        if(!this.endDate.equals(request.getEndDate())) this.endDate=request.getEndDate();
+        if(!this.posterImage.equals(posterImage)&&!posterImage.equals("")&&posterImage!=null) this.posterImage=posterImage;
+        if(this.amount!= request.getAmount()) this.amount= request.getAmount();
+        if(!(this.activated!=activated)) this.activated=activated;
     }
 
     public void updateState(){
