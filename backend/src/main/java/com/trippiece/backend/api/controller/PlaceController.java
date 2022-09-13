@@ -48,7 +48,7 @@ public class PlaceController {
         }
     }
 
-    @PostMapping
+    @PostMapping("/edit")
     @ApiOperation(value = "스팟/축제 수정", notes = "이벤트가 열릴 스팟이나 축제의 정보를 수정한다.")
     public ResponseEntity<?> editPlace(@RequestPart(value="place")PlaceRequestDto.PlaceEdit place, @RequestPart(value = "posterImage", required = false) MultipartFile posterImage) throws IOException {
         try {
