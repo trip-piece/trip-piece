@@ -6,6 +6,7 @@ import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
+import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -13,7 +14,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.PostConstruct;
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -52,8 +58,31 @@ public class S3Service {
         // key가 존재하면 기존 파일은 삭제
         delete(currentFilePath);
 
+        System.out.println(fileName);
+        System.out.println(file.getInputStream());
         // 파일 업로드
         s3Client.putObject(new PutObjectRequest(bucket, fileName, file.getInputStream(), null)
+                .withCannedAcl(CannedAccessControlList.PublicRead));
+
+        return fileName;
+    }
+
+    public String qrUpload(String currentFilePath, BufferedImage file, String imageName) throws IOException {
+        // 고유한 key 값을 갖기위해 현재 시간을 postfix로 붙여줌
+        SimpleDateFormat date = new SimpleDateFormat("yyyymmddHHmmss");
+        String fileName = date.format(new Date())+"-"+imageName;
+
+        // key가 존재하면 기존 파일은 삭제
+        delete(currentFilePath);
+
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        ImageIO.write(file, "png", os);
+        byte[] buffer = os.toByteArray();
+        InputStream is = new ByteArrayInputStream(buffer);
+        ObjectMetadata meta = new ObjectMetadata();
+        meta.setContentLength(buffer.length);
+        // 파일 업로드
+        s3Client.putObject(new PutObjectRequest(bucket, fileName, is, meta)
                 .withCannedAcl(CannedAccessControlList.PublicRead));
 
         return fileName;

@@ -73,7 +73,7 @@ public class FrameController {
                 else return new ResponseEntity<String>("스티커 프레임 삭제 성공", HttpStatus.OK);
             }
         } catch (Exception e){
-            return new ResponseEntity<String>("스티커 프레임 삭제 실패", HttpStatus.FORBIDDEN);
+            return new ResponseEntity<String>("스티커 프레임 삭제 실패", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -90,7 +90,7 @@ public class FrameController {
                 return new ResponseEntity<String>("스티커 프레임 스크랩 성공", HttpStatus.OK);
             }
         } catch (Exception e){
-            return new ResponseEntity<String>("스티커 프레임 스크랩 실패", HttpStatus.FORBIDDEN);
+            return new ResponseEntity<String>("스티커 프레임 스크랩 실패", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -107,7 +107,7 @@ public class FrameController {
                 return new ResponseEntity<String>("스티커 프레임 스크랩 해제 성공", HttpStatus.OK);
             }
         } catch (Exception e){
-            return new ResponseEntity<String>("스티커 프레임 스크랩 해제 실패", HttpStatus.FORBIDDEN);
+            return new ResponseEntity<String>("스티커 프레임 스크랩 해제 실패", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }

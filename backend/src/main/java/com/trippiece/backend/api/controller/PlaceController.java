@@ -1,8 +1,10 @@
 package com.trippiece.backend.api.controller;
 
+import com.trippiece.backend.api.domain.dto.request.PlaceRequestDto;
 import com.trippiece.backend.api.domain.dto.response.PlaceResponseDto;
 import com.trippiece.backend.api.domain.entity.User;
 import com.trippiece.backend.api.service.PlaceService;
+import com.trippiece.backend.api.service.S3Service;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
@@ -11,7 +13,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.Map;
 
 @Api(value = "이벤트 스팟/축제 장소 관련 API", tags={"Place"})
@@ -21,6 +25,28 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class PlaceController {
     private final PlaceService placeService;
+    private final S3Service s3Service;
+
+    @PostMapping
+    @ApiOperation(value = "스팟/축제 등록", notes = "이벤트가 열릴 스팟이나 축제를 등록한다.")
+    public ResponseEntity<?> addPlace(@RequestPart(value="place")PlaceRequestDto place, @RequestPart(value = "posterImage") MultipartFile posterImage) throws IOException {
+        try {
+            if(posterImage==null) return new ResponseEntity<String>("PosterImage가 필요합니다.", HttpStatus.BAD_REQUEST);
+            if(posterImage.getSize()>=10485760) return new ResponseEntity<String>("이미지 크기 제한은 10MB 입니다.", HttpStatus.FORBIDDEN);
+            String originFile = posterImage.getOriginalFilename();
+            String originFileExtension = originFile.substring(originFile.lastIndexOf("."));
+            if (!originFileExtension.equalsIgnoreCase(".jpg") && !originFileExtension.equalsIgnoreCase(".png")
+                    && !originFileExtension.equalsIgnoreCase(".jpeg")) {
+                return new ResponseEntity<String>("jpg, jpeg, png의 이미지 파일만 업로드해주세요", HttpStatus.FORBIDDEN);
+            }
+            String posterImagePath = s3Service.upload("",posterImage);
+            placeService.insertPlace(place, posterImagePath);
+            return new ResponseEntity<String>("이벤트 스팟/축제 등록 성공", HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<String>("이벤트 스팟/축제 등록 실패", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
     @GetMapping
     @ApiOperation(value = "스팟/축제 리스트 조회", notes = "다양한 필터링을 포함하여 이벤트 스팟/축제의 리스트를 조회한다.")
@@ -39,7 +65,7 @@ public class PlaceController {
             return new ResponseEntity<String>("이벤트 장소/축제 삭제 성공", HttpStatus.OK);
         } catch (Exception e){
             e.printStackTrace();
-            return new ResponseEntity<String>("이벤트 장소/축제 삭제 실패", HttpStatus.FORBIDDEN);
+            return new ResponseEntity<String>("이벤트 장소/축제 삭제 실패", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -52,7 +78,7 @@ public class PlaceController {
             return new ResponseEntity<String>("이벤트 장소/축제 활성화 및 비활성화 성공", HttpStatus.OK);
         } catch (Exception e){
             e.printStackTrace();
-            return new ResponseEntity<String>("이벤트 장소/축제 활성화 및 비활성화 실패", HttpStatus.FORBIDDEN);
+            return new ResponseEntity<String>("이벤트 장소/축제 활성화 및 비활성화 실패", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -72,7 +98,7 @@ public class PlaceController {
             }
         } catch (Exception e){
             e.printStackTrace();
-            return new ResponseEntity<String>("사용자 QR Log 저장 및 Place Amount 수정 실패", HttpStatus.FORBIDDEN);
+            return new ResponseEntity<String>("사용자 QR Log 저장 및 Place Amount 수정 실패", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }

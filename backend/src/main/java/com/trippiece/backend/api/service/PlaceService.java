@@ -1,6 +1,7 @@
 package com.trippiece.backend.api.service;
 
 import com.trippiece.backend.api.domain.dto.StickerDto;
+import com.trippiece.backend.api.domain.dto.request.PlaceRequestDto;
 import com.trippiece.backend.api.domain.dto.response.PlaceResponseDto;
 import com.trippiece.backend.api.domain.entity.*;
 import com.trippiece.backend.api.domain.repository.PlaceRepository;
@@ -16,6 +17,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -28,6 +30,7 @@ public class PlaceService {
     private final RegionRepository regionRepository;
     private final StickerRepository stickerRepository;
     private final QRlogRepository qrlogRepository;
+    private final QRService qrService;
 
     //이벤트 스팟/축제 리스트 조회 및 검색(지역필터링, 타입필터링)
     public Page<PlaceResponseDto> findPlaceList(final long regionId, final int type, Pageable pageable){
@@ -51,6 +54,41 @@ public class PlaceService {
         return result;
     }
 
+    //이벤트 스팟/축제 등록
+    @Transactional
+    public void insertPlace(final PlaceRequestDto request, final String posterImage){
+        Region region = regionRepository.findById(request.getRegionId()).orElseThrow(() -> new CustomException(ErrorCode.DATA_NOT_FOUND));
+        LocalDate today = LocalDate.now();
+        boolean activated = (today.compareTo(request.getStartDate()) >= 0 && today.compareTo(request.getEndDate()) <= 0)? true:false;
+        Place placeBuilder = Place.builder()
+                .type(request.getType())
+                .name(request.getName())
+                .region(region)
+                .locationAddress(request.getLocationAddress())
+                .lat(request.getLat())
+                .lng(request.getLng())
+                .startDate(request.getStartDate())
+                .endDate(request.getEndDate())
+                .posterImage(posterImage)
+                .amount(request.getAmount())
+                .activated(activated)
+                .build();
+        Place place = placeRepository.save(placeBuilder);
+        if(activated) {
+            String qrImage =qrService.QRMake(place);
+            place.updateQRImage(qrImage);
+        }
+
+        List<StickerDto> list = request.getStickerList();
+        for(StickerDto stickerDto : list) {
+            Sticker sticker = Sticker.builder()
+                    .tokenId(stickerDto.getTokenId())
+                    .place(place)
+                    .build();
+            stickerRepository.save(sticker);
+        }
+    }
+
     //이벤트 스팟/축제 삭제
     @Transactional
     public void deletePlace(final long placeId){
@@ -63,6 +101,13 @@ public class PlaceService {
     public void updateState(final long placeId){
         Place place = placeRepository.findById(placeId).orElseThrow(() -> new CustomException(ErrorCode.DATA_NOT_FOUND));
         place.updateState();
+    }
+
+    //이벤트 스팟/축제 qrImage 업데이트
+    @Transactional
+    public void updateQRImage(final long placeId, final String imgPath){
+        Place place = placeRepository.findById(placeId).orElseThrow(() -> new CustomException(ErrorCode.DATA_NOT_FOUND));
+        place.updateQRImage(imgPath);
     }
 
     //Place Amount 수정
