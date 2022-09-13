@@ -6,6 +6,8 @@ import com.trippiece.backend.api.domain.entity.*;
 import com.trippiece.backend.api.domain.repository.PlaceRepository;
 import com.trippiece.backend.api.domain.repository.RegionRepository;
 import com.trippiece.backend.api.domain.repository.StickerRepository;
+import com.trippiece.backend.exception.CustomException;
+import com.trippiece.backend.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -30,7 +32,7 @@ public class PlaceService {
         List<Place> placeList = new ArrayList<>();
         if(regionId==0) placeList=placeRepository.findAllByTypeAndActivated(type, true);
         else {
-            Region region = regionRepository.getOne(regionId);
+            Region region = regionRepository.findById(regionId).orElseThrow(() -> new CustomException(ErrorCode.DATA_NOT_FOUND));
             placeList=placeRepository.findAllByRegionAndTypeAndActivated(region, type, true);
         }
 
@@ -51,7 +53,7 @@ public class PlaceService {
     @Transactional
     public int deletePlace(final long placeId){
         int resultCode = 200;
-        Place place = placeRepository.getOne(placeId);
+        Place place = placeRepository.findById(placeId).orElseThrow(() -> new CustomException(ErrorCode.DATA_NOT_FOUND));
         if(place!=null) resultCode = 400;
         else placeRepository.delete(place);
         return resultCode;
