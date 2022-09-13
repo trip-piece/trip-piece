@@ -80,6 +80,12 @@ public class PlaceController {
         return new ResponseEntity<Page<PlaceResponseDto>>(placeService.findPlaceList(regionId, type, pageable), HttpStatus.OK);
     }
 
+    @GetMapping("/{placeId}")
+    @ApiOperation(value = "스팟/축제 상세 조회", notes = "하나의 이벤트 스팟/축제의 상세정보를 조회한다.")
+    public ResponseEntity<?> getPlaceList(@PathVariable long placeId) {
+        return new ResponseEntity<PlaceResponseDto>(placeService.findPlace(placeId), HttpStatus.OK);
+    }
+
     @ApiOperation(value = "이벤트 스팟/축제 삭제", notes = "이벤트 스팟/축제를 삭제한다.")
     @DeleteMapping
     public ResponseEntity<?> deletePlace(@RequestBody final Map<String, Long> request){

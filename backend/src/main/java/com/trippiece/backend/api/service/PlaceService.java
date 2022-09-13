@@ -56,6 +56,15 @@ public class PlaceService {
         return result;
     }
 
+    //이벤트 스팟/축제 리스트 조회 및 검색(지역필터링, 타입필터링)
+    public PlaceResponseDto findPlace(final long placeId){
+        Place place = placeRepository.findById(placeId).orElseThrow(() -> new CustomException(ErrorCode.DATA_NOT_FOUND));
+        List<Sticker> list = stickerRepository.findAllByPlace(place);
+        List<StickerDto> stickerList = list.stream().map(StickerDto::new).collect(Collectors.toList());
+        PlaceResponseDto result = new PlaceResponseDto(place, stickerList);
+        return result;
+    }
+
     //이벤트 스팟/축제 등록
     @Transactional
     public void insertPlace(final PlaceRequestDto.PlaceRegister request, final String posterImage){
