@@ -35,10 +35,10 @@ public class PlaceController {
     public ResponseEntity<?> deletePlace(@RequestBody final Map<String, Long> request){
         long placeId = request.get("placeId");
         try{
-            int deleteCode = placeService.deletePlace(placeId);
-            if(deleteCode==400) return new ResponseEntity<String>("유효하지 않은 PlaceId", HttpStatus.BAD_REQUEST);
+            placeService.deletePlace(placeId);
             return new ResponseEntity<String>("이벤트 장소/축제 삭제 성공", HttpStatus.OK);
         } catch (Exception e){
+            e.printStackTrace();
             return new ResponseEntity<String>("이벤트 장소/축제 삭제 실패", HttpStatus.FORBIDDEN);
         }
     }

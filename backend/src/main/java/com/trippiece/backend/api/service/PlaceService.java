@@ -51,12 +51,9 @@ public class PlaceService {
 
     //이벤트 스팟/축제 삭제
     @Transactional
-    public int deletePlace(final long placeId){
-        int resultCode = 200;
+    public void deletePlace(final long placeId){
         Place place = placeRepository.findById(placeId).orElseThrow(() -> new CustomException(ErrorCode.DATA_NOT_FOUND));
-        if(place!=null) resultCode = 400;
-        else placeRepository.delete(place);
-        return resultCode;
+        placeRepository.delete(place);
     }
 }
 
