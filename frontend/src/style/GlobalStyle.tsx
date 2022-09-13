@@ -143,7 +143,7 @@ export default function GlobalStyle() {
             min-width: 320px;
             min-height: 100vh;
             margin: 0 auto;
-            background-color: ${theme.colors.white};
+            background-color: ${theme.colors.mainDark};
           }
           html,
           body {
@@ -154,7 +154,7 @@ export default function GlobalStyle() {
           body {
             line-height: 1.2;
             color: ${theme.colors.gray900};
-            background-color: ${theme.colors.mainDark};
+            background-color: ${theme.colors.white};
           }
           a {
             text-decoration: none;

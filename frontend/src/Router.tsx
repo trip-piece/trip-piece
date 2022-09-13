@@ -1,6 +1,6 @@
-import React from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { Landing, Main } from './Pages';
+import React from "react";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { Landing, Main, TripList } from "./Pages";
 
 function Router() {
   return (
@@ -8,6 +8,7 @@ function Router() {
       <Routes>
         <Route path="" element={<Landing />} />
         <Route path="main" element={<Main />} />
+        <Route path="trips" element={<TripList />} />
       </Routes>
     </BrowserRouter>
   );
