@@ -1,5 +1,5 @@
 import React, { useRef, useState } from "react";
-import { InfiniteData, useInfiniteQuery } from "react-query";
+import { useInfiniteQuery } from "react-query";
 import fetchData from "../../utils/apis/api";
 import { isQueryError } from "../../utils/functions/util";
 import useObserver from "../../utils/hooks/useObserver";
@@ -9,7 +9,7 @@ interface InifinteListProps {
   queryKey: string;
   CardComponent: React.ElementType;
   SkeletonCardComponent: React.ElementType;
-  text: string;
+  // text: string;
   func: object;
   count: number;
 }
@@ -19,7 +19,7 @@ function InfiniteList({
   queryKey,
   CardComponent,
   SkeletonCardComponent,
-  text,
+  // text,
   func,
   count,
 }: InifinteListProps) {
