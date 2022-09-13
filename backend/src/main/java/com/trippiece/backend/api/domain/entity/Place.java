@@ -69,4 +69,10 @@ public class Place extends BaseEntity {
         this.qrImage=qrImage;
         this.activated=activated;
     }
+
+    public void updateState(){
+        this.activated=!this.activated;
+    }
+
+    public void updatePlaceAmount() { this.amount-=1; }
 }

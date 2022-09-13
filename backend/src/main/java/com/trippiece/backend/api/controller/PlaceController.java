@@ -42,4 +42,37 @@ public class PlaceController {
             return new ResponseEntity<String>("이벤트 장소/축제 삭제 실패", HttpStatus.FORBIDDEN);
         }
     }
+
+    @ApiOperation(value = "이벤트 스팟/축제 활성화 및 비활성화", notes = "활성화된 이벤트 스팟/축제를 비활성화하거나, 비활성화된 이벤트 스팟/축제를 활성화한다.")
+    @PatchMapping("/active")
+    public ResponseEntity<?> updatePlaceState(@RequestBody final Map<String, Long> request){
+        long placeId = request.get("placeId");
+        try{
+            placeService.updateState(placeId);
+            return new ResponseEntity<String>("이벤트 장소/축제 활성화 및 비활성화 성공", HttpStatus.OK);
+        } catch (Exception e){
+            e.printStackTrace();
+            return new ResponseEntity<String>("이벤트 장소/축제 활성화 및 비활성화 실패", HttpStatus.FORBIDDEN);
+        }
+    }
+
+    @ApiOperation(value = "사용자가 QR인식", notes = "사용자가 QR인식을 하고 스티커를 발급받으면 QRLog를 저장하고 Place의 amount값을 수정한다.")
+    @PatchMapping("/QR")
+    public ResponseEntity<?> doQRLog(@RequestBody final Map<String, Long> request){
+        long placeId = request.get("placeId");
+        long stickerId = request.get("stickerId");
+        try{
+            //로그인 완료되면 token으로 User 가져올 예정
+            User user = null;
+            if(user == null) return new ResponseEntity<String>("로그인된 회원을 찾을 수 없습니다.", HttpStatus.NOT_FOUND);
+            else {
+                placeService.insertQRLog(user, placeId, stickerId);
+                placeService.updatePlaceAmount(placeId);
+                return new ResponseEntity<String>("사용자 QR Log 저장 및 Place Amount 수정 성공", HttpStatus.OK);
+            }
+        } catch (Exception e){
+            e.printStackTrace();
+            return new ResponseEntity<String>("사용자 QR Log 저장 및 Place Amount 수정 실패", HttpStatus.FORBIDDEN);
+        }
+    }
 }

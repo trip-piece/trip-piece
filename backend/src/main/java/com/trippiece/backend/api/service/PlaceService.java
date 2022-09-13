@@ -4,6 +4,7 @@ import com.trippiece.backend.api.domain.dto.StickerDto;
 import com.trippiece.backend.api.domain.dto.response.PlaceResponseDto;
 import com.trippiece.backend.api.domain.entity.*;
 import com.trippiece.backend.api.domain.repository.PlaceRepository;
+import com.trippiece.backend.api.domain.repository.QRlogRepository;
 import com.trippiece.backend.api.domain.repository.RegionRepository;
 import com.trippiece.backend.api.domain.repository.StickerRepository;
 import com.trippiece.backend.exception.CustomException;
@@ -26,6 +27,7 @@ public class PlaceService {
     private final PlaceRepository placeRepository;
     private final RegionRepository regionRepository;
     private final StickerRepository stickerRepository;
+    private final QRlogRepository qrlogRepository;
 
     //이벤트 스팟/축제 리스트 조회 및 검색(지역필터링, 타입필터링)
     public Page<PlaceResponseDto> findPlaceList(final long regionId, final int type, Pageable pageable){
@@ -54,6 +56,31 @@ public class PlaceService {
     public void deletePlace(final long placeId){
         Place place = placeRepository.findById(placeId).orElseThrow(() -> new CustomException(ErrorCode.DATA_NOT_FOUND));
         placeRepository.delete(place);
+    }
+
+    //이벤트 스팟/축제 활성화<->비활성화
+    @Transactional
+    public void updateState(final long placeId){
+        Place place = placeRepository.findById(placeId).orElseThrow(() -> new CustomException(ErrorCode.DATA_NOT_FOUND));
+        place.updateState();
+    }
+
+    @Transactional
+    public void updatePlaceAmount(final long placeId){
+        Place place = placeRepository.findById(placeId).orElseThrow(() -> new CustomException(ErrorCode.DATA_NOT_FOUND));
+        place.updatePlaceAmount();
+    }
+
+    @Transactional
+    public void insertQRLog(final User user, final long placeId, final long stickerId){
+        Place place = placeRepository.findById(placeId).orElseThrow(() -> new CustomException(ErrorCode.DATA_NOT_FOUND));
+        Sticker sticker = stickerRepository.findById(stickerId).orElseThrow(() -> new CustomException(ErrorCode.DATA_NOT_FOUND));
+        QRlog qrlog = QRlog.builder()
+                .place(place)
+                .user(user)
+                .sticker(sticker)
+                .build();
+        qrlogRepository.save(qrlog);
     }
 }
 
