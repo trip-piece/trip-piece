@@ -1,7 +1,6 @@
 package com.trippiece.backend.api.service;
 
 import com.trippiece.backend.api.domain.dto.StickerDto;
-import com.trippiece.backend.api.domain.dto.response.FrameResponseDto;
 import com.trippiece.backend.api.domain.dto.response.PlaceResponseDto;
 import com.trippiece.backend.api.domain.entity.*;
 import com.trippiece.backend.api.domain.repository.PlaceRepository;
@@ -12,6 +11,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,6 +47,15 @@ public class PlaceService {
         return result;
     }
 
+    //이벤트 스팟/축제 삭제
+    @Transactional
+    public int deletePlace(final long placeId){
+        int resultCode = 200;
+        Place place = placeRepository.getOne(placeId);
+        if(place!=null) resultCode = 400;
+        else placeRepository.delete(place);
+        return resultCode;
+    }
 }
 
 
