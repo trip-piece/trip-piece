@@ -65,12 +65,14 @@ public class PlaceService {
         place.updateState();
     }
 
+    //Place Amount 수정
     @Transactional
     public void updatePlaceAmount(final long placeId){
         Place place = placeRepository.findById(placeId).orElseThrow(() -> new CustomException(ErrorCode.DATA_NOT_FOUND));
         place.updatePlaceAmount();
     }
 
+    //QRLog 등록
     @Transactional
     public void insertQRLog(final User user, final long placeId, final long stickerId){
         Place place = placeRepository.findById(placeId).orElseThrow(() -> new CustomException(ErrorCode.DATA_NOT_FOUND));

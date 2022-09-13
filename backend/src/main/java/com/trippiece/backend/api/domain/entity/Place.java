@@ -75,4 +75,6 @@ public class Place extends BaseEntity {
     }
 
     public void updatePlaceAmount() { this.amount-=1; }
+
+    public void updateQRImage(String qrImage) { this.qrImage = qrImage; }
 }
