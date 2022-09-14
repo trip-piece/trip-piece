@@ -3,7 +3,6 @@ import { useEffect } from "react";
 interface IOberserProps {
   target: any;
   onIntersect: any;
-  hasMore: boolean;
   hasError: boolean;
   error: any;
   root?: any;
@@ -30,10 +29,15 @@ function useObserver({
       });
       observer.observe(target.current);
     }
-    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-    if (!hasMore || error) observer && observer.disconnect();
+    console.log(observer);
 
-    return () => observer && observer.disconnect();
+    console.log("hasMore", hasMore, error);
+
+    if (!hasMore || error) {
+      console.log(hasMore, error);
+      observer.disconnect();
+    }
+    return () => observer.disconnect();
   }, [hasMore, target, rootMargin, threshold]);
 }
 

@@ -25,7 +25,7 @@ const GridContainer = styled.div<GridProps>`
   grid-template-columns: ${(props) =>
     props.gridColumnCount && `repeat(${props.gridColumnCount}, 1fr)`};
   grid-gap: 1rem;
-  margin-bottom: 10px;
+  margin-bottom: 1rem;
 `;
 
 function InfiniteList({
@@ -63,7 +63,7 @@ function InfiniteList({
           data: { last },
         } = lastPage;
         if (last) return lastPage.page + 1;
-      }
+      } else setHasError(true);
     },
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
@@ -76,11 +76,9 @@ function InfiniteList({
 
   useObserver({
     target: bottom,
-    hasMore:
-      data?.pageParams && data?.pageParams?.length > 1
-        ? Boolean(data?.pageParams[data.pageParams.length - 1])
-        : true,
+    hasMore: hasError,
     hasError,
+    isError,
     error,
     onIntersect,
   });

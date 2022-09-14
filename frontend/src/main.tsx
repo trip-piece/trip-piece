@@ -12,12 +12,12 @@ if (process.env.NODE_ENV === "development") {
 }
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
-  <React.StrictMode>
-    <RecoilRoot>
-      <ThemeProvider theme={theme}>
-        <GlobalStyle />
-        <App />
-      </ThemeProvider>
-    </RecoilRoot>
-  </React.StrictMode>,
+  // <React.StrictMode>
+  <RecoilRoot>
+    <ThemeProvider theme={theme}>
+      <GlobalStyle />
+      <App />
+    </ThemeProvider>
+  </RecoilRoot>,
+  // </React.StrictMode>,
 );
