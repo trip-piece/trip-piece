@@ -10,14 +10,13 @@ import { fetchData } from "../../utils/apis/api";
 const MainBox = styled.div`
   height: 80%;
   box-shadow: 0 4px 4px 2px rgb(0 0 0/25%);
-  border-radius: 0 0 20px 20px;
+  border-radius: 0 0 1.25rem 1.25rem;
   padding: 30px 0 30px 0;
   background: ${(props) => props.theme.colors.mainGradient};
 `;
 
 const MiddleTitle = styled.div`
-  font-weight: bold;
-  font-size: ${(props) => props.theme.fontSizes.h3};
+  font-size: ${(props) => props.theme.fontSizes.h5};
   letter-spacing: -2px;
 `;
 
@@ -28,27 +27,29 @@ const MiddleBoxes = styled.div`
 
 const InsideLeftBox = styled.div`
   position: relative;
-  width: 250px;
+  width: 60%;
   height: 400px;
+  margin-left: 10px;
   border-top-style: solid;
   border-right-style: dashed;
   border-bottom-style: solid;
   border-left-style: solid;
   border-style: solid dashed solid solid;
-  border-width: 3px;
+  border-width: 0.188rem;
   border-color: ${(props) => props.theme.colors.gray300};
-  border-radius: 20px 0 0 20px;
+  border-radius: 1.25rem 0 0 1.25rem;
   text-align: center;
 `;
 
 const InsideRightBox = styled.div`
   position: relative;
-  width: 250px;
+  width: 60%;
   height: 400px;
+  margin-right: 10px;
   border-style: solid solid solid hidden;
-  border-width: 3px;
+  border-width: 0.188rem;
   border-color: ${(props) => props.theme.colors.gray300};
-  border-radius: 0 20px 20px 0;
+  border-radius: 0 1.25rem 1.25rem 0;
   text-align: center;
 `;
 
@@ -76,7 +77,7 @@ const IconPosition = styled.div`
 `;
 
 const MiddleTitlePosition = styled.div`
-  margin: 20px;
+  margin: 1.25rem;
   text-align: center;
 `;
 
@@ -91,9 +92,9 @@ const GetStickerBox = styled.div`
   width: 201px;
   height: 238px;
   background-color: ${(props) => props.theme.colors.gray200};
-  border-radius: 15px;
+  border-radius: 0.938rem;
   box-shadow: 0 4px 4px 2px rgb(0 0 0/25%);
-  margin: 13px;
+  margin: 0.938rem;
 `;
 
 function MainPage() {
