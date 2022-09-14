@@ -1,14 +1,14 @@
 package com.trippiece.backend.api.domain.dto.response;
 
-import com.trippiece.backend.api.domain.entity.Frame;
+import com.trippiece.backend.api.domain.dto.CountListDto;
 import lombok.Getter;
 
 import java.util.List;
 
 @Getter
 public class FrameCountResponseDto {
-    List<CountListDto> countList;
-    int countAll;
+    private List<CountListDto> countList;
+    private int countAll;
 
     public FrameCountResponseDto(List<CountListDto> countList, int countAll){
         this.countList=countList;
