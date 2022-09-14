@@ -4,14 +4,22 @@ import com.trippiece.backend.api.domain.entity.Decoration;
 import lombok.Getter;
 
 @Getter
-public class StickerDecorationDto {
-    private int tokenId;
+public class StickerDecorationDto implements Comparable<StickerDecorationDto> {
+
+    private long id;
+    private long tokenId;
     private float x;
     private float y;
 
-    public StickerDecorationDto(Decoration decoration){
-        this.tokenId=decoration.getSticker().getTokenId();
-        this.x=decoration.getX();
-        this.y=decoration.getY();
+    public StickerDecorationDto(Decoration decoration) {
+        this.id = decoration.getId();
+        this.tokenId = decoration.getSticker().getTokenId();
+        this.x = decoration.getX();
+        this.y = decoration.getY();
+    }
+
+    @Override
+    public int compareTo(StickerDecorationDto o) {
+        return (int) (this.id - o.getId());
     }
 }

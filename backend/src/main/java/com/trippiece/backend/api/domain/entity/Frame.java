@@ -34,4 +34,10 @@ public class Frame extends BaseEntity {
         this.region = region;
     }
 
+    public void updateFrame(Diary diary,Region region,String fileName){
+        if(!this.frameImage.equals(fileName)) this.frameImage = fileName;
+        if(this.diary.getId()!= diary.getId()) this.diary = diary;
+        if(this.region.getId()!= region.getId()) this.region = region;
+    }
+
 }
