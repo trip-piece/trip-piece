@@ -17,7 +17,7 @@ function useObserver({
   hasMore,
   error,
   root = null,
-  rootMargin = "-200px",
+  rootMargin = "0px",
   threshold = 0,
 }: IOberserProps) {
   useEffect(() => {

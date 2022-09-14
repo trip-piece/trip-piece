@@ -1,3 +1,4 @@
+/* eslint-disable react/require-default-props */
 import styled from "@emotion/styled";
 import React, { useRef, useState } from "react";
 import { useInfiniteQuery } from "react-query";
@@ -11,7 +12,7 @@ interface InifinteListProps {
   CardComponent: React.ElementType;
   SkeletonCardComponent: React.ElementType;
   zeroDataText: string;
-  func: object;
+  func?: object;
   count: number;
 }
 
@@ -22,8 +23,9 @@ type GridProps = {
 const GridContainer = styled.div<GridProps>`
   display: grid;
   grid-template-columns: ${(props) =>
-    props.gridColumnCount ?? `repeat(${props.gridColumnCount}, 1fr)}`};
+    props.gridColumnCount && `repeat(${props.gridColumnCount}, 1fr)`};
   grid-gap: 1rem;
+  margin-bottom: 10px;
 `;
 
 function InfiniteList({
@@ -38,7 +40,6 @@ function InfiniteList({
   const [hasError, setHasError] = useState(false);
   const bottom = useRef(null);
   const getTargetComponentList = async ({ pageParam = 0 }) => {
-    if (pageParam) return;
     try {
       const res = await fetchData.get({ url: `${url}?page=${pageParam}` });
       return { data: res?.data, page: pageParam };
@@ -57,19 +58,19 @@ function InfiniteList({
     isFetchingNextPage,
   } = useInfiniteQuery(queryKey, getTargetComponentList, {
     getNextPageParam: (lastPage: any) => {
-      if (lastPage?.data?.hasOwnPropery("hasMore")) {
+      if (lastPage.data.last) {
         const {
-          data: { hasMore },
+          data: { last },
         } = lastPage;
-        if (hasMore) return lastPage.page + 1;
-        return false;
+        if (last) return lastPage.page + 1;
       }
-      return false;
     },
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
     refetchOnMount: true,
   });
+
+  console.log("data", data);
 
   const onIntersect = ([entry]: any) => entry.isIntersecting && fetchNextPage();
 
@@ -84,16 +85,17 @@ function InfiniteList({
     onIntersect,
   });
 
+  console.log("count", count);
   return (
     <div>
-      {data?.pages[0]?.data?.resultList.length < 1 && <div>{zeroDataText}</div>}
+      {data?.pages[0]?.data?.data.length < 1 && <div>{zeroDataText}</div>}
       {isLoading && <div>Loading ...</div>}
       {isError && isQueryError(error) && <p>{error?.message}</p>}
       {isSuccess &&
-        data.pages.map((group: any, index: number) => (
+        data.pages.map((group: any | undefined, index: number) => (
           // eslint-disable-next-line react/no-array-index-key
           <GridContainer key={index} gridColumnCount={count}>
-            {group?.data?.resultList?.map((card: any, idx: number) => (
+            {group?.data?.data?.map((card: any, idx: number) => (
               // eslint-disable-next-line react/no-array-index-key
               <CardComponent card={card} key={idx} func={func} />
             ))}
@@ -101,11 +103,11 @@ function InfiniteList({
         ))}
       <div ref={bottom} />
       {isFetchingNextPage && (
-        <div>
+        <GridContainer gridColumnCount={count}>
           {[...Array(count).keys()].map((i) => (
             <SkeletonCardComponent key={i} />
           ))}
-        </div>
+        </GridContainer>
       )}
     </div>
   );
