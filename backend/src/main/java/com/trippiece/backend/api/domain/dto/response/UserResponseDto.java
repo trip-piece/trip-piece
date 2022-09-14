@@ -34,10 +34,11 @@ public class UserResponseDto {
     @Getter
     @NoArgsConstructor
     public static class Badges{
-        private List<Badge> badgeList;
+        private List<BadgeResponseDto.Detail> badgeList;
 
         @Builder
-        Badges(List<Badge> badgeList){
+        Badges(List<BadgeResponseDto.Detail> badgeList){
+
             this.badgeList = badgeList;
         }
 

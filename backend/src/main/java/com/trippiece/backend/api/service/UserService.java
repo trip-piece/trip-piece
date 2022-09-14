@@ -1,16 +1,16 @@
 package com.trippiece.backend.api.service;
 
 import com.trippiece.backend.api.domain.dto.request.UserRequestDto;
-import com.trippiece.backend.api.domain.dto.response.JwtTokenResponse;
-import com.trippiece.backend.api.domain.dto.response.StickerDecorationDto;
-import com.trippiece.backend.api.domain.dto.response.StickerFrameResponseDto;
-import com.trippiece.backend.api.domain.dto.response.UserResponseDto;
+import com.trippiece.backend.api.domain.dto.response.*;
 import com.trippiece.backend.api.domain.entity.*;
 import com.trippiece.backend.api.domain.repository.*;
 import com.trippiece.backend.exception.CustomException;
 import com.trippiece.backend.exception.ErrorCode;
 import com.trippiece.backend.util.JwtTokenUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,6 +27,9 @@ public class UserService {
     private final BadgeRepository badgeRepository;
     private final TripRepository tripRepository;
     private final DiaryRepository diaryRepository;
+    private final ScrapRepository scrapRepository;
+
+    private final FrameRepository frameRepository;
 
     private final MyBadgeRepository myBadgeRepository;
     private final JwtTokenUtil JWTTokenUtil;
@@ -89,7 +92,7 @@ public class UserService {
         return user;
     }
     @Transactional(readOnly = true)
-    public UserResponseDto.Detail findUser(long userId){
+    public UserResponseDto.Detail findUser(final long userId){
         Optional<User> userOptional = userRepository.findById(userId);
         if (!userOptional.isPresent()) throw new CustomException(ErrorCode.USER_NOT_FOUND);
 
@@ -110,7 +113,7 @@ public class UserService {
         return userDetail;
     }
     @Transactional
-    public HttpStatus modifyNickname(long userId, String nickname){
+    public HttpStatus modifyNickname(final long userId, final String nickname){
         Optional<User> userOptional = userRepository.findById(userId);
         if (!userOptional.isPresent()) throw new CustomException(ErrorCode.USER_NOT_FOUND);
 
@@ -121,7 +124,7 @@ public class UserService {
     }
 
     @Transactional
-    public HttpStatus modifyRepBadges(long userId, UserRequestDto.RepBadge badges){
+    public HttpStatus modifyRepBadges(final long userId, final UserRequestDto.RepBadge badges){
         Optional<User> userOptional = userRepository.findById(userId);
         if (!userOptional.isPresent()) throw new CustomException(ErrorCode.USER_NOT_FOUND);
 
@@ -132,17 +135,48 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    public UserResponseDto.Badges findBadgeList(long userId){
+    public UserResponseDto.Badges findBadgeList(final long userId){
         Optional<User> userOptional = userRepository.findById(userId);
         if (!userOptional.isPresent()) throw new CustomException(ErrorCode.USER_NOT_FOUND);
 
         User user = userOptional.get();
-        List<Badge> badgeList = new ArrayList<>();
+        List<BadgeResponseDto.Detail> badgeList = new ArrayList<>();
         List<MyBadge> myBadgeList = myBadgeRepository.findAllByUser(user);
-        for (MyBadge item : myBadgeList) badgeList.add(item.getBadge());
+
+        for (MyBadge item : myBadgeList) {
+            badgeList.add(BadgeResponseDto.Detail.builder()
+                    .badgeId(item.getBadge().getId())
+                    .name(item.getBadge().getName())
+                    .description(item.getBadge().getDescription())
+                    .image(item.getBadge().getBadgeImage())
+                    .build());
+        }
 
         UserResponseDto.Badges badgesResponse = UserResponseDto.Badges.builder().badgeList(badgeList).build();
         return badgesResponse;
+    }
+
+    @Transactional(readOnly = true)
+    public Page<ScrapResponseDto.Outline> findScrapedFrameList(final long userId, Pageable pageable){
+        Optional<User> userOptional = userRepository.findById(userId);
+        if (!userOptional.isPresent()) throw new CustomException(ErrorCode.USER_NOT_FOUND);
+
+        User user = userOptional.get();
+        List<Scrap> scrapList = scrapRepository.findByUser(user);
+        List<ScrapResponseDto.Outline> outlineList = new ArrayList<>();
+
+        for (Scrap item : scrapList){
+            outlineList.add(ScrapResponseDto.Outline.builder()
+                    .scrapId(item.getId())
+                    .diaryId(item.getFrame().getDiary().getId())
+                    .image(item.getFrame().getFrameImage())
+                    .build());
+        }
+        int size = outlineList.size();
+        int start = (int) pageable.getOffset();
+        int end = Math.min((start+pageable.getPageSize()), size);
+        Page<ScrapResponseDto.Outline> scrapedFramesResponse = new PageImpl<>(outlineList.subList(start, end), pageable, size);
+        return scrapedFramesResponse;
     }
 
     public List<Badge> findRepBadgeList(User user){
