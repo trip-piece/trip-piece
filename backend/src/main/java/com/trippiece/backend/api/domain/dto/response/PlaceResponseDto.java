@@ -20,7 +20,7 @@ public class PlaceResponseDto {
     private long regionId;
     private String regionName;
     private int type;
-    private String qrImage;
+    private String code;
     private List<StickerDto> stickerList;
     private boolean activated;
     private String name;
@@ -39,8 +39,7 @@ public class PlaceResponseDto {
         this.regionId=place.getRegion().getId();
         this.regionName=place.getRegion().getName();
         this.type=place.getType();
-        if(place.getQrImage()==null || place.getQrImage().equals("")) this.qrImage=null;
-        else this.qrImage="https://" + s3Service.CLOUD_FRONT_DOMAIN_NAME + "/" + place.getQrImage();
+        this.code=place.getCode();
         this.stickerList=stickerList;
         this.activated=place.isActivated();
         this.name=place.getName();
