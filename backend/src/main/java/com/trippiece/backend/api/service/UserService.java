@@ -191,4 +191,8 @@ public class UserService {
 
         return repBadgeList;
     }
+
+    public User findOneUser(long userId) {
+        return userRepository.findById(userId).orElseThrow(() -> new CustomException(ErrorCode.DATA_NOT_FOUND));
+    }
 }
