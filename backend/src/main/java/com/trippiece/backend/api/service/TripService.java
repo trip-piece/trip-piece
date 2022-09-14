@@ -89,29 +89,15 @@ public class TripService {
         List<Trip> list = new ArrayList<>();
         list.addAll(tripRepository.findAllByUser(user));
         for(Trip t : list){
+            if(todayDate.isAfter(t.getEndDate()))continue;
             if(!todayDate.isBefore(t.getStartDate())&&todayDate.isBefore(t.getEndDate())){
-                tt =t;
-                break;
-            }else{
-                if(result>subDate(todayDate,t.getStartDate())){
-                    result = subDate(todayDate,t.getStartDate());
-                    tt = t;
-                }
-
+                return new TripResponseDto(t); //진행중일때
             }
         }
-        //살려줘요!!!!!!!!
-        if(tt==null){
+        if(tripRepository.findFirstByStartDateAndUserOrderByStartDate(user,todayDate)==null){
             return null;
-        }else {
-            return new TripResponseDto(tt);
+        }else{
+            return new TripResponseDto(tripRepository.findFirstByStartDateAndUserOrderByStartDate(user,todayDate).get(0));
         }
     }
-
-    public long subDate(LocalDate todayDate,LocalDate startDate){
-        LocalDateTime today  =todayDate.atStartOfDay();
-        LocalDateTime start = startDate.atStartOfDay();
-        return Duration.between(today,start).toDays();
-    }
-
 }
