@@ -1,3 +1,4 @@
+import styled from "@emotion/styled";
 import React, { useRef, useState } from "react";
 import { useInfiniteQuery } from "react-query";
 import fetchData from "../../utils/apis/api";
@@ -9,17 +10,23 @@ interface InifinteListProps {
   queryKey: string;
   CardComponent: React.ElementType;
   SkeletonCardComponent: React.ElementType;
-  // text: string;
+  zeroDataText: string;
   func: object;
   count: number;
 }
+
+const GridContainer = styled('div')`
+  display: grid;
+  grid-template-columns: ${(props) =>
+    props.gridColumnCount ?? `${repeat(props.gridColumnCount, 1fr)}`};
+`;
 
 function InfiniteList({
   url,
   queryKey,
   CardComponent,
   SkeletonCardComponent,
-  // text,
+  zeroDataText,
   func,
   count,
 }: InifinteListProps) {
@@ -74,11 +81,11 @@ function InfiniteList({
 
   return (
     <div>
-      {data?.pages[0]?.data?.resultList.length < 1 && <div>데이터 음따</div>}
+      {data?.pages[0]?.data?.resultList.length < 1 && <div>{zeroDataText}</div>}
       {isLoading && <div>Loading ...</div>}
       {isError && isQueryError(error) && <p>{error?.message}</p>}
       {isSuccess &&
-        data.pages.map((group, index) => (
+        data.pages.map((group: any, index: number) => (
           // eslint-disable-next-line react/no-array-index-key
           <div key={index}>
             {group?.data?.resultList?.map((card: any, idx: number) => (
