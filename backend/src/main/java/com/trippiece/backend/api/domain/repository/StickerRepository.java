@@ -8,4 +8,5 @@ import java.util.List;
 
 public interface StickerRepository extends JpaRepository<Sticker, Long> {
     List<Sticker> findAllByPlace(Place place);
+    Sticker findByTokenId(long TokenId);
 }

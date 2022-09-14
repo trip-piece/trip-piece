@@ -100,7 +100,6 @@ public class FrameService {
     public int deleteFrame(final User user, final long frameId) {
         int resultCode = 200;
         Frame frame = frameRepository.findById(frameId).orElseThrow(() -> new CustomException(ErrorCode.DATA_NOT_FOUND));
-        ;
         if (!frame.getDiary().getUser().equals(user)) resultCode = 406;
         else {
             frameRepository.delete(frame);
