@@ -7,8 +7,6 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
 import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
@@ -24,7 +22,7 @@ import java.util.List;
 @Configuration
 @EnableSwagger2
 // http://localhost:8080/swagger-ui/#
-public class SwaggerConfig extends WebMvcConfigurationSupport {
+public class SwaggerConfig {
     TypeResolver typeResolver = new TypeResolver();
     @Bean
     public Docket swagger() {
@@ -60,13 +58,5 @@ public class SwaggerConfig extends WebMvcConfigurationSupport {
                 .description("여행조각 관련 테스트 API 상세소개 및 사용법")
                 .version("1.0")
                 .build();
-    }
-
-    @Override
-    protected void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("swagger-ui.html")
-                .addResourceLocations("classpath:/META-INF/resources/");
-        registry.addResourceHandler("/webjars/**")
-                .addResourceLocations("classpath:/META-INF/resources/webjars/");
     }
 }
