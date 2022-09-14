@@ -5,6 +5,8 @@ import com.trippiece.backend.api.domain.dto.response.PlaceResponseDto;
 import com.trippiece.backend.api.domain.entity.User;
 import com.trippiece.backend.api.service.PlaceService;
 import com.trippiece.backend.api.service.S3Service;
+import com.trippiece.backend.api.service.UserService;
+import com.trippiece.backend.util.JwtTokenUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +28,8 @@ import java.util.Map;
 public class PlaceController {
     private final PlaceService placeService;
     private final S3Service s3Service;
+    private final UserService userService;
+    private final JwtTokenUtil jwtTokenUtil;
 
     @PostMapping
     @ApiOperation(value = "스팟/축제 등록", notes = "이벤트가 열릴 스팟이나 축제를 등록한다.")
@@ -114,12 +118,12 @@ public class PlaceController {
 
     @ApiOperation(value = "사용자가 QR인식", notes = "사용자가 QR인식을 하고 스티커를 발급받으면 QRLog를 저장하고 Place의 amount값을 수정한다.")
     @PatchMapping("/QR")
-    public ResponseEntity<?> doQRLog(@RequestBody final Map<String, Long> request){
+    public ResponseEntity<?> doQRLog(@RequestHeader("ACCESS_TOKEN") final String accessToken, @RequestBody final Map<String, Long> request){
         long placeId = request.get("placeId");
         long stickerId = request.get("stickerId");
         try{
-            //로그인 완료되면 token으로 User 가져올 예정
-            User user = null;
+            long userId = jwtTokenUtil.getUserIdFromToken(accessToken);
+            User user = userService.findOneUser(userId);
             if(user == null) return new ResponseEntity<String>("로그인된 회원을 찾을 수 없습니다.", HttpStatus.NOT_FOUND);
             else {
                 placeService.insertQRLog(user, placeId, stickerId);
