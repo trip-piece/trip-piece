@@ -80,38 +80,22 @@ public class TripService {
     public TripResponseDto findTrip(final User user,final long tripId){
         Trip trip = tripRepository.getOne(tripId);
         return new TripResponseDto(trip);
-
     }
+
     @Transactional
     public TripResponseDto isInTrip(final User user, LocalDate todayDate){
-        long result = 1000000;
-        Trip tt =null;
         List<Trip> list = new ArrayList<>();
         list.addAll(tripRepository.findAllByUser(user));
         for(Trip t : list){
+            if(todayDate.isAfter(t.getEndDate()))continue;
             if(!todayDate.isBefore(t.getStartDate())&&todayDate.isBefore(t.getEndDate())){
-                tt =t;
-                break;
-            }else{
-                if(result>subDate(todayDate,t.getStartDate())){
-                    result = subDate(todayDate,t.getStartDate());
-                    tt = t;
-                }
-
+                return new TripResponseDto(t); //진행중일때
             }
         }
-        //살려줘요!!!!!!!!
-        if(tt==null){
+        if(tripRepository.findFirstByStartDateAndUserOrderByStartDate(user,todayDate)==null){ //뒤 내용 아예없을때
             return null;
-        }else {
-            return new TripResponseDto(tt);
+        }else{
+            return new TripResponseDto(tripRepository.findFirstByStartDateAndUserOrderByStartDate(user,todayDate).get(0));
         }
     }
-
-    public long subDate(LocalDate todayDate,LocalDate startDate){
-        LocalDateTime today  =todayDate.atStartOfDay();
-        LocalDateTime start = startDate.atStartOfDay();
-        return Duration.between(today,start).toDays();
-    }
-
 }
