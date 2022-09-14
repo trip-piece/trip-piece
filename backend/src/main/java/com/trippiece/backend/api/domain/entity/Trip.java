@@ -1,5 +1,6 @@
 package com.trippiece.backend.api.domain.entity;
 
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,7 +11,7 @@ import javax.persistence.*;
 import java.time.LocalDate;
 
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @Table(name = "trip")
 public class Trip extends BaseEntity {
@@ -33,6 +34,13 @@ public class Trip extends BaseEntity {
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Region region;
 
+    public void update(String title, LocalDate startDate, LocalDate endDate, User user, Region region){
+        this.title =title;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.user = user;
+        this.region = region;
+    }
     @Builder
     public Trip(String title, LocalDate startDate, LocalDate endDate, User user, Region region) {
         this.title = title;
