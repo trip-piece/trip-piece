@@ -5,6 +5,8 @@ import com.trippiece.backend.api.domain.dto.response.FrameResponseDto;
 import com.trippiece.backend.api.domain.dto.response.StickerFrameResponseDto;
 import com.trippiece.backend.api.domain.entity.User;
 import com.trippiece.backend.api.service.FrameService;
+import com.trippiece.backend.api.service.UserService;
+import com.trippiece.backend.util.JwtTokenUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
@@ -25,12 +27,14 @@ import java.util.Map;
 public class FrameController {
 
     private final FrameService frameService;
+    private final UserService userService;
+    private final JwtTokenUtil jwtTokenUtil;
 
     @GetMapping
     @ApiOperation(value = "공유된 스티커프레임 리스트 조회", notes = "지역별 필터링을 포함하여 공유된 스티커 프레임의 리스트를 조회한다.")
-    public ResponseEntity<?> getFrameList(@RequestParam List<Long> regionList, Pageable pageable) {
-        //로그인 완료되면 token으로 User 가져올 예정
-        User user = null;
+    public ResponseEntity<?> getFrameList(@RequestHeader("ACCESS_TOKEN") final String accessToken, @RequestParam List<Long> regionList, Pageable pageable) {
+        long userId = jwtTokenUtil.getUserIdFromToken(accessToken);
+        User user = userService.findOneUser(userId);
         if(user == null) return new ResponseEntity<String>("로그인된 회원을 찾을 수 없습니다.", HttpStatus.NOT_FOUND);
         else{
             return new ResponseEntity<Page<FrameResponseDto>>(frameService.findFrameList(user, regionList, pageable), HttpStatus.OK);
@@ -39,9 +43,9 @@ public class FrameController {
 
     @GetMapping("/counts")
     @ApiOperation(value = "지역별 스티커프레임 개수 조회", notes = "지역별로 공유된 스티커 프레임의 개수를 조회한다.")
-    public ResponseEntity<?> getFrameListCountsByRegion() {
-        //로그인 완료되면 token으로 User 가져올 예정
-        User user = null;
+    public ResponseEntity<?> getFrameListCountsByRegion(@RequestHeader("ACCESS_TOKEN") final String accessToken) {
+        long userId = jwtTokenUtil.getUserIdFromToken(accessToken);
+        User user = userService.findOneUser(userId);
         if(user == null) return new ResponseEntity<String>("로그인된 회원을 찾을 수 없습니다.", HttpStatus.NOT_FOUND);
         else{
             return new ResponseEntity<FrameCountResponseDto>(frameService.findFrameListCount(), HttpStatus.OK);
@@ -50,9 +54,9 @@ public class FrameController {
 
     @GetMapping("/{frameId}")
     @ApiOperation(value = "스티커 프레임 상세 조회", notes = "하나의 공유된 스티커 프레임을 상세 조회한다.")
-    public ResponseEntity<?> getFrame(@PathVariable long frameId) {
-        //로그인 완료되면 token으로 User 가져올 예정
-        User user = null;
+    public ResponseEntity<?> getFrame(@RequestHeader("ACCESS_TOKEN") final String accessToken, @PathVariable long frameId) {
+        long userId = jwtTokenUtil.getUserIdFromToken(accessToken);
+        User user = userService.findOneUser(userId);
         if(user == null) return new ResponseEntity<String>("로그인된 회원을 찾을 수 없습니다.", HttpStatus.NOT_FOUND);
         else{
             return new ResponseEntity<StickerFrameResponseDto>(frameService.findFrame(user, frameId), HttpStatus.OK);
@@ -61,11 +65,11 @@ public class FrameController {
 
     @ApiOperation(value = "공유된 스티커 프레임 삭제", notes = "다이어리가 아닌 공유한 스티커 프레임만 삭제한다.")
     @DeleteMapping
-    public ResponseEntity<?> deleteFrame(@RequestBody final Map<String, Long> request){
+    public ResponseEntity<?> deleteFrame(@RequestHeader("ACCESS_TOKEN") final String accessToken, @RequestBody final Map<String, Long> request){
         long frameId = request.get("frameId");
         try{
-            //로그인 완료되면 token으로 User 가져올 예정
-            User user = null;
+            long userId = jwtTokenUtil.getUserIdFromToken(accessToken);
+            User user = userService.findOneUser(userId);
             if(user == null) return new ResponseEntity<String>("로그인된 회원을 찾을 수 없습니다.", HttpStatus.NOT_FOUND);
             else{
                 int deleteResult = frameService.deleteFrame(user, frameId);
@@ -79,11 +83,11 @@ public class FrameController {
 
     @ApiOperation(value = "스티커 프레임 스크랩 등록", notes = "스티커 프레임을 스크랩한다.")
     @PostMapping
-    public ResponseEntity<?> scrapFrame(@RequestBody final Map<String, Long> request){
+    public ResponseEntity<?> scrapFrame(@RequestHeader("ACCESS_TOKEN") final String accessToken, @RequestBody final Map<String, Long> request){
         long frameId = request.get("frameId");
         try{
-            //로그인 완료되면 token으로 User 가져올 예정
-            User user = null;
+            long userId = jwtTokenUtil.getUserIdFromToken(accessToken);
+            User user = userService.findOneUser(userId);
             if(user == null) return new ResponseEntity<String>("로그인된 회원을 찾을 수 없습니다.", HttpStatus.NOT_FOUND);
             else{
                 frameService.scrapFrame(user, frameId);
@@ -96,11 +100,11 @@ public class FrameController {
 
     @ApiOperation(value = "스티커 프레임 스크랩 해제", notes = "스크랩되었던 스티커 프레임을 다시 스크랩 해제한다.")
     @DeleteMapping("/scrap")
-    public ResponseEntity<?> deleteFrameScrap(@RequestBody final Map<String, Long> request){
+    public ResponseEntity<?> deleteFrameScrap(@RequestHeader("ACCESS_TOKEN") final String accessToken, @RequestBody final Map<String, Long> request){
         long frameId = request.get("frameId");
         try{
-            //로그인 완료되면 token으로 User 가져올 예정
-            User user = null;
+            long userId = jwtTokenUtil.getUserIdFromToken(accessToken);
+            User user = userService.findOneUser(userId);
             if(user == null) return new ResponseEntity<String>("로그인된 회원을 찾을 수 없습니다.", HttpStatus.NOT_FOUND);
             else{
                 frameService.deleteFrameScrap(user, frameId);
