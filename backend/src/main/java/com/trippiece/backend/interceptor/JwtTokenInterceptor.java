@@ -26,17 +26,14 @@ public class JwtTokenInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
             throws IOException {
 
-        System.out.println("JwtToken 호출");
         String accessToken = request.getHeader("ACCESS_TOKEN");
-        System.out.println("AccessToken:" + accessToken);
         String refreshToken = request.getHeader("REFRESH_TOKEN");
-        System.out.println("RefreshToken:" + refreshToken);
-        Optional<User> user = userRepository.findById(jwtTokenUtil.getUserIdFromToken(accessToken));
 
         if (request.getMethod().equals("OPTIONS")) {
             return true;
         }
         if (accessToken != null) {
+            Optional<User> user = userRepository.findById(jwtTokenUtil.getUserIdFromToken(accessToken));
             if (user.isPresent()) {
                 Optional<Auth> auth = authRepository.findByUser(user.get());
                 if (auth.isPresent()) {
@@ -46,7 +43,6 @@ public class JwtTokenInterceptor implements HandlerInterceptor {
                 }
             }
         }
-        System.out.println("setStatus401");
         response.setStatus(401);
         response.setHeader("ACCESS_TOKEN", accessToken);
         response.setHeader("REFRESH_TOKEN", refreshToken);

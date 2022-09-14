@@ -8,8 +8,8 @@ import org.springframework.http.HttpStatus;
 @AllArgsConstructor
 public enum ErrorCode {
     //예시
-    BAD_REQUEST(HttpStatus.BAD_REQUEST, "잘못된 요청입니다.");
-    ;
+    BAD_REQUEST(HttpStatus.BAD_REQUEST, "잘못된 요청입니다."),
+    USER_NOT_FOUND(HttpStatus.NOT_FOUND, "찾을 수 없는 유저입니다.");
 
     private final HttpStatus status;
     private final String message;
