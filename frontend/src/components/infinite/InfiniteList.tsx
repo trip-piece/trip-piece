@@ -15,10 +15,15 @@ interface InifinteListProps {
   count: number;
 }
 
-const GridContainer = styled('div')`
+type GridProps = {
+  gridColumnCount: number;
+};
+
+const GridContainer = styled.div<GridProps>`
   display: grid;
   grid-template-columns: ${(props) =>
-    props.gridColumnCount ?? `${repeat(props.gridColumnCount, 1fr)}`};
+    props.gridColumnCount ?? `repeat(${props.gridColumnCount}, 1fr)}`};
+  grid-gap: 1rem;
 `;
 
 function InfiniteList({
@@ -87,12 +92,12 @@ function InfiniteList({
       {isSuccess &&
         data.pages.map((group: any, index: number) => (
           // eslint-disable-next-line react/no-array-index-key
-          <div key={index}>
+          <GridContainer key={index} gridColumnCount={count}>
             {group?.data?.resultList?.map((card: any, idx: number) => (
               // eslint-disable-next-line react/no-array-index-key
               <CardComponent card={card} key={idx} func={func} />
             ))}
-          </div>
+          </GridContainer>
         ))}
       <div ref={bottom} />
       {isFetchingNextPage && (
