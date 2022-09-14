@@ -54,6 +54,9 @@ public class Place extends BaseEntity {
     @Column
     private String qrImage;
 
+    @Column
+    private String code;
+
     @Column(nullable = false)
     private boolean activated = false;
 
@@ -97,4 +100,6 @@ public class Place extends BaseEntity {
     public void updatePlaceAmount() { this.amount-=1; }
 
     public void updateQRImage(String qrImage) { this.qrImage = qrImage; }
+
+    public void updateCode(String code) { this.code = code; }
 }

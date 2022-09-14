@@ -19,8 +19,8 @@ public class QRService {
 
     private final S3Service s3Service;
 
-    public String QRMake(Place place) {
-        String content = "https://j7a607.p.ssafy.io/places/"+place.getId();
+    public String QRMake(Place place, String code) {
+        String content = "https://j7a607.p.ssafy.io/places/"+place.getId()+"/"+code;
         String fileName;
         try {
             QRCodeWriter qrCodeWriter = new QRCodeWriter();
