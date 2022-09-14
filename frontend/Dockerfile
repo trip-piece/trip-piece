@@ -3,7 +3,7 @@ WORKDIR /var/jenkins_home/workspace/trippiece/frontend
 COPY package*.json ./
 RUN yarn install
 COPY . .
-RUN yarn dev
+RUN yarn build
 FROM nginx:stable-alpine as production-stage
 
 COPY --from=build-stage /var/jenkins_home/workspace/trippiece/frontend/dist /usr/share/nginx/html
