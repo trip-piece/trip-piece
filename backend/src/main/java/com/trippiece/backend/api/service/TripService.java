@@ -80,12 +80,10 @@ public class TripService {
     public TripResponseDto findTrip(final User user,final long tripId){
         Trip trip = tripRepository.getOne(tripId);
         return new TripResponseDto(trip);
-
     }
+
     @Transactional
     public TripResponseDto isInTrip(final User user, LocalDate todayDate){
-        long result = 1000000;
-        Trip tt =null;
         List<Trip> list = new ArrayList<>();
         list.addAll(tripRepository.findAllByUser(user));
         for(Trip t : list){
@@ -94,7 +92,7 @@ public class TripService {
                 return new TripResponseDto(t); //진행중일때
             }
         }
-        if(tripRepository.findFirstByStartDateAndUserOrderByStartDate(user,todayDate)==null){
+        if(tripRepository.findFirstByStartDateAndUserOrderByStartDate(user,todayDate)==null){ //뒤 내용 아예없을때
             return null;
         }else{
             return new TripResponseDto(tripRepository.findFirstByStartDateAndUserOrderByStartDate(user,todayDate).get(0));
