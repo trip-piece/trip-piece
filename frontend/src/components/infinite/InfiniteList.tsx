@@ -8,12 +8,13 @@ import useObserver from "../../utils/hooks/useObserver";
 
 interface InifinteListProps {
   url: string;
-  queryKey: string;
+  queryKey: string[];
   CardComponent: React.ElementType;
   SkeletonCardComponent: React.ElementType;
   zeroDataText: string;
   func?: object;
   count: number;
+  listName: string;
 }
 
 type GridProps = {
@@ -36,6 +37,7 @@ function InfiniteList({
   zeroDataText,
   func,
   count,
+  listName,
 }: InifinteListProps) {
   const [hasError, setHasError] = useState(false);
   const bottom = useRef(null);
@@ -85,16 +87,16 @@ function InfiniteList({
 
   return (
     <div>
-      {data?.pages[0]?.data?.data.length < 1 && <div>{zeroDataText}</div>}
+      {data?.pages[0]?.data[listName]?.length < 1 && <div>{zeroDataText}</div>}
       {isLoading && <div>Loading ...</div>}
       {isError && isQueryError(error) && <p>{error?.message}</p>}
       {isSuccess &&
         data.pages.map((group: any | undefined, index: number) => (
           // eslint-disable-next-line react/no-array-index-key
           <GridContainer key={index} gridColumnCount={count}>
-            {group?.data?.data?.map((card: any, idx: number) => (
-              // eslint-disable-next-line react/no-array-index-key
-              <CardComponent card={card} key={idx} func={func} />
+            {group?.data[listName]?.map((card: any, idx: number) => (
+              // eslint-disable-next-line react/no-array-index-key, react/jsx-props-no-spreading
+              <CardComponent {...card} key={idx} func={func} />
             ))}
           </GridContainer>
         ))}

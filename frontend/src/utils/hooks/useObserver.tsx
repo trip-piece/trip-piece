@@ -30,12 +30,8 @@ function useObserver({
       });
       observer.observe(target.current);
     }
-    console.log(observer);
-
-    console.log("hasMore", hasMore, error);
 
     if (!hasMore || error) {
-      console.log(hasMore, error);
       observer.disconnect();
     }
     return () => observer.disconnect();

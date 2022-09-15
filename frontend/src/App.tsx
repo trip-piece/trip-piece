@@ -6,6 +6,7 @@ import Router from "./Router";
 const AppContainer = styled.div`
   min-height: 100vh;
   background-color: red;
+  scroll-behavior: smooth;
 `;
 function App() {
   const [queryClient] = useState(() => new QueryClient());

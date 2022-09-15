@@ -160,6 +160,10 @@ export default function GlobalStyle() {
             text-decoration: none;
             color: inherit;
           }
+          button {
+            cursor: pointer;
+            border: none;
+          }
         }
       `}
     />
