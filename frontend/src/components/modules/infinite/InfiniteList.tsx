@@ -2,9 +2,9 @@
 import styled from "@emotion/styled";
 import React, { useRef, useState } from "react";
 import { useInfiniteQuery } from "react-query";
-import fetchData from "../../utils/apis/api";
-import { isQueryError } from "../../utils/functions/util";
-import useObserver from "../../utils/hooks/useObserver";
+import fetchData from "../../../utils/apis/api";
+import { isQueryError } from "../../../utils/functions/util";
+import useObserver from "../../../utils/hooks/useObserver";
 
 interface InifinteListProps {
   url: string;

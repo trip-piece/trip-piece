@@ -1,17 +1,19 @@
 import styled from "@emotion/styled";
-import React from "react";
+import React, { useState } from "react";
 import { Helmet, HelmetProvider } from "react-helmet-async";
-import InfiniteList from "../../components/infinite/InfiniteList";
+import InfiniteList from "../../components/modules/infinite/InfiniteList";
+import BasicModal from "../../components/modules/Modal/Modal";
 import tripApis from "../../utils/apis/tripsApis";
 import Card from "./Card";
 import Skeleton from "./Skeleton";
-import TripCreateButton from "./TripCreateButton";
+import TripCreateButton from "./TripCreationButton";
 
 const Container = styled.main`
   min-height: 100vh;
   background-color: ${(props) => props.theme.colors.gray200};
   border-radius: 30px 30px 0 0;
-  padding: 2rem;
+  padding: 1rem;
+  position: relative;
 `;
 
 const Title = styled.h2`
@@ -27,9 +29,12 @@ const Title = styled.h2`
 const FixedContainer = styled.div`
   position: fixed;
   bottom: 30px;
-  right: 30px;
+  right: 0;
+  width: fit-content;
 `;
 function TripListPage() {
+  const [open, setOpen] = useState(false);
+  const handleOpen = () => setOpen(true);
   return (
     <>
       <HelmetProvider>
@@ -49,8 +54,9 @@ function TripListPage() {
           listName="tripList"
         />
         <FixedContainer>
-          <TripCreateButton />
+          <TripCreateButton func={handleOpen} />
         </FixedContainer>
+        <BasicModal open={open} setOpen={setOpen} />
       </Container>
     </>
   );

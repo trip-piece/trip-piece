@@ -155,7 +155,22 @@ export default function GlobalStyle() {
             line-height: 1.2;
             color: ${theme.colors.gray900};
             background-color: ${theme.colors.white};
+            -ms-overflow-style: none; /* IE and Edge */
+            scrollbar-width: none; /* Firefox */
           }
+          body::-webkit-scrollbar {
+            display: none; /* Chrome, Safari, Opera*/
+            scrollbar-width: none; /* Firefox */
+          }
+          body {
+            -ms-overflow-style: none;
+            scrollbar-width: none; /* Firefox */
+          }
+          body::-webkit-scrollbar {
+            display: none;
+            width: 0 !important;
+          }
+
           a {
             text-decoration: none;
             color: inherit;
