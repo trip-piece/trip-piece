@@ -49,20 +49,14 @@ public class JwtTokenUtil {
     }
 
     public boolean isValidToken(String token) {
-        System.out.println("isValidToken is : " + token);
         try {
             Claims accessClaims = getClaimsFormToken(token);
-            System.out.println("Access expireTime: " + accessClaims.getExpiration());
-            System.out.println("Access userId: " + accessClaims.get("userEmail"));
             return true;
         } catch (ExpiredJwtException exception) {
-            System.out.println("Token Expired UserID : " + exception.getClaims().getSubject());
             return false;
         } catch (JwtException exception) {
-            System.out.println("Token Tampered");
             return false;
         } catch (NullPointerException exception) {
-            System.out.println("Token is null");
             return false;
         }
     }
@@ -70,19 +64,12 @@ public class JwtTokenUtil {
     public boolean isValidRefreshToken(String token) {
         try {
             Claims accessClaims = getClaimsToken(token);
-            System.out.println("Access expireTime: " + accessClaims.getExpiration());
-            System.out.println("Access userId: " + accessClaims.get("userEmail"));
             return true;
         } catch (ExpiredJwtException exception) {
-            System.out.println("Token Expired UserID : " + exception.getClaims().getSubject());
-
-
             return false;
         } catch (JwtException exception) {
-            System.out.println("Token Tampered");
             return false;
         } catch (NullPointerException exception) {
-            System.out.println("Token is null");
             return false;
         }
     }
