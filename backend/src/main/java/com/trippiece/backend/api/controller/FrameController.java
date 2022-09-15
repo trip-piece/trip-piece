@@ -73,7 +73,7 @@ public class FrameController {
             if(user == null) return new ResponseEntity<String>("로그인된 회원을 찾을 수 없습니다.", HttpStatus.NOT_FOUND);
             else{
                 int deleteResult = frameService.deleteFrame(user, frameId);
-                if(deleteResult==403) return new ResponseEntity<String>("사용자가 스티커 프레임의 소유자가 아닙니다.", HttpStatus.NOT_ACCEPTABLE);
+                if(deleteResult==406) return new ResponseEntity<String>("사용자가 스티커 프레임의 소유자가 아닙니다.", HttpStatus.NOT_ACCEPTABLE);
                 else return new ResponseEntity<String>("스티커 프레임 삭제 성공", HttpStatus.OK);
             }
         } catch (Exception e){
