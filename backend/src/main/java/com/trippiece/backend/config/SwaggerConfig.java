@@ -35,7 +35,8 @@ public class SwaggerConfig {
                 .paths(PathSelectors.any())
                 .build()
                 .apiInfo(apiInfo())
-                .enable(true);
+                .enable(true)
+                .host("j7a607.q.ssafy.io/api");
     }
 
     @Getter
