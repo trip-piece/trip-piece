@@ -1,5 +1,6 @@
 package com.trippiece.backend.api.domain.entity;
 
+import com.trippiece.backend.api.domain.dto.request.DiaryRequestDto;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -53,5 +54,15 @@ public class Diary extends BaseEntity {
       this.weather = weather;
       this.user = user;
       this.trip = trip;
+    }
+
+    public void updateDiary(DiaryRequestDto.DiaryEdit diaryEdit,Trip trip){
+        if(!this.content.equals(diaryEdit.getContent())) this.content = diaryEdit.getContent();
+        this.createDate = createDate;
+        if(!this.todayPhoto.equals(diaryEdit.getTodayPhoto())) this.todayPhoto = diaryEdit.getTodayPhoto();
+        if(!this.content.equals(diaryEdit.getContent())) this.content = diaryEdit.getContent();
+        if(this.fontType!= diaryEdit.getFontType()) this.fontType = diaryEdit.getFontType();
+        if(this.backgroundColor!= diaryEdit.getBackgroundColor()) this.backgroundColor = diaryEdit.getBackgroundColor();
+        if(this.trip.getId()!=diaryEdit.getTripId()) this.trip = trip;
     }
 }

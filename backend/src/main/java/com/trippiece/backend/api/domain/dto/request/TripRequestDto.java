@@ -14,9 +14,6 @@ public class TripRequestDto {
     @ApiModelProperty(name = "지역", example = "1")
     long regionId;
 
-    @ApiModelProperty(name = "유저", example = "1")
-    long userId;
-
     @ApiModelProperty(name = "티켓명", example = "두근두근서울여행")
     String title;
 

@@ -36,4 +36,5 @@ public class Decoration extends BaseEntity {
         this.x = x;
         this.y = y;
     }
+
 }
