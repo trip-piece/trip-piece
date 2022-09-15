@@ -55,6 +55,7 @@ function InfiniteList({
     isError,
     isSuccess,
     fetchNextPage,
+    hasNextPage,
     isFetchingNextPage,
   } = useInfiniteQuery(queryKey, getTargetComponentList, {
     getNextPageParam: (lastPage: any) => {
@@ -63,27 +64,25 @@ function InfiniteList({
           data: { last },
         } = lastPage;
         if (last) return lastPage.page + 1;
-      } else setHasError(true);
+        return false;
+      }
+      return false;
     },
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
     refetchOnMount: true,
   });
 
-  console.log("data", data);
-
   const onIntersect = ([entry]: any) => entry.isIntersecting && fetchNextPage();
 
   useObserver({
     target: bottom,
-    hasMore: hasError,
+    hasMore: hasNextPage,
     hasError,
-    isError,
     error,
     onIntersect,
   });
 
-  console.log("count", count);
   return (
     <div>
       {data?.pages[0]?.data?.data.length < 1 && <div>{zeroDataText}</div>}

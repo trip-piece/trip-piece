@@ -8,6 +8,7 @@ interface IOberserProps {
   root?: any;
   rootMargin?: string;
   threshold?: number;
+  hasMore?: boolean;
 }
 
 function useObserver({
