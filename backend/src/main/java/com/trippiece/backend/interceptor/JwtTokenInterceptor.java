@@ -37,12 +37,25 @@ public class JwtTokenInterceptor implements HandlerInterceptor {
             if (user.isPresent()) {
                 Optional<Auth> auth = authRepository.findByUser(user.get());
                 if (auth.isPresent()) {
+                    if (jwtTokenUtil.isValidToken(accessToken)) {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        if (refreshToken != null) {
+            Optional<User> user = userRepository.findById(jwtTokenUtil.getUserIdFromToken(accessToken));
+            if (user.isPresent()) {
+                Optional<Auth> auth = authRepository.findByUser(user.get());
+                if (auth.isPresent()) {
                     if (jwtTokenUtil.isValidToken(accessToken) && auth.get().getRefreshToken().equals(refreshToken)) {
                         return true;
                     }
                 }
             }
         }
+
         response.setStatus(401);
         response.setHeader("ACCESS_TOKEN", accessToken);
         response.setHeader("REFRESH_TOKEN", refreshToken);
