@@ -12,6 +12,16 @@ const Container = styled.main`
   border-radius: 30px 30px 0 0;
   padding: 2rem;
 `;
+
+const Title = styled.h2`
+  text-align: center;
+  font-size: ${(props) => props.theme.fontSizes.h4};
+  font-weight: 700;
+  height: 3rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
 function TripListPage() {
   return (
     <>
@@ -21,7 +31,7 @@ function TripListPage() {
         </Helmet>
       </HelmetProvider>
       <Container>
-        보유여행티켓
+        <Title>보유여행티켓</Title>
         <InfiniteList
           url={tripApis.trip}
           queryKey="fuckfuck"
