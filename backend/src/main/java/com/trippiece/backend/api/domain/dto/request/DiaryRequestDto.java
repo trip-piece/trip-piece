@@ -16,11 +16,11 @@ public class DiaryRequestDto {
     @NoArgsConstructor(access = AccessLevel.PROTECTED)
 
     public static class DiaryRegister{
+        @ApiModelProperty(name = "티켓아이디", example = "1")
+        long tripId;
+
         @ApiModelProperty(name = "일기내용", example = "날이 좋아서.. 날이 좋지 않아서..")
         String content;
-
-        @ApiModelProperty(name = "오늘의포토", example = "임상빈.png")
-        String todayPhoto;
 
         @ApiModelProperty(name = "폰트타입", example = "1")
         int fontType;
@@ -31,11 +31,8 @@ public class DiaryRequestDto {
         @ApiModelProperty(name = "날씨", example = "1")
         int weather;
 
-        @ApiModelProperty(name = "유저아이디", example = "1")
-        long userId;
-
-        @ApiModelProperty(name = "티켓아이디", example = "1")
-        long tripId;
+        @ApiModelProperty(name = "오늘의포토", example = "임상빈.png")
+        String todayPhoto;
 
     }
 

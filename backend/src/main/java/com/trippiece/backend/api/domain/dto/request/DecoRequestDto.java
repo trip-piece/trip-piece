@@ -15,7 +15,6 @@ import java.util.List;
 public class DecoRequestDto {
     @ApiModelProperty(name = "다이어리아이디", example = "1")
     long diaryId;
-
     //헷갈리지마세오옹
     private List<StickerDecorationDto> stickerList;
 

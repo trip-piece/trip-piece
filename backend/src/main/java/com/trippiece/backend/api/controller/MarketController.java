@@ -1,9 +1,10 @@
 package com.trippiece.backend.api.controller;
 
 import com.trippiece.backend.api.domain.dto.response.MarketStickerResponseDto;
-import com.trippiece.backend.api.domain.dto.response.TripResponseDto;
 import com.trippiece.backend.api.domain.entity.User;
 import com.trippiece.backend.api.service.MarketService;
+import com.trippiece.backend.api.service.UserService;
+import com.trippiece.backend.util.JwtTokenUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
@@ -23,11 +24,14 @@ import java.util.Map;
 public class MarketController {
 
     private final MarketService marketService;
+    private final UserService userService;
+    private final JwtTokenUtil jwtTokenUtil;
 
     @PostMapping
     @ApiOperation(value = "스티커마켓등록", notes = "스티커판매를 위해 등록한다.")
-    public ResponseEntity<?> addMarketSticker(@RequestBody long tokenId, float price) {
-        User user = null;
+    public ResponseEntity<?> addMarketSticker(@RequestHeader("ACCESS_TOKEN") final String accessToken,@RequestBody long tokenId, float price) {
+        long userId = jwtTokenUtil.getUserIdFromToken(accessToken);
+        User user = userService.findOneUser(userId);
         if (user == null) return new ResponseEntity<String>("로그인된 회원을 찾을 수 없습니다.", HttpStatus.NOT_FOUND);
         else {
             marketService.addMarketSticker(user, tokenId, price);
@@ -37,8 +41,9 @@ public class MarketController {
 
     @GetMapping
     @ApiOperation(value = "스티커 검색/조회", notes = "사용자가 마켓에서 등록된 스티커 조회")
-    public ResponseEntity<?> getMarketStickers(@RequestParam long regionId, @RequestParam int sort, Pageable pageable) {
-        User user = null;
+    public ResponseEntity<?> getMarketStickers(@RequestHeader("ACCESS_TOKEN") final String accessToken,@RequestParam long regionId, @RequestParam int sort, Pageable pageable) {
+        long userId = jwtTokenUtil.getUserIdFromToken(accessToken);
+        User user = userService.findOneUser(userId);
         if (user == null) return new ResponseEntity<String>("로그인된 회원을 찾을 수 없습니다.", HttpStatus.NOT_FOUND);
         else {
             if (sort > 2) return new ResponseEntity<String>("유효한 sort가 아닙니다.", HttpStatus.BAD_REQUEST);
@@ -50,10 +55,11 @@ public class MarketController {
 
     @DeleteMapping
     @ApiOperation(value = "스티커 판매 목록에서 제거", notes = "스티커가 판매완료되어 목록에서 제거")
-    public ResponseEntity<?> deleteMarketSticker(@RequestBody final Map<String, Long> request) {
+    public ResponseEntity<?> deleteMarketSticker(@RequestHeader("ACCESS_TOKEN") final String accessToken,@RequestBody final Map<String, Long> request) {
         long marketId = request.get("marketId");
         try {
-            User user = null;
+            long userId = jwtTokenUtil.getUserIdFromToken(accessToken);
+            User user = userService.findOneUser(userId);
             if (user == null) return new ResponseEntity<String>("로그인된 회원을 찾을 수 없습니다.", HttpStatus.NOT_FOUND);
             else {
                 marketService.deleteMarketSticker(user, marketId);

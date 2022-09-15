@@ -32,12 +32,9 @@ public class DiaryService {
 
     /*일기 내용 추가*/
     @Transactional
-    public void addDiary(DiaryRequestDto.DiaryRegister diaryRegister) {
+    public void addDiary(User user, DiaryRequestDto.DiaryRegister diaryRegister) {
         Trip trip = tripRepository.findById(diaryRegister.getTripId()).orElseThrow(() -> new CustomException(ErrorCode.DATA_NOT_FOUND));
         ;
-        User user = userRepository.findById(diaryRegister.getUserId()).orElseThrow(() -> new CustomException(ErrorCode.DATA_NOT_FOUND));
-        ;
-
         Diary diary = Diary.builder()
                 .content(diaryRegister.getContent())
                 .createDate(LocalDateTime.now())
@@ -60,7 +57,7 @@ public class DiaryService {
         for (StickerDecorationDto st : list) {
             Decoration decoration = Decoration.builder()
                     .diary(diary)
-                    .sticker(stickerRepository.getOne(st.getTokenId()))
+                    .sticker(stickerRepository.findById(st.getStickerId()).orElseThrow(() -> new CustomException(ErrorCode.DATA_NOT_FOUND)))
                     .x(st.getX())
                     .y(st.getY())
                     .build();
@@ -128,17 +125,27 @@ public class DiaryService {
     }
 
     @Transactional
-    public void updateDiary(DiaryRequestDto.DiaryEdit diaryEdit, long diaryId) {
+    public int updateDiary(User user, DiaryRequestDto.DiaryEdit diaryEdit, long diaryId) {
+        int resultCode = 200;
         Diary diary = diaryRepository.findById(diaryId).orElseThrow(() -> new CustomException(ErrorCode.DATA_NOT_FOUND));
         Trip trip = tripRepository.findById(diaryEdit.getTripId()).orElseThrow(() -> new CustomException(ErrorCode.DATA_NOT_FOUND));
-        diary.updateDiary(diaryEdit, trip);
+        if (!diary.getUser().equals(user)) resultCode = 406;
+        else {
+            diary.updateDiary(diaryEdit, trip);
+        }
+        return resultCode;
     }
 
 
     @Transactional
-    public void deleteDiary(final long diaryId) {
+    public int deleteDiary(User user,final long diaryId) {
+        int resultCode = 200;
         Diary diary = diaryRepository.findById(diaryId).orElseThrow(() -> new CustomException(ErrorCode.DATA_NOT_FOUND));
-        diaryRepository.delete(diary);
+        if(!diary.getUser().equals(user))resultCode = 406;
+        else {
+            diaryRepository.delete(diary);
+        }
+        return resultCode;
     }
 
 }
