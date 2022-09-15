@@ -114,7 +114,7 @@ public class DiaryService {
     public DiaryResponseDto findDiary(final long tripId, LocalDate date) {
         boolean isShare = false;
         Trip trip = tripRepository.findById(tripId).orElseThrow(() -> new CustomException(ErrorCode.DATA_NOT_FOUND));
-        Diary diary = diaryRepository.findByTripAndAndCreateDate(trip, date);
+        Diary diary = diaryRepository.findByTripAndCreateDate(trip, date);
         List<Decoration> list = decorationRepository.findAllByDiary(diary);
         List<StickerDecorationDto> deco = list.stream().map(StickerDecorationDto::new).collect(Collectors.toList());
 
