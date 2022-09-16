@@ -23,7 +23,7 @@ const DateInformationContainer = styled.div`
 
 const DateInformationWrapper = styled.div<{ active?: boolean | null }>`
   width: 100%;
-  padding: 0 0.5rem;
+  padding: 0 1rem;
   color: ${(props) =>
     props.active ? props.theme.colors.blue : props.theme.colors.gray400};
   border-right: ${(props) =>

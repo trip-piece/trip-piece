@@ -1,4 +1,11 @@
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import {
+  ChangeEvent,
+  Dispatch,
+  SetStateAction,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import Box from "@mui/material/Box";
 import Modal from "@mui/material/Modal";
 import styled from "@emotion/styled";
@@ -6,6 +13,8 @@ import DatePicker from "react-datepicker";
 import { ko } from "date-fns/esm/locale";
 import "react-datepicker/dist/react-datepicker.css";
 import "../../style/DatePicker.css";
+import { AiFillCaretDown } from "react-icons/ai";
+import { SubmitHandler, useForm } from "react-hook-form";
 import {
   createDate,
   getDayName,
@@ -14,6 +23,8 @@ import {
 } from "../../utils/functions/util";
 import { REGIONLIST, WEEK } from "../../utils/constants/constant";
 import DateInfomation from "./DateInfomation";
+import fetchData from "../../utils/apis/api";
+import tripApis from "../../utils/apis/tripsApis";
 
 const Wrapper = styled(Box)`
   position: absolute;
@@ -47,33 +58,84 @@ const DurationWrapper = styled.article`
   border-top-right-radius: ${pixelToRem(15)};
 `;
 
-const DateInformationContainer = styled.div`
+const ModalHeader = styled.article`
   display: flex;
+  width: 100%;
+  justify-content: space-evenly;
   align-items: center;
-  justify-content: space-between;
-  height: 100%;
-  padding: 0 0.4rem;
-  > p {
-    display: table-cell;
-    vertical-align: middle;
-    font-size: ${(props) => props.theme.fontSizes.h1};
+  gap: 1rem;
+  margin-bottom: 1rem;
+  > h3 {
+    font-size: ${(props) => props.theme.fontSizes.h3};
     font-weight: 600;
-    height: ${(props) => props.theme.fontSizes.h1};
-  }
-  > div {
-    display: flex;
-    justify-content: center;
-    flex-direction: column;
-    font-size: ${(props) => props.theme.fontSizes.s2};
   }
 `;
 
-const DateInformationWrapper = styled.div<{ active?: boolean | null }>`
+const SelectWrapper = styled.div`
+  display: flex;
+`;
+
+const Select = styled.select`
+  border: none;
+  border-radius: 5px;
+  width: ${pixelToRem(160)};
+  padding: 0 0.5rem;
+  font-size: ${(props) => props.theme.fontSizes.h4};
+  height: ${pixelToRem(40)};
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+`;
+
+const StyledAiFillCaretDown = styled(AiFillCaretDown)`
+  margin-left: -28px;
+  align-self: center;
+  width: 24px;
+  height: 24px;
+`;
+
+const TitleInputWrapper = styled.article`
   width: 100%;
-  color: ${(props) =>
-    props.active ? props.theme.colors.blue : props.theme.colors.gray400};
-  border-right: ${(props) =>
-    props.active && `1px dashed ${props.theme.colors.gray300}`};
+  > label {
+    font-size: ${(props) => props.theme.fontSizes.s1};
+    color: ${(props) => props.theme.colors.gray800};
+  }
+`;
+
+const TitleInput = styled.input`
+  border: none;
+  width: 100%;
+  height: ${pixelToRem(40)};
+  padding: 0 1rem;
+  border-radius: 5px;
+`;
+
+const MessageWrapper = styled.div`
+  min-height: 2rem;
+  width: 100%;
+  padding: 0.25rem;
+  font-size: ${(props) => props.theme.fontSizes.s2};
+  color: ${(props) => props.theme.colors.red};
+  display: flex;
+  align-items: center;
+`;
+
+const SubmitButton = styled.button`
+  background-color: ${(props) => props.theme.colors.mainLight};
+  border-radius: 20px;
+  padding: 0.5rem 1rem;
+  color: ${(props) => props.theme.colors.white};
+  font-weight: bold;
+  display: block;
+  &:disabled {
+    cursor: not-allowed;
+  }
+`;
+
+const Form = styled.form`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 `;
 
 interface BasicModalProps {
@@ -88,10 +150,16 @@ interface IDateInformation {
   day: string;
 }
 
+type FormValues = {
+  regionId: number;
+  title: string;
+};
+
 function BasicModal({ setOpen, open }: BasicModalProps) {
   const [month, setMonth] = useState(new Date().getMonth());
   const [startDate, setStartDate] = useState<Date | null>(new Date());
   const [endDate, setEndDate] = useState<Date | null>(new Date());
+
   const [startDateInfomation, setStartDateInformation] =
     useState<IDateInformation>({
       year: null,
@@ -107,6 +175,19 @@ function BasicModal({ setOpen, open }: BasicModalProps) {
       day: "",
     },
   );
+
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    formState: { errors },
+  } = useForm<FormValues>({
+    defaultValues: {
+      regionId: 1,
+      title: "",
+    },
+  });
+
   const onChange = (dates: Array<Date | null>) => {
     const [start, end] = dates;
     setStartDate(start);
@@ -152,7 +233,22 @@ function BasicModal({ setOpen, open }: BasicModalProps) {
     handleModifiedStartDate(endDate, setEndDateInformation);
   }, [startDate, endDate]);
 
-  console.log(endDate);
+  const onSubmit: SubmitHandler<FormValues> = async (data) => {
+    if (!startDate || !endDate) return;
+    const body = { startDate, endDate, ...data };
+    const response = await fetchData.post({ url: tripApis.trip, body });
+    try {
+      if (response.status === 200) {
+        handleClose();
+        setValue("regionId", 1);
+        setValue("title", "");
+        setStartDate(new Date());
+        setEndDate(new Date());
+      }
+    } catch (err) {
+      throw new Error(err);
+    }
+  };
 
   return (
     <div>
@@ -164,61 +260,62 @@ function BasicModal({ setOpen, open }: BasicModalProps) {
           aria-describedby="modal-modal-description"
         >
           <Wrapper>
-            <TripInformationWrapper>
-              <div>
-                <div>
-                  <h3>여행지</h3>
-                  <select>
-                    {REGIONLIST.slice(1).map((region, idx) => (
-                      <option value={idx} key={region}>
-                        {region}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-              <input />
-              <DurationWrapper>
-                <DateInfomation {...startDateInfomation} type="시작" />
-                <DateInfomation {...endDateInfomation} type="종료" />
-                {/* <DateInformationWrapper active>
-                  <h4>시작</h4>
-                  <DateInformationContainer>
-                    <p>{startDateInfomation.date}</p>
-                    <div>
-                      {startDateInfomation.year}년 {startDateInfomation.month}월
-                      <p>{startDateInfomation.day}</p>
-                    </div>
-                  </DateInformationContainer>
-                </DateInformationWrapper>
-                <DateInformationWrapper>
-                  <h4>종료</h4>
-                  <DateInformationContainer>
-                    <p>{endDateInfomation.date}</p>
-                    <div>
-                      <div>
-                        {endDateInfomation.year}년 {endDateInfomation.month}월
-                      </div>
-                      <p>{endDateInfomation.day}</p>
-                    </div>
-                  </DateInformationContainer>
-                </DateInformationWrapper> */}
-              </DurationWrapper>
-            </TripInformationWrapper>
-            <DatePicker
-              selected={startDate}
-              onChange={onChange}
-              startDate={startDate}
-              endDate={endDate}
-              minDate={new Date()}
-              selectsRange
-              locale={ko}
-              inline
-              onMonthChange={handleMonthChange}
-              dayClassName={setDayColor}
-              popperPlacement="auto"
-            />
-            <button type="button">여행 추가하기</button>
+            <Form onSubmit={handleSubmit(onSubmit)}>
+              <TripInformationWrapper>
+                <ModalHeader>
+                  <h3>
+                    <label htmlFor="trip-destination">여행지</label>
+                  </h3>
+                  <SelectWrapper>
+                    <Select
+                      id="trip-destination"
+                      {...register("regionId", {
+                        required: true,
+                        valueAsNumber: true,
+                      })}
+                    >
+                      {REGIONLIST.slice(1).map((region, idx) => (
+                        <option value={idx + 1} key={region}>
+                          {region}
+                        </option>
+                      ))}
+                    </Select>
+                    <StyledAiFillCaretDown />
+                  </SelectWrapper>
+                </ModalHeader>
+                <TitleInputWrapper>
+                  <label htmlFor="title">여행 제목</label>
+                  <TitleInput
+                    {...register("title", { required: "제목을 입력해주세요." })}
+                    placeholder="여행 제목을 입력하세요."
+                  />
+                  <MessageWrapper>
+                    <p>{errors?.title?.message}</p>
+                  </MessageWrapper>
+                </TitleInputWrapper>
+
+                <DurationWrapper>
+                  <DateInfomation {...startDateInfomation} type="시작" />
+                  <DateInfomation {...endDateInfomation} type="종료" />
+                </DurationWrapper>
+              </TripInformationWrapper>
+              <DatePicker
+                selected={startDate}
+                onChange={onChange}
+                startDate={startDate}
+                endDate={endDate}
+                minDate={new Date()}
+                selectsRange
+                locale={ko}
+                inline
+                onMonthChange={handleMonthChange}
+                dayClassName={setDayColor}
+                popperPlacement="auto"
+              />
+              <SubmitButton type="submit" disabled={!startDate || !endDate}>
+                여행 추가
+              </SubmitButton>
+            </Form>
           </Wrapper>
         </Modal>
       </div>

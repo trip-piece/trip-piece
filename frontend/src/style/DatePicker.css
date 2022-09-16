@@ -150,12 +150,12 @@
   border-bottom-left-radius: 15px;
   border-bottom-right-radius: 15px;
   background-color: white;
-  width: 100%;
-  padding: 0 1rem;
+  min-width: 280px;
 }
 
 .react-datepicker__month-container {
   border: none;
+  min-height: 266.867px;
 }
 
 .react-datepicker__triangle {
@@ -167,12 +167,34 @@
   background-color: #ffffff;
 }
 
+.react-datepicker__day-names {
+  display: flex;
+  justify-content: space-evenly;
+}
+
+.react-datepicker__week {
+  display: flex;
+  justify-content: space-evenly;
+}
+
+.react-datepicker__navigation--previous {
+  left: 8px;
+}
+
+.react-datepicker__navigation--next {
+  right: 8px;
+}
+
 .react-datepicker__day--in-selecting-range {
   /* border-radius: 50%; */
 }
 
 .react-datepicker__day--today {
   /* border-radius: 50%; */
+}
+
+.react-datepicker__month-container {
+  width: 100%;
 }
 
 .react-datepicker__day--selected {
