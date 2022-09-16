@@ -1,5 +1,5 @@
 import styled from "@emotion/styled";
-import React, { useState } from "react";
+import { useState } from "react";
 import { Helmet, HelmetProvider } from "react-helmet-async";
 import InfiniteList from "../../components/modules/infinite/InfiniteList";
 import tripApis from "../../utils/apis/tripsApis";

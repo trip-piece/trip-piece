@@ -5,7 +5,7 @@ import Router from "./Router";
 
 const AppContainer = styled.div`
   min-height: 100vh;
-  background-color: red;
+  background-color: ${(props) => props.theme.colors.mainDark};
   scroll-behavior: smooth;
 `;
 function App() {
@@ -13,7 +13,6 @@ function App() {
 
   return (
     <AppContainer>
-      여행조각
       <QueryClientProvider client={queryClient}>
         <Router />
       </QueryClientProvider>

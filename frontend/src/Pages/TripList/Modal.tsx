@@ -1,11 +1,4 @@
-import {
-  ChangeEvent,
-  Dispatch,
-  SetStateAction,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import Box from "@mui/material/Box";
 import Modal from "@mui/material/Modal";
 import styled from "@emotion/styled";
@@ -38,6 +31,8 @@ const Wrapper = styled(Box)`
   display: flex;
   flex-direction: column;
   align-items: center;
+  border: none;
+  outline: 0;
 `;
 
 const TripInformationWrapper = styled.article`
@@ -85,6 +80,7 @@ const Select = styled.select`
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
+  color: ${(props) => props.theme.colors.gray900};
 `;
 
 const StyledAiFillCaretDown = styled(AiFillCaretDown)`
@@ -129,6 +125,7 @@ const SubmitButton = styled.button`
   display: block;
   &:disabled {
     cursor: not-allowed;
+    background-color: ${(props) => props.theme.colors.gray400};
   }
 `;
 
@@ -286,8 +283,15 @@ function BasicModal({ setOpen, open }: BasicModalProps) {
                 <TitleInputWrapper>
                   <label htmlFor="title">여행 제목</label>
                   <TitleInput
-                    {...register("title", { required: "제목을 입력해주세요." })}
+                    {...register("title", {
+                      required: "제목을 입력해주세요.",
+                      maxLength: {
+                        value: 10,
+                        message: "제목은 10자 이내로 작성해주세요.",
+                      },
+                    })}
                     placeholder="여행 제목을 입력하세요."
+                    maxLength={10}
                   />
                   <MessageWrapper>
                     <p>{errors?.title?.message}</p>
