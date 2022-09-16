@@ -50,7 +50,7 @@ public class UserService {
 
         if (authOptional.isPresent()) {
             auth = authOptional.get();
-            if (!jwtTokenUtil.isValidRefreshToken(refreshToken)) auth.update(jwtTokenUtil.saveRefreshToken(user));
+            if (!jwtTokenUtil.isValidRefreshToken(auth.getRefreshToken())) auth.update(jwtTokenUtil.saveRefreshToken(user));
             accessToken = jwtTokenUtil.generateJwtToken(auth.getUser());
             refreshToken = auth.getRefreshToken();
         }
