@@ -1,5 +1,5 @@
 import { Global, css } from "@emotion/react";
-import theme from "./theme";
+import { themes } from "./theme";
 
 export default function GlobalStyle() {
   return (
@@ -143,7 +143,7 @@ export default function GlobalStyle() {
             min-width: 320px;
             min-height: 100vh;
             margin: 0 auto;
-            background-color: ${theme.colors.mainDark};
+            background-color: ${themes.colors.mainDark};
           }
           html,
           body {
@@ -153,8 +153,8 @@ export default function GlobalStyle() {
           }
           body {
             line-height: 1.2;
-            color: ${theme.colors.gray900};
-            background-color: ${theme.colors.white};
+            color: ${themes.colors.gray900};
+            background-color: ${themes.colors.white};
             -ms-overflow-style: none; /* IE and Edge */
             scrollbar-width: none; /* Firefox */
           }
@@ -162,15 +162,6 @@ export default function GlobalStyle() {
             display: none; /* Chrome, Safari, Opera*/
             scrollbar-width: none; /* Firefox */
           }
-          body {
-            -ms-overflow-style: none;
-            scrollbar-width: none; /* Firefox */
-          }
-          body::-webkit-scrollbar {
-            display: none;
-            width: 0 !important;
-          }
-
           a {
             text-decoration: none;
             color: inherit;

@@ -1,3 +1,4 @@
+import { createTheme } from "@mui/material/styles";
 import { pixelToRem } from "../utils/functions/util";
 
 const colors = {
@@ -22,6 +23,7 @@ const colors = {
   gray200: "#E4E4E4",
   gray100: "#f5f5f5",
   gray50: "#fafafa",
+  gray0: "#ffffff",
 };
 
 const fontSizes = {
@@ -37,9 +39,16 @@ const fontSizes = {
   s4: pixelToRem(6),
 };
 
-const theme = {
+export const themes = {
   colors,
   fontSizes,
 };
+
+// eslint-disable-next-line import/no-mutable-exports
+const theme = createTheme({
+  status: {
+    danger: "red",
+  },
+});
 
 export default theme;
