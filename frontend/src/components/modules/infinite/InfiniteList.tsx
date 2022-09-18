@@ -1,9 +1,11 @@
 /* eslint-disable react/require-default-props */
 import styled from "@emotion/styled";
-import React, { useRef, useState } from "react";
-import { useInfiniteQuery } from "react-query";
+import React, { useMemo, useRef, useState } from "react";
+import { QueryFunctionContext } from "react-query";
+// import { useInfiniteQuery } from "react-query";
 import fetchData from "../../../utils/apis/api";
 import { isQueryError } from "../../../utils/functions/util";
+import useFetchTripsInformation from "../../../utils/hooks/useFecthTripsInformation";
 import useObserver from "../../../utils/hooks/useObserver";
 
 interface InifinteListProps {
@@ -41,10 +43,13 @@ function InfiniteList({
 }: InifinteListProps) {
   const [hasError, setHasError] = useState(false);
   const bottom = useRef(null);
-  const getTargetComponentList = async ({ pageParam = 0 }) => {
+
+  const getTargetComponentList = async ({
+    pageParam = 0,
+  }: QueryFunctionContext) => {
     try {
       const res = await fetchData.get({ url: `${url}?page=${pageParam}` });
-      return { data: res?.data, page: pageParam };
+      return { result: res?.data, page: pageParam };
     } catch (_) {
       setHasError(true);
       return undefined;
@@ -59,23 +64,14 @@ function InfiniteList({
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
-  } = useInfiniteQuery(queryKey, getTargetComponentList, {
-    getNextPageParam: (lastPage: any) => {
-      if (lastPage.data.last) {
-        const {
-          data: { last },
-        } = lastPage;
-        if (last) return lastPage.page + 1;
-        return false;
-      }
-      return false;
-    },
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
-    refetchOnMount: true,
-  });
+  } = useFetchTripsInformation({ queryKey, getTargetComponentList });
 
   const onIntersect = ([entry]: any) => entry.isIntersecting && fetchNextPage();
+
+  const targetList = useMemo(
+    () => (data ? data.pages.flatMap(({ result }) => result[listName]) : []),
+    [data],
+  );
 
   useObserver({
     target: bottom,
@@ -87,23 +83,18 @@ function InfiniteList({
 
   return (
     <div>
-      {data?.pages[0]?.data[listName]?.length < 1 && <div>{zeroDataText}</div>}
+      {isSuccess && targetList?.length < 1 && <div>{zeroDataText}</div>}
       {isLoading && <div>Loading ...</div>}
       {isError && isQueryError(error) && <p>{error?.message}</p>}
-      {isSuccess &&
-        data.pages.map((group: any | undefined, index: number) => (
-          // eslint-disable-next-line react/no-array-index-key
-          <GridContainer key={index} gridColumnCount={count}>
-            {group?.data[listName]?.map((card: any, idx: number) => (
-              // eslint-disable-next-line react/no-array-index-key, react/jsx-props-no-spreading
-              <CardComponent {...card} key={idx} func={func} />
-            ))}
-          </GridContainer>
+      <GridContainer gridColumnCount={count}>
+        {targetList.map((target, idx) => (
+          <CardComponent {...target} key={idx} func={func} />
         ))}
+      </GridContainer>
       <div ref={bottom} />
       {isFetchingNextPage && (
         <GridContainer gridColumnCount={count}>
-          {[...Array(count).keys()].map((i) => (
+          {Array.from({ length: count }, (_, idx) => idx).map((i) => (
             <SkeletonCardComponent key={i} />
           ))}
         </GridContainer>
