@@ -73,12 +73,14 @@ function Card({
           편집
         </button>
       )}
-      <TripManagementModal
-        setOpen={setOpen}
-        open={open}
-        tripInformation={{ tripId, regionId, title, startDate, endDate }}
-        refetch={refetch}
-      />
+      {state && (
+        <TripManagementModal
+          setOpen={setOpen}
+          open={open}
+          tripInformation={{ tripId, regionId, title, startDate, endDate }}
+          refetch={refetch}
+        />
+      )}
     </Container>
   );
 }

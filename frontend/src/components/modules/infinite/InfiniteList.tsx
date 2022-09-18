@@ -1,6 +1,6 @@
 /* eslint-disable react/require-default-props */
 import styled from "@emotion/styled";
-import React, { useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { QueryFunctionContext } from "react-query";
 import fetchData from "../../../utils/apis/api";
 import { isQueryError } from "../../../utils/functions/util";
@@ -17,6 +17,7 @@ interface InifinteListProps {
   count: number;
   listName: string;
   state?: boolean;
+  isCreated?: boolean;
 }
 
 type GridProps = {
@@ -41,6 +42,7 @@ function InfiniteList({
   count,
   listName,
   state,
+  isCreated,
 }: InifinteListProps) {
   const [hasError, setHasError] = useState(false);
   const bottom = useRef(null);
@@ -90,6 +92,11 @@ function InfiniteList({
     error,
     onIntersect,
   });
+
+  useEffect(() => {
+    if (isCreated) refetchData();
+  }, [isCreated]);
+  // FIXME: key change
 
   return (
     <div>

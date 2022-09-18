@@ -36,6 +36,8 @@ const FixedContainer = styled.div`
 function TripListPage() {
   const [open, setOpen] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
+  const [isCreated, setIsCreated] = useState(false);
+
   const handleOpen = () => setOpen(true);
   const handleEditMode = () => setIsEditMode(!isEditMode);
 
@@ -62,13 +64,14 @@ function TripListPage() {
           count={2}
           listName="tripList"
           state={isEditMode}
+          isCreated={isCreated}
         />
         {!isEditMode && (
           <FixedContainer>
             <TripCreateButton func={handleOpen} />
           </FixedContainer>
         )}
-        <BasicModal setOpen={setOpen} open={open} />
+        <BasicModal setOpen={setOpen} open={open} setIsCreated={setIsCreated} />
       </Container>
     </>
   );

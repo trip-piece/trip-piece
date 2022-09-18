@@ -148,6 +148,7 @@ interface BasicModalProps {
   setOpen: (bool: boolean) => void;
   open: boolean;
   tripInformation?: ITrip;
+  setIsCreated?: (bool: boolean) => Dispatch<React.SetStateAction<boolean>>;
   refetch?: () => Promise<
     QueryObserverResult<
       InfiniteData<
@@ -179,6 +180,7 @@ function BasicModal({
   open,
   tripInformation,
   refetch,
+  setIsCreated,
 }: BasicModalProps) {
   const [month, setMonth] = useState(new Date().getMonth());
   const [startDate, setStartDate] = useState<Date | null>(new Date());
@@ -198,6 +200,10 @@ function BasicModal({
       day: "",
     },
   );
+
+  useEffect(() => {
+    if (setIsCreated) setIsCreated(false);
+  }, []);
 
   const {
     register,
@@ -285,6 +291,7 @@ function BasicModal({
         setValue("title", "");
         setStartDate(new Date());
         setEndDate(new Date());
+        setIsCreated(true);
       }
     } catch (err) {
       throw new Error(err);
@@ -292,6 +299,8 @@ function BasicModal({
   };
 
   const onDelete = async () => {
+    // eslint-disable-next-line no-alert
+    if (!window.confirm("여행을 삭제하시겠습니까?")) return;
     try {
       const response = await fetchData.delete({
         url: tripApis.aTrip(tripInformation?.tripId),
