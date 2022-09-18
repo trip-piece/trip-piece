@@ -43,7 +43,12 @@ export const handlers = [
     return res(ctx.status(200), ctx.json(data));
   }),
   rest.post("/trip", (req, res, ctx) => {
-    console.log(req, res, ctx);
+    return res(ctx.status(200));
+  }),
+  rest.patch(`/trip/123`, (req, res, ctx) => {
+    return res(ctx.status(200));
+  }),
+  rest.delete(`/trip/123`, (req, res, ctx) => {
     return res(ctx.status(200));
   }),
 ];

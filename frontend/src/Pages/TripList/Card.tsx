@@ -1,9 +1,10 @@
 import styled from "@emotion/styled";
 import { memo, MouseEvent, useState } from "react";
+import { InfiniteData, QueryObserverResult } from "react-query";
 import { Link } from "react-router-dom";
 import { REGIONLIST } from "../../utils/constants/constant";
 import { changeDateForamt } from "../../utils/functions/util";
-import BasicModal, { TripManagementModal } from "./Modal";
+import { TripManagementModal } from "./Modal";
 
 interface ITripCardProps {
   tripId: number;
@@ -13,6 +14,18 @@ interface ITripCardProps {
   endDate: Date;
   index: number;
   state: boolean;
+  refetch: () => Promise<
+    QueryObserverResult<
+      InfiniteData<
+        | {
+            result: any;
+            page: any;
+          }
+        | undefined
+      >,
+      unknown
+    >
+  >;
 }
 
 const Container = styled.div`
@@ -36,12 +49,14 @@ function Card({
   endDate,
   index,
   state,
+  refetch,
 }: ITripCardProps) {
   const [open, setOpen] = useState(false);
   const handleOpen = (event: MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
     setOpen(true);
   };
+
   return (
     <Container>
       <LinkContainer to={`trips/${tripId}`} state={state}>
@@ -62,6 +77,7 @@ function Card({
         setOpen={setOpen}
         open={open}
         tripInformation={{ tripId, regionId, title, startDate, endDate }}
+        refetch={refetch}
       />
     </Container>
   );

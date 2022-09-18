@@ -9,6 +9,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import "../../style/DatePicker.css";
 import { AiFillCaretDown } from "react-icons/ai";
 import { SubmitHandler, useForm } from "react-hook-form";
+import { InfiniteData, QueryObserverResult } from "react-query";
 import {
   createDate,
   getDayName,
@@ -147,6 +148,18 @@ interface BasicModalProps {
   setOpen: (bool: boolean) => void;
   open: boolean;
   tripInformation?: ITrip;
+  refetch?: () => Promise<
+    QueryObserverResult<
+      InfiniteData<
+        | {
+            result: any;
+            page: any;
+          }
+        | undefined
+      >,
+      unknown
+    >
+  >;
 }
 
 interface IDateInformation {
@@ -161,11 +174,15 @@ type FormValues = {
   title: string;
 };
 
-function BasicModal({ setOpen, open, tripInformation }: BasicModalProps) {
+function BasicModal({
+  setOpen,
+  open,
+  tripInformation,
+  refetch,
+}: BasicModalProps) {
   const [month, setMonth] = useState(new Date().getMonth());
   const [startDate, setStartDate] = useState<Date | null>(new Date());
   const [endDate, setEndDate] = useState<Date | null>(new Date());
-
   const [startDateInfomation, setStartDateInformation] =
     useState<IDateInformation>({
       year: null,
@@ -262,6 +279,7 @@ function BasicModal({ setOpen, open, tripInformation }: BasicModalProps) {
     }
     try {
       if (response.status === 200) {
+        if (refetch) refetch();
         handleClose();
         setValue("regionId", 1);
         setValue("title", "");
@@ -279,6 +297,7 @@ function BasicModal({ setOpen, open, tripInformation }: BasicModalProps) {
         url: tripApis.aTrip(tripInformation?.tripId),
       });
       if (response.status === 200) {
+        if (refetch) refetch();
         handleClose();
       }
     } catch (err) {

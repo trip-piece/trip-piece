@@ -66,6 +66,7 @@ function InfiniteList({
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
+    refetch,
   } = useFetchTripsInformation({ queryKey, getTargetComponentList });
 
   const onIntersect = ([entry]: any) => entry.isIntersecting && fetchNextPage();
@@ -77,6 +78,10 @@ function InfiniteList({
         : [],
     [data],
   );
+
+  const refetchData = () => {
+    refetch();
+  };
 
   useObserver({
     target: bottom,
@@ -99,6 +104,7 @@ function InfiniteList({
             key={target.tripId + idx}
             func={func}
             state={state}
+            refetch={refetchData}
           />
         ))}
       </GridContainer>
