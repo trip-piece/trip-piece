@@ -1,4 +1,5 @@
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
+/* eslint-disable react/destructuring-assignment */
+import { Dispatch, memo, SetStateAction, useEffect, useState } from "react";
 import Box from "@mui/material/Box";
 import Modal from "@mui/material/Modal";
 import styled from "@emotion/styled";
@@ -116,8 +117,8 @@ const MessageWrapper = styled.div`
   align-items: center;
 `;
 
-const SubmitButton = styled.button`
-  background-color: ${(props) => props.theme.colors.mainLight};
+const SubmitButton = styled.button<{ color: string }>`
+  background-color: ${(props) => props.theme.colors[props.color]};
   border-radius: 20px;
   padding: 0.5rem 1rem;
   color: ${(props) => props.theme.colors.white};
@@ -135,9 +136,17 @@ const Form = styled.form`
   align-items: center;
 `;
 
+const ButtonContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+`;
+
 interface BasicModalProps {
   setOpen: (bool: boolean) => void;
   open: boolean;
+  tripInformation?: ITrip;
 }
 
 interface IDateInformation {
@@ -152,7 +161,7 @@ type FormValues = {
   title: string;
 };
 
-function BasicModal({ setOpen, open }: BasicModalProps) {
+function BasicModal({ setOpen, open, tripInformation }: BasicModalProps) {
   const [month, setMonth] = useState(new Date().getMonth());
   const [startDate, setStartDate] = useState<Date | null>(new Date());
   const [endDate, setEndDate] = useState<Date | null>(new Date());
@@ -226,6 +235,15 @@ function BasicModal({ setOpen, open }: BasicModalProps) {
   };
 
   useEffect(() => {
+    if (tripInformation?.tripId) {
+      setValue("regionId", tripInformation.regionId);
+      setValue("title", tripInformation.title);
+      setStartDate(new Date(tripInformation.startDate));
+      setEndDate(new Date(tripInformation.endDate));
+    }
+  }, []);
+
+  useEffect(() => {
     handleModifiedStartDate(startDate, setStartDateInformation);
     handleModifiedStartDate(endDate, setEndDateInformation);
   }, [startDate, endDate]);
@@ -233,7 +251,15 @@ function BasicModal({ setOpen, open }: BasicModalProps) {
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
     if (!startDate || !endDate) return;
     const body = { startDate, endDate, ...data };
-    const response = await fetchData.post({ url: tripApis.trip, body });
+    let response;
+    if (tripInformation?.tripId) {
+      response = await fetchData.patch({
+        url: tripApis.aTrip(tripInformation.tripId),
+        body,
+      });
+    } else {
+      response = await fetchData.post({ url: tripApis.trip, body });
+    }
     try {
       if (response.status === 200) {
         handleClose();
@@ -244,6 +270,19 @@ function BasicModal({ setOpen, open }: BasicModalProps) {
       }
     } catch (err) {
       throw new Error(err);
+    }
+  };
+
+  const onDelete = async () => {
+    try {
+      const response = await fetchData.delete({
+        url: tripApis.aTrip(tripInformation?.tripId),
+      });
+      if (response.status === 200) {
+        handleClose();
+      }
+    } catch (err) {
+      console.log(err);
     }
   };
 
@@ -316,9 +355,20 @@ function BasicModal({ setOpen, open }: BasicModalProps) {
                 dayClassName={setDayColor}
                 popperPlacement="auto"
               />
-              <SubmitButton type="submit" disabled={!startDate || !endDate}>
-                여행 추가
-              </SubmitButton>
+              <ButtonContainer>
+                <SubmitButton
+                  color="mainLight"
+                  type="submit"
+                  disabled={!startDate || !endDate}
+                >
+                  {tripInformation?.tripId ? "여행 수정" : "여행 추가"}
+                </SubmitButton>
+                {tripInformation?.tripId && (
+                  <SubmitButton color="red" type="button" onClick={onDelete}>
+                    삭제
+                  </SubmitButton>
+                )}
+              </ButtonContainer>
             </Form>
           </Wrapper>
         </Modal>
@@ -328,3 +378,4 @@ function BasicModal({ setOpen, open }: BasicModalProps) {
 }
 
 export default BasicModal;
+export const TripManagementModal = memo(BasicModal);

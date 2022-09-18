@@ -2,7 +2,6 @@
 import styled from "@emotion/styled";
 import React, { useMemo, useRef, useState } from "react";
 import { QueryFunctionContext } from "react-query";
-// import { useInfiniteQuery } from "react-query";
 import fetchData from "../../../utils/apis/api";
 import { isQueryError } from "../../../utils/functions/util";
 import useFetchTripsInformation from "../../../utils/hooks/useFecthTripsInformation";
@@ -17,6 +16,7 @@ interface InifinteListProps {
   func?: object;
   count: number;
   listName: string;
+  state?: boolean;
 }
 
 type GridProps = {
@@ -40,6 +40,7 @@ function InfiniteList({
   func,
   count,
   listName,
+  state,
 }: InifinteListProps) {
   const [hasError, setHasError] = useState(false);
   const bottom = useRef(null);
@@ -55,6 +56,7 @@ function InfiniteList({
       return undefined;
     }
   };
+
   const {
     isLoading,
     data,
@@ -69,7 +71,10 @@ function InfiniteList({
   const onIntersect = ([entry]: any) => entry.isIntersecting && fetchNextPage();
 
   const targetList = useMemo(
-    () => (data ? data.pages.flatMap(({ result }) => result[listName]) : []),
+    () =>
+      data
+        ? data.pages.flatMap(({ result }) => result && result[listName])
+        : [],
     [data],
   );
 
@@ -88,7 +93,13 @@ function InfiniteList({
       {isError && isQueryError(error) && <p>{error?.message}</p>}
       <GridContainer gridColumnCount={count}>
         {targetList.map((target, idx) => (
-          <CardComponent {...target} key={idx} func={func} />
+          <CardComponent
+            {...target}
+            index={idx}
+            key={target.tripId + idx}
+            func={func}
+            state={state}
+          />
         ))}
       </GridContainer>
       <div ref={bottom} />

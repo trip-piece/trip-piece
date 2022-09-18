@@ -14,7 +14,7 @@ export const changeDateForamt = (date: Date): string => {
   const _date = new Date(date);
   const year = String(_date.getFullYear()).substring(2);
 
-  const month = PadZero(_date.getMonth());
+  const month = PadZero(_date.getMonth() + 1);
   const day = PadZero(_date.getDate());
 
   return `${year}.${month}.${day}`;

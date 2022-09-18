@@ -1,6 +1,6 @@
 const tripApis = {
   trip: "trip",
-  aTrip: (tripId: string) => `trip/${tripId}`,
+  aTrip: (tripId: number | undefined): string => `trip/${tripId}`,
 };
 
 export default tripApis;

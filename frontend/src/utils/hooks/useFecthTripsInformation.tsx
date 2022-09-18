@@ -17,7 +17,7 @@ const useFetchTripsInformation = ({
 }: UseFetchTripsInformationProps) =>
   useInfiniteQuery(queryKey, getTargetComponentList, {
     getNextPageParam: (lastPage: any) => {
-      if (lastPage.result.last) {
+      if (lastPage?.result.last) {
         const {
           result: { last },
         } = lastPage;

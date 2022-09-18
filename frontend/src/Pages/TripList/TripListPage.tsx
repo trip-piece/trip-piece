@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Helmet, HelmetProvider } from "react-helmet-async";
 import InfiniteList from "../../components/modules/infinite/InfiniteList";
 import tripApis from "../../utils/apis/tripsApis";
-import Card from "./Card";
+import { MemoCard } from "./Card";
 import Skeleton from "./Skeleton";
 import TripCreateButton from "./TripCreationButton";
 import BasicModal from "./Modal";
@@ -35,7 +35,10 @@ const FixedContainer = styled.div`
 
 function TripListPage() {
   const [open, setOpen] = useState(false);
+  const [isEditMode, setIsEditMode] = useState(false);
   const handleOpen = () => setOpen(true);
+  const handleEditMode = () => setIsEditMode(!isEditMode);
+
   return (
     <>
       <HelmetProvider>
@@ -45,18 +48,26 @@ function TripListPage() {
       </HelmetProvider>
       <Container>
         <Title>보유여행티켓</Title>
+
+        <button type="button" onClick={handleEditMode}>
+          {!isEditMode ? "여행 편집" : "편집 완료"}
+        </button>
+
         <InfiniteList
           url={tripApis.trip}
           queryKey={["tripList"]}
-          CardComponent={Card}
+          CardComponent={MemoCard}
           SkeletonCardComponent={Skeleton}
           zeroDataText="여행 리스트가 존재하지 않습니다."
           count={2}
           listName="tripList"
+          state={isEditMode}
         />
-        <FixedContainer>
-          <TripCreateButton func={handleOpen} />
-        </FixedContainer>
+        {!isEditMode && (
+          <FixedContainer>
+            <TripCreateButton func={handleOpen} />
+          </FixedContainer>
+        )}
         <BasicModal setOpen={setOpen} open={open} />
       </Container>
     </>
