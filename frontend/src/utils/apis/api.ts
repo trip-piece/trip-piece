@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios from "axios";
 
 interface IRequestParameter {
   url: string;
@@ -7,15 +7,23 @@ interface IRequestParameter {
 }
 
 const axiosInstance = axios.create({
+  baseURL: "",
   headers: {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
   },
 });
 
-export const fetchData = {
-  get: async ({ url, option }: IRequestParameter) => axiosInstance.get(url, option),
-  post: async ({ url, body, option }: IRequestParameter) => axiosInstance.post(url, body, option),
-  put: async ({ url, body, option }: IRequestParameter) => axiosInstance.put(url, body, option),
-  patch: async ({ url, body, option }: IRequestParameter) => axiosInstance.patch(url, body, option),
-  delete: async ({ url, option }: IRequestParameter) => axiosInstance.delete(url, option),
+const fetchData = {
+  get: async ({ url, option }: IRequestParameter) =>
+    axiosInstance.get(url, option),
+  post: async ({ url, body, option }: IRequestParameter) =>
+    axiosInstance.post(url, body, option),
+  put: async ({ url, body, option }: IRequestParameter) =>
+    axiosInstance.put(url, body, option),
+  patch: async ({ url, body, option }: IRequestParameter) =>
+    axiosInstance.patch(url, body, option),
+  delete: async ({ url, option }: IRequestParameter) =>
+    axiosInstance.delete(url, option),
 };
+
+export default fetchData;

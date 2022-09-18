@@ -1,7 +1,9 @@
+import { createTheme } from "@mui/material/styles";
+import { pixelToRem } from "../utils/functions/util";
+
 const colors = {
   /**  Main */
-  mainGradient:
-    "background: linear-gradient(180.69deg, #282B44 6.63%, #2C5166 99.4%)",
+  mainGradient: "linear-gradient(180.69deg, #282B44 6.63%, #2C5166 99.4%)",
   mainDark: "#282B44",
   mainLight: "#2C5166",
   white: "#F8F8F8",
@@ -21,8 +23,8 @@ const colors = {
   gray200: "#E4E4E4",
   gray100: "#f5f5f5",
   gray50: "#fafafa",
+  gray0: "#ffffff",
 };
-const pixelToRem = (size: number) => `${size / 16}rem`;
 
 const fontSizes = {
   h1: pixelToRem(36),
@@ -37,9 +39,16 @@ const fontSizes = {
   s4: pixelToRem(6),
 };
 
-const theme = {
+export const themes = {
   colors,
   fontSizes,
 };
+
+// eslint-disable-next-line import/no-mutable-exports
+const theme = createTheme({
+  status: {
+    danger: "red",
+  },
+});
 
 export default theme;

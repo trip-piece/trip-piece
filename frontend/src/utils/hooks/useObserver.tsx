@@ -1,22 +1,23 @@
-import { useEffect } from 'react';
+import { useEffect } from "react";
 
 interface IOberserProps {
   target: any;
   onIntersect: any;
-  hasMore: boolean;
-  isError: any;
-  root: any;
-  rootMargin: string;
-  threshold: number;
+  hasError: boolean;
+  error: any;
+  root?: any;
+  rootMargin?: string;
+  threshold?: number;
+  hasMore?: boolean;
 }
 
 function useObserver({
   target,
   onIntersect,
   hasMore,
-  isError,
+  error,
   root = null,
-  rootMargin = '-200px',
+  rootMargin = "0px",
   threshold = 0,
 }: IOberserProps) {
   useEffect(() => {
@@ -29,8 +30,11 @@ function useObserver({
       });
       observer.observe(target.current);
     }
-    if (!hasMore || isError) observer && observer.disconnect();
-    return () => observer && observer.disconnect();
+
+    if (!hasMore || error) {
+      observer.disconnect();
+    }
+    return () => observer.disconnect();
   }, [hasMore, target, rootMargin, threshold]);
 }
 
