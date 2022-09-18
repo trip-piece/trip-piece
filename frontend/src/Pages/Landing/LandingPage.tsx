@@ -1,12 +1,23 @@
 import React from "react";
+import styled from "@emotion/styled";
+import { HelmetProvider, Helmet } from "react-helmet-async";
+import LoginButton from "./LoginButton";
+import LadingButton from "./LandingButton";
+import Text from "./Text";
 
 function LandingPage() {
   return (
-    <div>
-      Landing
-      <button type="button">키키키</button>
-      <input type="text" />
-    </div>
+    <>
+      <HelmetProvider>
+        <Helmet>
+          <title>Welcome | 여행조각</title>
+        </Helmet>
+      </HelmetProvider>
+
+      <Text />
+      <LoginButton />
+      <LadingButton />
+    </>
   );
 }
 
