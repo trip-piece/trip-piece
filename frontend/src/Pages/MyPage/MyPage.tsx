@@ -9,7 +9,7 @@ function MyPage() {
     <>
       <HelmetProvider>
         <Helmet>
-          <title>마이페이지 | 여행조각</title>
+          <title>보유스티커 | 여행조각</title>
         </Helmet>
       </HelmetProvider>
 
