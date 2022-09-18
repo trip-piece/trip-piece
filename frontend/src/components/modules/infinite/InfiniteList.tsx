@@ -1,6 +1,6 @@
 /* eslint-disable react/require-default-props */
 import styled from "@emotion/styled";
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { memo, useEffect, useMemo, useRef, useState } from "react";
 import { QueryFunctionContext } from "react-query";
 import fetchData from "../../../utils/apis/api";
 import { isQueryError } from "../../../utils/functions/util";
@@ -128,3 +128,5 @@ function InfiniteList({
 }
 
 export default InfiniteList;
+
+export const MemoInfiniteList = memo(InfiniteList);

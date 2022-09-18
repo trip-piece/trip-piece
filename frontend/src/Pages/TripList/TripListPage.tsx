@@ -1,7 +1,9 @@
 import styled from "@emotion/styled";
 import { useState } from "react";
 import { Helmet, HelmetProvider } from "react-helmet-async";
-import InfiniteList from "../../components/modules/infinite/InfiniteList";
+import InfiniteList, {
+  MemoInfiniteList,
+} from "../../components/modules/infinite/InfiniteList";
 import tripApis from "../../utils/apis/tripsApis";
 import { MemoCard } from "./Card";
 import Skeleton from "./Skeleton";
@@ -55,7 +57,7 @@ function TripListPage() {
           {!isEditMode ? "여행 편집" : "편집 완료"}
         </button>
 
-        <InfiniteList
+        <MemoInfiniteList
           url={tripApis.trip}
           queryKey={["tripList"]}
           CardComponent={MemoCard}

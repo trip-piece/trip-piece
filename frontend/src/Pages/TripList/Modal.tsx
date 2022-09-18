@@ -291,7 +291,7 @@ function BasicModal({
         setValue("title", "");
         setStartDate(new Date());
         setEndDate(new Date());
-        setIsCreated(true);
+        if (setIsCreated) setIsCreated(true);
       }
     } catch (err) {
       throw new Error(err);
