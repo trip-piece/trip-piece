@@ -9,7 +9,7 @@ contract TrippieceNFT is ERC721 {
     Counters.Counter private _tokenIds;
     mapping(uint256 => string) tokenURIs;
 
-    constructor() ERC721("SsafyNFT", "SSF") {}
+    constructor() ERC721("MySticker", "MSK") {}
 
     function tokenURI(uint256 tokenId) public view override returns (string memory) {
         return tokenURIs[tokenId];
