@@ -1,6 +1,6 @@
 /* eslint-disable react/require-default-props */
 import styled from "@emotion/styled";
-import React, { memo, useEffect, useMemo, useRef, useState } from "react";
+import { ElementType, memo, useEffect, useMemo, useRef, useState } from "react";
 import { QueryFunctionContext } from "react-query";
 import fetchData from "../../../utils/apis/api";
 import { isQueryError } from "../../../utils/functions/util";
@@ -10,13 +10,13 @@ import useObserver from "../../../utils/hooks/useObserver";
 interface InifinteListProps {
   url: string;
   queryKey: string[];
-  CardComponent: React.ElementType;
-  SkeletonCardComponent: React.ElementType;
+  CardComponent: ElementType;
+  SkeletonCardComponent: ElementType;
   zeroDataText: string;
   func?: object;
   count: number;
   listName: string;
-  state?: boolean;
+  isEditMode?: boolean;
   isCreated?: boolean;
 }
 
@@ -41,7 +41,7 @@ function InfiniteList({
   func,
   count,
   listName,
-  state,
+  isEditMode,
   isCreated,
 }: InifinteListProps) {
   const [hasError, setHasError] = useState(false);
@@ -104,13 +104,13 @@ function InfiniteList({
       {isLoading && <div>Loading ...</div>}
       {isError && isQueryError(error) && <p>{error?.message}</p>}
       <GridContainer gridColumnCount={count}>
-        {targetList.map((target, idx) => (
+        {targetList?.map((target, idx) => (
           <CardComponent
             {...target}
             index={idx}
             key={target.tripId + idx}
             func={func}
-            state={state}
+            isEditMode={isEditMode}
             refetch={refetchData}
           />
         ))}

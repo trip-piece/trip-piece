@@ -1,7 +1,7 @@
 import React from "react";
 
 function TripManagementPage() {
-  return <div>TripManagementPage</div>;
+  return <div />;
 }
 
 export default TripManagementPage;

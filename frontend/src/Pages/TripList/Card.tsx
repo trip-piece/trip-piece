@@ -13,7 +13,7 @@ interface ITripCardProps {
   startDate: Date;
   endDate: Date;
   index: number;
-  state: boolean;
+  isEditMode: boolean;
   refetch: () => Promise<
     QueryObserverResult<
       InfiniteData<
@@ -35,8 +35,8 @@ const Container = styled.div`
   position: relative;
 `;
 
-const LinkContainer = styled(Link)<{ state: boolean }>`
-  pointer-events: ${(props) => props.state && "none"};
+const LinkContainer = styled(Link)<{ editmode: number }>`
+  pointer-events: ${(props) => props.editmode && "none"};
   height: 100%;
   display: block;
 `;
@@ -48,7 +48,7 @@ function Card({
   startDate,
   endDate,
   index,
-  state,
+  isEditMode,
   refetch,
 }: ITripCardProps) {
   const [open, setOpen] = useState(false);
@@ -59,7 +59,11 @@ function Card({
 
   return (
     <Container>
-      <LinkContainer to={`trips/${tripId}`} state={state}>
+      <LinkContainer
+        to={`${tripId}/diarys`}
+        editmode={isEditMode ? 1 : 0}
+        state={{ tripId, regionId, title, startDate, endDate }}
+      >
         <h3>
           No.{tripId} {title}
         </h3>
@@ -68,12 +72,12 @@ function Card({
           {changeDateForamt(startDate)} - {changeDateForamt(endDate)}
         </div>
       </LinkContainer>
-      {state && (
+      {isEditMode && (
         <button type="button" onClick={handleOpen}>
           편집
         </button>
       )}
-      {state && (
+      {isEditMode && open && (
         <TripManagementModal
           setOpen={setOpen}
           open={open}

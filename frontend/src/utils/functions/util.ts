@@ -10,7 +10,6 @@ export const PadZero = (num: number | undefined) => {
 };
 
 export const changeDateForamt = (date: Date): string => {
-  // eslint-disable-next-line @typescript-eslint/naming-convention, no-underscore-dangle
   const _date = new Date(date);
   const year = String(_date.getFullYear()).substring(2);
 
@@ -33,3 +32,14 @@ export const createDate = (date: Date) => {
     new Date(date.getFullYear(), date.getMonth(), date.getDate(), 0, 0, 0),
   );
 };
+
+export function getDatesStartToLast(startDate: string, lastDate: string) {
+  const result = [];
+  const curDate = new Date(startDate);
+  const _lastDate = new Date(lastDate);
+  while (curDate <= _lastDate) {
+    result.push(curDate.getDate());
+    curDate.setDate(curDate.getDate() + 1);
+  }
+  return result;
+}

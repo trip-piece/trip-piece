@@ -7,7 +7,7 @@ interface IRequestParameter {
 }
 
 const axiosInstance = axios.create({
-  baseURL: "",
+  // baseURL: "https://j7a607.q.ssafy.io",
   headers: {
     "Content-Type": "application/json",
   },

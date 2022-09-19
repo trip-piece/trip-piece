@@ -35,7 +35,7 @@ function useObserver({
       observer.disconnect();
     }
     return () => observer.disconnect();
-  }, [hasMore, target, rootMargin, threshold]);
+  }, [hasMore, error, target, rootMargin, threshold]);
 }
 
 export default useObserver;
