@@ -1,12 +1,13 @@
 /**
- * PJT Ⅰ - 과제 3 테스트 코드 작성
+ * 테스트 코드
  * @dev NFT mint, transfer, and compare URI
  */
 
-const NftCreator = artifacts.require("SsafyNFT");
+const NftCreator = artifacts.require("TrippieceNFT");
 
 contract("NftCreator", (accounts) => {
   it("NFT mint, transfer, and compare URI", async () => {
+    const trippiceNFT = new trippiceNFT("스티커이름1", "스티커상징");
     const tokenURI =
       "https://ipfs.io/ipfs/QmRSX4Uq6fczBc3Di78Ry51bLQRhr5NDsPPQPLAbhuYUnf?filename=QmRSX4Uq6fczBc3Di78Ry51bLQRhr5NDsPPQPLAbhuYUnf";
     const instance = await NftCreator.deployed();
