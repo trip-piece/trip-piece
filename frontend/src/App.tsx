@@ -1,6 +1,7 @@
 import styled from "@emotion/styled";
 import React, { Suspense, useState } from "react";
 import { QueryClient, QueryClientProvider } from "react-query";
+import { ReactQueryDevtools } from "react-query/devtools";
 import Router from "./Router";
 
 const AppContainer = styled.div`
@@ -17,6 +18,7 @@ function App() {
         <Suspense fallback={<div>Loading...</div>}>
           <Router />
         </Suspense>
+        <ReactQueryDevtools initialIsOpen={false} />
       </QueryClientProvider>
     </AppContainer>
   );

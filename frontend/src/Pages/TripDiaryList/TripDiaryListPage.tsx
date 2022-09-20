@@ -102,7 +102,7 @@ function TripDiaryListPage() {
           <NestedRoute>
             <Routes>
               <Route path="/" element={<TripDiary />} />
-              <Route path="/:diaryDate" element={<TripDiary />} />
+              <Route path=":diaryDate" element={<TripDiary />} />
             </Routes>
           </NestedRoute>
         </Suspense>

@@ -4,10 +4,19 @@ import { IButtonProps } from "../IComponents";
 
 const Button = styled.button<{ color: string | undefined }>`
   background-color: ${(props) =>
-    props.color && (props.color || props.theme.colors[props.color])};
+    props.color && (props.theme.colors[props.color] || props.color)};
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  color: ${(props) => props.theme.colors.white};
 `;
 
-function RoundButton({ text, type, color, func, disabled }: IButtonProps) {
+function ColoredRoundButton({
+  text,
+  type,
+  color,
+  func,
+  disabled,
+}: IButtonProps) {
   return (
     <Button type={type} color={color} onClick={func} disabled={disabled}>
       {text}
@@ -15,4 +24,4 @@ function RoundButton({ text, type, color, func, disabled }: IButtonProps) {
   );
 }
 
-export default RoundButton;
+export default ColoredRoundButton;

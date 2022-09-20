@@ -9,6 +9,9 @@ const TripDiaryList = lazy(
   () => import("./Pages/TripDiaryList/TripDiaryListPage"),
 );
 const TripList = lazy(() => import("./Pages/TripList/TripListPage"));
+const DiaryManagement = lazy(
+  () => import("./Pages/DiaryManagement/DiaryManagementPage"),
+);
 
 const Header = styled.header`
   height: 10vh;
@@ -24,6 +27,7 @@ function Router() {
         <Route path="main" element={<Main />} />
         <Route path="trips" element={<TripList />} />
         <Route path="trips/:tripId/diarys" element={<TripDiaryList />}>
+          <Route path="write" element={<DiaryManagement />} />
           <Route path=":diaryDate" element={<TripDiaryPage />} />
         </Route>
       </Routes>
