@@ -19,7 +19,7 @@ public class Sticker extends BaseEntity {
     @Column(nullable = false)
     private String tokenName;
 
-    @Column(nullable = false)
+    @Column(name = "token_url", nullable = false)
     private String tokenURL;
 
     @ManyToOne
