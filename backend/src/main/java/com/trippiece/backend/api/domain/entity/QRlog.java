@@ -14,6 +14,9 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name="qrlog")
 public class QRlog extends BaseEntity {
+    @Column(nullable = false)
+    private String tokenName;
+
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     @OnDelete(action= OnDeleteAction.CASCADE)
@@ -37,5 +40,6 @@ public class QRlog extends BaseEntity {
         this.user=user;
         this.place=place;
         this.sticker=sticker;
+        this.tokenName=sticker.getTokenName();
     }
 }

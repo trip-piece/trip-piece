@@ -16,6 +16,12 @@ public class Sticker extends BaseEntity {
     @Column(nullable = false)
     private int tokenId;
 
+    @Column(nullable = false)
+    private String tokenName;
+
+    @Column(name = "token_url", nullable = false)
+    private String tokenURL;
+
     @ManyToOne
     @JoinColumn(name="place_id", nullable = false)
     @OnDelete(action= OnDeleteAction.CASCADE)

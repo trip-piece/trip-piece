@@ -7,9 +7,10 @@ import lombok.Getter;
 public class StickerDecorationDto implements Comparable<StickerDecorationDto> {
 
     private long id;
-
     private long stickerId;
     private long tokenId;
+    private String tokenName;
+    private String tokenURL;
     private float x;
     private float y;
 
@@ -17,6 +18,8 @@ public class StickerDecorationDto implements Comparable<StickerDecorationDto> {
         this.id = decoration.getId();
         this.stickerId = decoration.getSticker().getId();
         this.tokenId = decoration.getSticker().getTokenId();
+        this.tokenName = decoration.getSticker().getTokenName();
+        this.tokenURL = decoration.getSticker().getTokenURL();
         this.x = decoration.getX();
         this.y = decoration.getY();
     }
