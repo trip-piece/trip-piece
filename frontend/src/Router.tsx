@@ -1,8 +1,14 @@
 import styled from "@emotion/styled";
-import React from "react";
+import React, { lazy } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { Landing, Main, TripDiaryList, TripList } from "./Pages";
 import TripDiaryPage from "./Pages/TripDiary/TripDiaryPage";
+
+const Landing = lazy(() => import("./Pages/Landing/LandingPage"));
+const Main = lazy(() => import("./Pages/Main/MainPage"));
+const TripDiaryList = lazy(
+  () => import("./Pages/TripDiaryList/TripDiaryListPage"),
+);
+const TripList = lazy(() => import("./Pages/TripList/TripListPage"));
 
 const Header = styled.header`
   height: 10vh;

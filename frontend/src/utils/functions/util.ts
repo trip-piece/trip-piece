@@ -44,11 +44,3 @@ export const getDatesStartToLast = (startDate: string, lastDate: string) => {
   }
   return result;
 };
-
-export const isSameDay = (target1: Date, target2: Date) => {
-  return (
-    target1.getFullYear() === target2.getFullYear() &&
-    target1.getMonth() === target2.getMonth() &&
-    target1.getDate() === target2.getDate()
-  );
-};

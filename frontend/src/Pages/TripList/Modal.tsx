@@ -27,6 +27,7 @@ import { REGIONLIST, WEEK } from "../../utils/constants/constant";
 import DateInfomation from "./DateInfomation";
 import fetchData from "../../utils/apis/api";
 import tripApis from "../../utils/apis/tripsApis";
+import { ITrip } from "../../components/IComponents";
 
 const Wrapper = styled(Box)`
   position: absolute;

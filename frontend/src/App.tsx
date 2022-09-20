@@ -1,5 +1,5 @@
 import styled from "@emotion/styled";
-import React, { useState } from "react";
+import React, { Suspense, useState } from "react";
 import { QueryClient, QueryClientProvider } from "react-query";
 import Router from "./Router";
 
@@ -14,7 +14,9 @@ function App() {
   return (
     <AppContainer>
       <QueryClientProvider client={queryClient}>
-        <Router />
+        <Suspense fallback={<div>Loading...</div>}>
+          <Router />
+        </Suspense>
       </QueryClientProvider>
     </AppContainer>
   );

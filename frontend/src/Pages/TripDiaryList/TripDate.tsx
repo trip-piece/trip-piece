@@ -2,6 +2,7 @@ import styled from "@emotion/styled";
 import { NavLink } from "react-router-dom";
 import { TiStarFullOutline } from "react-icons/ti";
 import { isSameDay } from "date-fns";
+import { pixelToRem } from "../../utils/functions/util";
 
 interface TripDateProps {
   date: Date;
@@ -16,7 +17,7 @@ const DateContainer = styled(NavLink)<{ color: string }>`
   position: relative;
   > svg {
     display: block;
-    font-size: calc(16px + 10vw);
+    font-size: ${pixelToRem(75)};
     color: ${(props) => props.color};
   }
   > p {
