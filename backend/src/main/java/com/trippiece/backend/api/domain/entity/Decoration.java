@@ -1,5 +1,8 @@
 package com.trippiece.backend.api.domain.entity;
 
+import com.trippiece.backend.api.domain.dto.request.DecoRequestDto;
+import com.trippiece.backend.api.domain.dto.request.DiaryRequestDto;
+import com.trippiece.backend.api.domain.dto.request.StickerRequestDto;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -33,6 +36,10 @@ public class Decoration extends BaseEntity {
     public Decoration(Sticker sticker,Diary diary,float x,float y){
         this.sticker = sticker;
         this.diary = diary;
+        this.x = x;
+        this.y = y;
+    }
+    public void updateXY(float x,float y){
         this.x = x;
         this.y = y;
     }

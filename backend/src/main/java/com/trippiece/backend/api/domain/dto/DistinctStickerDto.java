@@ -6,7 +6,7 @@ import lombok.Getter;
 @Getter
 public class DistinctStickerDto implements Comparable<DistinctStickerDto> {
     private long id;
-    private int tokenId;
+    private long tokenId;
     private String tokenName;
     private String tokenURL;
     private int amount;
