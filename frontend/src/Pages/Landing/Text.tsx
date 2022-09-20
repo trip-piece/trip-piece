@@ -3,32 +3,32 @@ import styled from "@emotion/styled";
 import { pixelToRem } from "../../utils/functions/util";
 
 const Container = styled.div`
-  padding-left: ${pixelToRem(56)};
+  display: flex;
+  justify-content: center;
 `;
 
-const Textbox = styled.div`
-  font-size: ${pixelToRem(32)};
-  width: ${pixelToRem(257)};
+const Textbox = styled.text`
+  font-size: ${(props) => props.theme.fontSizes.h2};
+  font-weight: bold;
+  width: ${pixelToRem(230)};
+  line-height: ${pixelToRem(50)};
   color: ${(props) => props.theme.colors.white};
-  text-align: center;
+
   padding: ${pixelToRem(5)};
   font-family: "Leferi Base Type";
-  z-index: 1;
-  padding: 0 | ${(props) => (props.padding ? 0 : pixelToRem(props.padding))};
+  text-align: center;
 `;
 
-const TopBox = styled.div`
-  height: ${pixelToRem(297)};
+const Top = styled.div`
+  height: 25vh;
 `;
 
 function Text() {
   return (
     <>
-      <TopBox />
+      <Top />
       <Container>
-        <Textbox>여행조각으로</Textbox>
-        <Textbox>당신의 기록을</Textbox>
-        <Textbox padding={200}>남겨보세요</Textbox>
+        <Textbox>여행조각으로 당신의 기록을 남겨보세요</Textbox>
       </Container>
     </>
   );

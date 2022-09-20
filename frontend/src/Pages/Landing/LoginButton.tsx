@@ -1,54 +1,32 @@
 import React from "react";
 import styled from "@emotion/styled";
-import { useWeb3React } from "@web3-react/core";
-import { InjectedConnector } from "@web3-react/injected-connector";
-import { pixelToRem } from "../../utils/functions/util";
 
-// const injected = new InjectedConnector({});
-// const { activate, active, deactivate } = useWeb3React();
+import YellowRoundButton from "../../components/atoms/YellowRoundButton";
 
-const StyledButton = styled.button`
-  /* 공통 스타일 */
-
-  outline: none;
-  border: none;
-  border-radius: 20px;
-  background: ${(props) => props.theme.colors.yellow};
-  font-weight: bold;
-  cursor: pointer;
-  text-align: center;
-
-  /* 크기 */
-  width: ${pixelToRem(117)};
-  height: ${pixelToRem(38)};
-  font-size: ${(props) => props.theme.fontSizes.h5};
-
-  /* 색상 */
-  font-color: ${(props) => props.theme.colors.MainDark};
-  z-index: 1;
+const Container = styled.div`
+  display: flex;
+  justify-content: center;
 `;
 
-// const handleActivate = () => {
-//   if (active) {
-//     deactivate();
-//     return;
-//   }
+const ButtonText = styled.text`
+  font-size: ${(props) => props.theme.fontSizes.h5};
+  font-weight: bold;
+  /* 색상 */
+  font-color: ${(props) => props.theme.colors.MainDark};
+`;
 
-//   activate(injected, async (error: Error) => {
-//     /*에러처리코드 */
-//     console.error("에러");
-//   });
-// };
-
-// const onClickDeactivate = () => {
-//   deactivate();
-// };
-
-function Button() {
-  return <StyledButton>로그인</StyledButton>;
+interface LoginButtonProps {
+  func: () => void;
 }
-// function Button() {
-//   return <StyledButton>로그인</StyledButton>;
-// }
 
-export default Button;
+function LoginButton({ func }: LoginButtonProps) {
+  return (
+    <Container>
+      <YellowRoundButton type="button" func={func}>
+        <ButtonText>로그인</ButtonText>
+      </YellowRoundButton>
+    </Container>
+  );
+}
+
+export default LoginButton;

@@ -6,6 +6,8 @@ import {
   ThemeProvider as MuiThemeProvider,
 } from "@mui/material/styles";
 import { ThemeProvider } from "@emotion/react";
+import { Web3ReactProvider } from "@web3-react/core";
+import { ethers } from "ethers";
 import App from "./App";
 import GlobalStyle from "./style/GlobalStyle";
 import theme, { themes } from "./style/theme";
@@ -15,17 +17,26 @@ if (process.env.NODE_ENV === "development") {
   worker.start();
 }
 
+const getLibrary = (provider: any): ethers.providers.Web3Provider => {
+  const library = new ethers.providers.Web3Provider(provider);
+  library.pollingInterval = 12000;
+  return library;
+};
+
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   // <React.StrictMode>
-  <RecoilRoot>
-    <StyledEngineProvider injectFirst>
-      <MuiThemeProvider theme={theme}>
-        <ThemeProvider theme={themes}>
-          <GlobalStyle />
-          <App />
-        </ThemeProvider>
-      </MuiThemeProvider>
-    </StyledEngineProvider>
-  </RecoilRoot>,
+  <Web3ReactProvider getLibrary={getLibrary}>
+    <RecoilRoot>
+      <StyledEngineProvider injectFirst>
+        <MuiThemeProvider theme={theme}>
+          <ThemeProvider theme={themes}>
+            <GlobalStyle />
+
+            <App />
+          </ThemeProvider>
+        </MuiThemeProvider>
+      </StyledEngineProvider>
+    </RecoilRoot>
+  </Web3ReactProvider>,
   // </React.StrictMode>,
 );
