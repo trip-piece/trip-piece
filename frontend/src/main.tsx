@@ -6,6 +6,7 @@ import {
   ThemeProvider as MuiThemeProvider,
 } from "@mui/material/styles";
 import { ThemeProvider } from "@emotion/react";
+import { HelmetProvider } from "react-helmet-async";
 import App from "./App";
 import GlobalStyle from "./style/GlobalStyle";
 import theme, { themes } from "./style/theme";
@@ -18,14 +19,16 @@ if (process.env.NODE_ENV === "development") {
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   // <React.StrictMode>
   <RecoilRoot>
-    <StyledEngineProvider injectFirst>
-      <MuiThemeProvider theme={theme}>
-        <ThemeProvider theme={themes}>
-          <GlobalStyle />
-          <App />
-        </ThemeProvider>
-      </MuiThemeProvider>
-    </StyledEngineProvider>
+    <HelmetProvider>
+      <StyledEngineProvider injectFirst>
+        <MuiThemeProvider theme={theme}>
+          <ThemeProvider theme={themes}>
+            <GlobalStyle />
+            <App />
+          </ThemeProvider>
+        </MuiThemeProvider>
+      </StyledEngineProvider>
+    </HelmetProvider>
   </RecoilRoot>,
   // </React.StrictMode>,
 );

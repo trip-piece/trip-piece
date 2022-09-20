@@ -1,5 +1,12 @@
 /* eslint-disable react/destructuring-assignment */
-import { Dispatch, memo, SetStateAction, useEffect, useState } from "react";
+import {
+  Dispatch,
+  memo,
+  SetStateAction,
+  useCallback,
+  useEffect,
+  useState,
+} from "react";
 import Box from "@mui/material/Box";
 import Modal from "@mui/material/Modal";
 import styled from "@emotion/styled";
@@ -148,7 +155,7 @@ interface BasicModalProps {
   setOpen: (bool: boolean) => void;
   open: boolean;
   tripInformation?: ITrip;
-  setIsCreated?: (bool: boolean) => Dispatch<React.SetStateAction<boolean>>;
+  setIsCreated?: (bool: boolean) => void;
   refetch?: () => Promise<
     QueryObserverResult<
       InfiniteData<
@@ -228,14 +235,14 @@ function BasicModal({
     setMonth(date.getMonth());
   };
 
-  const setDayColor = (date: Date) => {
+  const setDayColor = useCallback((date: Date) => {
     if (date.getMonth() === month) {
       if (getDayName(createDate(date)) === "토") return "custom-day saturday";
       if (getDayName(createDate(date)) === "일") return "custom-day sunday";
       return "custom-day";
     }
     return "custom-day gray-day";
-  };
+  }, []);
 
   const handleModifiedStartDate = (
     date: Date | null,

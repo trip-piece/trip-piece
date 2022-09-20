@@ -33,13 +33,22 @@ export const createDate = (date: Date) => {
   );
 };
 
-export function getDatesStartToLast(startDate: string, lastDate: string) {
+export const getDatesStartToLast = (startDate: string, lastDate: string) => {
   const result = [];
   const curDate = new Date(startDate);
   const _lastDate = new Date(lastDate);
   while (curDate <= _lastDate) {
-    result.push(curDate.getDate());
+    const copiedDate = new Date(curDate.getTime());
+    result.push(copiedDate);
     curDate.setDate(curDate.getDate() + 1);
   }
   return result;
-}
+};
+
+export const isSameDay = (target1: Date, target2: Date) => {
+  return (
+    target1.getFullYear() === target2.getFullYear() &&
+    target1.getMonth() === target2.getMonth() &&
+    target1.getDate() === target2.getDate()
+  );
+};

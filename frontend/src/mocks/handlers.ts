@@ -59,7 +59,7 @@ export const handlers = [
         regionId: 1,
         title: "간장공장장1",
         startDate: "2022-09-15",
-        endDate: "2022-09-28",
+        endDate: "2022-10-20",
       }),
     );
   }),
