@@ -2,11 +2,9 @@ package com.trippiece.backend.api.service;
 
 import com.trippiece.backend.api.domain.dto.response.MarketStickerResponseDto;
 import com.trippiece.backend.api.domain.entity.Market;
-import com.trippiece.backend.api.domain.entity.Region;
 import com.trippiece.backend.api.domain.entity.Sticker;
 import com.trippiece.backend.api.domain.entity.User;
 import com.trippiece.backend.api.domain.repository.MarketRepository;
-import com.trippiece.backend.api.domain.repository.RegionRepository;
 import com.trippiece.backend.api.domain.repository.StickerRepository;
 import com.trippiece.backend.exception.CustomException;
 import com.trippiece.backend.exception.ErrorCode;
@@ -28,26 +26,41 @@ public class MarketService {
     private final StickerRepository stickerRepository;
 
 
-    public Page<MarketStickerResponseDto> findMarketSticker(final long regionId, final int sort, @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable
+    public Page<MarketStickerResponseDto> findMarketSticker(final long regionId, final int sort, String keyword, @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable
     ) {
         List<Market> marketList = new ArrayList<>();
         List<MarketStickerResponseDto> responseList = new ArrayList<>();
 
-        if (regionId == 0 && sort == 0) marketList = marketRepository.findAll();
-        else if (regionId != 0) {
-            if (sort == 1) {
-                marketList = marketRepository.findAll(Sort.by(Sort.Direction.ASC,"price"));
-            } else if (sort == 2) {
-                marketList = marketRepository.findAll(Sort.by(Sort.Direction.DESC,"price"));
+
+        if (regionId == 0 && sort == 0) {
+            marketList = marketRepository.findAll();
+            for (Market market : marketList) {
+                responseList.add(new MarketStickerResponseDto(market));
             }
-            for(Market market : marketList){
+        } else if (regionId != 0) {
+            if (sort == 1) {
+                marketList = marketRepository.findAll(Sort.by(Sort.Direction.ASC, "price"));
+            } else if (sort == 2) {
+                marketList = marketRepository.findAll(Sort.by(Sort.Direction.DESC, "price"));
+            }
+            for (Market market : marketList) {
                 long maRegionId = market.getSticker().getPlace().getRegion().getId();
-                if(maRegionId==regionId){
+                if (maRegionId == regionId) {
                     responseList.add(new MarketStickerResponseDto(market));
                 }
             }
 
         }
+        if(keyword!=null){
+
+            for(MarketStickerResponseDto s :responseList){
+                //contains 때문에 equalsIgnoreCase 못했삼. 나중에 주석 지울 거임
+                if(!s.getTokenName().toLowerCase().contains(keyword.toLowerCase())){
+                    responseList.remove(s);
+                }
+            }
+        }
+
 
         int start = (int) pageable.getOffset();
         int end = Math.min((start + pageable.getPageSize()), responseList.size());
