@@ -6,7 +6,7 @@ import lombok.Getter;
 @Getter
 public class StickerDto implements Comparable<StickerDto> {
     private long id;
-    private int tokenId;
+    private long tokenId;
     private String tokenName;
     private String tokenURL;
 
