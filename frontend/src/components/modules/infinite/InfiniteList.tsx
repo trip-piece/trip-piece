@@ -2,7 +2,7 @@
 import styled from "@emotion/styled";
 import { ElementType, memo, useEffect, useMemo, useRef, useState } from "react";
 import { QueryFunctionContext } from "react-query";
-import fetchData from "../../../utils/apis/api";
+import axiosInstance from "../../../utils/apis/api";
 import { isQueryError } from "../../../utils/functions/util";
 import useFetchTripsInformation from "../../../utils/hooks/useFecthTripsInformation";
 import useObserver from "../../../utils/hooks/useObserver";
@@ -51,7 +51,7 @@ function InfiniteList({
     pageParam = 0,
   }: QueryFunctionContext) => {
     try {
-      const res = await fetchData.get({ url: `${url}?page=${pageParam}` });
+      const res = await axiosInstance.get(`${url}?page=${pageParam}`);
       return { result: res?.data, page: pageParam };
     } catch (_) {
       setHasError(true);

@@ -25,9 +25,9 @@ import {
 } from "../../utils/functions/util";
 import { REGIONLIST, WEEK } from "../../utils/constants/constant";
 import DateInfomation from "./DateInfomation";
-import fetchData from "../../utils/apis/api";
 import tripApis from "../../utils/apis/tripsApis";
-import { ITrip } from "../../utils/interfaces/components.interface";
+import { ITrip } from "../../utils/interfaces/trips.interface";
+import axiosInstance from "../../utils/apis/api";
 
 const Wrapper = styled(Box)`
   position: absolute;
@@ -284,12 +284,12 @@ function BasicModal({
     const body = { startDate, endDate, ...data };
     let response;
     if (tripInformation?.tripId) {
-      response = await fetchData.patch({
-        url: tripApis.aTrip(tripInformation.tripId),
+      response = await axiosInstance.patch(
+        tripApis.aTrip(tripInformation.tripId),
         body,
-      });
+      );
     } else {
-      response = await fetchData.post({ url: tripApis.trip, body });
+      response = await axiosInstance.post(tripApis.trip, body);
     }
     try {
       if (response.status === 200) {
@@ -310,9 +310,9 @@ function BasicModal({
     // eslint-disable-next-line no-alert
     if (!window.confirm("여행을 삭제하시겠습니까?")) return;
     try {
-      const response = await fetchData.delete({
-        url: tripApis.aTrip(tripInformation?.tripId),
-      });
+      const response = await axiosInstance.delete(
+        tripApis.aTrip(tripInformation?.tripId),
+      );
       if (response.status === 200) {
         if (refetch) refetch();
         handleClose();

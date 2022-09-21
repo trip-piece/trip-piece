@@ -1,5 +1,3 @@
-import { SelectedDate } from "../interfaces/diarys.interface";
-
 /* eslint-disable import/prefer-default-export */
 export const isQueryError = (error: unknown): error is Error => {
   return error instanceof Error;

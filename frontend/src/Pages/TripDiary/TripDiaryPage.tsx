@@ -3,14 +3,10 @@ import React, { useEffect, useState } from "react";
 import { useQuery } from "react-query";
 import { useNavigate, useParams } from "react-router-dom";
 import { HiPencilAlt } from "react-icons/hi";
-import fetchData from "../../utils/apis/api";
 import { diaryApis } from "../../utils/apis/diaryApis";
-import {
-  changeDateFormatToHyphen,
-  pixelToRem,
-} from "../../utils/functions/util";
+import { changeDateFormatToHyphen } from "../../utils/functions/util";
 import ColoredRoundButton from "../../components/atoms/ColoredRoundButton";
-import { SelectedDate } from "../../utils/interfaces/diarys.interface";
+import axiosInstance from "../../utils/apis/api";
 
 const Container = styled.article`
   height: 1px;
@@ -49,12 +45,16 @@ function TripDiaryPage() {
   }, []);
 
   const getDiary = (date: string) =>
-    fetchData.get({
-      url: diaryApis.diary(Number(tripId), date),
-    });
+    axiosInstance.get(diaryApis.diary(Number(tripId), date));
 
-  const { isLoading, isFetched, data } = useQuery([`${diaryDate}-diary`], () =>
-    getDiary(selectedDiaryDate),
+  const { isLoading, isFetched, data } = useQuery(
+    [`${diaryDate}-diary`],
+    () => getDiary(selectedDiaryDate),
+    {
+      refetchOnWindowFocus: false,
+      refetchOnReconnect: false,
+      refetchOnMount: true,
+    },
   );
 
   const moveToWriteDiary = () => {

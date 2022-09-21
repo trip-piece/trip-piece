@@ -7,12 +7,15 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination, Scrollbar, A11y } from "swiper";
 import styled from "@emotion/styled";
 import { isSameDay } from "date-fns";
-import fetchData from "../../utils/apis/api";
+import { AxiosError, AxiosResponse } from "axios";
 import tripApis from "../../utils/apis/tripsApis";
 import { getDatesStartToLast, pixelToRem } from "../../utils/functions/util";
 import TripDate from "./TripDate";
 
 import "swiper/css";
+import { ITrip } from "../../utils/interfaces/trips.interface";
+import axiosInstance from "../../utils/apis/api";
+import { REGIONLIST } from "../../utils/constants/constant";
 
 const TripDiary = lazy(() => import("../TripDiary/TripDiaryPage"));
 
@@ -31,33 +34,31 @@ const NestedRoute = styled.div`
 `;
 
 interface RouteState {
-  state: {
-    tripId?: number;
-    regionId?: number;
-    title?: string;
-    startDate?: string;
-    endDate?: string;
-  };
+  state: undefined | ITrip;
 }
 
 function TripDiaryListPage() {
   const [result, setResult] = useState<Date[]>([]);
   const [todayIndex, setTodayIndex] = useState<number>(5);
-  const [loading, setLoading] = useState(false);
-  const [selectedDiaryDate, setSelectedDiaryDate] = useState(new Date());
+  const [loading, setLoading] = useState<boolean>(false);
   const { tripId } = useParams();
 
   const { state } = useLocation() as RouteState;
 
-  const { isLoading, isSuccess, data } = useQuery(
+  const { isLoading, isSuccess, data } = useQuery<
+    AxiosResponse<ITrip>,
+    AxiosError
+  >(
     [`${tripId}-diaryList`],
-    () => fetchData.get({ url: tripApis.aTrip(Number(tripId)) }),
+    () => axiosInstance.get(tripApis.aTrip(Number(tripId))),
     {
       refetchOnWindowFocus: false,
       refetchOnReconnect: false,
       refetchOnMount: true,
     },
   );
+
+  console.log(state, data);
 
   useEffect(() => {
     if (data) {
@@ -83,6 +84,10 @@ function TripDiaryListPage() {
       </Helmet>
       <Container>
         <Header>
+          {state ? state.title : data?.data.title}
+          {state?.regionId
+            ? REGIONLIST[state.regionId]
+            : data && REGIONLIST[data?.data.regionId]}
           {isLoading && <div>Loading...</div>}
           {isSuccess && loading && (
             <Swiper
