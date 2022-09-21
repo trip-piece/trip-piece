@@ -148,8 +148,7 @@ export default function GlobalStyle() {
           html,
           body {
             scroll-behavior: smooth;
-            width: 100%;
-            height: 100%;
+            min-height: 100%;
           }
           body {
             line-height: 1.2;

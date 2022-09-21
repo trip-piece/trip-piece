@@ -1,22 +1,12 @@
 import styled from "@emotion/styled";
-import React, { ReactNode } from "react";
-
-interface TransparentRoundButtonProps {
-  children: ReactNode;
-  type: "button" | "submit" | "reset" | undefined;
-  func?: () => void;
-}
+import { IButtonProps } from "../IComponents";
 
 const Button = styled.button`
   background-color: transparent;
   border-radius: 50%;
 `;
 
-function TransparentRoundButton({
-  children,
-  type,
-  func,
-}: TransparentRoundButtonProps) {
+function TransparentRoundButton({ children, type, func }: IButtonProps) {
   return (
     <Button type={type} onClick={func}>
       {children}

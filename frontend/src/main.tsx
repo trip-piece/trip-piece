@@ -31,7 +31,6 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
         <MuiThemeProvider theme={theme}>
           <ThemeProvider theme={themes}>
             <GlobalStyle />
-
             <App />
           </ThemeProvider>
         </MuiThemeProvider>
