@@ -1,12 +1,16 @@
 import styled from "@emotion/styled";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useQuery } from "react-query";
 import { useNavigate, useParams } from "react-router-dom";
 import { HiPencilAlt } from "react-icons/hi";
 import fetchData from "../../utils/apis/api";
 import { diaryApis } from "../../utils/apis/diaryApis";
-import { pixelToRem } from "../../utils/functions/util";
+import {
+  changeDateFormatToHyphen,
+  pixelToRem,
+} from "../../utils/functions/util";
 import ColoredRoundButton from "../../components/atoms/ColoredRoundButton";
+import { SelectedDate } from "../../utils/interfaces/diarys.interface";
 
 const Container = styled.article`
   height: 1px;
@@ -32,15 +36,26 @@ const NoDiaryContainer = styled.div`
     text-align: center;
   }
 `;
+
 function TripDiaryPage() {
+  const [selectedDiaryDate, setSelectedDiaryDate] = useState<string>(
+    changeDateFormatToHyphen(new Date()),
+  );
   const { tripId, diaryDate } = useParams();
   const navigate = useNavigate();
-  const getDiary = () => {
-    const response = fetchData.get({
-      url: diaryApis.diary(Number(tripId), diaryDate),
+
+  useEffect(() => {
+    if (diaryDate) setSelectedDiaryDate(diaryDate);
+  }, []);
+
+  const getDiary = (date: string) =>
+    fetchData.get({
+      url: diaryApis.diary(Number(tripId), date),
     });
-  };
-  // const { isLoading, data } = useQuery([`${diaryDate}-diary`], getDiary);
+
+  const { isLoading, isFetched, data } = useQuery([`${diaryDate}-diary`], () =>
+    getDiary(selectedDiaryDate),
+  );
 
   const moveToWriteDiary = () => {
     navigate(`/trips/${tripId}/diarys/write`);
@@ -48,19 +63,22 @@ function TripDiaryPage() {
 
   return (
     <Container>
-      <NoDiaryContainer>
-        <HiPencilAlt />
-        {/* {tripId}, {diaryDate} */}
-        <p>
-          이 날짜에 작성된 기록이 없습니다. <br /> 다이어리를 작성해주세요.
-        </p>
-        <ColoredRoundButton
-          text="작성하기"
-          color="gray400"
-          type="button"
-          func={moveToWriteDiary}
-        />
-      </NoDiaryContainer>
+      {isLoading && <div>Loading...</div>}
+      {!isLoading && (
+        <NoDiaryContainer>
+          <HiPencilAlt />
+
+          <p>
+            이 날짜에 작성된 기록이 없습니다. <br /> 다이어리를 작성해주세요.
+          </p>
+          <ColoredRoundButton
+            text="작성하기"
+            color="gray400"
+            type="button"
+            func={moveToWriteDiary}
+          />
+        </NoDiaryContainer>
+      )}
     </Container>
   );
 }

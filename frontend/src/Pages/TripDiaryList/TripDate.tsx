@@ -2,7 +2,10 @@ import styled from "@emotion/styled";
 import { NavLink } from "react-router-dom";
 import { TiStarFullOutline } from "react-icons/ti";
 import { isSameDay } from "date-fns";
-import { pixelToRem } from "../../utils/functions/util";
+import {
+  changeDateFormatToHyphen,
+  pixelToRem,
+} from "../../utils/functions/util";
 
 interface TripDateProps {
   date: Date;
@@ -39,7 +42,7 @@ const DateContainer = styled(NavLink)<{ color: string }>`
 function TripDate({ date }: TripDateProps) {
   const tripDate = date.getDate();
   const tripMonth = date.getMonth() + 1;
-  const diaryDate = date.toISOString().split("T")[0];
+  const diaryDate = changeDateFormatToHyphen(date);
 
   let color;
   if (isSameDay(new Date(), date)) {

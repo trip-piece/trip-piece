@@ -44,9 +44,11 @@ function TripDiaryListPage() {
   const [result, setResult] = useState<Date[]>([]);
   const [todayIndex, setTodayIndex] = useState<number>(5);
   const [loading, setLoading] = useState(false);
+  const [selectedDiaryDate, setSelectedDiaryDate] = useState(new Date());
   const { tripId } = useParams();
 
   const { state } = useLocation() as RouteState;
+
   const { isLoading, isSuccess, data } = useQuery(
     [`${tripId}-diaryList`],
     () => fetchData.get({ url: tripApis.aTrip(Number(tripId)) }),

@@ -1,3 +1,5 @@
+import { SelectedDate } from "../interfaces/diarys.interface";
+
 /* eslint-disable import/prefer-default-export */
 export const isQueryError = (error: unknown): error is Error => {
   return error instanceof Error;
@@ -9,7 +11,7 @@ export const PadZero = (num: number | undefined) => {
   return String(num).padStart(2, "0");
 };
 
-export const changeDateForamt = (date: Date): string => {
+export const changeDateForamtToDot = (date: Date): string => {
   const _date = new Date(date);
   const year = String(_date.getFullYear()).substring(2);
 
@@ -43,4 +45,8 @@ export const getDatesStartToLast = (startDate: string, lastDate: string) => {
     curDate.setDate(curDate.getDate() + 1);
   }
   return result;
+};
+
+export const changeDateFormatToHyphen = (date: Date): string => {
+  return date.toISOString().split("T")[0];
 };

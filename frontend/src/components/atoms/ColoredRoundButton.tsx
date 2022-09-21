@@ -1,6 +1,6 @@
 import styled from "@emotion/styled";
 import React from "react";
-import { IButtonProps } from "../IComponents";
+import { IButtonProps } from "../../utils/interfaces/trips.interface";
 
 const Button = styled.button<{ color: string | undefined }>`
   background-color: ${(props) =>

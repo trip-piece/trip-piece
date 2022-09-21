@@ -27,9 +27,12 @@ function Router() {
         <Route path="main" element={<Main />} />
         <Route path="trips" element={<TripList />} />
         <Route path="trips/:tripId/diarys" element={<TripDiaryList />}>
-          <Route path="write" element={<DiaryManagement />} />
           <Route path=":diaryDate" element={<TripDiaryPage />} />
         </Route>
+        <Route
+          path="trips/:tripId/diarys/write"
+          element={<DiaryManagement />}
+        />
       </Routes>
     </BrowserRouter>
   );
