@@ -58,7 +58,9 @@ function TripDiaryPage() {
   );
 
   const moveToWriteDiary = () => {
-    navigate(`/trips/${tripId}/diarys/write`);
+    navigate(`/trips/${tripId}/diarys/write`, {
+      state: { date: selectedDiaryDate },
+    });
   };
 
   return (

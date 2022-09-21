@@ -1,5 +1,7 @@
 import { Global, css } from "@emotion/react";
 import { themes } from "./theme";
+import AllIsWell from "../assets/fonts/alliswell.woff";
+import Letter from "../assets/fonts/letter.woff";
 
 export default function GlobalStyle() {
   return (
@@ -169,6 +171,14 @@ export default function GlobalStyle() {
           button {
             cursor: pointer;
             border: none;
+          }
+          @font-face {
+            font-family: "잘하고있어";
+            src: url(${AllIsWell}) format("woff");
+          }
+          @font-face {
+            font-family: "아빠의연애편지";
+            src: url(${Letter}) format("woff");
           }
         }
       `}

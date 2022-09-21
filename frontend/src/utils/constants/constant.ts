@@ -29,4 +29,6 @@ export const WEEK = [
   "토요일",
 ];
 
+export const FONTTYPELIST = ["잘하고있어", "아빠의연애편지"];
+
 export const MESSAGE = {};
