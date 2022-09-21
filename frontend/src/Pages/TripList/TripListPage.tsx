@@ -1,16 +1,14 @@
 import styled from "@emotion/styled";
 import { useState } from "react";
-import { Helmet, HelmetProvider } from "react-helmet-async";
-import InfiniteList, {
-  MemoInfiniteList,
-} from "../../components/modules/infinite/InfiniteList";
+import { Helmet } from "react-helmet-async";
+import { MemoInfiniteList } from "../../components/modules/infinite/InfiniteList";
 import tripApis from "../../utils/apis/tripsApis";
 import { MemoCard } from "./Card";
 import Skeleton from "./Skeleton";
 import TripCreateButton from "./TripCreationButton";
 import BasicModal from "./Modal";
 
-const Container = styled.main`
+const Container = styled.section`
   min-height: 100vh;
   background-color: ${(props) => props.theme.colors.white};
   border-radius: 30px 30px 0 0;
@@ -45,11 +43,9 @@ function TripListPage() {
 
   return (
     <>
-      <HelmetProvider>
-        <Helmet>
-          <title>여행 폴더 | 여행조각</title>
-        </Helmet>
-      </HelmetProvider>
+      <Helmet>
+        <title>여행 폴더 | 여행조각</title>
+      </Helmet>
       <Container>
         <Title>보유여행티켓</Title>
 
@@ -65,7 +61,7 @@ function TripListPage() {
           zeroDataText="여행 리스트가 존재하지 않습니다."
           count={2}
           listName="tripList"
-          state={isEditMode}
+          isEditMode={isEditMode}
           isCreated={isCreated}
         />
         {!isEditMode && (

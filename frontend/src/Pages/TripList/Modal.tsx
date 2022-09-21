@@ -1,5 +1,12 @@
 /* eslint-disable react/destructuring-assignment */
-import { Dispatch, memo, SetStateAction, useEffect, useState } from "react";
+import {
+  Dispatch,
+  memo,
+  SetStateAction,
+  useCallback,
+  useEffect,
+  useState,
+} from "react";
 import Box from "@mui/material/Box";
 import Modal from "@mui/material/Modal";
 import styled from "@emotion/styled";
@@ -18,8 +25,9 @@ import {
 } from "../../utils/functions/util";
 import { REGIONLIST, WEEK } from "../../utils/constants/constant";
 import DateInfomation from "./DateInfomation";
-import fetchData from "../../utils/apis/api";
 import tripApis from "../../utils/apis/tripsApis";
+import { ITrip } from "../../utils/interfaces/trips.interface";
+import axiosInstance from "../../utils/apis/api";
 
 const Wrapper = styled(Box)`
   position: absolute;
@@ -148,7 +156,7 @@ interface BasicModalProps {
   setOpen: (bool: boolean) => void;
   open: boolean;
   tripInformation?: ITrip;
-  setIsCreated?: (bool: boolean) => Dispatch<React.SetStateAction<boolean>>;
+  setIsCreated?: (bool: boolean) => void;
   refetch?: () => Promise<
     QueryObserverResult<
       InfiniteData<
@@ -228,14 +236,14 @@ function BasicModal({
     setMonth(date.getMonth());
   };
 
-  const setDayColor = (date: Date) => {
+  const setDayColor = useCallback((date: Date) => {
     if (date.getMonth() === month) {
       if (getDayName(createDate(date)) === "토") return "custom-day saturday";
       if (getDayName(createDate(date)) === "일") return "custom-day sunday";
       return "custom-day";
     }
     return "custom-day gray-day";
-  };
+  }, []);
 
   const handleModifiedStartDate = (
     date: Date | null,
@@ -276,12 +284,12 @@ function BasicModal({
     const body = { startDate, endDate, ...data };
     let response;
     if (tripInformation?.tripId) {
-      response = await fetchData.patch({
-        url: tripApis.aTrip(tripInformation.tripId),
+      response = await axiosInstance.patch(
+        tripApis.aTrip(tripInformation.tripId),
         body,
-      });
+      );
     } else {
-      response = await fetchData.post({ url: tripApis.trip, body });
+      response = await axiosInstance.post(tripApis.trip, body);
     }
     try {
       if (response.status === 200) {
@@ -302,9 +310,9 @@ function BasicModal({
     // eslint-disable-next-line no-alert
     if (!window.confirm("여행을 삭제하시겠습니까?")) return;
     try {
-      const response = await fetchData.delete({
-        url: tripApis.aTrip(tripInformation?.tripId),
-      });
+      const response = await axiosInstance.delete(
+        tripApis.aTrip(tripInformation?.tripId),
+      );
       if (response.status === 200) {
         if (refetch) refetch();
         handleClose();
