@@ -33,6 +33,13 @@ const NestedRoute = styled.div`
   padding: 1rem;
 `;
 
+const H2 = styled.h2`
+  padding: 0 1rem;
+  font-size: ${(props) => props.theme.fontSizes.h4};
+  font-weight: 700;
+  color: ${(props) => props.theme.colors.white};
+`;
+
 interface RouteState {
   state: undefined | ITrip;
 }
@@ -84,10 +91,12 @@ function TripDiaryListPage() {
       </Helmet>
       <Container>
         <Header>
-          {state ? state.title : data?.data.title}
-          {state?.regionId
-            ? REGIONLIST[state.regionId]
-            : data && REGIONLIST[data?.data.regionId]}
+          <H2>
+            {state ? state.title : data?.data.title}
+            {state?.regionId
+              ? REGIONLIST[state.regionId]
+              : data && REGIONLIST[data?.data.regionId]}
+          </H2>
           {isLoading && <div>Loading...</div>}
           {isSuccess && loading && (
             <Swiper

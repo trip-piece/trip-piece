@@ -67,7 +67,6 @@ function TripDiaryPage() {
       {!isLoading && (
         <NoDiaryContainer>
           <HiPencilAlt />
-
           <p>
             이 날짜에 작성된 기록이 없습니다. <br /> 다이어리를 작성해주세요.
           </p>
