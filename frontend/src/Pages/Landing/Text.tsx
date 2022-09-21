@@ -23,7 +23,7 @@ const Top = styled.div`
   height: 25vh;
 `;
 
-function Text() {
+function Content() {
   return (
     <>
       <Top />
@@ -34,4 +34,4 @@ function Text() {
   );
 }
 
-export default Text;
+export default Content;

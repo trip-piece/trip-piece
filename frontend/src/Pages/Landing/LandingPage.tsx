@@ -4,14 +4,17 @@ import { HelmetProvider, Helmet } from "react-helmet-async";
 import { setCookie } from "../../utils/cookie";
 import { useWeb3React } from "@web3-react/core";
 import { InjectedConnector } from "@web3-react/injected-connector";
+import { logggedInState, UserInfoState } from "../../store/atom";
 
 import LoginButton from "./LoginButton";
 import LadingButton from "./LandingButton";
-import Text from "./Text";
+import Content from "./Text";
 
 import fetchData from "../../utils/apis/api";
+import { Navigate, useNavigate } from "react-router-dom";
+import { useRecoilState } from "recoil";
 
-const injected = new InjectedConnector({ supportedChainIds: [1, 3, 4, 5, 42] });
+const injected = new InjectedConnector({});
 
 /**
 connector: 현재 dapp에 연결된 월렛의 connector 값
@@ -29,29 +32,38 @@ deactivate: dapp 월렛 연결 해제 수행 함수
 
 function LandingPage() {
   const { activate, active, deactivate, account } = useWeb3React();
+  const { userInfo, setUserInfo } = useRecoilState(UserInfoState);
+  const navigate = useNavigate();
   const onLogin = async () => {
     try {
       const response = await fetchData.post({
-        url: "user/login",
+        url: "api/user/login",
         body: { account: { account } },
       });
 
       if (response.status === 200) {
         setCookie("accessToken", response.data.accessToken);
         setCookie("refreshToken", response.data.refreshToken);
+        navigate("/main");
       }
     } catch (err) {
       console.log(err);
     }
   };
   const handleActivate = () => {
+    console.log(active);
+
     if (active) {
-      deactivate();
+      //메타마스크와 연결되있으면 바로 main으로
+      navigate("/main");
+      //deactivate();
       return;
     }
 
     activate(injected, async (error: Error) => {});
-    onLogin();
+    console.log();
+    //onLogin();
+    setUserInfo({ address: { account }, isLoggedIn: true });
   };
   return (
     <>
@@ -61,7 +73,7 @@ function LandingPage() {
         </Helmet>
       </HelmetProvider>
 
-      <Text />
+      <Content />
       <LoginButton func={handleActivate} />
       <LadingButton />
     </>

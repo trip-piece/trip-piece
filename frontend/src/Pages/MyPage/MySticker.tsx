@@ -3,6 +3,7 @@ import { HelmetProvider, Helmet } from "react-helmet-async";
 import UserInfo from "./UserInfo";
 import Tap from "./Tap";
 import MyStickerList from "./MyStickerList";
+import Sticker from "./Sticker";
 
 function MyPage() {
   return (
@@ -15,7 +16,9 @@ function MyPage() {
 
       <UserInfo />
       <Tap />
-      <MyStickerList />
+      <MyStickerList>
+        <Sticker />
+      </MyStickerList>
     </>
   );
 }

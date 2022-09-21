@@ -6,18 +6,19 @@ import { pixelToRem } from "../../utils/functions/util";
 const StickerBox = styled.div`
   box-shadow: 0 4px 4px 2px rgb(0 0 0/25%);
   border-radius: 1.25rem 1.25rem 1.25rem 1.25rem;
-  padding: 0 0 ${pixelToRem(18)} ${pixelToRem(18)};
+  padding: 0 ${pixelToRem(18)} 0 ${pixelToRem(18)};
   margin: ${pixelToRem(15)};
 
   height: ${pixelToRem(600)};
   background: ${(props) => props.theme.colors.white};
   display: flex;
+  flex-direction: column;
 `;
 
 const TitleBox = styled.div`
   height: 8%;
-  width: 95%;
-  padding: ${pixelToRem(17)} 0 0 ${pixelToRem(10)};
+  width: 100%;
+  padding: ${pixelToRem(17)} 0 0 0;
   border-bottom: solid 1px ${(props) => props.theme.colors.gray400};
   justify-content: center;
 `;
@@ -40,12 +41,21 @@ const Filter = styled.select`
   margin-left: auto;
 `;
 
+const StickerContainer = styled.div`
+  width: 100%;
+  height: 100%;
+  color: ${(props) => props.theme.colors.gray900};
+  padding: ${pixelToRem(18)} 0 0 0;
+  display: inline-block;
+`;
+
 function MyStickerList() {
   return (
     <StickerBox>
       <TitleBox>
         <Title>보유 NFT 스티커</Title>
       </TitleBox>
+      <StickerContainer>ss</StickerContainer>
     </StickerBox>
   );
 }
