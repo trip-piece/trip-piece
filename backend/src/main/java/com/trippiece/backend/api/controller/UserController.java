@@ -1,7 +1,7 @@
 package com.trippiece.backend.api.controller;
 
 import com.trippiece.backend.api.domain.dto.request.UserRequestDto;
-import com.trippiece.backend.api.domain.dto.response.JwtTokenResponse;
+import com.trippiece.backend.api.domain.dto.response.JwtTokenResponseDto;
 import com.trippiece.backend.api.domain.dto.response.ScrapResponseDto;
 import com.trippiece.backend.api.domain.dto.response.UserResponseDto;
 import com.trippiece.backend.api.service.UserService;
@@ -9,8 +9,10 @@ import com.trippiece.backend.util.JwtTokenUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.annotations.Fetch;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -31,7 +33,14 @@ public class UserController {
         if (logInRequest.getWalletAddress().length() != 42)
             return new ResponseEntity<String>("올바르지 않은 Wallet Address입니다.", HttpStatus.BAD_REQUEST);
         else
-            return new ResponseEntity<JwtTokenResponse>(userService.login(logInRequest.getWalletAddress()), HttpStatus.OK);
+            return new ResponseEntity<JwtTokenResponseDto.Detail>(userService.login(logInRequest.getWalletAddress()), HttpStatus.OK);
+    }
+
+    @PatchMapping("/reissue")
+    @ApiOperation(value = "access토큰, refresh토큰 재발급", notes = "access토큰이 만료 되었을 경우 재발급한다. refresh토큰 또한 만료 되었을 경우 재발급")
+    public ResponseEntity reissue(@RequestHeader("REFRESH_TOKEN") String refreshToken, @RequestHeader("ACCESS_TOKEN") String accessToken) throws Exception {
+        long userId = jwtTokenUtil.getUserIdFromToken(accessToken);
+        return new ResponseEntity<JwtTokenResponseDto.Reissue>(userService.reissueTokens(refreshToken, userId), HttpStatus.OK);
     }
 
     @ApiOperation(value = "내 정보", notes = "내 정보 조회")
@@ -40,6 +49,8 @@ public class UserController {
         long userId = jwtTokenUtil.getUserIdFromToken(accessToken);
         return new ResponseEntity<UserResponseDto.Detail>(userService.findUser(userId), HttpStatus.OK);
     }
+
+
 
     @ApiOperation(value = "닉네임 수정", notes = "수정 할 닉네임을 받아서 회원의 닉네임을 수정")
     @PatchMapping("/nickname")

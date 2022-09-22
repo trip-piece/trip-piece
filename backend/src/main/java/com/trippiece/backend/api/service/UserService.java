@@ -28,23 +28,20 @@ public class UserService {
     private final TripRepository tripRepository;
     private final DiaryRepository diaryRepository;
     private final ScrapRepository scrapRepository;
-
-    private final FrameRepository frameRepository;
-
     private final MyBadgeRepository myBadgeRepository;
-    private final JwtTokenUtil JWTTokenUtil;
+    private final JwtTokenUtil jwtTokenUtil;
 
 
     @Transactional
-    public JwtTokenResponse login(final String walletAddress){
+    public JwtTokenResponseDto.Detail login(final String walletAddress){
         boolean isFirstLogin = false;
         if (!userRepository.existsByWalletAddress(walletAddress)) {
             register(walletAddress);
             isFirstLogin = true;
         }
 
-        // 없으면 만들어오기 때문에 못 찾을 수 없음. 바로 get()
-        User user = userRepository.findByWalletAddress(walletAddress).get();
+        User user = userRepository.findByWalletAddress(walletAddress)
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
         Optional<Auth> authOptional = authRepository.findByUser(user);
         String accessToken = "";
         String refreshToken = "";
@@ -53,13 +50,13 @@ public class UserService {
 
         if (authOptional.isPresent()) {
             auth = authOptional.get();
-            if (!JWTTokenUtil.isValidRefreshToken(refreshToken)) auth.update(JWTTokenUtil.saveRefreshToken(user));
-            accessToken = JWTTokenUtil.generateJwtToken(auth.getUser());
+            if (!jwtTokenUtil.isValidRefreshToken(auth.getRefreshToken())) auth.update(jwtTokenUtil.saveRefreshToken(user));
+            accessToken = jwtTokenUtil.generateJwtToken(auth.getUser());
             refreshToken = auth.getRefreshToken();
         }
         else {
-            accessToken = JWTTokenUtil.generateJwtToken(user);
-            refreshToken = JWTTokenUtil.saveRefreshToken(user);
+            accessToken = jwtTokenUtil.generateJwtToken(user);
+            refreshToken = jwtTokenUtil.saveRefreshToken(user);
             auth = Auth.builder().
                     user(user).
                     refreshToken(refreshToken).
@@ -67,9 +64,9 @@ public class UserService {
             authRepository.save(auth);
         }
 
-        long expiresIn = JWTTokenUtil.getExpFromToken(accessToken);
+        long expiresIn = jwtTokenUtil.getExpFromToken(accessToken);
 
-        return JwtTokenResponse
+        return JwtTokenResponseDto.Detail
                 .builder()
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
@@ -91,12 +88,35 @@ public class UserService {
         userRepository.save(user);
         return user;
     }
+
+    @Transactional
+    public JwtTokenResponseDto.Reissue reissueTokens(String refreshToken, long userId) throws Exception {
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+        Auth auth = authRepository
+                .findByUser(user).orElseThrow(() -> new CustomException(ErrorCode.DATA_NOT_FOUND));
+
+        String accessToken = jwtTokenUtil.generateJwtToken(user);
+
+        if (!jwtTokenUtil.isValidRefreshToken(refreshToken) || !refreshToken.equals(auth.getRefreshToken())) {
+            refreshToken = jwtTokenUtil.saveRefreshToken(user);
+            auth.update(refreshToken);
+            authRepository.save(auth);
+        }
+        long expiresIn = jwtTokenUtil.getExpFromToken(accessToken);
+        return JwtTokenResponseDto.Reissue.builder()
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .accessTokenExpiresIn(expiresIn)
+                .build();
+    }
+
     @Transactional(readOnly = true)
     public UserResponseDto.Detail findUser(final long userId){
-        Optional<User> userOptional = userRepository.findById(userId);
-        if (!userOptional.isPresent()) throw new CustomException(ErrorCode.USER_NOT_FOUND);
 
-        User user = userOptional.get();
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
         List<Badge> repBadgeList = findRepBadgeList(user);
         long tripCount = tripRepository.findAllByUser(user).size();
         long diaryCount = diaryRepository.findAllByUser(user).size();
@@ -114,10 +134,10 @@ public class UserService {
     }
     @Transactional
     public HttpStatus modifyNickname(final long userId, final String nickname){
-        Optional<User> userOptional = userRepository.findById(userId);
-        if (!userOptional.isPresent()) throw new CustomException(ErrorCode.USER_NOT_FOUND);
 
-        User user = userOptional.get();
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
         user.update(nickname, user.getFirstBadge(), user.getSecondBadge(), user.getThirdBadge());
 
         return HttpStatus.OK;
@@ -125,10 +145,10 @@ public class UserService {
 
     @Transactional
     public HttpStatus modifyRepBadges(final long userId, final UserRequestDto.RepBadge badges){
-        Optional<User> userOptional = userRepository.findById(userId);
-        if (!userOptional.isPresent()) throw new CustomException(ErrorCode.USER_NOT_FOUND);
 
-        User user = userOptional.get();
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
         user.update(user.getNickname(), badges.getFirstBadge(), badges.getSecondBadge(), badges.getThirdBadge());
 
         return HttpStatus.OK;
@@ -136,10 +156,10 @@ public class UserService {
 
     @Transactional(readOnly = true)
     public UserResponseDto.Badges findBadgeList(final long userId){
-        Optional<User> userOptional = userRepository.findById(userId);
-        if (!userOptional.isPresent()) throw new CustomException(ErrorCode.USER_NOT_FOUND);
 
-        User user = userOptional.get();
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
         List<BadgeResponseDto.Detail> badgeList = new ArrayList<>();
         List<MyBadge> myBadgeList = myBadgeRepository.findAllByUser(user);
 
@@ -158,10 +178,10 @@ public class UserService {
 
     @Transactional(readOnly = true)
     public Page<ScrapResponseDto.Outline> findScrapedFrameList(final long userId, Pageable pageable){
-        Optional<User> userOptional = userRepository.findById(userId);
-        if (!userOptional.isPresent()) throw new CustomException(ErrorCode.USER_NOT_FOUND);
 
-        User user = userOptional.get();
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
         List<Scrap> scrapList = scrapRepository.findByUser(user);
         List<ScrapResponseDto.Outline> outlineList = new ArrayList<>();
 
