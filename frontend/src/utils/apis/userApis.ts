@@ -6,7 +6,7 @@ const loginApis = {
 };
 
 export interface walletAddress {
-  wallet?: string | null | undefined;
+  walletAddress?: string | null | undefined;
 }
 
 export default loginApis;

@@ -3,6 +3,7 @@ import styled from "@emotion/styled";
 import { ReactComponent as BookMarkIcon } from "../../assets/svgs/bookmarkIcon.svg";
 import { ReactComponent as StickerIcon } from "../../assets/svgs/stickerIcon.svg";
 import { pixelToRem } from "../../utils/functions/util";
+import { Link } from "react-router-dom";
 
 const TapBox = styled.div`
   box-shadow: 0 4px 4px 2px rgb(0 0 0/25%);
