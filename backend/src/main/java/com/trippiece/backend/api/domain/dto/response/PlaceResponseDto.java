@@ -1,5 +1,6 @@
 package com.trippiece.backend.api.domain.dto.response;
 
+import com.trippiece.backend.api.domain.dto.DistinctStickerDto;
 import com.trippiece.backend.api.domain.dto.StickerDto;
 import com.trippiece.backend.api.domain.entity.Place;
 import com.trippiece.backend.api.service.S3Service;
@@ -22,6 +23,7 @@ public class PlaceResponseDto {
     private int type;
     private String code;
     private List<StickerDto> stickerList;
+    private List<DistinctStickerDto> disinctStickerList;
     private boolean activated;
     private String name;
     private String locationAddress;
@@ -30,7 +32,7 @@ public class PlaceResponseDto {
 
     @Autowired
     S3Service s3Service;
-    public PlaceResponseDto(Place place, List<StickerDto> stickerList){
+    public PlaceResponseDto(Place place, List<StickerDto> stickerList, List<DistinctStickerDto> disinctStickerList){
         this.id=place.getId();
         this.lat=place.getLat();
         this.lng=place.getLng();
@@ -41,6 +43,7 @@ public class PlaceResponseDto {
         this.type=place.getType();
         this.code=place.getCode();
         this.stickerList=stickerList;
+        this.disinctStickerList=disinctStickerList;
         this.activated=place.isActivated();
         this.name=place.getName();
         this.locationAddress=place.getLocationAddress();

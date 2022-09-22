@@ -41,7 +41,7 @@ public class MarketController {
 
     @GetMapping
     @ApiOperation(value = "스티커 검색/조회", notes = "사용자가 마켓에서 등록된 스티커 조회")
-    public ResponseEntity<?> getMarketStickers(@RequestHeader("ACCESS_TOKEN") final String accessToken,@RequestParam long regionId, @RequestParam int sort, Pageable pageable) {
+    public ResponseEntity<?> getMarketStickers(@RequestHeader("ACCESS_TOKEN") final String accessToken,@RequestParam long regionId, @RequestParam int sort,@RequestParam String keyword, Pageable pageable) {
         long userId = jwtTokenUtil.getUserIdFromToken(accessToken);
         User user = userService.findOneUser(userId);
         if (user == null) return new ResponseEntity<String>("로그인된 회원을 찾을 수 없습니다.", HttpStatus.NOT_FOUND);
@@ -49,7 +49,7 @@ public class MarketController {
             if (sort > 2) return new ResponseEntity<String>("유효한 sort가 아닙니다.", HttpStatus.BAD_REQUEST);
             if (regionId < 0 || regionId > 17)
                 return new ResponseEntity<String>("유효한 regionId가 아닙니다.", HttpStatus.BAD_REQUEST);
-            return new ResponseEntity<Page<MarketStickerResponseDto>>(marketService.findMarketSticker(regionId, sort, pageable), HttpStatus.OK);
+            return new ResponseEntity<Page<MarketStickerResponseDto>>(marketService.findMarketSticker(regionId, sort, keyword,pageable), HttpStatus.OK);
         }
     }
 

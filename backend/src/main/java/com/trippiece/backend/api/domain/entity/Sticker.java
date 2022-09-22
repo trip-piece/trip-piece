@@ -14,7 +14,13 @@ import javax.persistence.*;
 @Table(name="sticker")
 public class Sticker extends BaseEntity {
     @Column(nullable = false)
-    private int tokenId;
+    private long tokenId;
+
+    @Column(nullable = false)
+    private String tokenName;
+
+    @Column(name = "token_url", nullable = false)
+    private String tokenURL;
 
     @ManyToOne
     @JoinColumn(name="place_id", nullable = false)
@@ -22,7 +28,7 @@ public class Sticker extends BaseEntity {
     private Place place;
 
     @Builder
-    public Sticker(int tokenId, Place place){
+    public Sticker(long tokenId, Place place){
         this.tokenId=tokenId;
         this.place=place;
     }

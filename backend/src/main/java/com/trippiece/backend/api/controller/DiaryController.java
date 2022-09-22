@@ -60,7 +60,7 @@ public class DiaryController {
 
     @PostMapping("/decoration")
     @ApiOperation(value = "일기 꾸미기", notes = "일기를 보유스티커로 꾸미고 공유할거면 이미지화 해서 저장")
-    public ResponseEntity<?> decoDiary(@RequestHeader("ACCESS_TOKEN") final String accessToken, @RequestPart(value = "diaryRequestDto") DecoRequestDto decoRequestDto, @RequestPart(value = "file", required = false) MultipartFile frameImage) throws IOException {
+    public ResponseEntity<?> decoDiary(@RequestHeader("ACCESS_TOKEN") final String accessToken, @RequestPart(value = "diaryRequestDto") DecoRequestDto.DecoRegister decoRequestDto, @RequestPart(value = "file", required = false) MultipartFile frameImage) throws IOException {
         long userId = jwtTokenUtil.getUserIdFromToken(accessToken);
         User user = userService.findOneUser(userId);
         if (user == null) return new ResponseEntity<String>("로그인된 회원을 찾을 수 없습니다.", HttpStatus.NOT_FOUND);
@@ -76,7 +76,7 @@ public class DiaryController {
 
     @PatchMapping
     @ApiOperation(value = "일기 꾸미기 수정", notes = "일기 꾸민 스티커 위치 조정,추가,삭제 등 모두 수정")
-    public ResponseEntity<?> editDecoDiary(@RequestHeader("ACCESS_TOKEN") final String accessToken, @RequestPart(value = "diaryRequestDto") DecoRequestDto decoRequestDto, @RequestPart(value = "file", required = false) MultipartFile frameImage) throws IOException {
+    public ResponseEntity<?> editDecoDiary(@RequestHeader("ACCESS_TOKEN") final String accessToken, @RequestPart(value = "diaryRequestDto") DecoRequestDto.DecoEdit decoRequestDto, @RequestPart(value = "file", required = false) MultipartFile frameImage) throws IOException {
         long userId = jwtTokenUtil.getUserIdFromToken(accessToken);
         User user = userService.findOneUser(userId);
         if (user == null) return new ResponseEntity<String>("로그인된 회원을 찾을 수 없습니다.", HttpStatus.NOT_FOUND);
