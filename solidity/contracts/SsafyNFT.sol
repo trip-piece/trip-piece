@@ -8,7 +8,7 @@ import "./utils/Counters.sol";
  * PJT Ⅰ - 과제 2) NFT Creator 구현
  * 상태 변수나 함수의 시그니처는 구현에 따라 변경할 수 있습니다.
  */
-contract TrippieceNFT is ERC721 {
+contract SsafyNFT is ERC721 {
     struct Sticker {
         uint256 tokenId;
         string tokenURI;
@@ -18,7 +18,7 @@ contract TrippieceNFT is ERC721 {
     Counters.Counter private _tokenIds;
     mapping(uint256 => string) tokenURIs;
 
-    constructor() ERC721("MySticker", "MSK") {}
+    constructor() ERC721("MyToken", "MTK") {}
 
     function tokenURI(uint256 tokenId)
         public
@@ -31,7 +31,7 @@ contract TrippieceNFT is ERC721 {
 
     function getStickerList(address walletAddress) public view returns(Sticker[] memory ){
         uint256 max = _tokenIds.current(); //총 토큰아이디 개수라고 생각함 
-        require( balanceOf(walletAddress)> 0,"you don't have any sticker Oopsie!!!");
+         require( balanceOf(walletAddress)> 0,"you don't have any sticker Oopsie!!!");
          Sticker[] memory stickerLists = new Sticker[](balanceOf(walletAddress));
          uint256 index = 0;
               for (uint256 t = 1; t <= max; t++) {
@@ -53,7 +53,8 @@ contract TrippieceNFT is ERC721 {
 
         uint256 newTokenId = _tokenIds.current();
         _mint(to, newTokenId);
-        tokenURIs[newTokenId] = _tokenURI;        
-        return newTokenId;
+        tokenURIs[newTokenId] = _tokenURI;
+
+        return 1;
     }
 }
