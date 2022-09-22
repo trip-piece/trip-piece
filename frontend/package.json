@@ -15,6 +15,11 @@
   "dependencies": {
     "@emotion/react": "^11.10.4",
     "@emotion/styled": "^11.10.4",
+    "@iconify-icon/react": "^1.0.0",
+    "@iconify/icons-fxemoji": "^1.2.2",
+    "@iconify/icons-noto-v1": "^1.2.2",
+    "@iconify/icons-twemoji": "^1.2.5",
+    "@iconify/react": "^4.0.0",
     "@mui/material": "^5.10.5",
     "axios": "^0.27.2",
     "date-fns": "^2.29.3",
