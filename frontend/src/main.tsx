@@ -1,6 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { RecoilRoot } from "recoil";
+import { HelmetProvider } from "react-helmet-async";
 import {
   StyledEngineProvider,
   ThemeProvider as MuiThemeProvider,
@@ -27,14 +28,16 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   // <React.StrictMode>
   <Web3ReactProvider getLibrary={getLibrary}>
     <RecoilRoot>
-      <StyledEngineProvider injectFirst>
-        <MuiThemeProvider theme={theme}>
-          <ThemeProvider theme={themes}>
-            <GlobalStyle />
-            <App />
-          </ThemeProvider>
-        </MuiThemeProvider>
-      </StyledEngineProvider>
+      <HelmetProvider>
+        <StyledEngineProvider injectFirst>
+          <MuiThemeProvider theme={theme}>
+            <ThemeProvider theme={themes}>
+              <GlobalStyle />
+              <App />
+            </ThemeProvider>
+          </MuiThemeProvider>
+        </StyledEngineProvider>
+      </HelmetProvider>
     </RecoilRoot>
   </Web3ReactProvider>,
   // </React.StrictMode>,

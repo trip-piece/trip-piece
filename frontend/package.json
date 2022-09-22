@@ -34,7 +34,8 @@
     "recoil": "^0.7.5",
     "swiper": "^8.4.2",
     "uuid": "^9.0.0",
-    "vite-plugin-svgr": "^2.2.1"
+    "vite-plugin-svgr": "^2.2.1",
+    "web3": "^1.8.0"
   },
   "devDependencies": {
     "@babel/core": "^7.19.0",

@@ -22,7 +22,7 @@ export const UserInfoState = atom<IUserInfo[]>({
       nickname: "null",
       balance: 0.0,
       isLoggedIn: false,
-      id: -1git,
+      id: -1,
     },
   ],
 });

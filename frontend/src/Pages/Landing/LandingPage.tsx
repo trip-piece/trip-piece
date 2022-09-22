@@ -1,18 +1,20 @@
-import React from "react";
+import React, { useEffect } from "react";
 import styled from "@emotion/styled";
-import { HelmetProvider, Helmet } from "react-helmet-async";
-import { setCookie } from "../../utils/cookie";
-import { useWeb3React } from "@web3-react/core";
+import { Helmet } from "react-helmet-async";
 import { InjectedConnector } from "@web3-react/injected-connector";
-import { logggedInState, UserInfoState } from "../../store/atom";
+import { useWeb3React } from "@web3-react/core";
+import { useNavigate } from "react-router-dom";
+import { useRecoilState } from "recoil";
+import { setCookie } from "../../utils/cookie";
+import { IUserInfo, UserInfoState } from "../../store/atom";
 
 import LoginButton from "./LoginButton";
 import LadingButton from "./LandingButton";
 import Content from "./Text";
 
-import fetchData from "../../utils/apis/api";
-import { Navigate, useNavigate } from "react-router-dom";
-import { useRecoilState } from "recoil";
+import loginApis, { walletAddress } from "../../utils/apis/userApis";
+import axiosInstance from "../../utils/apis/api";
+import { AxiosError } from "axios";
 
 const injected = new InjectedConnector({});
 
@@ -34,44 +36,42 @@ function LandingPage() {
   const { activate, active, deactivate, account } = useWeb3React();
   const { userInfo, setUserInfo } = useRecoilState(UserInfoState);
   const navigate = useNavigate();
-  const onLogin = async () => {
-    try {
-      const response = await fetchData.post({
-        url: "api/user/login",
-        body: { account: { account } },
-      });
+  const address: walletAddress = { wallet: account };
+  useEffect(() => {
+    login(address);
+  }, [account]);
 
-      if (response.status === 200) {
-        setCookie("accessToken", response.data.accessToken);
-        setCookie("refreshToken", response.data.refreshToken);
-        navigate("/main");
-      }
-    } catch (err) {
-      console.log(err);
-    }
+  const login = async (data: string | null | undefined | walletAddress) => {
+    await axiosInstance
+      .post(loginApis.login, data)
+      .then(
+        (response: { data: { accessToken: string; refreshToken: string } }) => {
+          setCookie("accessToken", response.data.accessToken);
+          setCookie("refreshToken", response.data.refreshToken);
+          setUserInfo({ address: { account }, isLoggedIn: true });
+          navigate("/main");
+        },
+      );
   };
-  const handleActivate = () => {
+
+  const handleActivate = async () => {
     console.log(active);
 
-    if (active) {
-      //메타마스크와 연결되있으면 바로 main으로
-      navigate("/main");
-      //deactivate();
-      return;
-    }
+    // if (active) {
+    //   //메타마스크와 연결되있으면 바로 main으로
+    //   login(address);
+    //   //deactivate();
+    //   console.log(account);
+    //   return;
+    // }
 
-    activate(injected, async (error: Error) => {});
-    console.log();
-    //onLogin();
-    setUserInfo({ address: { account }, isLoggedIn: true });
+    activate(injected, async () => {});
   };
   return (
     <>
-      <HelmetProvider>
-        <Helmet>
-          <title>Welcome | 여행조각</title>
-        </Helmet>
-      </HelmetProvider>
+      <Helmet>
+        <title>Welcome | 여행조각</title>
+      </Helmet>
 
       <Content />
       <LoginButton func={handleActivate} />
