@@ -1,6 +1,7 @@
 import styled from "@emotion/styled";
 import React, { lazy } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { MyPage } from "./Pages";
 import TripDiaryPage from "./Pages/TripDiary/TripDiaryPage";
 
 const Landing = lazy(() => import("./Pages/Landing/LandingPage"));
@@ -33,6 +34,7 @@ function Router() {
           path="trips/:tripId/diarys/write"
           element={<DiaryManagement />}
         />
+        <Route path="user/stickers" element={<MyPage />} />
       </Routes>
     </BrowserRouter>
   );
