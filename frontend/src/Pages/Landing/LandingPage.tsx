@@ -14,7 +14,6 @@ import Content from "./Text";
 
 import loginApis, { walletAddress } from "../../utils/apis/userApis";
 import axiosInstance from "../../utils/apis/api";
-import { AxiosError } from "axios";
 
 const injected = new InjectedConnector({});
 

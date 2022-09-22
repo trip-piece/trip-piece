@@ -8,7 +8,7 @@ const Container = styled.div`
   justify-content: center;
 `;
 
-const ButtonText = styled.text`
+const ButtonText = styled.div`
   font-size: ${(props) => props.theme.fontSizes.h5};
   font-weight: bold;
   /* 색상 */

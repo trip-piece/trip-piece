@@ -7,7 +7,7 @@ const Container = styled.div`
   justify-content: center;
 `;
 
-const Textbox = styled.text`
+const Textbox = styled.div`
   font-size: ${(props) => props.theme.fontSizes.h2};
   font-weight: bold;
   width: ${pixelToRem(230)};
