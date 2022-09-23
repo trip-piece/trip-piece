@@ -12,6 +12,7 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -32,7 +33,7 @@ public class FrameController {
 
     @GetMapping
     @ApiOperation(value = "공유된 스티커프레임 리스트 조회", notes = "지역별 필터링을 포함하여 공유된 스티커 프레임의 리스트를 조회한다.")
-    public ResponseEntity<?> getFrameList(@RequestHeader("ACCESS_TOKEN") final String accessToken, @RequestParam List<Long> regionList, Pageable pageable) {
+    public ResponseEntity<?> getFrameList(@RequestHeader("ACCESS_TOKEN") final String accessToken, @RequestParam List<Long> regionList, @PageableDefault(size=10) Pageable pageable) {
         long userId = jwtTokenUtil.getUserIdFromToken(accessToken);
         User user = userService.findOneUser(userId);
         if(user == null) return new ResponseEntity<String>("로그인된 회원을 찾을 수 없습니다.", HttpStatus.NOT_FOUND);
