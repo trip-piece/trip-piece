@@ -1,6 +1,7 @@
 package com.trippiece.backend.api.service;
 
 import com.trippiece.backend.api.domain.dto.response.MarketStickerResponseDto;
+import com.trippiece.backend.api.domain.dto.response.StickerMarketResponseDto;
 import com.trippiece.backend.api.domain.entity.Market;
 import com.trippiece.backend.api.domain.entity.Sticker;
 import com.trippiece.backend.api.domain.entity.User;
@@ -66,6 +67,11 @@ public class MarketService {
         int end = Math.min((start + pageable.getPageSize()), responseList.size());
         Page<MarketStickerResponseDto> result = new PageImpl<>(responseList.subList(start, end), pageable, responseList.size());
         return result;
+    }
+
+    public StickerMarketResponseDto findMarketStickerDetail(long marketId){
+Market market = marketRepository.findById(marketId).orElseThrow(() -> new CustomException(ErrorCode.DATA_NOT_FOUND));
+   return new StickerMarketResponseDto(market);
     }
 
     public void addMarketSticker(User user, long tokenId, float price) {
