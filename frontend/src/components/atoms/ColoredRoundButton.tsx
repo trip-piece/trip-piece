@@ -8,6 +8,8 @@ const Button = styled.button<{ color: string | undefined }>`
   padding: 0.5rem 1rem;
   border-radius: 20px;
   color: ${(props) => props.theme.colors.white};
+  font-size: ${(props) => props.theme.fontSizes.h5};
+  font-weight: 700;
 `;
 
 function ColoredRoundButton({

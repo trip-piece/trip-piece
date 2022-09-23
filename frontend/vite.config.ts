@@ -16,14 +16,14 @@ export default defineConfig({
   server: {
     port: 3000,
     host: "0.0.0.0",
-    // proxy: {
-    //   "/api": {
-    //     target: "https://j7a607.q.ssafy.io",
-    //     changeOrigin: true,
-    //     rewrite: (path) => path.replace(/^\/api/, ""),
-    //     secure: false,
-    //     ws: true,
-    //   },
-    // },
+    proxy: {
+      "/api": {
+        target: "https://j7a607.q.ssafy.io",
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api/, ""),
+        secure: false,
+        ws: true,
+      },
+    },
   },
 });

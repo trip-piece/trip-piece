@@ -65,8 +65,6 @@ function TripDiaryListPage() {
     },
   );
 
-  console.log(state, data);
-
   useEffect(() => {
     if (data) {
       const _result = getDatesStartToLast(

@@ -1,5 +1,5 @@
 const loginApis = {
-  login: "api/user/login",
+  login: "user/login",
   getUser: "api/user",
   modifyNickname: "api/user/nickname",
   getMyScraps: "api/user/scraps",
