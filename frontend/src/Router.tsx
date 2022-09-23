@@ -2,6 +2,10 @@ import styled from "@emotion/styled";
 import React, { lazy } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { MyPage } from "./Pages";
+import MarketListPage from "./Pages/Market/MarketListPage";
+import MarketMainPage from "./Pages/Market/MarketMainPage";
+import MarketRegisterPage from "./Pages/Market/MarketRegisterPage";
+import StickerDetailPage from "./Pages/Market/StickerDetailPage";
 import TripDiaryPage from "./Pages/TripDiary/TripDiaryPage";
 
 const Landing = lazy(() => import("./Pages/Landing/LandingPage"));
@@ -34,6 +38,10 @@ function Router() {
           path="trips/:tripId/diarys/write"
           element={<DiaryManagement />}
         />
+        <Route path="market" element={<MarketMainPage />} />
+        <Route path="market/:regionId" element={<MarketListPage />} />
+        <Route path="market/:marketId/detail" element={<StickerDetailPage />} />
+        <Route path="market/register" element={<MarketRegisterPage />} />
         <Route path="user/stickers" element={<MyPage />} />
       </Routes>
     </BrowserRouter>
