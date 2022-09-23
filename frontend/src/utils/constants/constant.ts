@@ -31,6 +31,8 @@ export const WEEK = [
 
 export const FONTTYPELIST = ["잘하고있어", "아빠의연애편지"];
 
-export const DIARY_COLOR_LIST = ["#FFFFFF", "#FCCEE2", "#F7E7B1"];
+export const DIARY_COLOR_LIST = ["#FFFFFF", "#FCCEE2", "#F7E7C1"];
 
 export const MESSAGE = {};
+
+export const IMAGE_SIZE_LIMIT_NUMBER = 10 * 1024 * 1024;

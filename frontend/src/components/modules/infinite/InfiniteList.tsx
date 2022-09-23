@@ -2,6 +2,7 @@
 import styled from "@emotion/styled";
 import { ElementType, memo, useEffect, useMemo, useRef, useState } from "react";
 import { QueryFunctionContext } from "react-query";
+import { v4 } from "uuid";
 import axiosInstance from "../../../utils/apis/api";
 import { isQueryError } from "../../../utils/functions/util";
 import useFetchTripsInformation from "../../../utils/hooks/useFecthTripsInformation";
@@ -108,7 +109,7 @@ function InfiniteList({
           <CardComponent
             {...target}
             index={idx}
-            key={target?.tripId + idx}
+            key={v4()}
             func={func}
             isEditMode={isEditMode}
             refetch={refetchData}

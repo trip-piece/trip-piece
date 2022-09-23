@@ -1,5 +1,5 @@
 import styled from "@emotion/styled";
-import { ChangeEvent, useEffect, useState } from "react";
+import { ChangeEvent, useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Icon } from "@iconify/react/dist/offline";
 import sunIcon from "@iconify/icons-twemoji/sun";
@@ -10,9 +10,15 @@ import { v4 } from "uuid";
 import { Controller, useForm } from "react-hook-form";
 import { TextareaAutosize } from "@mui/material";
 import { BsFillGeoAltFill } from "react-icons/bs";
-import { DIARY_COLOR_LIST, FONTTYPELIST } from "../../utils/constants/constant";
+import { HiTrash } from "react-icons/hi";
+import {
+  DIARY_COLOR_LIST,
+  FONTTYPELIST,
+  IMAGE_SIZE_LIMIT_NUMBER,
+} from "../../utils/constants/constant";
 import ColoredRoundButton from "../../components/atoms/ColoredRoundButton";
 import { pixelToRem } from "../../utils/functions/util";
+import { shake } from "../../style/animations";
 
 const Container = styled.section`
   height: 1px;
@@ -73,7 +79,8 @@ const WeatherButtonListContainer = styled.div`
 
 const FileUploadContainer = styled.div`
   height: 10%;
-  padding: 1rem;
+  padding-top: 1rem;
+  width: 100%;
 `;
 
 const HandleButtonListContainer = styled.div`
@@ -81,6 +88,7 @@ const HandleButtonListContainer = styled.div`
   gap: 1rem;
   align-items: center;
   height: 10%;
+  margin-bottom: 1rem;
 `;
 const ColorButton = styled.button<{ active: boolean; backgroundColor: string }>`
   background-color: ${(props) => props.backgroundColor};
@@ -126,6 +134,68 @@ const ColorAndPositionContainer = styled.div`
   background-color: ${(props) => props.theme.colors.lightBlue};
 `;
 
+const Label = styled.label`
+  font-size: ${(props) => props.theme.fontSizes.h4};
+  font-weight: bold;
+  padding: 1rem;
+`;
+
+const ImageControlContainer = styled.div`
+  display: flex;
+  padding: 1rem 2rem;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  height: 3.25rem;
+  background-color: white;
+  > p {
+    background-color: ${(props) => props.theme.colors.gray200};
+    width: 70%;
+    height: ${pixelToRem(28)};
+    display: flex;
+    align-items: center;
+    padding: 0 0.5rem;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+`;
+
+const FileSelectionButton = styled.button`
+  background-color: ${(props) => props.theme.colors.mainLight};
+  border-radius: 10px;
+  height: ${pixelToRem(28)};
+  color: ${(props) => props.theme.colors.white};
+  width: ${pixelToRem(80)};
+  font-weight: bold;
+`;
+
+const PreviewImage = styled.img`
+  width: 100%;
+  max-height: 8rem;
+  object-fit: contain;
+`;
+
+const PreviewContainer = styled.div`
+  width: 100%;
+  position: relative;
+  padding: 1rem;
+`;
+
+const DeleteButton = styled.button`
+  position: absolute;
+  color: ${(props) => props.theme.colors.red};
+  top: 0;
+  right: 0;
+  font-size: 2rem;
+  padding: inherit;
+  background-color: ${(props) => props.theme.colors.white};
+  border-radius: 50%;
+  &:hover {
+    animation: ${shake} 0.5s infinite;
+  }
+`;
+
 interface RouteState {
   state: {
     date: string;
@@ -155,16 +225,14 @@ function DiaryManagementPage() {
   const [dottedDate, setDottedDate] = useState("");
   const [todayPhoto, setTodayPhoto] = useState<File | string>("");
   const [imageSrc, setImageSrc] = useState<string | null>("");
+  const fileInput = useRef<HTMLInputElement>(null);
+
   const {
     state: { date },
   } = useLocation() as RouteState;
-  const {
-    register,
-    handleSubmit,
-    control,
-    watch,
-    formState: { errors },
-  } = useForm<IFormInput>({ mode: "onChange" });
+  const { register, handleSubmit, control, watch } = useForm<IFormInput>({
+    mode: "onChange",
+  });
   const navigate = useNavigate();
   useEffect(() => {
     setDottedDate(date.replaceAll("-", "."));
@@ -181,8 +249,8 @@ function DiaryManagementPage() {
   const encodeFileToBase64 = (fileBlob: Blob) => {
     const reader = new FileReader();
     reader.readAsDataURL(fileBlob);
-    const tmpImage = reader.result as string;
     reader.onload = () => {
+      const tmpImage = reader.result as string;
       setImageSrc(tmpImage);
     };
   };
@@ -192,12 +260,20 @@ function DiaryManagementPage() {
       target: { files },
     } = event;
     const file = files && files[0];
+    if (file && file?.size > IMAGE_SIZE_LIMIT_NUMBER) {
+      alert("10MB 이하의 이미지를 넣어주세요.");
+      return;
+    }
     if (file) {
       setTodayPhoto(file);
       encodeFileToBase64(file);
     }
   };
-  console.log(imageSrc);
+
+  const onDlelete = () => {
+    setImageSrc("");
+    setTodayPhoto("");
+  };
 
   return (
     <Container>
@@ -259,14 +335,32 @@ function DiaryManagementPage() {
           )}
         />
         <FileUploadContainer>
-          <label htmlFor="todayPhoto">오늘의 PHOTO</label>
-          {imageSrc && <img src={imageSrc} alt="today" width="100%" />}
+          <Label htmlFor="todayPhoto">오늘의 PHOTO</Label>
           <input
+            style={{ display: "none" }}
             type="file"
             id="todayPhoto"
             accept="image/jpg, image/jpeg, image/png"
             onChange={onLoadFile}
+            ref={fileInput}
           />
+          <ImageControlContainer>
+            <p>{todayPhoto?.name}</p>
+            <FileSelectionButton
+              type="button"
+              onClick={() => fileInput.current?.click()}
+            >
+              파일 선택
+            </FileSelectionButton>
+          </ImageControlContainer>
+          <PreviewContainer>
+            {imageSrc && <PreviewImage src={imageSrc} alt="today" />}
+            {imageSrc && (
+              <DeleteButton type="button" onClick={onDlelete}>
+                <HiTrash />
+              </DeleteButton>
+            )}
+          </PreviewContainer>
         </FileUploadContainer>
         <HandleButtonListContainer>
           <ColoredRoundButton
