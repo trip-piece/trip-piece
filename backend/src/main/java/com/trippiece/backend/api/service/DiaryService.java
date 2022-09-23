@@ -33,7 +33,7 @@ public class DiaryService {
 
     /*일기 내용 추가*/
     @Transactional
-    public void addDiary(User user, DiaryRequestDto.DiaryRegister diaryRegister) {
+    public long addDiary(User user, DiaryRequestDto.DiaryRegister diaryRegister) {
         Trip trip = tripRepository.findById(diaryRegister.getTripId()).orElseThrow(() -> new CustomException(ErrorCode.DATA_NOT_FOUND));
         ;
         Diary diary = Diary.builder()
@@ -46,7 +46,7 @@ public class DiaryService {
                 .trip(trip)
                 .user(user)
                 .build();
-        diaryRepository.save(diary);
+        return diaryRepository.save(diary).getId();
     }
 
     /*꾸민 스티커 위치 추가*/

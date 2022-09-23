@@ -46,16 +46,17 @@ public class DiaryController {
     public ResponseEntity<?> addDiary(@RequestHeader("ACCESS_TOKEN") final String accessToken, @RequestPart(value = "diaryRequestDto") DiaryRequestDto.DiaryRegister diaryRegister, @RequestPart(value = "file", required = false) MultipartFile todayPhoto) throws IOException {
         long userId = jwtTokenUtil.getUserIdFromToken(accessToken);
         User user = userService.findOneUser(userId);
+        long diaryId;
         if (user == null) return new ResponseEntity<String>("로그인된 회원을 찾을 수 없습니다.", HttpStatus.NOT_FOUND);
         else {
             if (todayPhoto != null) {
                 String fileName = s3Service.upload("", todayPhoto); //입력하면 업로드하러 넘어감
                 diaryRegister.setTodayPhoto(fileName);
             }
-            diaryService.addDiary(user, diaryRegister);
+            diaryId = diaryService.addDiary(user, diaryRegister);
 
         }
-        return new ResponseEntity<>("일기 작성 성공!", HttpStatus.OK);
+        return new ResponseEntity<Long>(diaryId, HttpStatus.OK);
     }
 
     @PostMapping("/decoration")
