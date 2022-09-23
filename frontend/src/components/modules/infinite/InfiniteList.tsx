@@ -77,7 +77,7 @@ function InfiniteList({
   const targetList = useMemo(
     () =>
       data
-        ? data.pages?.flatMap((data) => data?.result && data?.result[listName])
+        ? data.pages?.flatMap((page) => page?.result && page?.result[listName])
         : [],
     [data],
   );
