@@ -1,6 +1,6 @@
 import styled from "@emotion/styled";
-import { ChangeEvent, useEffect, useRef, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { ChangeEvent, useEffect, useRef, useState, useCallback } from "react";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { Icon } from "@iconify/react/dist/offline";
 import sunIcon from "@iconify/icons-twemoji/sun";
 import cloudIcon from "@iconify/icons-noto-v1/cloud";
@@ -11,6 +11,7 @@ import { Controller, useForm } from "react-hook-form";
 import { TextareaAutosize } from "@mui/material";
 import { BsFillGeoAltFill } from "react-icons/bs";
 import { HiTrash } from "react-icons/hi";
+import { useMutation } from "react-query";
 import {
   DIARY_COLOR_LIST,
   FONTTYPELIST,
@@ -19,6 +20,8 @@ import {
 import ColoredRoundButton from "../../components/atoms/ColoredRoundButton";
 import { pixelToRem } from "../../utils/functions/util";
 import { shake } from "../../style/animations";
+import axiosInstance from "../../utils/apis/api";
+import { diaryApis } from "../../utils/apis/diaryApis";
 
 const Container = styled.section`
   height: 1px;
@@ -108,9 +111,14 @@ const AutosizedTextarea = styled(TextareaAutosize)<IDiaryStyle>`
   font-size: 24px;
   outline: none;
   border: none;
-  padding: 1rem;
+  padding: 1rem
+    ${(props) => `${pixelToRem(16 + (props.diarywidth - 320) / 20)}`};
   resize: none;
   transition: background-color 0.5s ease-in;
+  font-size: ${(props) => pixelToRem(props.diarywidth / 20)};
+  &::placeholder {
+    color: ${(props) => props.theme.colors.gray400};
+  }
 `;
 
 const ColorButtonListContainer = styled.div`
@@ -204,6 +212,7 @@ interface RouteState {
 interface IDiaryStyle {
   fonttype: string;
   backgroundcolor: string;
+  diarywidth: number;
 }
 interface IFormInput {
   fontType: string;
@@ -217,16 +226,16 @@ const weatherList = [
   snowmanwithoutsnowIcon,
 ];
 
-const tmp =
-  "이듬해 질 녘 꽃 피는 봄 한여름 밤의 꿈 가을 타 겨울 내릴 눈 일 년 네 번 또다시 봄 정들었던 내 젊은 날 이제는 안녕 아름답던 우리의 봄 여름 가을겨울 (Four seasons with no reason) 비 갠 뒤에 비애 대신 a happy end 비스듬히 씩 비웃듯 칠색 무늬의 무지개 철없이 철 지나 철들지 못해 (still 철부지에 철 그른지 오래 Marchin' 비발디, 차이코프스키 오늘의 사계를 맞이해 (boy) 마침내, 마치 넷이 못내 저 하늘만 바라보고서 사계절 잘 지내고 있어, goodbye 떠난 사람 또 나타난 사람 머리 위 저세상, 난 떠나 영감의 amazon 지난 밤의 트라우마 다 묻고 목숨 바쳐 달려올 새 출발 하는 왕복선 변할래 전보다는 더욱더 좋은 사람 더욱더, 더 나은 사람 더욱더";
 function DiaryManagementPage() {
   const [weather, setWeather] = useState(0);
   const [diaryColor, setDiaryColor] = useState(0);
   const [dottedDate, setDottedDate] = useState("");
-  const [todayPhoto, setTodayPhoto] = useState<File | string>("");
+  const [diaryWidth, setDiaryWidth] = useState(320);
+  const [todayPhoto, setTodayPhoto] = useState<File | null>();
   const [imageSrc, setImageSrc] = useState<string | null>("");
   const fileInput = useRef<HTMLInputElement>(null);
-
+  const textAreaRef = useRef<HTMLTextAreaElement>(null);
+  const { tripId } = useParams();
   const {
     state: { date },
   } = useLocation() as RouteState;
@@ -238,7 +247,17 @@ function DiaryManagementPage() {
     setDottedDate(date.replaceAll("-", "."));
   }, []);
 
-  const onSubmit = () => {};
+  useEffect(() => {
+    if (!textAreaRef.current?.offsetWidth) return;
+    const tmpSize =
+      // eslint-disable-next-line no-unsafe-optional-chaining
+      textAreaRef.current?.offsetWidth;
+    setDiaryWidth(tmpSize);
+  }, [textAreaRef.current?.offsetWidth]);
+
+  const onSubmit = (data: IFormInput) => {
+    console.log(data, tripId, weather, diaryColor);
+  };
 
   const onCancel = () => {
     if (window.confirm("다이어리 작성을 취소하시겠습니까?")) {
@@ -246,14 +265,14 @@ function DiaryManagementPage() {
     }
   };
 
-  const encodeFileToBase64 = (fileBlob: Blob) => {
+  const encodeFileToBase64 = useCallback((fileBlob: File) => {
     const reader = new FileReader();
     reader.readAsDataURL(fileBlob);
     reader.onload = () => {
       const tmpImage = reader.result as string;
       setImageSrc(tmpImage);
     };
-  };
+  }, []);
 
   const onLoadFile = (event: ChangeEvent<HTMLInputElement>) => {
     const {
@@ -272,8 +291,18 @@ function DiaryManagementPage() {
 
   const onDlelete = () => {
     setImageSrc("");
-    setTodayPhoto("");
+    setTodayPhoto(null);
   };
+
+  const addDiary = async (newDiary: any): Promise<any> => {
+    const { data } = await axiosInstance.post<any>(
+      diaryApis.diaryWrite,
+      newDiary,
+    );
+    return data;
+  };
+
+  const {} = useMutation(addDiary);
 
   return (
     <Container>
@@ -329,8 +358,11 @@ function DiaryManagementPage() {
             <AutosizedTextarea
               minRows={10}
               fonttype={watch("fontType")}
+              placeholder="오늘의 여행은 어땠나요?"
               {...field}
               backgroundcolor={DIARY_COLOR_LIST[diaryColor]}
+              ref={textAreaRef}
+              diarywidth={diaryWidth}
             />
           )}
         />
