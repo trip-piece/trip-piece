@@ -47,6 +47,7 @@
           "some": ["nesting", "id"]
         }
       }
-    ]
+    ],
+    "no-alert": ["off"]
   }
 }

@@ -33,14 +33,15 @@ deactivate: dapp 월렛 연결 해제 수행 함수
 
 function LandingPage() {
   const { activate, active, deactivate, account } = useWeb3React();
-  const { userInfo, setUserInfo } = useRecoilState(UserInfoState);
+  const [userInfo, setUserInfo] = useRecoilState(UserInfoState);
   const navigate = useNavigate();
-  const address: walletAddress = { wallet: account };
+  const address: walletAddress = { walletAddress: account };
   useEffect(() => {
     login(address);
   }, [account]);
 
   const login = async (data: string | null | undefined | walletAddress) => {
+    console.log(data);
     await axiosInstance
       .post(loginApis.login, data)
       .then(

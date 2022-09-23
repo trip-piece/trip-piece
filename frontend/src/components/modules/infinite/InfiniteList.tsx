@@ -76,7 +76,7 @@ function InfiniteList({
   const targetList = useMemo(
     () =>
       data
-        ? data.pages.flatMap(({ result }) => result && result[listName])
+        ? data.pages?.flatMap((data) => data?.result && data?.result[listName])
         : [],
     [data],
   );
@@ -108,7 +108,7 @@ function InfiniteList({
           <CardComponent
             {...target}
             index={idx}
-            key={target.tripId + idx}
+            key={target?.tripId + idx}
             func={func}
             isEditMode={isEditMode}
             refetch={refetchData}
