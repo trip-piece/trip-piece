@@ -188,6 +188,7 @@ public class UserService {
         for (Scrap item : scrapList){
             outlineList.add(ScrapResponseDto.Outline.builder()
                     .scrapId(item.getId())
+                    .frameId(item.getFrame().getId())
                     .diaryId(item.getFrame().getDiary().getId())
                     .image(item.getFrame().getFrameImage())
                     .build());
