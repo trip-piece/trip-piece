@@ -10,6 +10,7 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -41,7 +42,7 @@ public class MarketController {
 
     @GetMapping
     @ApiOperation(value = "스티커 검색/조회", notes = "사용자가 마켓에서 등록된 스티커 조회")
-    public ResponseEntity<?> getMarketStickers(@RequestHeader("ACCESS_TOKEN") final String accessToken,@RequestParam long regionId, @RequestParam int sort,@RequestParam String keyword, Pageable pageable) {
+    public ResponseEntity<?> getMarketStickers(@RequestHeader("ACCESS_TOKEN") final String accessToken,@RequestParam long regionId, @RequestParam int sort,@RequestParam String keyword, @PageableDefault(size=10) Pageable pageable) {
         long userId = jwtTokenUtil.getUserIdFromToken(accessToken);
         User user = userService.findOneUser(userId);
         if (user == null) return new ResponseEntity<String>("로그인된 회원을 찾을 수 없습니다.", HttpStatus.NOT_FOUND);

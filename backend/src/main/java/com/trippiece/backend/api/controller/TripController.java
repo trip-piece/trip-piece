@@ -11,6 +11,7 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -78,7 +79,7 @@ public class TripController {
 
     @GetMapping
     @ApiOperation(value = "여행 티켓들 조회", notes = "사용자가 등록했던 모든 여행의 일정을 조회한다.")
-    public ResponseEntity<?> getTripList(@RequestHeader("ACCESS_TOKEN") final String accessToken, Pageable pageable) {
+    public ResponseEntity<?> getTripList(@RequestHeader("ACCESS_TOKEN") final String accessToken, @PageableDefault(size=10) Pageable pageable) {
         long userId = jwtTokenUtil.getUserIdFromToken(accessToken);
         User user = userService.findOneUser(userId);
         if (user == null) return new ResponseEntity<String>("로그인된 회원을 찾을 수 없습니다.", HttpStatus.NOT_FOUND);
