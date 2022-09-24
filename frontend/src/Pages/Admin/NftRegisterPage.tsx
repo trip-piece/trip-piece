@@ -4,11 +4,9 @@ import { Helmet } from "react-helmet-async";
 import { IMAGE_SIZE_LIMIT_NUMBER } from "../../utils/constants/constant";
 import { pixelToRem } from "../../utils/functions/util";
 import getAddressFrom from "../..//utils/AddressExtractor";
-import Web3 from "web3";
-import { NFTContract } from "../../common/ABI";
+import { NFTContract } from "../../common/NFT_ABI";
 import { create } from "ipfs-http-client";
 import { Buffer } from "buffer";
-import { useNavigate } from "react-router-dom";
 
 const Container = styled.section`
   min-height: 90vh;
