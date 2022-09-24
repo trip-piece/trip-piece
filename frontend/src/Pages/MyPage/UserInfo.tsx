@@ -2,7 +2,7 @@ import React from "react";
 import styled from "@emotion/styled";
 import { pixelToRem } from "../../utils/functions/util";
 import { ReactComponent as EtherIcon } from "../../assets/svgs/etherIcon.svg";
-import { ReactComponent as PencilIcon } from "../../assets/svgs/pencilIcon.svg";
+import NestedModal from "./Modal";
 
 const InfoBox = styled.div`
   box-shadow: 0 4px 4px 2px rgb(0 0 0/25%);
@@ -18,30 +18,41 @@ const InfoBox = styled.div`
 const InfoContent = styled.div`
   padding: ${pixelToRem(30)} 0 0 0;
 `;
+const ContentTop = styled.div`
+  display: flex;
+  position: relative;
+`;
+
+const ContentBottom = styled.div`
+  display: flex;
+  position: absolute;
+`;
 
 const WalletBalance = styled.div`
   font-size: ${(props) => props.theme.fontSizes.paragraph};
   padding: ${pixelToRem(9)} 0 0 0;
-  position: relative;
+  display: flex;
+  float: bottom;
 `;
-const WalletBalanceText = styled.text`
-  margin: ${pixelToRem(6)} 0 0 ${pixelToRem(8)};
-  position: absolute;
+const WalletBalanceText = styled.div`
+  margin: 3% 0 0 5%;
 `;
 
-const Name = styled.text`
+const Name = styled.div`
   font-size: ${(props) => props.theme.fontSizes.h2};
   padding: 0 ${pixelToRem(7)} 0 0;
   font-weight: bold;
+  display: flex;
 `;
 
-const NameSuffix = styled.text`
+const NameSuffix = styled.div`
   font-size: ${(props) => props.theme.fontSizes.h4};
 
+  margin: 5% 0 0 0;
   font-weight: bold;
 `;
 
-const ModifyNickNameButton = styled.button`
+const ModifyNickNameButton = styled.div`
   float: right;
   margin: ${pixelToRem(11)} ${pixelToRem(18)} 0 0;
   background-color: transparent;
@@ -53,15 +64,19 @@ function UserInfo() {
   return (
     <InfoBox>
       <InfoContent>
-        <Name>유지연</Name>
-        <NameSuffix>여행자님</NameSuffix>
+        <ContentTop>
+          <Name>유지연</Name>
+          <NameSuffix>여행자님</NameSuffix>
+        </ContentTop>
+
         <WalletBalance>
           <EtherIcon />
           <WalletBalanceText>123.456</WalletBalanceText>
         </WalletBalance>
       </InfoContent>
+
       <ModifyNickNameButton>
-        <PencilIcon width="25" />
+        <NestedModal />
       </ModifyNickNameButton>
     </InfoBox>
   );
