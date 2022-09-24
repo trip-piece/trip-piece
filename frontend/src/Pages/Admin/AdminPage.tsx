@@ -6,6 +6,7 @@ import Select from "react-select";
 import { pixelToRem } from "../../utils/functions/util";
 import "react-datepicker/dist/react-datepicker.css";
 import "../../style/DatePicker.css";
+
 // 지역리스트 가져오기
 const options = [
   { value: "chocolate", label: "Chocolate" },
@@ -23,7 +24,7 @@ const Container = styled.section`
   flex-direction: column;
   justify-content: space-evenly;
 
-  input {
+  > .fileupload {
     color: ${(props) => props.theme.colors.white};
   }
 `;
@@ -154,7 +155,7 @@ function AdminPage() {
             <label htmlFor="sticker">NFT 스티커</label>
           </div>
         </InfoBox>
-        <input type="file" id="fileUpload" />
+        <input className="fileupload" type="file" id="fileUpload" />
         <ButtonGroup>
           <button type="button" className="register">
             등록하기
