@@ -6,7 +6,6 @@ import Select from "react-select";
 import { pixelToRem } from "../../utils/functions/util";
 import "react-datepicker/dist/react-datepicker.css";
 import "../../style/DatePicker.css";
-
 // 지역리스트 가져오기
 const options = [
   { value: "chocolate", label: "Chocolate" },
