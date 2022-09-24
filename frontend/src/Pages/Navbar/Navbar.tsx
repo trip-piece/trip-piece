@@ -17,6 +17,7 @@ import {
   MdShoppingCart,
   MdOutlineFestival,
   MdLocationOn,
+  MdQrCodeScanner,
 } from "react-icons/md";
 import { FaBook, FaEthereum } from "react-icons/fa";
 import { BsFillBookmarkHeartFill } from "react-icons/bs";
@@ -234,6 +235,17 @@ const MiddleBoxes = styled.div`
       color: ${(props) => props.theme.colors.blue};
     }
   }
+
+  .QRButton {
+    background-color: transparent;
+    box-shadow: 0 0 0 0 rgb(0 0 0/10%);
+
+    .QRIcon {
+      width: 100%;
+      height: 100%;
+      color: ${(props) => props.theme.colors.blue};
+    }
+  }
 `;
 
 const OngoingTripBox = styled.div<{ active?: boolean | null }>`
@@ -405,8 +417,8 @@ export default function Navbar() {
               <BiShareAlt className="icon" onClick={moveToShareFrame} />
               프레임 공유
             </button>
-            <button onClick={moveToQR}>
-              <p>✨</p> QR 스티커
+            <button onClick={moveToQR} className="QRButton">
+              <MdQrCodeScanner className="QRIcon" />
             </button>
             <button>
               <MdShoppingCart className="icon" onClick={moveToMarket} /> NFT
