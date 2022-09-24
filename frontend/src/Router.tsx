@@ -52,7 +52,7 @@ function Router() {
         <Route path="market/:regionId" element={<MarketListPage />} />
         <Route path="market/:marketId/detail" element={<StickerDetailPage />} />
         <Route path="market/register" element={<MarketRegisterPage />} />
-        <Route path="user/stickers" element={<MyPage />} />
+        <Route path="user/scraps" element={<MyPage />} />
         <Route path="places/map" element={<StickerMapMain />} />
         <Route path="places/information" element={<StickerMapFiltering />} />
       </Routes>

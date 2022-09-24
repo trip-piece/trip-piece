@@ -1,7 +1,12 @@
 import React from "react";
 import styled from "@emotion/styled";
-import { Select } from "@mui/material";
+import { Modal, Select } from "@mui/material";
 import { pixelToRem } from "../../utils/functions/util";
+import NestedModal from "./Modal";
+import { MemoInfiniteList } from "../../components/modules/infinite/InfiniteList";
+import userApis from "../../utils/apis/userApis";
+import { MemoCard } from "./Card";
+import Skeleton from "./Skeleton";
 
 const StickerBox = styled.div`
   box-shadow: 0 4px 4px 2px rgb(0 0 0/25%);
@@ -22,7 +27,7 @@ const TitleBox = styled.div`
   border-bottom: solid 1px ${(props) => props.theme.colors.gray400};
   justify-content: center;
 `;
-const Title = styled.text`
+const Title = styled.div`
   font-weight: bold;
   font-size: ${(props) => props.theme.fontSizes.h5};
 `;
@@ -49,15 +54,25 @@ const StickerContainer = styled.div`
   display: inline-block;
 `;
 
-function MyStickerList() {
+function MyScrapList() {
   return (
     <StickerBox>
       <TitleBox>
-        <Title>보유 NFT 스티커</Title>
+        <Title>내가 스크랩한 프레임</Title>
       </TitleBox>
-      <StickerContainer>ss</StickerContainer>
+      <StickerContainer>휑 ~</StickerContainer>
+
+      {/* <MemoInfiniteList
+        url={userApis.getMyScraps(1)}
+        queryKey={["scrapList"]}
+        CardComponent={MemoCard}
+        SkeletonCardComponent={Skeleton}
+        zeroDataText="스크랩이 존재하지..않습니다"
+        count={3}
+        listName="scrapList"
+      /> */}
     </StickerBox>
   );
 }
 
-export default MyStickerList;
+export default MyScrapList;
