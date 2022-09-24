@@ -17,10 +17,12 @@ import {
   MdShoppingCart,
   MdOutlineFestival,
   MdLocationOn,
+  MdQrCodeScanner,
 } from "react-icons/md";
 import { FaBook, FaEthereum } from "react-icons/fa";
 import { BsFillBookmarkHeartFill } from "react-icons/bs";
 import { pixelToRem } from "../../utils/functions/util";
+import { useNavigate } from "react-router-dom";
 
 const drawerWidth = "80%";
 
@@ -233,6 +235,17 @@ const MiddleBoxes = styled.div`
       color: ${(props) => props.theme.colors.blue};
     }
   }
+
+  .QRButton {
+    background-color: transparent;
+    box-shadow: 0 0 0 0 rgb(0 0 0/10%);
+
+    .QRIcon {
+      width: 100%;
+      height: 100%;
+      color: ${(props) => props.theme.colors.blue};
+    }
+  }
 `;
 
 const OngoingTripBox = styled.div<{ active?: boolean | null }>`
@@ -287,6 +300,31 @@ export default function Navbar() {
   };
 
   const handleDrawerClose = () => {
+    setOpen(false);
+  };
+
+  const navigate = useNavigate();
+  const moveToMySticker = () => {
+    navigate("/user/stickers");
+    setOpen(false);
+  };
+  const moveToMyFrame = () => {};
+  const moveToMyDiary = () => {
+    navigate("/trips");
+    setOpen(false);
+  };
+  const moveToShareFrame = () => {};
+  const moveToQR = () => {};
+  const moveToMarket = () => {
+    navigate("/market");
+    setOpen(false);
+  };
+  const moveToSpot = () => {
+    navigate("/places/map");
+    setOpen(false);
+  };
+  const moveToTrip = () => {
+    navigate("/trips");
     setOpen(false);
   };
 
@@ -355,29 +393,36 @@ export default function Navbar() {
         <BottomArea>
           <MiddleLongBox>
             <button>
-              <MdOutlineAddReaction className="icon" />
+              <MdOutlineAddReaction
+                className="icon"
+                onClick={moveToMySticker}
+              />
               보유 스티커
             </button>
             <div className="middle-bar" />
             <button>
-              <BsFillBookmarkHeartFill className="icon" />
+              <BsFillBookmarkHeartFill
+                className="icon"
+                onClick={moveToMyFrame}
+              />
               찜한 프레임
             </button>
             <div className="middle-bar" />
             <button>
-              <FaBook className="icon" />내 다이어리
+              <FaBook className="icon" onClick={moveToMyDiary} />내 다이어리
             </button>
           </MiddleLongBox>
           <MiddleBoxes>
             <button>
-              <BiShareAlt className="icon" />
+              <BiShareAlt className="icon" onClick={moveToShareFrame} />
               프레임 공유
             </button>
-            <button>
-              <p>✨</p> QR 스티커
+            <button onClick={moveToQR} className="QRButton">
+              <MdQrCodeScanner className="QRIcon" />
             </button>
             <button>
-              <MdShoppingCart className="icon" /> NFT 마켓
+              <MdShoppingCart className="icon" onClick={moveToMarket} /> NFT
+              마켓
             </button>
           </MiddleBoxes>
           <MiddleLongBox>
@@ -389,7 +434,7 @@ export default function Navbar() {
               <h5>
                 현재 발급할 수 있는 축제/스팟
                 <br />
-                <button>보러가기</button>
+                <button onClick={moveToSpot}>보러가기</button>
               </h5>
             </div>
           </MiddleLongBox>
@@ -401,7 +446,7 @@ export default function Navbar() {
                   <p>현재 진행중인 여행이 없어요</p>
                   <p>여행을 등록해 주세요!</p>
                 </div>
-                <button>등록하기</button>
+                <button onClick={moveToTrip}>등록하기</button>
               </div>
             </div>
           </OngoingTripBox>
