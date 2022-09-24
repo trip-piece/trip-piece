@@ -3,11 +3,9 @@ import styled from "@emotion/styled";
 import { Helmet } from "react-helmet-async";
 import DatePicker from "react-datepicker";
 import Select from "react-select";
-import ColoredRoundButton from "../../components/atoms/ColoredRoundButton";
 import { pixelToRem } from "../../utils/functions/util";
 import "react-datepicker/dist/react-datepicker.css";
 import "../../style/DatePicker.css";
-
 // 지역리스트 가져오기
 const options = [
   { value: "chocolate", label: "Chocolate" },
@@ -16,55 +14,93 @@ const options = [
 ];
 
 const Container = styled.section`
-  min-height: 100vh;
+  min-height: 90vh;
   width: 100%;
   border-radius: 30px 30px 0 0;
   padding: 1rem;
   position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+
+  input {
+    color: ${(props) => props.theme.colors.white};
+  }
 `;
 
 const Title = styled.h2`
   text-align: center;
   font-size: ${(props) => props.theme.fontSizes.h3};
   font-weight: 700;
-  height: 3rem;
-  display: flex;
   color: ${(props) => props.theme.colors.white};
-  justify-content: center;
-  align-items: center;
 `;
 
 const TitleInput = styled.input`
   border: none;
   width: 100%;
-  display: block;
   height: ${pixelToRem(40)};
   padding: 0 1rem;
   border-radius: 5px;
-  margin: ${pixelToRem(10)} 0;
 `;
 
 const InfoBox = styled.div`
   box-shadow: 0 4px 4px 2px rgb(0 0 0/25%);
   border-radius: 5px;
-  padding: 0 0 ${pixelToRem(30)} ${pixelToRem(32)};
-  margin: ${pixelToRem(10)} 0;
+  padding: ${pixelToRem(20)};
   height: ${pixelToRem(121)};
   width: 100%;
   background: ${(props) => props.theme.colors.white};
-  display: flex;
 `;
 
-const ButtonText = styled.div`
-  font-size: ${(props) => props.theme.fontSizes.h5};
-  font-weight: bold;
-  /* 색상 */
-  font-color: ${(props) => props.theme.colors.MainDark};
+const RadioGroup = styled.div`
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+
+  div {
+    text-align: center;
+    width: 25%;
+    height: 2rem;
+    border-radius: 20px;
+
+    label {
+      padding: 0.5rem;
+      color: ${(props) => props.theme.colors.white};
+    }
+  }
+`;
+
+const ButtonGroup = styled.div`
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+
+  button {
+    width: 30%;
+    height: 2rem;
+    border-radius: 20px;
+  }
+
+  .register {
+    margin-right: 1rem;
+    background: ${(props) => props.theme.colors.yellow};
+  }
 `;
 
 const Flex = styled.div`
   display: flex;
-  height: ${pixelToRem(40)};
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+
+  input {
+    height: ${pixelToRem(40)};
+    border-radius: 5px;
+    width: 100%;
+    color: ${(props) => props.theme.colors.gray900};
+    padding: 1rem;
+  }
 `;
 
 function AdminPage() {
@@ -78,17 +114,18 @@ function AdminPage() {
       </Helmet>
       <Container>
         <Title>이벤트 등록(수정)</Title>
-        <label>
-          <input type="checkbox" />
-          축제
-          <input type="checkbox" />
-          스팟
-        </label>
-
+        <RadioGroup>
+          <div>
+            <input type="radio" checked id="spot" />
+            <label htmlFor="spot">스팟</label>
+          </div>
+          <div>
+            <input type="radio" id="festival" />
+            <label htmlFor="festival">축제</label>
+          </div>
+        </RadioGroup>
         <TitleInput placeholder="축제 / 지역 명" maxLength={10} />
-
         <Select options={options} />
-
         <TitleInput placeholder="장소" />
         <TitleInput placeholder="담당자 이메일" />
         <Flex>
@@ -111,17 +148,19 @@ function AdminPage() {
           />
         </Flex>
         <InfoBox>
-          <h5>NFT스티커</h5>
+          <h5>NFT 스티커 목록</h5>
+          <div>
+            <input type="checkbox" id="sticker" />
+            <label htmlFor="sticker">NFT 스티커</label>
+          </div>
         </InfoBox>
         <input type="file" id="fileUpload" />
-        <br />
-        <ColoredRoundButton color="yellow" type="button">
-          <ButtonText>등록하기</ButtonText>
-        </ColoredRoundButton>
-
-        <ColoredRoundButton color="white" type="button" font-color="black">
-          <ButtonText>취소하기</ButtonText>
-        </ColoredRoundButton>
+        <ButtonGroup>
+          <button type="button" className="register">
+            등록하기
+          </button>
+          <button type="button">취소하기</button>
+        </ButtonGroup>
       </Container>
     </>
   );
