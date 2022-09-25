@@ -31,13 +31,20 @@ public class MarketController {
     @PostMapping
     @ApiOperation(value = "스티커마켓등록", notes = "스티커판매를 위해 등록한다.")
     public ResponseEntity<?> addMarketSticker(@RequestHeader("ACCESS_TOKEN") final String accessToken, @RequestBody long tokenId, float price) {
-        long userId = jwtTokenUtil.getUserIdFromToken(accessToken);
-        User user = userService.findOneUser(userId);
-        if (user == null) return new ResponseEntity<String>("로그인된 회원을 찾을 수 없습니다.", HttpStatus.NOT_FOUND);
-        else {
-            marketService.addMarketSticker(user, tokenId, price);
+        try {
+            long userId = jwtTokenUtil.getUserIdFromToken(accessToken);
+            User user = userService.findOneUser(userId);
+            if (user == null) return new ResponseEntity<String>("로그인된 회원을 찾을 수 없습니다.", HttpStatus.NOT_FOUND);
+            else {
+                marketService.addMarketSticker(user, tokenId, price);
+                return new ResponseEntity<>("마켓에 스티커 등록 성공!", HttpStatus.OK);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<String>("마켓에 스티커 등록 실패", HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return new ResponseEntity<>("마켓에 스티커 등록 성공!", HttpStatus.OK);
+
+
     }
 
     @GetMapping
