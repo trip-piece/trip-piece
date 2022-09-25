@@ -1,12 +1,12 @@
 import React, { useEffect } from "react";
-import styled from "@emotion/styled";
+
 import { Helmet } from "react-helmet-async";
 import { InjectedConnector } from "@web3-react/injected-connector";
 import { useWeb3React } from "@web3-react/core";
 import { useNavigate } from "react-router-dom";
-import { useRecoilState } from "recoil";
+// import { useRecoilState } from "recoil";
 import { setCookie } from "../../utils/cookie";
-import { IUserInfo, UserInfoState } from "../../store/atom";
+// import { IUserInfo, UserInfoState } from "../../store/atom";
 
 import LoginButton from "./LoginButton";
 import LadingButton from "./LandingButton";
@@ -33,18 +33,21 @@ deactivate: dapp 월렛 연결 해제 수행 함수
 
 function LandingPage() {
   const { activate, active, deactivate, account } = useWeb3React();
-  const [userInfo, setUserInfo] = useRecoilState(UserInfoState);
+  //const [userInfo, setUserInfo] = useRecoilState(UserInfoState);
   const navigate = useNavigate();
   const address: walletAddress = { walletAddress: account };
 
-  const login = async (data: string | null | undefined | walletAddress) => {
+  const login = async (
+    data: string | null | undefined | walletAddress,
+    // props: IUserInfo,
+  ) => {
     await axiosInstance
       .post(userApis.login, data)
       .then(
         (response: { data: { accessToken: string; refreshToken: string } }) => {
           setCookie("accessToken", response.data.accessToken);
           setCookie("refreshToken", response.data.refreshToken);
-          setUserInfo({ address: { account }, isLoggedIn: true });
+          // setUserInfo({ isLoggedIn: true });
           navigate("/main");
         },
       );
@@ -53,7 +56,7 @@ function LandingPage() {
     login(address);
   }, [account]);
 
-  const handleActivate = async (event) => {
+  const handleActivate = async (event: any) => {
     event.preventDefault();
     console.log(active);
 

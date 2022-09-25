@@ -1,5 +1,5 @@
 import styled from "@emotion/styled";
-import { IButtonProps } from "../IComponents";
+import { IButtonProps } from "../../utils/interfaces/trips.interface";
 
 const Button = styled.button`
   background-color: transparent;
