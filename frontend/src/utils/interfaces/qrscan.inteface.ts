@@ -4,7 +4,7 @@ export interface TitleProps {
 }
 
 export interface ContentProps {
-  result: "success" | "fail" | "incorrect";
+  result: "success" | "fail" | "incorrect" | string;
   stickerName?: string | null;
   stickerUrl?: string | null;
 }
