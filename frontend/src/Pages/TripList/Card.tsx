@@ -12,7 +12,6 @@ interface ITripCardProps {
   title: string;
   startDate: Date;
   endDate: Date;
-  index: number;
   isEditMode: boolean;
   refetch: () => Promise<
     QueryObserverResult<
@@ -47,7 +46,6 @@ function Card({
   title,
   startDate,
   endDate,
-  index,
   isEditMode,
   refetch,
 }: ITripCardProps) {
