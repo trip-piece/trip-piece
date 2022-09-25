@@ -56,7 +56,7 @@ function LandingPage() {
     login(address);
   }, [account]);
 
-  const handleActivate = async (event) => {
+  const handleActivate = async (event: any) => {
     event.preventDefault();
     console.log(active);
 
