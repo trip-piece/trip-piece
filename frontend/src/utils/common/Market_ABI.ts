@@ -1,6 +1,6 @@
 import Web3 from "web3";
 
-export const Market_ABI = [
+export const NFT_ABI = [
   {
     inputs: [
       {
@@ -111,7 +111,7 @@ export const Market_ABI = [
 
 const web3 = new Web3((window as any).web3.currentProvider);
 
-export const MarketContract = new web3.eth.Contract(
-  Market_ABI as any,
-  import.meta.env.VITE_MARKET_CA,
+export const NFTContract = new web3.eth.Contract(
+  NFT_ABI as any,
+  import.meta.env.VITE_NFT_CA,
 );
