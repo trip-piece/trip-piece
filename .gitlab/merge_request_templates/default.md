@@ -14,7 +14,6 @@
 
 - [ ] git conflict는 문제가 없었나요?
 - [ ] 알맞은 branch로 merge 요청을 하시나요?
-- [ ] 브랜치를 삭제하실껀가요?
 
 ## relavant issue number
 
