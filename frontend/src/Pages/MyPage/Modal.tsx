@@ -6,11 +6,11 @@ import styled from "@emotion/styled";
 import { pixelToRem } from "../../utils/functions/util";
 import ColoredRoundButton from "../../components/atoms/ColoredRoundButton";
 import { ReactComponent as PencilIcon } from "../../assets/svgs/pencilIcon.svg";
-import axiosInstance from "../../utils/apis/api";
-import userApis, { Inickname } from "../../utils/apis/userApis";
-import { useRecoilState } from "recoil";
-import { UserInfoState } from "../../store/atom";
-import { useForm } from "react-hook-form";
+// import axiosInstance from "../../utils/apis/api";
+// import userApis, { Inickname } from "../../utils/apis/userApis";
+// import { useRecoilState } from "recoil";
+// import { UserInfoState } from "../../store/atom";
+// import { SubmitHandler, useForm } from "react-hook-form";
 
 const ModifiedNicknameModal = styled(Box)`
   position: absolute;
@@ -69,22 +69,22 @@ const InputBox = styled.input`
 
 export default function NestedModal() {
   const [open, setOpen] = React.useState(false);
-  const [userInfo, setUserInfo] = useRecoilState(UserInfoState);
+  // const [userInfo, setUserInfo] = useRecoilState(UserInfoState);
   const handleOpen = () => {
     setOpen(true);
   };
   const handleClose = () => {
     setOpen(false);
   };
-  const { handleSubmit } = useForm<Inickname>();
+  // const { handleSubmit } = useForm<Inickname>();
 
-  const onSubmit: SubmitHandler<Inickname> = async (data: Inickname) => {
-    let response = await axiosInstance.patch(userApis.modifyNickname, data);
+  // const onSubmit: SubmitHandler<Inickname> = async (data: Inickname) => {
+  //  let response = await axiosInstance.patch(userApis.modifyNickname, data);
 
-    if (response.status === 200) {
-      setUserInfo({ nickname: data.nickname });
-    }
-  };
+  // if (response.status === 200) {
+  // setUserInfo({ nickname: data.nickname });
+  //  }
+  // }
   return (
     <>
       <Button onClick={handleOpen}>
@@ -99,7 +99,7 @@ export default function NestedModal() {
         <ModifiedNicknameModal>
           <Container>
             <Title>닉네임 수정</Title>
-            <Form onSubmit={handleSubmit(onSubmit)}>
+            <Form>
               <InputBox placeholder="1 ~ 8자 이내로 입력" />
             </Form>
 

@@ -5,6 +5,7 @@ import { pixelToRem } from "../../utils/functions/util";
 import { ContentProps } from "../../utils/interfaces/qrscan.inteface";
 
 import ColoredRoundButton from "../../components/atoms/ColoredRoundButton";
+import { EmotionJSX } from "@emotion/react/types/jsx-namespace";
 
 const Box = styled.div`
   box-shadow: 0 4px 4px 2px rgb(0 0 0/25%);
@@ -62,7 +63,7 @@ const ResultText = styled.div`
   justify-content: center;
 `;
 
-function NFTInfo({ result, stickerName, stickerUrl }: ContentProps) {
+function NFTInfo({ stickerName, stickerUrl }: ContentProps) {
   return (
     <>
       <StickerName>{stickerName}</StickerName>
@@ -71,7 +72,7 @@ function NFTInfo({ result, stickerName, stickerUrl }: ContentProps) {
   );
 }
 
-function QrInfo({ result, stickerName, stickerUrl }: ContentProps) {
+function QrInfo({ stickerName, stickerUrl }: ContentProps) {
   return (
     <>
       <StickerName>{stickerName}</StickerName>
@@ -80,7 +81,7 @@ function QrInfo({ result, stickerName, stickerUrl }: ContentProps) {
   );
 }
 
-function Result({ result }: ContentProps) {
+function Result({ result }: ContentProps): EmotionJSX.Element {
   const flag: string = result;
 
   if (flag === "success") {
@@ -119,6 +120,8 @@ function Result({ result }: ContentProps) {
       </>
     );
   }
+
+  return <div>ss</div>;
 }
 
 function Content({ result, stickerName, stickerUrl }: ContentProps) {
@@ -140,7 +143,7 @@ function Content({ result, stickerName, stickerUrl }: ContentProps) {
             result={result}
           />
         ) : (
-          <QrInfo stickerName={null} stickerUrl={stickerUrl} result={null} />
+          <QrInfo stickerName={null} stickerUrl={stickerUrl} result={result} />
         )}
       </MainBox>
 
