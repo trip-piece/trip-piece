@@ -30,7 +30,7 @@ public class TripController {
     private final JwtTokenUtil jwtTokenUtil;
 
     @PostMapping
-    @ApiOperation(value = "여행 티켓 추가", notes = "가고자 하는 여행지와 일정을 추가한다.")
+    @ApiOperation(value = "여행 티켓추가", notes = "가고자 하는 여행지와 일정을 추가한다.")
     public ResponseEntity<?> addTrip(@RequestHeader("ACCESS_TOKEN") final String accessToken, @RequestBody TripRequestDto tripRequestDto) {
         try {
             long userId = jwtTokenUtil.getUserIdFromToken(accessToken);

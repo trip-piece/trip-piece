@@ -29,7 +29,7 @@ public class MarketController {
     private final JwtTokenUtil jwtTokenUtil;
 
     @PostMapping
-    @ApiOperation(value = "스티커마켓등록", notes = "스티커판매를 위해 등록한다.")
+    @ApiOperation(value = "스티커마켓등록", notes = "스티커 판매를 위해 등록한다.")
     public ResponseEntity<?> addMarketSticker(@RequestHeader("ACCESS_TOKEN") final String accessToken, @RequestBody long tokenId, float price) {
         try {
             long userId = jwtTokenUtil.getUserIdFromToken(accessToken);

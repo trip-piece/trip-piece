@@ -114,7 +114,7 @@ public class DiaryController {
     }
 
     @GetMapping
-    @ApiOperation(value = "일기 조회", notes = "작성한 일기 내용을 조회")
+    @ApiOperation(value = "일기조회", notes = "작성한 일기 내용을 조회")
     public ResponseEntity<?> getDiary(@RequestHeader("ACCESS_TOKEN") final String accessToken, @PathVariable("trip_id") long tripId, @PathVariable("date") LocalDate date) {
         long userId = jwtTokenUtil.getUserIdFromToken(accessToken);
         User user = userService.findOneUser(userId);
