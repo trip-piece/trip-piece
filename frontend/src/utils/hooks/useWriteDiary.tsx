@@ -1,21 +1,10 @@
 import { useMutation } from "react-query";
 import axiosInstance from "../apis/api";
 import diaryApis from "../apis/diaryApis";
-
-interface IDiaryProps {
-  diary: {
-    tripId: number;
-    content: string;
-    fontType: number;
-    backgroundColor: number;
-    weather: number;
-    date: string;
-  };
-  todayPhoto: FormData | undefined;
-}
+import { IWritedDiary } from "../interfaces/diarys.interface";
 
 function useWriteDiary() {
-  return useMutation((diary: IDiaryProps) =>
+  return useMutation((diary: IWritedDiary<FormData | undefined>) =>
     axiosInstance.post(diaryApis.diaryWrite, diary, {
       headers: {
         "Content-Type": "multipart/form-data:",

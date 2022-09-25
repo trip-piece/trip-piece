@@ -45,7 +45,7 @@ function Router() {
           <Route path=":diaryDate" element={<TripDiaryPage />} />
         </Route>
         <Route
-          path="trips/:tripId/diarys/write"
+          path="trips/:tripId/diarys/:diaryDate/write"
           element={<DiaryManagement />}
         />
         <Route path="market" element={<MarketMainPage />} />

@@ -48,7 +48,7 @@ function TripDiaryPage() {
     axiosInstance.get(diaryApis.diary(Number(tripId), date));
 
   const { isLoading, isFetched, data } = useQuery(
-    [`${diaryDate}-diary`],
+    ["diary", `${tripId}-${diaryDate}`],
     () => getDiary(selectedDiaryDate),
     {
       refetchOnWindowFocus: false,
@@ -58,7 +58,7 @@ function TripDiaryPage() {
   );
 
   const moveToWriteDiary = () => {
-    navigate(`/trips/${tripId}/diarys/write`, {
+    navigate(`/trips/${tripId}/diarys/${diaryDate}/write`, {
       state: { date: selectedDiaryDate },
     });
   };

@@ -12,6 +12,7 @@ import { TextareaAutosize } from "@mui/material";
 import { BsFillGeoAltFill } from "react-icons/bs";
 import { HiTrash } from "react-icons/hi";
 import { Helmet } from "react-helmet-async";
+import { useRecoilState } from "recoil";
 import {
   DIARY_COLOR_LIST,
   FONTTYPELIST,
@@ -25,6 +26,7 @@ import axiosInstance from "../../utils/apis/api";
 import diaryApis from "../../utils/apis/diaryApis";
 import useWriteDiary from "../../utils/hooks/useWriteDiary";
 import useWindowResize from "../../utils/hooks/useWindowResize";
+import { writedDiaryState } from "../../store/diaryAtoms";
 
 const Container = styled.section`
   height: 1px;
@@ -238,7 +240,10 @@ function DiaryManagementPage() {
   const [imageSrc, setImageSrc] = useState<string | null>("");
   const fileInput = useRef<HTMLInputElement>(null);
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
-  const { tripId } = useParams();
+  const { tripId, diaryDate } = useParams();
+  const [diary, setDiary] = useRecoilState(
+    writedDiaryState(`${tripId}-${diaryDate}`),
+  );
   const {
     state: { date },
   } = useLocation() as RouteState;
@@ -247,7 +252,10 @@ function DiaryManagementPage() {
   const navigate = useNavigate();
   const size = useWindowResize();
   useEffect(() => {
-    setDottedDate(date.replaceAll("-", "."));
+    if (date) setDottedDate(date?.replaceAll("-", "."));
+    else if (diaryDate) {
+      setDottedDate(diaryDate?.replaceAll("-", "."));
+    }
   }, []);
 
   useEffect(() => {
@@ -273,10 +281,12 @@ function DiaryManagementPage() {
       },
       todayPhoto: formData,
     };
-    diaryMutate(body, {
-      onSuccess: (res) => console.log(res),
-      onError: (err) => console.log(err),
-    });
+    setDiary(body);
+    console.log(diary);
+    // diaryMutate(body, {
+    //   onSuccess: (res) => console.log(res),
+    //   onError: (err) => console.log(err),
+    // });
   };
 
   const onCancel = () => {
