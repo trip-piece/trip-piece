@@ -47,7 +47,7 @@ function TripDiaryPage() {
   const getDiary = (date: string) =>
     axiosInstance.get(diaryApis.diary(Number(tripId), date));
 
-  const { isLoading, isFetched, data } = useQuery(
+  const { isLoading } = useQuery(
     [`${diaryDate}-diary`],
     () => getDiary(selectedDiaryDate),
     {
