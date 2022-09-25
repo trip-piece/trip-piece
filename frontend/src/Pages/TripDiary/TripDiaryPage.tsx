@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useQuery } from "react-query";
 import { useNavigate, useParams } from "react-router-dom";
 import { HiPencilAlt } from "react-icons/hi";
-import { diaryApis } from "../../utils/apis/diaryApis";
+import diaryApis from "../../utils/apis/diaryApis";
 import { changeDateFormatToHyphen } from "../../utils/functions/util";
 import ColoredRoundButton from "../../components/atoms/ColoredRoundButton";
 import axiosInstance from "../../utils/apis/api";

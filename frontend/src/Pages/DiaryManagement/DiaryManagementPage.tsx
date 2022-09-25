@@ -11,7 +11,6 @@ import { Controller, useForm } from "react-hook-form";
 import { TextareaAutosize } from "@mui/material";
 import { BsFillGeoAltFill } from "react-icons/bs";
 import { HiTrash } from "react-icons/hi";
-import { useMutation } from "react-query";
 import { Helmet } from "react-helmet-async";
 import {
   DIARY_COLOR_LIST,
@@ -23,7 +22,9 @@ import ColoredRoundButton from "../../components/atoms/ColoredRoundButton";
 import { pixelToRem } from "../../utils/functions/util";
 import { shake } from "../../style/animations";
 import axiosInstance from "../../utils/apis/api";
-import { diaryApis } from "../../utils/apis/diaryApis";
+import diaryApis from "../../utils/apis/diaryApis";
+import useWriteDiary from "../../utils/hooks/useWriteDiary";
+import useWindowResize from "../../utils/hooks/useWindowResize";
 
 const Container = styled.section`
   height: 1px;
@@ -106,7 +107,7 @@ const ColorButton = styled.button<{ active: boolean; backgroundColor: string }>`
 
 const AutosizedTextarea = styled(TextareaAutosize)<IDiaryStyle>`
   display: block;
-  font-family: ${(props) => FONTTYPELIST[Number(props.fonttype)]};
+  font-family: ${(props) => FONTTYPELIST[props.fonttype]};
   background-color: ${(props) => props.backgroundcolor};
   width: 100%;
   min-height: 5vh;
@@ -212,12 +213,12 @@ interface RouteState {
   };
 }
 interface IDiaryStyle {
-  fonttype: string;
+  fonttype: number;
   backgroundcolor: string;
   diarywidth: number;
 }
 interface IFormInput {
-  fontType: string;
+  fontType: number;
   content: string;
 }
 
@@ -242,7 +243,9 @@ function DiaryManagementPage() {
     state: { date },
   } = useLocation() as RouteState;
   const { register, handleSubmit, control, watch } = useForm<IFormInput>({});
+  const { mutate: diaryMutate } = useWriteDiary();
   const navigate = useNavigate();
+  const size = useWindowResize();
   useEffect(() => {
     setDottedDate(date.replaceAll("-", "."));
   }, []);
@@ -253,10 +256,27 @@ function DiaryManagementPage() {
       // eslint-disable-next-line no-unsafe-optional-chaining
       textAreaRef.current?.offsetWidth;
     setDiaryWidth(tmpSize);
-  }, [textAreaRef.current?.offsetWidth]);
+  }, [size]);
 
   const onSubmit = (data: IFormInput) => {
-    console.log(data, tripId, weather, diaryColor);
+    const formData = new FormData();
+    if (todayPhoto) {
+      formData.append("file", todayPhoto);
+    }
+    const body = {
+      diary: {
+        ...data,
+        weather,
+        backgroundColor: diaryColor,
+        tripId: Number(tripId),
+        date,
+      },
+      todayPhoto: formData,
+    };
+    diaryMutate(body, {
+      onSuccess: (res) => console.log(res),
+      onError: (err) => console.log(err),
+    });
   };
 
   const onCancel = () => {
@@ -294,16 +314,6 @@ function DiaryManagementPage() {
     setTodayPhoto(null);
   };
 
-  const addDiary = async (newDiary: any): Promise<any> => {
-    const { data } = await axiosInstance.post<any>(
-      diaryApis.diaryWrite,
-      newDiary,
-    );
-    return data;
-  };
-
-  const {} = useMutation(addDiary);
-
   return (
     <>
       <Helmet>
@@ -315,7 +325,11 @@ function DiaryManagementPage() {
         </DateConatiner>
         <Form onSubmit={handleSubmit(onSubmit)}>
           <DiaryStyleContainer>
-            <Select id="font" defaultValue="0" {...register("fontType")}>
+            <Select
+              id="font"
+              defaultValue="0"
+              {...register("fontType", { valueAsNumber: true })}
+            >
               <option value="0" disabled hidden>
                 글씨체
               </option>
