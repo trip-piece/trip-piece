@@ -32,12 +32,18 @@ public class TripController {
     @PostMapping
     @ApiOperation(value = "여행 티켓 추가", notes = "가고자 하는 여행지와 일정을 추가한다.")
     public ResponseEntity<?> addTrip(@RequestHeader("ACCESS_TOKEN") final String accessToken, @RequestBody TripRequestDto tripRequestDto) {
-        long userId = jwtTokenUtil.getUserIdFromToken(accessToken);
-        User user = userService.findOneUser(userId);
-        if (user == null) return new ResponseEntity<String>("로그인된 회원을 찾을 수 없습니다.", HttpStatus.NOT_FOUND);
-        else {
-            tripService.addTrip(user,tripRequestDto);
-            return new ResponseEntity<String>("티켓 추가 성공!", HttpStatus.CREATED);
+        try {
+            long userId = jwtTokenUtil.getUserIdFromToken(accessToken);
+            User user = userService.findOneUser(userId);
+            if (user == null) return new ResponseEntity<String>("로그인된 회원을 찾을 수 없습니다.", HttpStatus.NOT_FOUND);
+            else {
+                tripService.addTrip(user, tripRequestDto);
+                return new ResponseEntity<String>("티켓 추가 성공!", HttpStatus.CREATED);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<String>("여행 티켓 등록 실패", HttpStatus.INTERNAL_SERVER_ERROR);
+
         }
 
 
@@ -66,20 +72,27 @@ public class TripController {
     @PatchMapping
     @ApiOperation(value = "여행 티켓 수정", notes = "등록한 여행 일정을 수정한다.")
     public ResponseEntity<?> updateTrip(@RequestHeader("ACCESS_TOKEN") final String accessToken, @PathVariable("tripId") long tripId, @RequestBody TripRequestDto tripRequestDto) {
-        long userId = jwtTokenUtil.getUserIdFromToken(accessToken);
-        User user = userService.findOneUser(userId);
-        int updateResult = tripService.updateTrip(user, tripId, tripRequestDto);
-        if (updateResult == 406)
-            return new ResponseEntity<String>("사용자가 티켓의 소유자가 아닙니다.", HttpStatus.NOT_ACCEPTABLE);
-        else {
-            return new ResponseEntity<String>("티켓 수정 성공!", HttpStatus.OK);
+        try {
+            long userId = jwtTokenUtil.getUserIdFromToken(accessToken);
+            User user = userService.findOneUser(userId);
+            int updateResult = tripService.updateTrip(user, tripId, tripRequestDto);
+            if (updateResult == 406)
+                return new ResponseEntity<String>("사용자가 티켓의 소유자가 아닙니다.", HttpStatus.NOT_ACCEPTABLE);
+            else {
+                return new ResponseEntity<String>("티켓 수정 성공!", HttpStatus.OK);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<String>("여행 티켓 수정 실패", HttpStatus.INTERNAL_SERVER_ERROR);
+
         }
 
     }
 
     @GetMapping
     @ApiOperation(value = "여행 티켓들 조회", notes = "사용자가 등록했던 모든 여행의 일정을 조회한다.")
-    public ResponseEntity<?> getTripList(@RequestHeader("ACCESS_TOKEN") final String accessToken, @PageableDefault(size=10) Pageable pageable) {
+    public ResponseEntity<?> getTripList(@RequestHeader("ACCESS_TOKEN") final String accessToken, @PageableDefault(size = 10) Pageable pageable) {
+
         long userId = jwtTokenUtil.getUserIdFromToken(accessToken);
         User user = userService.findOneUser(userId);
         if (user == null) return new ResponseEntity<String>("로그인된 회원을 찾을 수 없습니다.", HttpStatus.NOT_FOUND);
@@ -106,8 +119,6 @@ public class TripController {
         User user = userService.findOneUser(userId);
         if (user == null) return new ResponseEntity<String>("로그인된 회원을 찾을 수 없습니다.", HttpStatus.NOT_FOUND);
         else {
-
-
             return new ResponseEntity<>(tripService.isInTrip(user, todayDate), HttpStatus.OK);
         }
     }
