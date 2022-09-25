@@ -3,9 +3,7 @@ import { Helmet } from "react-helmet-async";
 import { useNavigate, useParams } from "react-router-dom";
 import { SetStateAction, useState } from "react";
 import { AiOutlineSearch, AiFillPlusCircle } from "react-icons/ai";
-import { MemoInfiniteList } from "../../components/modules/infinite/InfiniteList";
-import { StickerCard } from "./StickerCard";
-import { Skeleton } from "@mui/material";
+import { REGIONLIST } from "../../utils/constants/constant";
 
 const Container = styled.article`
   min-height: 90vh;
@@ -85,26 +83,7 @@ const ListContainer = styled.article`
 
 function MarketListPage() {
   const { regionId } = useParams();
-  const regionName = [
-    "전체",
-    "서울",
-    "부산",
-    "대구",
-    "인천",
-    "광주",
-    "대전",
-    "울산",
-    "세종",
-    "경기",
-    "강원",
-    "충북",
-    "충남",
-    "전북",
-    "전남",
-    "경북",
-    "경남",
-    "제주",
-  ];
+  const regionName = REGIONLIST;
   const [sorting, setSorting] = useState("0");
   const [keyword, setKeyword] = useState("");
 

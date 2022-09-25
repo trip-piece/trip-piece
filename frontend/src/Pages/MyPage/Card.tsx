@@ -1,16 +1,13 @@
-import { memo, React } from "react";
+import React, { memo } from "react";
 import styled from "@emotion/styled";
 import { Link } from "react-router-dom";
 import { frameApis } from "../../utils/apis/frameApis";
-interface IStickerCardProps {
-  stickerId: number;
-}
 
 interface IMyScrappedFrameProps {
-  scrapId: number;
-  diaryId: number;
+  // scrapId?: number;
+  //  diaryId?: number;
   frameId: number;
-  image: string;
+  //  image?: string;
   //  “scrapId” : int,
   //   “diaryId” : int,
   //   “image” : string
@@ -28,14 +25,7 @@ const LinkContainer = styled(Link)`
   display: block;
 `;
 
-//const Sticker = styled.div``;
-
-function ScrappedFrameCard({
-  scrapId,
-  diaryId,
-  image,
-  frameId,
-}: IMyScrappedFrameProps) {
+function ScrappedFrameCard({ frameId }: IMyScrappedFrameProps) {
   return (
     <Container>
       <LinkContainer to={frameApis.getDetailedFrames(frameId)}>

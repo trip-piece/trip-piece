@@ -2,13 +2,6 @@ import styled from "@emotion/styled";
 import { width } from "@mui/system";
 import { useNavigate } from "react-router-dom";
 
-interface CardProps {
-  region: {
-    regionId: number;
-    name: string;
-  };
-}
-
 const Container = styled.article`
   width: 100%;
   height: 24vh;
@@ -43,17 +36,22 @@ const Container = styled.article`
   }
 `;
 
-function RegionCard({ region }: CardProps) {
-  const image = "/image/region/" + region.name + ".png";
+interface propsType {
+  name: string;
+  id: number;
+}
+
+function RegionCard({ name, id }: propsType) {
+  const image = "/image/region/" + name + ".png";
   const navigate = useNavigate();
   const moveToListPage = (regionId: Number) => {
     navigate("/market/" + regionId);
   };
   return (
-    <Container onClick={() => moveToListPage(region.regionId)}>
+    <Container onClick={() => moveToListPage(id)}>
       <img src={image} />
       <div className="BackgroundOpacitiy" />
-      <p>{region.name}</p>
+      <p>{name}</p>
     </Container>
   );
 }

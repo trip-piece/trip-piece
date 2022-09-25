@@ -10,6 +10,7 @@ import TripDiaryPage from "./Pages/TripDiary/TripDiaryPage";
 import Navbar from "./Pages/Navbar/Navbar";
 import Admin from "./Pages/Admin/AdminPage";
 import NftRegister from "./Pages/Admin/NftRegisterPage";
+import QrScanner from "./Pages/QrScan/QrReader";
 
 const Landing = lazy(() => import("./Pages/Landing/LandingPage"));
 const Main = lazy(() => import("./Pages/Main/MainPage"));
@@ -25,6 +26,8 @@ const StickerMapMain = lazy(() => import("./Pages/StickerMap/StickerMapMain"));
 const StickerMapFiltering = lazy(
   () => import("./Pages/StickerMap/SpotFestivalMap"),
 );
+
+const NftResponse = lazy(() => import("./Pages/QrScan/NftResponse"));
 
 const Header = styled.header`
   height: 10vh;
@@ -55,6 +58,8 @@ function Router() {
         <Route path="user/scraps" element={<MyPage />} />
         <Route path="places/map" element={<StickerMapMain />} />
         <Route path="places/information" element={<StickerMapFiltering />} />
+        <Route path="qrscan" element={<QrScanner />} />
+        <Route path="/places/:placeId" element={<NftResponse />} />
       </Routes>
     </BrowserRouter>
   );

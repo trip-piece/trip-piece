@@ -2,14 +2,14 @@
 import React from "react";
 import { Navigate, Outlet } from "react-router-dom";
 import { useRecoilState } from "recoil";
-import { loggedInState } from "../../../store/atom";
+import { UserInfoState } from "../../../store/atom";
 
 interface RouteProps {
   children?: React.ReactNode;
 }
 
 function ProtectedRoute({ children }: RouteProps) {
-  const loggedIn = useRecoilState(loggedInState);
+  const loggedIn = useRecoilState(UserInfoState);
   if (!loggedIn) {
     return <Navigate to="/" replace />;
   }

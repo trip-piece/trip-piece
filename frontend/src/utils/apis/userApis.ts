@@ -2,7 +2,7 @@ const userApis = {
   login: "user/login",
   getUser: "user",
   modifyNickname: "user/nickname",
-  getMyScraps: (page: number): string => `user/scraps?page=${page}`,
+  getMyScraps: `user/scraps`,
 };
 
 export interface walletAddress {

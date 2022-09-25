@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "truffle": "^5.5.28",
+    "web3": "^1.6.1"
+  }
+}
