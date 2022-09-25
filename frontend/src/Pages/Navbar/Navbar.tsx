@@ -2,7 +2,6 @@ import * as React from "react";
 import styled from "@emotion/styled";
 import Box from "@mui/material/Box";
 import Drawer from "@mui/material/Drawer";
-import MuiAppBar, { AppBarProps as MuiAppBarProps } from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import { GiTicket } from "react-icons/gi";
@@ -23,29 +22,7 @@ import { FaBook, FaEthereum } from "react-icons/fa";
 import { BsFillBookmarkHeartFill } from "react-icons/bs";
 import { pixelToRem } from "../../utils/functions/util";
 import { useNavigate } from "react-router-dom";
-
-const drawerWidth = "80%";
-
-interface AppBarProps extends MuiAppBarProps {
-  open?: boolean;
-}
-
-const AppBar = styled(MuiAppBar, {
-  shouldForwardProp: (prop) => prop !== "open",
-})<AppBarProps>(({ theme, open }) => ({
-  transition: theme.transitions.create(["margin", "width"], {
-    easing: theme.transitions.easing.sharp,
-    duration: theme.transitions.duration.leavingScreen,
-  }),
-  ...(open && {
-    width: "100%",
-    transition: theme.transitions.create(["margin", "width"], {
-      easing: theme.transitions.easing.easeOut,
-      duration: theme.transitions.duration.enteringScreen,
-    }),
-    marginRight: drawerWidth,
-  }),
-}));
+import AppBar from "@mui/material/AppBar";
 
 const DrawerHeader = styled.div`
   display: flex;
@@ -295,163 +272,140 @@ const OngoingTripBox = styled.div<{ active?: boolean | null }>`
 export default function Navbar() {
   const [open, setOpen] = React.useState(false);
 
-  const handleDrawerOpen = () => {
-    setOpen(true);
-  };
+  const toggleDrawer =
+    (open: boolean) => (event: React.KeyboardEvent | React.MouseEvent) => {
+      if (
+        event.type === "keydown" &&
+        ((event as React.KeyboardEvent).key === "Tab" ||
+          (event as React.KeyboardEvent).key === "Shift")
+      ) {
+        return;
+      }
 
-  const handleDrawerClose = () => {
-    setOpen(false);
-  };
-
-  const navigate = useNavigate();
-  const moveToMySticker = () => {
-    navigate("/user/stickers");
-    setOpen(false);
-  };
-  const moveToMyFrame = () => {};
-  const moveToMyDiary = () => {
-    navigate("/trips");
-    setOpen(false);
-  };
-  const moveToShareFrame = () => {};
-  const moveToQR = () => {};
-  const moveToMarket = () => {
-    navigate("/market");
-    setOpen(false);
-  };
-  const moveToSpot = () => {
-    navigate("/places/map");
-    setOpen(false);
-  };
-  const moveToTrip = () => {
-    navigate("/trips");
-    setOpen(false);
-  };
+      setOpen(open);
+    };
 
   return (
-    <Box sx={{ display: "flex" }}>
-      <AppBar
-        position="fixed"
-        open={open}
-        sx={{ bgcolor: "#282B44", boxShadow: 0 }}
-      >
-        <Toolbar>
-          <Typography variant="h6" noWrap sx={{ flexGrow: 1 }} component="div">
-            여행조각
-          </Typography>
-          <MdOutlineMenu
-            size="30px"
-            onClick={handleDrawerOpen}
-            sx={{ ...(open && { display: "none" }) }}
-          />
-        </Toolbar>
-      </AppBar>
-      <Drawer
-        sx={{
-          width: drawerWidth,
-          "& .MuiDrawer-paper": {
-            width: "100%",
-          },
-        }}
-        variant="persistent"
-        anchor="top"
-        open={open}
-      >
-        <DrawerHeader>
-          <button>
-            <MdOutlineLogout />
-          </button>
-          <button>
-            <MdOutlineClose onClick={handleDrawerClose} sx={{ ...open }} />
-          </button>
-        </DrawerHeader>
-        <TopBackgroundBox>
-          <UserInformation>
-            <div className="username">
-              아무개
-              <h5>여행자님</h5>
+    <Box sx={{ flexGrow: 1 }}>
+      <React.Fragment key={"top"}>
+        <AppBar position="static" sx={{ bgcolor: "#282B44", boxShadow: 0 }}>
+          <Toolbar>
+            <Typography
+              variant="h6"
+              noWrap
+              sx={{ flexGrow: 1 }}
+              component="div"
+            >
+              여행조각
+            </Typography>
+            <MdOutlineMenu size="30px" onClick={toggleDrawer(true)} />
+          </Toolbar>
+        </AppBar>
+        <Drawer
+          anchor={"top"}
+          variant="persistent"
+          open={open}
+          onClose={toggleDrawer(false)}
+          PaperProps={{
+            sx: {
+              minWidth: "320px",
+              maxWidth: "550px",
+              height: "100%",
+              margin: "auto",
+            },
+          }}
+        >
+          <Box role="presentation" onKeyDown={toggleDrawer(false)}>
+            <DrawerHeader>
               <button>
-                <MdModeEditOutline />
+                <MdOutlineLogout />
               </button>
-            </div>
-            <div className="wallet-info">
-              <FaEthereum className="icon" />
-              <p>209509</p>
-            </div>
-          </UserInformation>
-          <TopMainBox>
-            <div className="right-line">
-              <BiTrip className="icon" />
-              <p>5번의 여정</p>
-            </div>
-            <div>
-              <MdEditCalendar className="icon" />
-              <p>16일의 기록</p>
-            </div>
-          </TopMainBox>
-        </TopBackgroundBox>
-        <BottomArea>
-          <MiddleLongBox>
-            <button>
-              <MdOutlineAddReaction
-                className="icon"
-                onClick={moveToMySticker}
-              />
-              보유 스티커
-            </button>
-            <div className="middle-bar" />
-            <button>
-              <BsFillBookmarkHeartFill
-                className="icon"
-                onClick={moveToMyFrame}
-              />
-              찜한 프레임
-            </button>
-            <div className="middle-bar" />
-            <button>
-              <FaBook className="icon" onClick={moveToMyDiary} />내 다이어리
-            </button>
-          </MiddleLongBox>
-          <MiddleBoxes>
-            <button>
-              <BiShareAlt className="icon" onClick={moveToShareFrame} />
-              프레임 공유
-            </button>
-            <button onClick={moveToQR} className="QRButton">
-              <MdQrCodeScanner className="QRIcon" />
-            </button>
-            <button>
-              <MdShoppingCart className="icon" onClick={moveToMarket} /> NFT
-              마켓
-            </button>
-          </MiddleBoxes>
-          <MiddleLongBox>
-            <div className="check-spot">
-              <div className="icon-group">
-                <MdOutlineFestival className="spot-icon" />
-                <MdLocationOn className="icon-red" />
-              </div>
-              <h5>
-                현재 발급할 수 있는 축제/스팟
-                <br />
-                <button onClick={moveToSpot}>보러가기</button>
-              </h5>
-            </div>
-          </MiddleLongBox>
-          <OngoingTripBox>
-            <div className="with-icon">
-              <GiTicket className="icon" />
-              <div className="trip-notice">
-                <div className="typo">
-                  <p>현재 진행중인 여행이 없어요</p>
-                  <p>여행을 등록해 주세요!</p>
+              <button>
+                <MdOutlineClose onClick={toggleDrawer(false)} />
+              </button>
+            </DrawerHeader>
+            <TopBackgroundBox>
+              <UserInformation>
+                <div className="username">
+                  아무개
+                  <h5>여행자님</h5>
+                  <button>
+                    <MdModeEditOutline />
+                  </button>
                 </div>
-                <button onClick={moveToTrip}>등록하기</button>
-              </div>
-            </div>
-          </OngoingTripBox>
-        </BottomArea>
-      </Drawer>
+                <div className="wallet-info">
+                  <FaEthereum className="icon" />
+                  <p>209509</p>
+                </div>
+              </UserInformation>
+              <TopMainBox>
+                <div className="right-line">
+                  <BiTrip className="icon" />
+                  <p>5번의 여정</p>
+                </div>
+                <div>
+                  <MdEditCalendar className="icon" />
+                  <p>16일의 기록</p>
+                </div>
+              </TopMainBox>
+            </TopBackgroundBox>
+            <BottomArea>
+              <MiddleLongBox>
+                <button>
+                  <MdOutlineAddReaction className="icon" />
+                  보유 스티커
+                </button>
+                <div className="middle-bar" />
+                <button>
+                  <BsFillBookmarkHeartFill className="icon" />
+                  찜한 프레임
+                </button>
+                <div className="middle-bar" />
+                <button>
+                  <FaBook className="icon" />내 다이어리
+                </button>
+              </MiddleLongBox>
+              <MiddleBoxes>
+                <button>
+                  <BiShareAlt className="icon" />
+                  프레임 공유
+                </button>
+                <button className="QRButton">
+                  <MdQrCodeScanner className="QRIcon" />
+                </button>
+                <button>
+                  <MdShoppingCart className="icon" /> NFT 마켓
+                </button>
+              </MiddleBoxes>
+              <MiddleLongBox>
+                <div className="check-spot">
+                  <div className="icon-group">
+                    <MdOutlineFestival className="spot-icon" />
+                    <MdLocationOn className="icon-red" />
+                  </div>
+                  <h5>
+                    현재 발급할 수 있는 축제/스팟
+                    <br />
+                    <button>보러가기</button>
+                  </h5>
+                </div>
+              </MiddleLongBox>
+              <OngoingTripBox>
+                <div className="with-icon">
+                  <GiTicket className="icon" />
+                  <div className="trip-notice">
+                    <div className="typo">
+                      <p>현재 진행중인 여행이 없어요</p>
+                      <p>여행을 등록해 주세요!</p>
+                    </div>
+                    <button>등록하기</button>
+                  </div>
+                </div>
+              </OngoingTripBox>
+            </BottomArea>
+          </Box>
+        </Drawer>
+      </React.Fragment>
     </Box>
   );
 }

@@ -4,7 +4,7 @@ import { Helmet } from "react-helmet-async";
 import { IMAGE_SIZE_LIMIT_NUMBER } from "../../utils/constants/constant";
 import { pixelToRem } from "../../utils/functions/util";
 import getAddressFrom from "../..//utils/AddressExtractor";
-import { NFTContract } from "../../common/NFT_ABI";
+import { NFTContract } from "../../utils/common/NFT_ABI";
 import { create } from "ipfs-http-client";
 import { Buffer } from "buffer";
 

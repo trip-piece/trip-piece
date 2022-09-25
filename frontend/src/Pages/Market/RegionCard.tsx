@@ -44,7 +44,7 @@ const Container = styled.article`
 `;
 
 function RegionCard({ region }: CardProps) {
-  const image = "/image/region/" + region.name + ".png";
+  const image = "/src/assets/image/region/" + region.name + ".png";
   const navigate = useNavigate();
   const moveToListPage = (regionId: Number) => {
     navigate("/market/" + regionId);
