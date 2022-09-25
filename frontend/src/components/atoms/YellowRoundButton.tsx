@@ -20,7 +20,7 @@ const Button = styled.button`
 interface YellowRoundButtonProps {
   children: ReactNode;
   type: "button" | "submit" | undefined;
-  func?: () => void;
+  func?: (event: any) => Promise<void>;
 }
 
 function YellowRoundButton({ children, type, func }: YellowRoundButtonProps) {
