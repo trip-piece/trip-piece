@@ -1,8 +1,8 @@
 import React from "react";
 import styled from "@emotion/styled";
+import { BsCheckLg, BsXLg } from "react-icons/bs";
 import { pixelToRem } from "../../utils/functions/util";
 import { ContentProps } from "../../utils/interfaces/qrscan.inteface";
-import { BsCheckLg, BsXLg } from "react-icons/bs";
 
 import ColoredRoundButton from "../../components/atoms/ColoredRoundButton";
 
