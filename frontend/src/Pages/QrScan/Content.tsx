@@ -144,7 +144,7 @@ function Content({ result, stickerName, stickerUrl }: ContentProps) {
         )}
       </MainBox>
 
-      <Result result="success" />
+      <Result result={result} />
       <ResulButtontBox>
         <ColoredRoundButton text="  확인  " color="mainLight" type="submit" />
       </ResulButtontBox>
