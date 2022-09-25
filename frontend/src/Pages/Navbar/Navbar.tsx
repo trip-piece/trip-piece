@@ -285,6 +285,42 @@ export default function Navbar() {
       setOpen(open);
     };
 
+  const navigate = useNavigate();
+  const moveToMarket = () => {
+    navigate("/market");
+    setOpen(false);
+  };
+
+  const moveToSticker = () => {
+    navigate("/user/stickers");
+    setOpen(false);
+  };
+
+  const moveToFrame = () => {
+    navigate("/user/scraps");
+    setOpen(false);
+  };
+
+  const moveToPlace = () => {
+    navigate("/place/map");
+    setOpen(false);
+  };
+
+  const moveToQR = () => {
+    navigate("/qrscan");
+    setOpen(false);
+  };
+
+  const moveToShare = () => {
+    navigate("/frames");
+    setOpen(false);
+  };
+
+  const moveToTrip = () => {
+    navigate("/trips");
+    setOpen(false);
+  };
+
   return (
     <Box sx={{ flexGrow: 1 }}>
       <React.Fragment key={"top"}>
@@ -351,33 +387,33 @@ export default function Navbar() {
             </TopBackgroundBox>
             <BottomArea>
               <MiddleLongBox>
-                <button>
+                <button onClick={moveToSticker}>
                   <MdOutlineAddReaction className="icon" />
                   보유 스티커
                 </button>
                 <div className="middle-bar" />
-                <button>
+                <button onClick={moveToFrame}>
                   <BsFillBookmarkHeartFill className="icon" />
                   찜한 프레임
                 </button>
                 <div className="middle-bar" />
-                <button>
+                <button onClick={moveToTrip}>
                   <FaBook className="icon" />내 다이어리
                 </button>
               </MiddleLongBox>
               <MiddleBoxes>
-                <button>
+                <button onClick={moveToShare}>
                   <BiShareAlt className="icon" />
                   프레임 공유
                 </button>
-                <button className="QRButton">
+                <button className="QRButton" onClick={moveToQR}>
                   <MdQrCodeScanner className="QRIcon" />
                 </button>
-                <button>
+                <button onClick={moveToMarket}>
                   <MdShoppingCart className="icon" /> NFT 마켓
                 </button>
               </MiddleBoxes>
-              <MiddleLongBox>
+              <MiddleLongBox onClick={moveToPlace}>
                 <div className="check-spot">
                   <div className="icon-group">
                     <MdOutlineFestival className="spot-icon" />
@@ -386,7 +422,7 @@ export default function Navbar() {
                   <h5>
                     현재 발급할 수 있는 축제/스팟
                     <br />
-                    <button>보러가기</button>
+                    <button onClick={moveToPlace}>보러가기</button>
                   </h5>
                 </div>
               </MiddleLongBox>
