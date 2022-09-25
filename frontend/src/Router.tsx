@@ -1,7 +1,7 @@
 import styled from "@emotion/styled";
 import React, { lazy } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { MyPage } from "./Pages";
+import { MyPage, QrReader } from "./Pages";
 import MarketListPage from "./Pages/Market/MarketListPage";
 import MarketMainPage from "./Pages/Market/MarketMainPage";
 import MarketRegisterPage from "./Pages/Market/MarketRegisterPage";
@@ -10,6 +10,7 @@ import TripDiaryPage from "./Pages/TripDiary/TripDiaryPage";
 import Navbar from "./Pages/Navbar/Navbar";
 import Admin from "./Pages/Admin/AdminPage";
 import NftRegister from "./Pages/Admin/NftRegisterPage";
+import QrScanner from "./Pages/QrScan/QrReader";
 
 const Landing = lazy(() => import("./Pages/Landing/LandingPage"));
 const Main = lazy(() => import("./Pages/Main/MainPage"));
@@ -55,6 +56,7 @@ function Router() {
         <Route path="user/scraps" element={<MyPage />} />
         <Route path="places/map" element={<StickerMapMain />} />
         <Route path="places/information" element={<StickerMapFiltering />} />
+        <Route path="qrscan" element={<QrScanner />} />
       </Routes>
     </BrowserRouter>
   );
