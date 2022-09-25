@@ -34,7 +34,7 @@ const NoDiaryContainer = styled.div`
 `;
 
 function TripDiaryPage() {
-  const [selectedDiaryDate, setSelectedDiaryDate] = useState<string>(
+  const [selectedDiaryDate, setSelectedDiaryDate] = useState<string>(() =>
     changeDateFormatToHyphen(new Date()),
   );
   const { tripId, diaryDate } = useParams();
@@ -58,7 +58,7 @@ function TripDiaryPage() {
   );
 
   const moveToWriteDiary = () => {
-    navigate(`/trips/${tripId}/diarys/${diaryDate}/write`, {
+    navigate(`/trips/${tripId}/diarys/${selectedDiaryDate}/write`, {
       state: { date: selectedDiaryDate },
     });
   };

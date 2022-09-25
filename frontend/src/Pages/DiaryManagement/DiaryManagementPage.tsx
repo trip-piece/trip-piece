@@ -27,6 +27,10 @@ import diaryApis from "../../utils/apis/diaryApis";
 import useWriteDiary from "../../utils/hooks/useWriteDiary";
 import useWindowResize from "../../utils/hooks/useWindowResize";
 import { writedDiaryState } from "../../store/diaryAtoms";
+import {
+  IDiaryListState,
+  IWritedDiary,
+} from "../../utils/interfaces/diarys.interface";
 
 const Container = styled.section`
   height: 1px;
@@ -241,14 +245,14 @@ function DiaryManagementPage() {
   const fileInput = useRef<HTMLInputElement>(null);
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
   const { tripId, diaryDate } = useParams();
-  const [diary, setDiary] = useRecoilState(
+  const [diary, setDiary] = useRecoilState<IWritedDiary<File | null>>(
     writedDiaryState(`${tripId}-${diaryDate}`),
   );
   const {
     state: { date },
   } = useLocation() as RouteState;
-  const { register, handleSubmit, control, watch } = useForm<IFormInput>({});
-  const { mutate: diaryMutate } = useWriteDiary();
+  const { register, handleSubmit, control, watch, setValue } =
+    useForm<IFormInput>({});
   const navigate = useNavigate();
   const size = useWindowResize();
   useEffect(() => {
@@ -266,11 +270,31 @@ function DiaryManagementPage() {
     setDiaryWidth(tmpSize);
   }, [size]);
 
-  const onSubmit = (data: IFormInput) => {
-    const formData = new FormData();
-    if (todayPhoto) {
-      formData.append("file", todayPhoto);
+  const encodeFileToBase64 = useCallback((fileBlob: File) => {
+    if (!fileBlob) return;
+    const reader = new FileReader();
+    reader.readAsDataURL(fileBlob);
+    reader.onload = () => {
+      const tmpImage = reader.result as string;
+      setImageSrc(tmpImage);
+    };
+  }, []);
+  useEffect(() => {
+    if (diary) {
+      setDiaryColor(diary.diary.backgroundColor);
+      setWeather(diary.diary.weather);
+      setTodayPhoto(diary.todayPhoto);
+      if (diary.todayPhoto) encodeFileToBase64(diary.todayPhoto);
+      setValue("fontType", diary.diary.fontType);
+      setValue("content", diary.diary.content);
     }
+  }, []);
+
+  const onSubmit = (data: IFormInput) => {
+    // const formData = new FormData();
+    // if (todayPhoto) {
+    //   formData.append("file", todayPhoto);
+    // }
     const body = {
       diary: {
         ...data,
@@ -279,14 +303,10 @@ function DiaryManagementPage() {
         tripId: Number(tripId),
         date,
       },
-      todayPhoto: formData,
+      todayPhoto: todayPhoto || null,
     };
     setDiary(body);
-    console.log(diary);
-    // diaryMutate(body, {
-    //   onSuccess: (res) => console.log(res),
-    //   onError: (err) => console.log(err),
-    // });
+    navigate(`../trips/${tripId}/diarys/${diaryDate}/decoration`);
   };
 
   const onCancel = () => {
@@ -294,15 +314,6 @@ function DiaryManagementPage() {
       navigate(-1);
     }
   };
-
-  const encodeFileToBase64 = useCallback((fileBlob: File) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(fileBlob);
-    reader.onload = () => {
-      const tmpImage = reader.result as string;
-      setImageSrc(tmpImage);
-    };
-  }, []);
 
   const onLoadFile = (event: ChangeEvent<HTMLInputElement>) => {
     const {

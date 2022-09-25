@@ -21,7 +21,9 @@ const TripList = lazy(() => import("./Pages/TripList/TripListPage"));
 const DiaryManagement = lazy(
   () => import("./Pages/DiaryManagement/DiaryManagementPage"),
 );
-
+const DiaryDecoration = lazy(
+  () => import("./Pages/DiaryDecoration/DiaryDecorationPage"),
+);
 const StickerMapMain = lazy(() => import("./Pages/StickerMap/StickerMapMain"));
 const StickerMapFiltering = lazy(
   () => import("./Pages/StickerMap/SpotFestivalMap"),
@@ -50,6 +52,10 @@ function Router() {
         <Route
           path="trips/:tripId/diarys/:diaryDate/write"
           element={<DiaryManagement />}
+        />
+        <Route
+          path="trips/:tripId/diarys/:diaryDate/decoration"
+          element={<DiaryDecoration />}
         />
         <Route path="market" element={<MarketMainPage />} />
         <Route path="market/:regionId" element={<MarketListPage />} />
