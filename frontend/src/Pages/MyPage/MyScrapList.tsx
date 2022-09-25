@@ -60,17 +60,17 @@ function MyScrapList() {
       <TitleBox>
         <Title>내가 스크랩한 프레임</Title>
       </TitleBox>
-      <StickerContainer>휑 ~</StickerContainer>
-
-      {/* <MemoInfiniteList
-        url={userApis.getMyScraps(1)}
-        queryKey={["scrapList"]}
-        CardComponent={MemoCard}
-        SkeletonCardComponent={Skeleton}
-        zeroDataText="스크랩이 존재하지..않습니다"
-        count={3}
-        listName="scrapList"
-      /> */}
+      <StickerContainer>
+        <MemoInfiniteList
+          url={userApis.getMyScraps}
+          queryKey={["scrapList"]}
+          CardComponent={MemoCard}
+          SkeletonCardComponent={Skeleton}
+          zeroDataText="스크랩이 존재하지..않습니다"
+          count={3}
+          listName="scrapList"
+        />
+      </StickerContainer>
     </StickerBox>
   );
 }
