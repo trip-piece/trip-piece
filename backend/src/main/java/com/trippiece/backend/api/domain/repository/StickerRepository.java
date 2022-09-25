@@ -12,7 +12,7 @@ public interface StickerRepository extends JpaRepository<Sticker, Long> {
     List<Sticker> findAllByPlace(Place place);
     @Query(value = "SELECT DISTINCT token_name FROM sticker where place_id = :placeId", nativeQuery = true)
     List<String> getTokenNameList(@Param("placeId") long placeId);
-    Sticker findDistinctByTokenNameAndPlace(String tokenName, Place place);
+    Sticker findDistinctFirstByTokenNameAndPlace(String tokenName, Place place);
     Sticker findByTokenId(long TokenId);
     int countAllByTokenNameAndPlace(String tokenName, Place place);
 }

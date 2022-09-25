@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.hibernate.annotations.Fetch;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -77,7 +78,7 @@ public class UserController {
 
     @GetMapping("/scraps")
     @ApiOperation(value = "스크랩한 프레임 조회", notes = "요청한 유저가 스크랩중인 다이어리 프레임들을 조회한다.")
-    public ResponseEntity<?> scrapedFrame(@RequestHeader("ACCESS_TOKEN") final String accessToken, Pageable pageable) {
+    public ResponseEntity<?> scrapedFrame(@RequestHeader("ACCESS_TOKEN") final String accessToken, @PageableDefault(size=6) Pageable pageable) {
         long userId = jwtTokenUtil.getUserIdFromToken(accessToken);
         return new ResponseEntity<Page<ScrapResponseDto.Outline>>(userService.findScrapedFrameList(userId, pageable), HttpStatus.OK);
     }

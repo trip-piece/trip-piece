@@ -22,7 +22,7 @@ public class PlaceResponseDto {
     private String regionName;
     private int type;
     private String code;
-    private List<StickerDto> stickerList;
+    private List<StickerDto> enableStickerList;
     private List<DistinctStickerDto> disinctStickerList;
     private boolean activated;
     private String name;
@@ -42,7 +42,7 @@ public class PlaceResponseDto {
         this.regionName=place.getRegion().getName();
         this.type=place.getType();
         this.code=place.getCode();
-        this.stickerList=stickerList;
+        this.enableStickerList=stickerList;
         this.disinctStickerList=disinctStickerList;
         this.activated=place.isActivated();
         this.name=place.getName();
