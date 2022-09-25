@@ -1,7 +1,7 @@
 import styled from "@emotion/styled";
 import React, { lazy } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { MyPage, QrReader } from "./Pages";
+import { MyPage } from "./Pages";
 import MarketListPage from "./Pages/Market/MarketListPage";
 import MarketMainPage from "./Pages/Market/MarketMainPage";
 import MarketRegisterPage from "./Pages/Market/MarketRegisterPage";
@@ -26,6 +26,8 @@ const StickerMapMain = lazy(() => import("./Pages/StickerMap/StickerMapMain"));
 const StickerMapFiltering = lazy(
   () => import("./Pages/StickerMap/SpotFestivalMap"),
 );
+
+const NftResponse = lazy(() => import("./Pages/QrScan/NftResponse"));
 
 const Header = styled.header`
   height: 10vh;
@@ -57,6 +59,7 @@ function Router() {
         <Route path="places/map" element={<StickerMapMain />} />
         <Route path="places/information" element={<StickerMapFiltering />} />
         <Route path="qrscan" element={<QrScanner />} />
+        <Route path="/places/:placeId" element={<NftResponse />} />
       </Routes>
     </BrowserRouter>
   );

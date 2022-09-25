@@ -10,8 +10,8 @@ function QrScanner() {
       <Helmet>
         <title>QR 스캔 | 여행조각</title>
       </Helmet>
-      <Title />
-      <Content />
+      <Title title="QR코드 스캔" location="현재 GPS위치" />
+      <Content result="success" />
     </>
   );
 }
