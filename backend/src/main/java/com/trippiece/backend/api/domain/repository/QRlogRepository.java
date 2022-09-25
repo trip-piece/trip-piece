@@ -7,4 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface QRlogRepository extends JpaRepository<QRlog, Long> {
     int countAllByTokenNameAndPlace(String tokenName, Place place);
+
+    boolean existsBySticker(Sticker sticker);
 }
