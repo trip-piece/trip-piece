@@ -12,7 +12,7 @@ import LoginButton from "./LoginButton";
 import LadingButton from "./LandingButton";
 import Content from "./Text";
 
-import loginApis, { walletAddress } from "../../utils/apis/userApis";
+import userApis, { walletAddress } from "../../utils/apis/userApis";
 import axiosInstance from "../../utils/apis/api";
 
 const injected = new InjectedConnector({});
@@ -36,14 +36,10 @@ function LandingPage() {
   const [userInfo, setUserInfo] = useRecoilState(UserInfoState);
   const navigate = useNavigate();
   const address: walletAddress = { walletAddress: account };
-  useEffect(() => {
-    login(address);
-  }, [account]);
 
   const login = async (data: string | null | undefined | walletAddress) => {
-    console.log(data);
     await axiosInstance
-      .post(loginApis.login, data)
+      .post(userApis.login, data)
       .then(
         (response: { data: { accessToken: string; refreshToken: string } }) => {
           setCookie("accessToken", response.data.accessToken);
@@ -53,8 +49,12 @@ function LandingPage() {
         },
       );
   };
+  useEffect(() => {
+    login(address);
+  }, [account]);
 
-  const handleActivate = async () => {
+  const handleActivate = async (event) => {
+    event.preventDefault();
     console.log(active);
 
     // if (active) {
