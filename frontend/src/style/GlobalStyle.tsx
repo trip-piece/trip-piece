@@ -1,7 +1,5 @@
 import { Global, css } from "@emotion/react";
-import { themes } from "./theme";
-import AllIsWell from "../assets/fonts/alliswell.woff";
-import Letter from "../assets/fonts/letter.woff";
+import theme from "./theme";
 
 export default function GlobalStyle() {
   return (
@@ -145,40 +143,22 @@ export default function GlobalStyle() {
             min-width: 320px;
             min-height: 100vh;
             margin: 0 auto;
-            background-color: ${themes.colors.mainDark};
+            background-color: ${theme.colors.white};
           }
           html,
           body {
             scroll-behavior: smooth;
-            min-height: 100%;
+            width: 100%;
+            height: 100%;
           }
           body {
             line-height: 1.2;
-            color: ${themes.colors.gray900};
-            background-color: ${themes.colors.white};
-            -ms-overflow-style: none; /* IE and Edge */
-            scrollbar-width: none; /* Firefox */
-          }
-          body::-webkit-scrollbar {
-            display: none; /* Chrome, Safari, Opera*/
-            scrollbar-width: none; /* Firefox */
+            color: ${theme.colors.gray900};
+            background-color: ${theme.colors.mainDark};
           }
           a {
             text-decoration: none;
             color: inherit;
-            cursor: pointer;
-          }
-          button {
-            cursor: pointer;
-            border: none;
-          }
-          @font-face {
-            font-family: "잘하고있어";
-            src: url(${AllIsWell}) format("woff");
-          }
-          @font-face {
-            font-family: "아빠의연애편지";
-            src: url(${Letter}) format("woff");
           }
         }
       `}
