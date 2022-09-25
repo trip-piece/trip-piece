@@ -49,13 +49,45 @@ public class PlaceService {
 
         List<PlaceResponseDto> responseList = new ArrayList<>();
         for(Place place : placeList){
-            List<Sticker> list = stickerRepository.findAllByPlace(place);
+            List<Sticker> allStickerlist = stickerRepository.findAllByPlace(place);
+            List<Sticker> list = new ArrayList<>();
+            for(Sticker sticker : allStickerlist) {
+                if(!qrlogRepository.existsBySticker(sticker)) list.add(sticker);
+            }
             List<String> tokenNameList = stickerRepository.getTokenNameList(place.getId());
             List<DistinctStickerDto> distinctStickerList = new ArrayList<>();
             for(String name : tokenNameList) {
                 int originCount = stickerRepository.countAllByTokenNameAndPlace(name, place);
                 int useCount = qrlogRepository.countAllByTokenNameAndPlace(name, place);
-                distinctStickerList.add(new DistinctStickerDto(stickerRepository.findDistinctByTokenNameAndPlace(name, place),
+                distinctStickerList.add(new DistinctStickerDto(stickerRepository.findDistinctFirstByTokenNameAndPlace(name, place),
+                        originCount-useCount));
+            }
+            List<StickerDto> stickerList = list.stream().map(StickerDto::new).collect(Collectors.toList());
+            responseList.add(new PlaceResponseDto(place, stickerList, distinctStickerList));
+        }
+
+        int start = (int) pageable.getOffset();
+        int end = Math.min((start+pageable.getPageSize()), responseList.size());
+        Page<PlaceResponseDto> result = new PageImpl<>(responseList.subList(start, end), pageable, responseList.size());
+        return result;
+    }
+
+    //내 위치 기반 이벤트 스팟/축제 리스트 조회
+    public Page<PlaceResponseDto> findPlaceListByLocation(final float lat, final float lng, Pageable pageable){
+        List<Place> placeList = placeRepository.findAllByDistance(lat, lng);
+        List<PlaceResponseDto> responseList = new ArrayList<>();
+        for(Place place : placeList){
+            List<Sticker> allStickerlist = stickerRepository.findAllByPlace(place);
+            List<Sticker> list = new ArrayList<>();
+            for(Sticker sticker : allStickerlist) {
+                if(!qrlogRepository.existsBySticker(sticker)) list.add(sticker);
+            }
+            List<String> tokenNameList = stickerRepository.getTokenNameList(place.getId());
+            List<DistinctStickerDto> distinctStickerList = new ArrayList<>();
+            for(String name : tokenNameList) {
+                int originCount = stickerRepository.countAllByTokenNameAndPlace(name, place);
+                int useCount = qrlogRepository.countAllByTokenNameAndPlace(name, place);
+                distinctStickerList.add(new DistinctStickerDto(stickerRepository.findDistinctFirstByTokenNameAndPlace(name, place),
                         originCount-useCount));
             }
             List<StickerDto> stickerList = list.stream().map(StickerDto::new).collect(Collectors.toList());
@@ -71,13 +103,17 @@ public class PlaceService {
     //이벤트 스팟/축제 상세 조회
     public PlaceResponseDto findPlace(final long placeId){
         Place place = placeRepository.findById(placeId).orElseThrow(() -> new CustomException(ErrorCode.DATA_NOT_FOUND));
-        List<Sticker> list = stickerRepository.findAllByPlace(place);
+        List<Sticker> allStickerlist = stickerRepository.findAllByPlace(place);
+        List<Sticker> list = new ArrayList<>();
+        for(Sticker sticker : allStickerlist) {
+            if(!qrlogRepository.existsBySticker(sticker)) list.add(sticker);
+        }
         List<String> tokenNameList = stickerRepository.getTokenNameList(place.getId());
         List<DistinctStickerDto> distinctStickerList = new ArrayList<>();
         for(String name : tokenNameList) {
             int originCount = stickerRepository.countAllByTokenNameAndPlace(name, place);
             int useCount = qrlogRepository.countAllByTokenNameAndPlace(name, place);
-            distinctStickerList.add(new DistinctStickerDto(stickerRepository.findDistinctByTokenNameAndPlace(name, place),
+            distinctStickerList.add(new DistinctStickerDto(stickerRepository.findDistinctFirstByTokenNameAndPlace(name, place),
                     originCount-useCount));
         }
         List<StickerDto> stickerList = list.stream().map(StickerDto::new).collect(Collectors.toList());

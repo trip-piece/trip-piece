@@ -85,6 +85,15 @@ public class PlaceController {
         return new ResponseEntity<Page<PlaceResponseDto>>(placeService.findPlaceList(regionId, type, pageable), HttpStatus.OK);
     }
 
+    @GetMapping("/mylocation")
+    @ApiOperation(value = "내 위치 기반 스팟/축제 리스트 조회", notes = "내 위치 기반 50km 이내 이벤트 스팟/축제 리스트룰 조회한다.")
+    public ResponseEntity<?> getPlaceList(@RequestHeader("ACCESS_TOKEN") final String accessToken, @RequestParam float lat, @RequestParam float lng, @PageableDefault(size=10) Pageable pageable) {
+        long userId = jwtTokenUtil.getUserIdFromToken(accessToken);
+        User user = userService.findOneUser(userId);
+        if(user == null) return new ResponseEntity<String>("로그인된 회원을 찾을 수 없습니다.", HttpStatus.NOT_FOUND);
+        return new ResponseEntity<Page<PlaceResponseDto>>(placeService.findPlaceListByLocation(lat, lng, pageable), HttpStatus.OK);
+    }
+
     @GetMapping("/{placeId}")
     @ApiOperation(value = "스팟/축제 상세 조회", notes = "하나의 이벤트 스팟/축제의 상세정보를 조회한다.")
     public ResponseEntity<?> getPlaceList(@PathVariable long placeId) {
