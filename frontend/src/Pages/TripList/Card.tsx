@@ -10,8 +10,8 @@ interface ITripCardProps {
   tripId: number;
   regionId: number;
   title: string;
-  startDate: Date;
-  endDate: Date;
+  startDate: string;
+  endDate: string;
   isEditMode: boolean;
   refetch: () => Promise<
     QueryObserverResult<

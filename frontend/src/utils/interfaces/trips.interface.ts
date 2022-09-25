@@ -4,8 +4,8 @@ export interface ITrip {
   tripId: number;
   regionId: number;
   title: string;
-  startDate: string | Date;
-  endDate: string | Date;
+  startDate: string;
+  endDate: string;
 }
 
 export interface IButtonProps {
