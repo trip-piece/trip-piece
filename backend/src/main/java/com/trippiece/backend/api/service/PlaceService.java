@@ -77,21 +77,23 @@ public class PlaceService {
         List<Place> placeList = placeRepository.findAllByDistance(lat, lng);
         List<PlaceResponseDto> responseList = new ArrayList<>();
         for(Place place : placeList){
-            List<Sticker> allStickerlist = stickerRepository.findAllByPlace(place);
-            List<Sticker> list = new ArrayList<>();
-            for(Sticker sticker : allStickerlist) {
-                if(!qrlogRepository.existsBySticker(sticker)) list.add(sticker);
+            if(place.isActivated()) {
+                List<Sticker> allStickerlist = stickerRepository.findAllByPlace(place);
+                List<Sticker> list = new ArrayList<>();
+                for(Sticker sticker : allStickerlist) {
+                    if(!qrlogRepository.existsBySticker(sticker)) list.add(sticker);
+                }
+                List<String> tokenNameList = stickerRepository.getTokenNameList(place.getId());
+                List<DistinctStickerDto> distinctStickerList = new ArrayList<>();
+                for(String name : tokenNameList) {
+                    int originCount = stickerRepository.countAllByTokenNameAndPlace(name, place);
+                    int useCount = qrlogRepository.countAllByTokenNameAndPlace(name, place);
+                    distinctStickerList.add(new DistinctStickerDto(stickerRepository.findDistinctFirstByTokenNameAndPlace(name, place),
+                            originCount-useCount));
+                }
+                List<StickerDto> stickerList = list.stream().map(StickerDto::new).collect(Collectors.toList());
+                responseList.add(new PlaceResponseDto(place, stickerList, distinctStickerList));
             }
-            List<String> tokenNameList = stickerRepository.getTokenNameList(place.getId());
-            List<DistinctStickerDto> distinctStickerList = new ArrayList<>();
-            for(String name : tokenNameList) {
-                int originCount = stickerRepository.countAllByTokenNameAndPlace(name, place);
-                int useCount = qrlogRepository.countAllByTokenNameAndPlace(name, place);
-                distinctStickerList.add(new DistinctStickerDto(stickerRepository.findDistinctFirstByTokenNameAndPlace(name, place),
-                        originCount-useCount));
-            }
-            List<StickerDto> stickerList = list.stream().map(StickerDto::new).collect(Collectors.toList());
-            responseList.add(new PlaceResponseDto(place, stickerList, distinctStickerList));
         }
 
         int start = (int) pageable.getOffset();
