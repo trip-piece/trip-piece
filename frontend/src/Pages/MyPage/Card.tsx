@@ -1,4 +1,4 @@
-import { memo, React } from "react";
+import React, { memo } from "react";
 import styled from "@emotion/styled";
 import { Link } from "react-router-dom";
 import { frameApis } from "../../utils/apis/frameApis";
