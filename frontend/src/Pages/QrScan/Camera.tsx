@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "@emotion/styled";
+import QrReader from "react-qr-reader";
 import { pixelToRem } from "../../utils/functions/util";
 
 const Box = styled.div`
@@ -20,10 +21,34 @@ const CameraBox = styled.div`
   align - items: center;
   background: ${(props) => props.theme.colors.gray400};
 `;
+
+function QrReaderComponent() {
+  const [scanned, setScanned] = useState("");
+
+  const onScan = (result: string | null) => {
+    setScanned(result || "");
+  };
+  return (
+    <>
+      <QrReader
+        delay={100}
+        onError={() => {}}
+        onScan={onScan}
+        className="scanner"
+        facingMode="environment"
+      />
+      <div className="result">{scanned}</div>
+      <div>url: {scanned}</div>
+    </>
+  );
+}
+
 function Camera() {
   return (
     <Box>
-      <CameraBox>카메라위치</CameraBox>
+      <CameraBox>
+        <QrReaderComponent />
+      </CameraBox>
     </Box>
   );
 }
