@@ -23,7 +23,6 @@
     "@mui/material": "^5.10.5",
     "@mui/x-date-pickers": "^5.0.2",
     "@types/node": "^18.7.19",
-    "@types/react-qr-reader": "^2.1.4",
     "@web3-react/core": "^6.1.9",
     "@web3-react/injected-connector": "^6.0.7",
     "axios": "^0.27.2",

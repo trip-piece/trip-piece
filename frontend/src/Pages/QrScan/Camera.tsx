@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import styled from "@emotion/styled";
-import QrReader from "react-qr-reader";
+import { QrReader } from "react-qr-reader";
 import { pixelToRem } from "../../utils/functions/util";
 
 const Box = styled.div`
@@ -13,32 +13,34 @@ const Box = styled.div`
   background: ${(props) => props.theme.colors.white};
 `;
 
-const CameraBox = styled.div`   
-  display: flex;
-  justify-content: center;
-  padding: 10% 10% 10% 10%;
-  height:500px;
-  align - items: center;
-  background: ${(props) => props.theme.colors.gray400};
-`;
-
 function QrReaderComponent() {
-  const [scanned, setScanned] = useState("");
+  const delay = 500;
 
-  const onScan = (result: string | null) => {
-    setScanned(result || "");
+  const previewStyle = {
+    height: 320,
+    width: 320,
   };
+
+  const [result, setResult] = useState("No result");
+
+  const handleScan = (result) => {
+    if (result) {
+      setResult(result);
+    }
+  };
+
+  const handleError = (error: Error) => {
+    console.log(error);
+  };
+
   return (
     <>
       <QrReader
-        delay={100}
-        onError={() => {}}
-        onScan={onScan}
-        className="scanner"
-        facingMode="environment"
+        scanDelay={delay}
+        onResult={handleScan}
+        constraints={{ facingMode: "environment" }}
       />
-      <div className="result">{scanned}</div>
-      <div>url: {scanned}</div>
+      <p>{result}</p>
     </>
   );
 }
@@ -46,9 +48,7 @@ function QrReaderComponent() {
 function Camera() {
   return (
     <Box>
-      <CameraBox>
-        <QrReaderComponent />
-      </CameraBox>
+      <QrReaderComponent />
     </Box>
   );
 }
