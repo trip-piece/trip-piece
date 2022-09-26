@@ -66,7 +66,7 @@ function NestedModal() {
 
   useEffect(() => {
     if (recoilQrState.modalFlag === true) handleOpen();
-  }, []);
+  }, [recoilQrState.modalFlag]);
 
   return (
     <>
