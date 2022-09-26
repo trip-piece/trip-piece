@@ -393,7 +393,7 @@ export const NFT_ABI = [
   },
 ];
 
-const web3 = new Web3((window as any).web3.currentProvider);
+const web3 = new Web3((window as any).ethereum);
 
 export const NFTContract = new web3.eth.Contract(
   NFT_ABI as any,
