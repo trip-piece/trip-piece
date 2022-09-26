@@ -7,6 +7,9 @@ import { AiOutlineSearch, AiFillPlusCircle } from "react-icons/ai";
 import { SetStateAction, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { REGIONLIST } from "../../utils/constants/constant";
+import { marketApis } from "../../utils/apis/marketApis";
+import axiosInstance from "../../utils/apis/api";
+import { QueryFunctionContext } from "react-query";
 
 const Container = styled.article`
   min-height: 90vh;
@@ -135,43 +138,57 @@ const CateContainer = styled.article`
 `;
 
 function MarketMainPage() {
-  const result = [
-    {
-      marketId: 0,
-      image:
-        "https://www.infura-ipfs.io/ipfs/QmcqJiEjJon38JNzbsdgKhLBsjfWF8tZiUT5Mi7GQbtGP4",
-      name: "NFT카드1",
-      price: 123.5,
-    },
-    {
-      marketId: 1,
-      image:
-        "https://www.infura-ipfs.io/ipfs/QmRkTWeyoREXuJ9s2vCtPTwvA1iaPjGS29Ei2fKZFZisGL",
-      name: "NFT카드2",
-      price: 123.5,
-    },
-    {
-      marketId: 2,
-      image:
-        "https://www.infura-ipfs.io/ipfs/QmXyV1fnFM4EYv42KyfAyzXNX8bu73zpqQndoJBQPbL5pF",
-      name: "NFT카드3",
-      price: 123.5,
-    },
-    {
-      marketId: 3,
-      image:
-        "https://www.infura-ipfs.io/ipfs/QmPPEWSC7qX7rzxE76XJLkNQk2d95r6BSfiPMS3tNs4p1y",
-      name: "NFT카드4",
-      price: 123.5,
-    },
-    {
-      marketId: 4,
-      image:
-        "https://www.infura-ipfs.io/ipfs/QmQyqcdu8HhnN3tfJtzAduS59GJt4ZNxjSXnTaim72fxCU",
-      name: "NFT카드5",
-      price: 123.5,
-    },
-  ];
+  // const marketList = [
+  //   {
+  //     marketId: 0,
+  //     image:
+  //       "https://www.infura-ipfs.io/ipfs/QmcqJiEjJon38JNzbsdgKhLBsjfWF8tZiUT5Mi7GQbtGP4",
+  //     name: "NFT카드1",
+  //     price: 123.9,
+  //   },
+  //   {
+  //     marketId: 1,
+  //     image:
+  //       "https://www.infura-ipfs.io/ipfs/QmRkTWeyoREXuJ9s2vCtPTwvA1iaPjGS29Ei2fKZFZisGL",
+  //     name: "NFT카드2",
+  //     price: 123.5,
+  //   },
+  //   {
+  //     marketId: 2,
+  //     image:
+  //       "https://www.infura-ipfs.io/ipfs/QmXyV1fnFM4EYv42KyfAyzXNX8bu73zpqQndoJBQPbL5pF",
+  //     name: "NFT카드3",
+  //     price: 123.5,
+  //   },
+  //   {
+  //     marketId: 3,
+  //     image:
+  //       "https://www.infura-ipfs.io/ipfs/QmPPEWSC7qX7rzxE76XJLkNQk2d95r6BSfiPMS3tNs4p1y",
+  //     name: "NFT카드4",
+  //     price: 123.5,
+  //   },
+  //   {
+  //     marketId: 4,
+  //     image:
+  //       "https://www.infura-ipfs.io/ipfs/QmQyqcdu8HhnN3tfJtzAduS59GJt4ZNxjSXnTaim72fxCU",
+  //     name: "NFT카드5",
+  //     price: 123.5,
+  //   },
+  // ];
+
+  const url:string = marketApis.marketList("hello",1,1);
+  const [hasError, setHasError] = useState(false);
+  const marketList = async ({
+    pageParam = 0,
+  }: QueryFunctionContext) => {
+    try {
+      const res = await axiosInstance.get(`${url}?page=${pageParam}`);
+      return { result: res?.data, page: pageParam };
+    } catch (_) {
+      setHasError(true);
+      return undefined;
+    }
+  };
 
   const region = REGIONLIST;
 
@@ -220,8 +237,8 @@ function MarketMainPage() {
           </div>
           <div className="CardList">
             <Swiper slidesPerView={1.2} spaceBetween={13}>
-              {result.length &&
-                result.map((sticker, idx) => (
+              {marketList.length &&
+                marketList.map((sticker, idx) => (
                   <SwiperSlide key={idx}>
                     <Card sticker={sticker} />
                   </SwiperSlide>
