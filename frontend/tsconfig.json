@@ -15,7 +15,7 @@
     "isolatedModules": true,
     "noImplicitAny": true,
     "noImplicitThis": true,
-    "strictNullChecks": true,
+    "strictNullChecks": false,
     "noEmit": true,
     "jsx": "react-jsx",
     "jsxImportSource": "@emotion/react"

@@ -9,7 +9,6 @@ import { v4 } from "uuid";
 import ColoredRoundButton from "../../components/atoms/ColoredRoundButton";
 import Container from "../../components/atoms/Container";
 import DateContainer from "../../components/atoms/DateContainer";
-import TransparentRoundButton from "../../components/atoms/TransparentRoundButton";
 import { writedDiaryState } from "../../store/diaryAtoms";
 import { DIARY_COLOR_LIST, FONTTYPELIST } from "../../utils/constants/constant";
 import { weatherList } from "../../utils/constants/weatherList";
@@ -17,6 +16,7 @@ import { pixelToRem } from "../../utils/functions/util";
 import useWindowResize from "../../utils/hooks/useWindowResize";
 import { IWritedDiary } from "../../utils/interfaces/diarys.interface";
 import { dummyStickerList } from "../../utils/constants/dummyData";
+import LazyImage from "../../components/atoms/LazyImage";
 
 const PositionContainer = styled.div`
   > svg {
@@ -41,12 +41,11 @@ const DiaryContents = styled.div<{
   font-size: ${(props) => pixelToRem(props.diaryWidth / 20)};
 `;
 
-const StickerZone = styled.div<{ active: boolean }>`
+const StickerZone = styled.div`
   position: fixed;
-  max-height: ${(props) => (props.active ? "50vh" : "120px")};
+  max-height: 120px;
   bottom: 0;
-  background-color: ${(props) =>
-    props.active ? "rgba(40, 43, 68, 0.9)" : "rgba(40, 43, 68, 0.6)"};
+  background-color: rgba(40, 43, 68, 0.6);
   border-radius: 20px 20px 0 0;
   width: 100%;
   max-width: 550px;
@@ -66,7 +65,7 @@ const StickerZone = styled.div<{ active: boolean }>`
 
   & > div {
     min-height: 50px;
-    overflow-y: ${(props) => (props.active ? "scroll" : "hidden")};
+    /* overflow-y: ${(props) => (props.active ? "scroll" : "hidden")}; */
     padding: 0.5rem 1.5rem;
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -99,6 +98,11 @@ const DragBox = styled.div`
   position: absolute;
 `;
 
+const TransparentRoundButton = styled.button`
+  background-color: transparent;
+  height: 40px;
+`;
+
 interface ISticker {
   tokenId: number;
   x: number;
@@ -107,7 +111,6 @@ interface ISticker {
 
 function DiaryDecorationPage() {
   const [dottedDate, setDottedDate] = useState<string>("");
-  const [toggle, setToggle] = useState<boolean>(false);
   const [diaryWidth, setDiaryWidth] = useState<number>(320);
   const [imageSrc, setImageSrc] = useState<string | null>("");
   const [stickerList, setStickerList] = useState<ISticker[]>([]);
@@ -117,6 +120,8 @@ function DiaryDecorationPage() {
     writedDiaryState(`${tripId}-${diaryDate}`),
   );
   const diaryRef = useRef<HTMLDivElement>(null);
+  const stickerRef = useRef<HTMLDivElement>(null);
+  const stickerBoxRef = useRef<HTMLDivElement>(null);
   const size = useWindowResize();
 
   const encodeFileToBase64 = useCallback((fileBlob: File) => {
@@ -143,7 +148,15 @@ function DiaryDecorationPage() {
   }, [size]);
 
   const onClick = () => {
-    setToggle(!toggle);
+    if (stickerRef.current.style.maxHeight === "50vh") {
+      stickerRef.current.style.maxHeight = "120px";
+      stickerRef.current.style.backgroundColor = "rgba(40, 43, 68, 0.6)";
+      stickerBoxRef.current.style.overflowY = "hidden";
+    } else {
+      stickerRef.current.style.maxHeight = "50vh";
+      stickerRef.current.style.backgroundColor = "rgba(40, 43, 68, 0.9)";
+      stickerBoxRef.current.style.overflowY = "scroll";
+    }
   };
 
   const addSticker = (event) => {
@@ -208,19 +221,14 @@ function DiaryDecorationPage() {
             />
             <ColoredRoundButton text="취소" color="gray400" type="button" />
           </ButtonListContainer>
-          <StickerZone active={toggle}>
+          <StickerZone ref={stickerRef}>
             <button type="button" onClick={onClick}>
               보유한 스티커
             </button>
-            <div>
+            <div ref={stickerBoxRef}>
               {dummyStickerList.map((sticker) => (
-                <TransparentRoundButton type="button" key={v4()}>
-                  <img
-                    src={sticker.tokenURI}
-                    alt="#"
-                    width="100"
-                    loading="lazy"
-                  />
+                <TransparentRoundButton type="button">
+                  <LazyImage src={sticker.tokenURI} key={v4()} />
                 </TransparentRoundButton>
               ))}
             </div>
