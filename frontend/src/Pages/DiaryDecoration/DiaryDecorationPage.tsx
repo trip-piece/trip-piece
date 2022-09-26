@@ -4,15 +4,19 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { BsFillGeoAltFill } from "react-icons/bs";
 import { useParams } from "react-router-dom";
 import { useRecoilValue } from "recoil";
+import Draggable, { DraggableCore } from "react-draggable";
+import { v4 } from "uuid";
 import ColoredRoundButton from "../../components/atoms/ColoredRoundButton";
 import Container from "../../components/atoms/Container";
 import DateContainer from "../../components/atoms/DateContainer";
+import TransparentRoundButton from "../../components/atoms/TransparentRoundButton";
 import { writedDiaryState } from "../../store/diaryAtoms";
 import { DIARY_COLOR_LIST, FONTTYPELIST } from "../../utils/constants/constant";
 import { weatherList } from "../../utils/constants/weatherList";
 import { pixelToRem } from "../../utils/functions/util";
 import useWindowResize from "../../utils/hooks/useWindowResize";
 import { IWritedDiary } from "../../utils/interfaces/diarys.interface";
+import { dummyStickerList } from "../../utils/constants/dummyData";
 
 const PositionContainer = styled.div`
   > svg {
@@ -39,7 +43,7 @@ const DiaryContents = styled.div<{
 
 const StickerZone = styled.div<{ active: boolean }>`
   position: fixed;
-  max-height: ${(props) => (props.active ? "50vh" : "100px")};
+  max-height: ${(props) => (props.active ? "50vh" : "120px")};
   bottom: 0;
   background-color: ${(props) =>
     props.active ? "rgba(40, 43, 68, 0.9)" : "rgba(40, 43, 68, 0.6)"};
@@ -50,11 +54,24 @@ const StickerZone = styled.div<{ active: boolean }>`
   flex-direction: column;
   transition: all 0.8s ease-in;
   justify-content: center;
+  > button {
+    background-color: transparent;
+    height: fit-content;
+    color: ${(props) => props.theme.colors.white};
+    font-size: ${(props) => props.theme.fontSizes.h5};
+    font-weight: bold;
+    text-align: left;
+    padding: 1rem 1.5rem;
+  }
 
   & > div {
-    min-height: 100px;
+    min-height: 50px;
     overflow-y: ${(props) => (props.active ? "scroll" : "hidden")};
-    padding: 2rem;
+    padding: 0.5rem 1.5rem;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    justify-items: center;
+    gap: 1rem;
     -ms-overflow-style: none;
     scrollbar-width: none;
     &::-webkit-scrollbar {
@@ -78,13 +95,24 @@ const DiaryImag = styled.img`
   width: fit-content;
 `;
 
+const DragBox = styled.div`
+  position: absolute;
+`;
+
+interface ISticker {
+  tokenId: number;
+  x: number;
+  y: number;
+}
+
 function DiaryDecorationPage() {
   const [dottedDate, setDottedDate] = useState<string>("");
   const [toggle, setToggle] = useState<boolean>(false);
   const [diaryWidth, setDiaryWidth] = useState<number>(320);
   const [imageSrc, setImageSrc] = useState<string | null>("");
-
+  const [stickerList, setStickerList] = useState<ISticker[]>([]);
   const { tripId, diaryDate } = useParams();
+  const nodeRef = useRef<HTMLDivElement>(null);
   const diary = useRecoilValue<IWritedDiary<File | null>>(
     writedDiaryState(`${tripId}-${diaryDate}`),
   );
@@ -117,6 +145,11 @@ function DiaryDecorationPage() {
   const onClick = () => {
     setToggle(!toggle);
   };
+
+  const addSticker = (event) => {
+    setStickerList((prev) => [...prev, { tokenId: 0, x: 0, y: 0 }]);
+  };
+
   return (
     <Container>
       {diary && (
@@ -136,6 +169,24 @@ function DiaryDecorationPage() {
               ref={diaryRef}
               fontType={diary.diary.fontType}
             >
+              <Draggable
+                nodeRef={nodeRef}
+                defaultPosition={{ x: 0, y: 0 }}
+                scale={1}
+                // onStart={this.handleStart}
+                // onDrag={this.handleDrag}
+                // onStop={this.handleStop}
+              >
+                <div ref={nodeRef}>
+                  <img
+                    className="handle"
+                    src="https://cdn.pixabay.com/photo/2020/12/27/20/25/smile-5865209_1280.png"
+                    alt="#"
+                    width="40"
+                  />
+                </div>
+              </Draggable>
+
               {diary.diary.content}
               {imageSrc && (
                 <Picture>
@@ -159,9 +210,20 @@ function DiaryDecorationPage() {
           </ButtonListContainer>
           <StickerZone active={toggle}>
             <button type="button" onClick={onClick}>
-              버튼
+              보유한 스티커
             </button>
-            <div />
+            <div>
+              {dummyStickerList.map((sticker) => (
+                <TransparentRoundButton type="button" key={v4()}>
+                  <img
+                    src={sticker.tokenURI}
+                    alt="#"
+                    width="100"
+                    loading="lazy"
+                  />
+                </TransparentRoundButton>
+              ))}
+            </div>
           </StickerZone>
         </>
       )}
