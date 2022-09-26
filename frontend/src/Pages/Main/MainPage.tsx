@@ -1,14 +1,14 @@
 import styled from "@emotion/styled";
-
-import Box from "@mui/material/Box";
 import { ReactComponent as StarIcon } from "../../assets/svgs/starplus.svg";
 
 const MainBox = styled.div`
-  height: 80%;
+  height: 50%;
   box-shadow: 0 4px 4px 2px rgb(0 0 0/25%);
   border-radius: 0 0 1.25rem 1.25rem;
   padding: 30px 0 30px 0;
   background: ${(props) => props.theme.colors.mainGradient};
+  display: flex;
+  justify-content: center;
 `;
 
 const MiddleTitle = styled.div`
@@ -16,15 +16,9 @@ const MiddleTitle = styled.div`
   letter-spacing: -2px;
 `;
 
-const MiddleBoxes = styled.div`
-  display: flex;
-  justify-content: center;
-`;
-
 const InsideLeftBox = styled.div`
-  position: relative;
-  width: 60%;
-  height: 400px;
+  width: 50%;
+  height: 100%;
   margin-left: 10px;
   border-top-style: solid;
   border-right-style: dashed;
@@ -35,12 +29,14 @@ const InsideLeftBox = styled.div`
   border-color: ${(props) => props.theme.colors.gray300};
   border-radius: 1.25rem 0 0 1.25rem;
   text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;
 
 const InsideRightBox = styled.div`
-  position: relative;
-  width: 60%;
-  height: 400px;
+  width: 50%;
+  height: 100%;
   margin-right: 10px;
   border-style: solid solid solid hidden;
   border-width: 0.188rem;
@@ -50,30 +46,27 @@ const InsideRightBox = styled.div`
 `;
 
 const InsideContent = styled.div`
-  position: absolute;
-  top: 20%;
-  left: 15%;
-  right: 15%;
-  justify-content: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
   align-items: center;
+  height: 70%;
+  width: 100%;
   color: ${(props) => props.theme.colors.gray300};
 `;
 
 const InnerTextTitle = styled.div`
   font-weight: bold;
-  font-size: ${(props) => props.theme.fontSizes.s1};
+  font-size: ${(props) => props.theme.fontSizes.paragraph};
 `;
 
 const InnerTextBody = styled.div`
-  font-size: ${(props) => props.theme.fontSizes.s3};
-`;
-
-const IconPosition = styled.div`
-  margin: 3.125rem 0;
+  font-size: ${(props) => props.theme.fontSizes.s2};
 `;
 
 const MiddleTitlePosition = styled.div`
   margin: 1.25rem;
+  background-color: ${(props) => props.theme.colors.white};
   text-align: center;
 `;
 
@@ -93,27 +86,29 @@ const GetStickerBox = styled.div`
   margin: 0.938rem;
 `;
 
+const BoxContainer = styled.div`
+  background-color: ${(props) => props.theme.colors.white};
+  width: 100%;
+  height: 100vh;
+`;
+
 function MainPage() {
   return (
-    <Box>
+    <BoxContainer>
       <MainBox>
-        <MiddleBoxes>
-          <InsideLeftBox>
-            <InsideContent>
-              <InnerTextTitle>현재 진행 중인 여행</InnerTextTitle>
-              <IconPosition>
-                <StarIcon width="77" height="77" fill="#d4d4d4" />
-              </IconPosition>
-              <InnerTextBody>
-                현재 진행중인 여행이 없습니다. <br />
-                여행을 등록해주세요.
-              </InnerTextBody>
-            </InsideContent>
-          </InsideLeftBox>
-          <InsideRightBox>
-            <InsideContent>티켓 이미지 들어갈 공간</InsideContent>
-          </InsideRightBox>
-        </MiddleBoxes>
+        <InsideLeftBox>
+          <InsideContent>
+            <InnerTextTitle>현재 진행 중인 여행</InnerTextTitle>
+            <StarIcon width="77" height="77" fill="#d4d4d4" />
+            <InnerTextBody>
+              현재 진행중인 여행이 없습니다. <br />
+              여행을 등록해주세요.
+            </InnerTextBody>
+          </InsideContent>
+        </InsideLeftBox>
+        <InsideRightBox>
+          <InsideContent>티켓 이미지 들어갈 공간</InsideContent>
+        </InsideRightBox>
       </MainBox>
       <MiddleTitlePosition>
         <MiddleTitle>
@@ -124,7 +119,7 @@ function MainPage() {
       <MiddleTitlePosition>
         <FooterText>Copyright ⓒ2022 여행조각 All rights reserved.</FooterText>
       </MiddleTitlePosition>
-    </Box>
+    </BoxContainer>
   );
 }
 
