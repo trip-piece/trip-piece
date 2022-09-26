@@ -7,14 +7,15 @@ import { MemoCard } from "./Card";
 import Skeleton from "./Skeleton";
 import TripCreateButton from "./TripCreationButton";
 import BasicModal from "./Modal";
+import Container from "../../components/atoms/Container";
 
-const Container = styled.section`
-  min-height: 100vh;
-  background-color: ${(props) => props.theme.colors.white};
-  border-radius: 30px 30px 0 0;
-  padding: 1rem;
-  position: relative;
-`;
+// const Container = styled.section`
+//   min-height: 100vh;
+//   background-color: ${(props) => props.theme.colors.white};
+//   border-radius: 30px 30px 0 0;
+//   padding: 1rem;
+//   position: relative;
+// `;
 
 const Title = styled.h2`
   text-align: center;
@@ -46,7 +47,7 @@ function TripListPage() {
       <Helmet>
         <title>여행 폴더 | 여행조각</title>
       </Helmet>
-      <Container>
+      <Container hasPadding>
         <Title>보유여행티켓</Title>
 
         <button type="button" onClick={handleEditMode}>
