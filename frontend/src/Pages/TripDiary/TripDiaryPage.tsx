@@ -1,9 +1,9 @@
 import styled from "@emotion/styled";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useQuery } from "react-query";
 import { useNavigate, useParams } from "react-router-dom";
 import { HiPencilAlt } from "react-icons/hi";
-import { diaryApis } from "../../utils/apis/diaryApis";
+import diaryApis from "../../utils/apis/diaryApis";
 import { changeDateFormatToHyphen } from "../../utils/functions/util";
 import ColoredRoundButton from "../../components/atoms/ColoredRoundButton";
 import axiosInstance from "../../utils/apis/api";
@@ -34,7 +34,7 @@ const NoDiaryContainer = styled.div`
 `;
 
 function TripDiaryPage() {
-  const [selectedDiaryDate, setSelectedDiaryDate] = useState<string>(
+  const [selectedDiaryDate, setSelectedDiaryDate] = useState<string>(() =>
     changeDateFormatToHyphen(new Date()),
   );
   const { tripId, diaryDate } = useParams();
@@ -58,7 +58,7 @@ function TripDiaryPage() {
   );
 
   const moveToWriteDiary = () => {
-    navigate(`/trips/${tripId}/diarys/write`, {
+    navigate(`/trips/${tripId}/diarys/${selectedDiaryDate}/write`, {
       state: { date: selectedDiaryDate },
     });
   };

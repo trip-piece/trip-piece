@@ -11,17 +11,26 @@ import { Controller, useForm } from "react-hook-form";
 import { TextareaAutosize } from "@mui/material";
 import { BsFillGeoAltFill } from "react-icons/bs";
 import { HiTrash } from "react-icons/hi";
-import { useMutation } from "react-query";
+import { Helmet } from "react-helmet-async";
+import { useRecoilState } from "recoil";
 import {
   DIARY_COLOR_LIST,
   FONTTYPELIST,
   IMAGE_SIZE_LIMIT_NUMBER,
+  MESSAGE_LIST,
 } from "../../utils/constants/constant";
 import ColoredRoundButton from "../../components/atoms/ColoredRoundButton";
 import { pixelToRem } from "../../utils/functions/util";
 import { shake } from "../../style/animations";
 import axiosInstance from "../../utils/apis/api";
-import { diaryApis } from "../../utils/apis/diaryApis";
+import diaryApis from "../../utils/apis/diaryApis";
+import useWriteDiary from "../../utils/hooks/useWriteDiary";
+import useWindowResize from "../../utils/hooks/useWindowResize";
+import { writedDiaryState } from "../../store/diaryAtoms";
+import {
+  IDiaryListState,
+  IWritedDiary,
+} from "../../utils/interfaces/diarys.interface";
 
 const Container = styled.section`
   height: 1px;
@@ -104,7 +113,7 @@ const ColorButton = styled.button<{ active: boolean; backgroundColor: string }>`
 
 const AutosizedTextarea = styled(TextareaAutosize)<IDiaryStyle>`
   display: block;
-  font-family: ${(props) => FONTTYPELIST[Number(props.fonttype)]};
+  font-family: ${(props) => FONTTYPELIST[props.fonttype]};
   background-color: ${(props) => props.backgroundcolor};
   width: 100%;
   min-height: 5vh;
@@ -210,12 +219,12 @@ interface RouteState {
   };
 }
 interface IDiaryStyle {
-  fonttype: string;
+  fonttype: number;
   backgroundcolor: string;
   diarywidth: number;
 }
 interface IFormInput {
-  fontType: string;
+  fontType: number;
   content: string;
 }
 
@@ -227,24 +236,30 @@ const weatherList = [
 ];
 
 function DiaryManagementPage() {
-  const [weather, setWeather] = useState(0);
-  const [diaryColor, setDiaryColor] = useState(0);
-  const [dottedDate, setDottedDate] = useState("");
-  const [diaryWidth, setDiaryWidth] = useState(320);
+  const [weather, setWeather] = useState<number>(0);
+  const [diaryColor, setDiaryColor] = useState<number>(0);
+  const [dottedDate, setDottedDate] = useState<string>("");
+  const [diaryWidth, setDiaryWidth] = useState<number>(320);
   const [todayPhoto, setTodayPhoto] = useState<File | null>();
   const [imageSrc, setImageSrc] = useState<string | null>("");
   const fileInput = useRef<HTMLInputElement>(null);
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
-  const { tripId } = useParams();
+  const { tripId, diaryDate } = useParams();
+  const [diary, setDiary] = useRecoilState<IWritedDiary<File | null>>(
+    writedDiaryState(`${tripId}-${diaryDate}`),
+  );
   const {
     state: { date },
   } = useLocation() as RouteState;
-  const { register, handleSubmit, control, watch } = useForm<IFormInput>({
-    mode: "onChange",
-  });
+  const { register, handleSubmit, control, watch, setValue } =
+    useForm<IFormInput>({});
   const navigate = useNavigate();
+  const size = useWindowResize();
   useEffect(() => {
-    setDottedDate(date.replaceAll("-", "."));
+    if (date) setDottedDate(date?.replaceAll("-", "."));
+    else if (diaryDate) {
+      setDottedDate(diaryDate?.replaceAll("-", "."));
+    }
   }, []);
 
   useEffect(() => {
@@ -253,19 +268,10 @@ function DiaryManagementPage() {
       // eslint-disable-next-line no-unsafe-optional-chaining
       textAreaRef.current?.offsetWidth;
     setDiaryWidth(tmpSize);
-  }, [textAreaRef.current?.offsetWidth]);
-
-  const onSubmit = (data: IFormInput) => {
-    console.log(data, tripId, weather, diaryColor);
-  };
-
-  const onCancel = () => {
-    if (window.confirm("다이어리 작성을 취소하시겠습니까?")) {
-      navigate(-1);
-    }
-  };
+  }, [size]);
 
   const encodeFileToBase64 = useCallback((fileBlob: File) => {
+    if (!fileBlob) return;
     const reader = new FileReader();
     reader.readAsDataURL(fileBlob);
     reader.onload = () => {
@@ -273,6 +279,41 @@ function DiaryManagementPage() {
       setImageSrc(tmpImage);
     };
   }, []);
+  useEffect(() => {
+    if (diary) {
+      setDiaryColor(diary.diary.backgroundColor);
+      setWeather(diary.diary.weather);
+      setTodayPhoto(diary.todayPhoto);
+      if (diary.todayPhoto) encodeFileToBase64(diary.todayPhoto);
+      setValue("fontType", diary.diary.fontType);
+      setValue("content", diary.diary.content);
+    }
+  }, []);
+
+  const onSubmit = (data: IFormInput) => {
+    // const formData = new FormData();
+    // if (todayPhoto) {
+    //   formData.append("file", todayPhoto);
+    // }
+    const body = {
+      diary: {
+        ...data,
+        weather,
+        backgroundColor: diaryColor,
+        tripId: Number(tripId),
+        date,
+      },
+      todayPhoto: todayPhoto || null,
+    };
+    setDiary(body);
+    navigate(`../trips/${tripId}/diarys/${diaryDate}/decoration`);
+  };
+
+  const onCancel = () => {
+    if (window.confirm(MESSAGE_LIST.DIARY_CANCEL)) {
+      navigate(-1);
+    }
+  };
 
   const onLoadFile = (event: ChangeEvent<HTMLInputElement>) => {
     const {
@@ -280,7 +321,7 @@ function DiaryManagementPage() {
     } = event;
     const file = files && files[0];
     if (file && file?.size > IMAGE_SIZE_LIMIT_NUMBER) {
-      alert("10MB 이하의 이미지를 넣어주세요.");
+      alert(MESSAGE_LIST.PHOTO_LIMIT);
       return;
     }
     if (file) {
@@ -294,121 +335,120 @@ function DiaryManagementPage() {
     setTodayPhoto(null);
   };
 
-  const addDiary = async (newDiary: any): Promise<any> => {
-    const { data } = await axiosInstance.post<any>(
-      diaryApis.diaryWrite,
-      newDiary,
-    );
-    return data;
-  };
-
-  const {} = useMutation(addDiary);
-
   return (
-    <Container>
-      <DateConatiner>
-        <h2>{dottedDate}</h2>
-      </DateConatiner>
-      <Form onSubmit={handleSubmit(onSubmit)}>
-        <DiaryStyleContainer>
-          <Select id="font" defaultValue="0" {...register("fontType")}>
-            <option value="0" disabled hidden>
-              글씨체
-            </option>
-            {FONTTYPELIST.map((font, idx) => (
-              <option key={font} value={idx}>
-                {font}
-              </option>
-            ))}
-          </Select>
-          <WeatherButtonListContainer>
-            {weatherList.map((weatherType, idx) => (
-              <WeatherButton
-                type="button"
-                key={v4()}
-                active={idx === weather}
-                onClick={() => setWeather(idx)}
-              >
-                <Icon icon={weatherType} />
-              </WeatherButton>
-            ))}
-          </WeatherButtonListContainer>
-        </DiaryStyleContainer>
-        <ColorAndPositionContainer>
-          <ColorButtonListContainer>
-            {DIARY_COLOR_LIST.map((color, idx) => (
-              <ColorButton
-                type="button"
-                key={color}
-                backgroundColor={color}
-                active={idx === diaryColor}
-                onClick={() => setDiaryColor(idx)}
-              />
-            ))}
-          </ColorButtonListContainer>
-          <PositionContainer>
-            <BsFillGeoAltFill />
-            서울 송파구
-          </PositionContainer>
-        </ColorAndPositionContainer>
-        <Controller
-          name="content"
-          control={control}
-          render={({ field }) => (
-            <AutosizedTextarea
-              minRows={10}
-              fonttype={watch("fontType")}
-              placeholder="오늘의 여행은 어땠나요?"
-              {...field}
-              backgroundcolor={DIARY_COLOR_LIST[diaryColor]}
-              ref={textAreaRef}
-              diarywidth={diaryWidth}
-            />
-          )}
-        />
-        <FileUploadContainer>
-          <Label htmlFor="todayPhoto">오늘의 PHOTO</Label>
-          <input
-            style={{ display: "none" }}
-            type="file"
-            id="todayPhoto"
-            accept="image/jpg, image/jpeg, image/png"
-            onChange={onLoadFile}
-            ref={fileInput}
-          />
-          <ImageControlContainer>
-            <p>{todayPhoto?.name}</p>
-            <FileSelectionButton
-              type="button"
-              onClick={() => fileInput.current?.click()}
+    <>
+      <Helmet>
+        <title>다이어리 | 여행조각</title>
+      </Helmet>
+      <Container>
+        <DateConatiner>
+          <h2>{dottedDate}</h2>
+        </DateConatiner>
+        <Form onSubmit={handleSubmit(onSubmit)}>
+          <DiaryStyleContainer>
+            <Select
+              id="font"
+              defaultValue="0"
+              {...register("fontType", { valueAsNumber: true })}
             >
-              파일 선택
-            </FileSelectionButton>
-          </ImageControlContainer>
-          <PreviewContainer>
-            {imageSrc && <PreviewImage src={imageSrc} alt="today" />}
-            {imageSrc && (
-              <DeleteButton type="button" onClick={onDlelete}>
-                <HiTrash />
-              </DeleteButton>
+              <option value="0" disabled hidden>
+                글씨체
+              </option>
+              {FONTTYPELIST.map((font, idx) => (
+                <option key={font} value={idx}>
+                  {font}
+                </option>
+              ))}
+            </Select>
+            <WeatherButtonListContainer>
+              {weatherList.map((weatherType, idx) => (
+                <WeatherButton
+                  type="button"
+                  key={v4()}
+                  active={idx === weather}
+                  onClick={() => setWeather(idx)}
+                >
+                  <Icon icon={weatherType} />
+                </WeatherButton>
+              ))}
+            </WeatherButtonListContainer>
+          </DiaryStyleContainer>
+          <ColorAndPositionContainer>
+            <ColorButtonListContainer>
+              {DIARY_COLOR_LIST.map((color, idx) => (
+                <ColorButton
+                  type="button"
+                  key={color}
+                  backgroundColor={color}
+                  active={idx === diaryColor}
+                  onClick={() => setDiaryColor(idx)}
+                />
+              ))}
+            </ColorButtonListContainer>
+            <PositionContainer>
+              <BsFillGeoAltFill />
+              서울 송파구
+            </PositionContainer>
+          </ColorAndPositionContainer>
+          <Controller
+            name="content"
+            control={control}
+            render={({ field }) => (
+              <AutosizedTextarea
+                minRows={10}
+                fonttype={watch("fontType")}
+                placeholder={MESSAGE_LIST.DIARY_INTRO}
+                {...field}
+                backgroundcolor={DIARY_COLOR_LIST[diaryColor]}
+                ref={textAreaRef}
+                diarywidth={diaryWidth}
+              />
             )}
-          </PreviewContainer>
-        </FileUploadContainer>
-        <HandleButtonListContainer>
-          <ColoredRoundButton
-            type="submit"
-            color="mainLight"
-            text="일기 꾸미기"
           />
-          <ColoredRoundButton
-            type="button"
-            color="gray400"
-            text="취소"
-            func={onCancel}
-          />
-        </HandleButtonListContainer>
-      </Form>
-    </Container>
+          <FileUploadContainer>
+            <Label htmlFor="todayPhoto">오늘의 PHOTO</Label>
+            <input
+              style={{ display: "none" }}
+              type="file"
+              id="todayPhoto"
+              accept="image/jpg, image/jpeg, image/png"
+              onChange={onLoadFile}
+              ref={fileInput}
+            />
+            <ImageControlContainer>
+              <p>{todayPhoto?.name}</p>
+              <FileSelectionButton
+                type="button"
+                onClick={() => fileInput.current?.click()}
+              >
+                파일 선택
+              </FileSelectionButton>
+            </ImageControlContainer>
+            <PreviewContainer>
+              {imageSrc && <PreviewImage src={imageSrc} alt="today" />}
+              {imageSrc && (
+                <DeleteButton type="button" onClick={onDlelete}>
+                  <HiTrash />
+                </DeleteButton>
+              )}
+            </PreviewContainer>
+          </FileUploadContainer>
+          <HandleButtonListContainer>
+            <ColoredRoundButton
+              type="submit"
+              color="mainLight"
+              text="일기 꾸미기"
+            />
+            <ColoredRoundButton
+              type="button"
+              color="gray400"
+              text="취소"
+              func={onCancel}
+            />
+          </HandleButtonListContainer>
+        </Form>
+      </Container>
+    </>
   );
 }
 
