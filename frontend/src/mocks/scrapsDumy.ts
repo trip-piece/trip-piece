@@ -1,7 +1,8 @@
+// eslint-disable-next-line import/no-extraneous-dependencies
 import { rest } from "msw";
 
 const data = {
-  scrap: [
+  scrapList: [
     {
       scrapId: 11,
       diaryId: 12,
@@ -75,4 +76,13 @@ const data = {
       image: "이미지 경로오",
     },
   ],
+  last: true,
 };
+
+export const scrapHandlers = [
+  rest.get("/user/scraps", (req, res, ctx) => {
+    if (req.url.search === "?page=5")
+      return res(ctx.status(200), ctx.json({ ...data, last: false }));
+    return res(ctx.status(200), ctx.json(data));
+  }),
+];
