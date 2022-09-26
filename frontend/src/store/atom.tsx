@@ -26,3 +26,14 @@ export const UserInfoState = atom<IUserInfo[]>({
     },
   ],
 });
+
+interface IQrInfo {
+  url: string | null;
+}
+
+const initialQrInfoState: IQrInfo = { url: null };
+
+export const QrInfoState = atom({
+  key: "recoilQrState",
+  default: initialQrInfoState,
+});

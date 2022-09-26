@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styled from "@emotion/styled";
 import { QrReader } from "react-qr-reader";
 import { pixelToRem } from "../../utils/functions/util";
@@ -26,6 +26,8 @@ function QrReaderComponent() {
   const delay = 500;
 
   const [result, setResult] = useState("No result");
+
+  useEffect
 
   const handleScan = (result) => {
     if (result) {
