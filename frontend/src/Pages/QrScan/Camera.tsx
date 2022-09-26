@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import styled from "@emotion/styled";
 import { QrReader } from "react-qr-reader";
 import { pixelToRem } from "../../utils/functions/util";
+import NestedModal from "./Modal";
 
 const Box = styled.div`
   box-shadow: 0 4px 4px 2px rgb(0 0 0/25%);
@@ -13,13 +14,16 @@ const Box = styled.div`
   background: ${(props) => props.theme.colors.white};
 `;
 
+const GetNftButtonBox = styled.div`
+  border-bottom: solid 1px ${(props) => props.theme.colors.gray400};
+  display: flex;
+  justify-content: center;
+  padding: 0 0 20% 0;
+  align-items: center;
+`;
+
 function QrReaderComponent() {
   const delay = 500;
-
-  const previewStyle = {
-    height: 320,
-    width: 320,
-  };
 
   const [result, setResult] = useState("No result");
 
@@ -27,10 +31,6 @@ function QrReaderComponent() {
     if (result) {
       setResult(result);
     }
-  };
-
-  const handleError = (error: Error) => {
-    console.log(error);
   };
 
   return (
@@ -41,6 +41,7 @@ function QrReaderComponent() {
         constraints={{ facingMode: "environment" }}
       />
       <p>{result}</p>
+      <GetNftButtonBox>버튼</GetNftButtonBox>
     </>
   );
 }
@@ -49,6 +50,7 @@ function Camera() {
   return (
     <Box>
       <QrReaderComponent />
+      <NestedModal />
     </Box>
   );
 }
