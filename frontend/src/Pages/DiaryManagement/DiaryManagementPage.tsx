@@ -188,11 +188,6 @@ const DeleteButton = styled.button`
   }
 `;
 
-// interface RouteState {
-//   state: {
-//     date: string;
-//   };
-// }
 interface IDiaryStyle {
   fonttype: number;
   backgroundcolor: string;

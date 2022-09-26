@@ -1,6 +1,6 @@
 import styled from "@emotion/styled";
 import { Icon } from "@iconify/react/dist/offline";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { BsFillGeoAltFill } from "react-icons/bs";
 import { useParams } from "react-router-dom";
 import { useRecoilValue } from "recoil";
@@ -8,7 +8,10 @@ import ColoredRoundButton from "../../components/atoms/ColoredRoundButton";
 import Container from "../../components/atoms/Container";
 import DateContainer from "../../components/atoms/DateContainer";
 import { writedDiaryState } from "../../store/diaryAtoms";
+import { DIARY_COLOR_LIST, FONTTYPELIST } from "../../utils/constants/constant";
 import { weatherList } from "../../utils/constants/weatherList";
+import { pixelToRem } from "../../utils/functions/util";
+import useWindowResize from "../../utils/hooks/useWindowResize";
 import { IWritedDiary } from "../../utils/interfaces/diarys.interface";
 
 const PositionContainer = styled.div`
@@ -18,10 +21,20 @@ const PositionContainer = styled.div`
   color: ${(props) => props.theme.colors.gray400};
 `;
 
-const DiaryContents = styled.div`
+const DiaryContents = styled.div<{
+  fontType: number;
+  diaryWidth: number;
+  backgroundColor: number;
+}>`
   white-space: pre-line;
   min-height: 60vh;
-  background-color: red;
+  background-color: ${(props) => DIARY_COLOR_LIST[props.backgroundColor]};
+  font-family: ${(props) => FONTTYPELIST[props.fontType]};
+  padding: 1rem
+    ${(props) => `${pixelToRem(16 + (props.diaryWidth - 320) / 20)}`};
+  resize: none;
+  transition: background-color 0.5s ease-in;
+  font-size: ${(props) => pixelToRem(props.diaryWidth / 20)};
 `;
 
 const StickerZone = styled.div<{ active: boolean }>`
@@ -55,19 +68,51 @@ const ButtonListContainer = styled.div`
   margin-bottom: 125px;
 `;
 
+const Picture = styled.picture`
+  display: flex;
+  justify-content: center;
+`;
+
+const DiaryImag = styled.img`
+  max-width: 100%;
+  width: fit-content;
+`;
+
 function DiaryDecorationPage() {
   const [dottedDate, setDottedDate] = useState<string>("");
-  const [toggle, setToggle] = useState(false);
+  const [toggle, setToggle] = useState<boolean>(false);
+  const [diaryWidth, setDiaryWidth] = useState<number>(320);
+  const [imageSrc, setImageSrc] = useState<string | null>("");
+
   const { tripId, diaryDate } = useParams();
   const diary = useRecoilValue<IWritedDiary<File | null>>(
     writedDiaryState(`${tripId}-${diaryDate}`),
   );
-  const ref = useRef<HTMLDivElement>(null);
+  const diaryRef = useRef<HTMLDivElement>(null);
+  const size = useWindowResize();
+
+  const encodeFileToBase64 = useCallback((fileBlob: File) => {
+    if (!fileBlob) return;
+    const reader = new FileReader();
+    reader.readAsDataURL(fileBlob);
+    reader.onload = () => {
+      const tmpImage = reader.result as string;
+      setImageSrc(tmpImage);
+    };
+  }, []);
+
   useEffect(() => {
     if (diaryDate) {
       setDottedDate(diaryDate?.replaceAll("-", "."));
     }
+    if (diary?.todayPhoto) encodeFileToBase64(diary.todayPhoto);
   }, []);
+
+  useEffect(() => {
+    if (!diaryRef.current?.offsetWidth) return;
+    const tmpSize = diaryRef.current.offsetWidth;
+    setDiaryWidth(tmpSize);
+  }, [size]);
 
   const onClick = () => {
     setToggle(!toggle);
@@ -85,7 +130,24 @@ function DiaryDecorationPage() {
               <BsFillGeoAltFill />
               서울 송파구
             </PositionContainer>
-            <DiaryContents>{diary.diary.content}</DiaryContents>
+            <DiaryContents
+              diaryWidth={diaryWidth}
+              backgroundColor={diary.diary.backgroundColor}
+              ref={diaryRef}
+              fontType={diary.diary.fontType}
+            >
+              {diary.diary.content}
+              {imageSrc && (
+                <Picture>
+                  <DiaryImag
+                    src={imageSrc}
+                    alt="미리보기"
+                    width="550"
+                    loading="lazy"
+                  />
+                </Picture>
+              )}
+            </DiaryContents>
           </div>
           <ButtonListContainer>
             <ColoredRoundButton
@@ -95,76 +157,11 @@ function DiaryDecorationPage() {
             />
             <ColoredRoundButton text="취소" color="gray400" type="button" />
           </ButtonListContainer>
-          <StickerZone ref={ref} active={toggle}>
+          <StickerZone active={toggle}>
             <button type="button" onClick={onClick}>
               버튼
             </button>
-            <div>
-              <div>
-                이듬해 질 녘 꽃 피는 봄 한여름 밤의 꿈 가을 타 겨울 내릴 눈 일
-                년 네 번 또다시 봄 정들었던 내 젊은 날 이제는 안녕 아름답던
-                우리의 봄 여름 가을 겨울 (Four seasons with no reason) 비 갠
-                뒤에 비애 대신 a happy end 비스듬히 씩 비웃듯 칠색 무늬의 무지개
-                철없이 철 지나 철들지 못해 (still) 철부지에 철 그른지 오래
-                Marchin' 비발디, 차이코프스키 오늘의 사계를 맞이해 (boy) 마침내,
-                마치 넷이 못내 저 하늘만 바라보고서 사계절 잘 지내고 있어,
-                goodbye 떠난 사람 또 나타난 사람 머리 위 저세상, 난 떠나 영감의
-                amazon 지난 밤의 트라우마 다 묻고 목숨 바쳐 달려올 새 출발 하는
-                왕복선 변할래 전보다는 더욱더 좋은 사람 더욱더, 더 나은 사람
-                더욱더 아침 이슬을 맞고 (내 안에) 내 안에 분노 과거에 묻고 For
-                life, do it away, away, away 울었던 웃었던 소년과 소녀가 그리워
-                나 찬란했던 사랑했던 그 시절만 자꾸 기억나 계절은 날이 갈수록
-                속절없이 흘러 붉게 물들이고 파랗게 멍들어 가슴을 훑고 언젠가
-                다시 올 그날 그때를 위하여 (그대를 위하여) 아름다울 우리의 봄
-                여름 가을 겨울 La, la-la-la-la, la-la-la-la, la, la La,
-                la-la-la-la, la-la-la-la, la, la La, la-la-la-la, la-la-la-la,
-                la, la La, la-la-la-la, la-la-la-la, la, la
-              </div>
-              <div>
-                이듬해 질 녘 꽃 피는 봄 한여름 밤의 꿈 (음) 가을 타 겨울 내린 눈
-                봄 여름 가을 겨울 (우) 이듬해 질 녘 꽃 피는 봄 한여름 밤의 꿈
-                가을 타 겨울 내릴 눈 일 년 네 번 또다시 봄 정들었던 내 젊은 날
-                이제는 안녕 아름답던 우리의 봄 여름 가을 겨울 (Four seasons with
-                no reason) 비 갠 뒤에 비애 대신 a happy end 비스듬히 씩 비웃듯
-                칠색 무늬의 무지개 철없이 철 지나 철들지 못해 (still) 철부지에
-                철 그른지 오래 Marchin' 비발디, 차이코프스키 오늘의 사계를
-                맞이해 (boy) 마침내, 마치 넷이 못내 저 하늘만 바라보고서 사계절
-                잘 지내고 있어, goodbye 떠난 사람 또 나타난 사람 머리 위 저세상,
-                난 떠나 영감의 amazon 지난 밤의 트라우마 다 묻고 목숨 바쳐
-                달려올 새 출발 하는 왕복선 변할래 전보다는 더욱더 좋은 사람
-                더욱더, 더 나은 사람 더욱더 아침 이슬을 맞고 (내 안에) 내 안에
-                분노 과거에 묻고 For life, do it away, away, away 울었던 웃었던
-                소년과 소녀가 그리워 나 찬란했던 사랑했던 그 시절만 자꾸 기억나
-                계절은 날이 갈수록 속절없이 흘러 붉게 물들이고 파랗게 멍들어
-                가슴을 훑고 언젠가 다시 올 그날 그때를 위하여 (그대를 위하여)
-                아름다울 우리의 봄 여름 가을 겨울 La, la-la-la-la, la-la-la-la,
-                la, la La, la-la-la-la, la-la-la-la, la, la La, la-la-la-la,
-                la-la-la-la, la, la La, la-la-la-la, la-la-la-la, la, la
-              </div>
-              <div>
-                이듬해 질 녘 꽃 피는 봄 한여름 밤의 꿈 (음) 가을 타 겨울 내린 눈
-                봄 여름 가을 겨울 (우) 이듬해 질 녘 꽃 피는 봄 한여름 밤의 꿈
-                가을 타 겨울 내릴 눈 일 년 네 번 또다시 봄 정들었던 내 젊은 날
-                이제는 안녕 아름답던 우리의 봄 여름 가을 겨울 (Four seasons with
-                no reason) 비 갠 뒤에 비애 대신 a happy end 비스듬히 씩 비웃듯
-                칠색 무늬의 무지개 철없이 철 지나 철들지 못해 (still) 철부지에
-                철 그른지 오래 Marchin' 비발디, 차이코프스키 오늘의 사계를
-                맞이해 (boy) 마침내, 마치 넷이 못내 저 하늘만 바라보고서 사계절
-                잘 지내고 있어, goodbye 떠난 사람 또 나타난 사람 머리 위 저세상,
-                난 떠나 영감의 amazon 지난 밤의 트라우마 다 묻고 목숨 바쳐
-                달려올 새 출발 하는 왕복선 변할래 전보다는 더욱더 좋은 사람
-                더욱더, 더 나은 사람 더욱더 아침 이슬을 맞고 (내 안에) 내 안에
-                분노 과거에 묻고 For life, do it away, away, away 울었던 웃었던
-                소년과 소녀가 그리워 나 찬란했던 사랑했던 그 시절만 자꾸 기억나
-                계절은 날이 갈수록 속절없이 흘러 붉게 물들이고 파랗게 멍들어
-                가슴을 훑고 언젠가 다시 올 그날 그때를 위하여 (그대를 위하여)
-                아름다울 우리의 봄 여름 가을 겨울 La, la-la-la-la, la-la-la-la,
-                la, la La, la-la-la-la, la-la-la-la, la, la La, la-la-la-la,
-                la-la-la-la, la, la La, la-la-la-la, la-la-la-la, la, la 이듬해
-                질 녘 꽃 피는 봄 한여름 밤의 꿈 (음) 가을 타 겨울 내린 눈 봄
-                여름 가을 겨울 (우)
-              </div>
-            </div>
+            <div />
           </StickerZone>
         </>
       )}
