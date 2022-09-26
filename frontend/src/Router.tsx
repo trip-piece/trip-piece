@@ -11,6 +11,8 @@ import Navbar from "./Pages/Navbar/Navbar";
 import Admin from "./Pages/Admin/AdminPage";
 import NftRegister from "./Pages/Admin/NftRegisterPage";
 import FrameSharePage from "./Pages/Share/FrameSharePage";
+import QrScanner from "./Pages/QrScan/QrReader";
+
 
 const Landing = lazy(() => import("./Pages/Landing/LandingPage"));
 const Main = lazy(() => import("./Pages/Main/MainPage"));
@@ -21,11 +23,15 @@ const TripList = lazy(() => import("./Pages/TripList/TripListPage"));
 const DiaryManagement = lazy(
   () => import("./Pages/DiaryManagement/DiaryManagementPage"),
 );
-
+const DiaryDecoration = lazy(
+  () => import("./Pages/DiaryDecoration/DiaryDecorationPage"),
+);
 const StickerMapMain = lazy(() => import("./Pages/StickerMap/StickerMapMain"));
 const StickerMapFiltering = lazy(
   () => import("./Pages/StickerMap/SpotFestivalMap"),
 );
+
+const NftResponse = lazy(() => import("./Pages/QrScan/NftResponse"));
 
 const Header = styled.header`
   height: 10vh;
@@ -47,16 +53,22 @@ function Router() {
           <Route path=":diaryDate" element={<TripDiaryPage />} />
         </Route>
         <Route
-          path="trips/:tripId/diarys/write"
+          path="trips/:tripId/diarys/:diaryDate/write"
           element={<DiaryManagement />}
+        />
+        <Route
+          path="trips/:tripId/diarys/:diaryDate/decoration"
+          element={<DiaryDecoration />}
         />
         <Route path="market" element={<MarketMainPage />} />
         <Route path="market/:regionId" element={<MarketListPage />} />
         <Route path="market/:marketId/detail" element={<StickerDetailPage />} />
         <Route path="market/register" element={<MarketRegisterPage />} />
-        <Route path="user/stickers" element={<MyPage />} />
+        <Route path="user/scraps" element={<MyPage />} />
         <Route path="places/map" element={<StickerMapMain />} />
         <Route path="places/information" element={<StickerMapFiltering />} />
+        <Route path="qrscan" element={<QrScanner />} />
+        <Route path="/places/:placeId" element={<NftResponse />} />
       </Routes>
     </BrowserRouter>
   );

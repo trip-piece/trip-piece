@@ -16,7 +16,7 @@ const ButtonText = styled.div`
 `;
 
 interface LoginButtonProps {
-  func: () => void;
+  func: (event: any) => Promise<void>;
 }
 
 function LoginButton({ func }: LoginButtonProps) {

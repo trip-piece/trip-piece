@@ -105,8 +105,8 @@ const Flex = styled.div`
 `;
 
 function AdminPage() {
-  const [startDate, setStartDate] = useState(new Date());
-  const [endDate, setEndDate] = useState(null);
+  const [startDate, setStartDate] = useState<Date | null>(new Date());
+  const [endDate, setEndDate] = useState<Date | null>(new Date());
 
   return (
     <>

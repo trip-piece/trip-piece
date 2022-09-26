@@ -3,14 +3,14 @@ import styled from "@emotion/styled";
 import { useQuery } from "react-query";
 import { useNavigate, useParams } from "react-router-dom";
 import { MdLocationOn } from "react-icons/md";
-import { diaryApis } from "../../utils/apis/diaryApis";
 import {
   changeDateFormatToHyphen,
   pixelToRem,
 } from "../../utils/functions/util";
 import ColoredRoundButton from "../../components/atoms/ColoredRoundButton";
 import axiosInstance from "../../utils/apis/api";
-import ToggleButton from "../../components/atoms/ToggleButton";
+import ToggleButton from "@mui/material/ToggleButton";
+import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 
 const Container = styled.div`
   min-height: 100vh;
@@ -18,7 +18,6 @@ const Container = styled.div`
   background-color: ${(props) => props.theme.colors.gray0};
   border-radius: 10px;
   padding: 1rem;
-  }
 `;
 
 const TitleGroup = styled.div`
@@ -110,19 +109,34 @@ const StickerInformationBox = styled.div`
 const ToggleBox = styled.div`
   margin-top: 5%;
   text-align: center;
+
+  button {
+    background-color: ${(props) => props.theme.colors.mainDark};
+    color: ${(props) => props.theme.colors.white};
+  }
 `;
+
 export default function StickerMapMain() {
-  const [choose, setChoose] = React.useState(true);
+  const [choose, setChoose] = React.useState("0");
+  const handleChange = (
+    event: React.MouseEvent<HTMLElement>,
+    newAlignment: string,
+  ) => {
+    setChoose(newAlignment);
+  };
 
   return (
     <Container>
       <ToggleBox>
-        <ToggleButton
-          textLeft="스팟"
-          textRight="축제"
-          onClickLeft={() => setChoose(true)}
-          onClickRight={() => setChoose(false)}
-        />
+        <ToggleButtonGroup
+          value={choose}
+          exclusive
+          onChange={handleChange}
+          aria-label="event"
+        >
+          <ToggleButton value="0">축제</ToggleButton>
+          <ToggleButton value="1">스팟</ToggleButton>
+        </ToggleButtonGroup>
       </ToggleBox>
       <TitleGroup>
         <h1 className="main">제주도</h1>

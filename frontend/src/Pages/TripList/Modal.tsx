@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /* eslint-disable react/destructuring-assignment */
 import {
   Dispatch,
@@ -302,7 +303,7 @@ function BasicModal({
         if (setIsCreated) setIsCreated(true);
       }
     } catch (err) {
-      throw new Error(err);
+      console.log(err);
     }
   };
 

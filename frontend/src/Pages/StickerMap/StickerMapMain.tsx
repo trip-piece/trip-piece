@@ -3,7 +3,6 @@ import styled from "@emotion/styled";
 import { useQuery } from "react-query";
 import { useNavigate, useParams } from "react-router-dom";
 import { MdLocationOn } from "react-icons/md";
-import { diaryApis } from "../../utils/apis/diaryApis";
 import {
   changeDateFormatToHyphen,
   pixelToRem,
@@ -17,7 +16,6 @@ const Container = styled.div`
   background-color: ${(props) => props.theme.colors.gray0};
   border-radius: 10px;
   padding: 1rem;
-  }
 `;
 
 const TitleGroup = styled.div`

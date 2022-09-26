@@ -1,8 +1,12 @@
-import React from "react";
+import React, { ChangeEvent, SetStateAction, useRef, useState } from "react";
 import styled from "@emotion/styled";
 import { Helmet } from "react-helmet-async";
-
+import { IMAGE_SIZE_LIMIT_NUMBER } from "../../utils/constants/constant";
 import { pixelToRem } from "../../utils/functions/util";
+import getAddressFrom from "../..//utils/AddressExtractor";
+import { NFTContract } from "../../utils/common/NFT_ABI";
+import { create } from "ipfs-http-client";
+import { Buffer } from "buffer";
 
 const Container = styled.section`
   min-height: 90vh;
@@ -14,7 +18,7 @@ const Container = styled.section`
   flex-direction: column;
   justify-content: start;
 
-  input {
+  #fileUpload {
     color: ${(props) => props.theme.colors.white};
   }
 `;
@@ -58,24 +62,130 @@ const ButtonGroup = styled.div`
 `;
 
 function NftRegisterPage() {
+  const [item, setItem] = useState<File | null>();
+  const fileInput = useRef<HTMLInputElement>(null);
+  const [NFTName, setNFTName] = useState("");
+  const [privKey, setPrivKey] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const handleNFTName = (e: { target: { value: SetStateAction<string> } }) => {
+    setNFTName(e.target.value);
+  };
+
+  const handlePrivKey = (e: { target: { value: SetStateAction<string> } }) => {
+    setPrivKey(e.target.value);
+  };
+
+  const handleItem = (event: ChangeEvent<HTMLInputElement>) => {
+    const {
+      target: { files },
+    } = event;
+    const file = files && files[0];
+    if (file && file?.size > IMAGE_SIZE_LIMIT_NUMBER) {
+      alert("10MB 이하의 이미지를 넣어주세요.");
+      return;
+    }
+    if (file) {
+      setItem(file);
+    }
+  };
+
+  const projectId = import.meta.env.VITE_IPFS_PROJECT_ID;
+  const projectSecret = import.meta.env.VITE_PFS_PROJECT_SECRET_KEY;
+  const auth =
+    "Basic " + Buffer.from(projectId + ":" + projectSecret).toString("base64");
+  const ipfs = create({
+    host: "ipfs.infura.io",
+    port: 5001,
+    protocol: "https",
+    headers: {
+      authorization: auth,
+    },
+  });
+
+  const createNFT = async (e: { preventDefault: () => void }) => {
+    setLoading(true);
+    e.preventDefault();
+
+    try {
+      if (NFTName === "" || NFTName === null) alert("NFT 이름을 입력해주세요.");
+      else if (item === null || item === undefined) alert("파일을 넣어주세요.");
+      else {
+        const PrivKey = "0x" + privKey;
+        const myaddress = getAddressFrom(PrivKey);
+        const added = await ipfs.add(item);
+        const url = `https://www.infura-ipfs.io/ipfs/${added.path}`;
+        var metadata = [
+          {
+            name: NFTName,
+            image: url,
+          },
+        ];
+        const metaadded = await ipfs.add(Buffer.from(JSON.stringify(metadata)));
+        const tokenUrl = `${metaadded.path}`;
+        // const content = await ipfs.get(tokenUrl);
+        // console.log(JSON.parse(content[0].content));
+        if (!(window as any).ethereum.enable())
+          (window as any).ethereum.enable();
+        const result = await NFTContract.methods
+          .create(myaddress, tokenUrl)
+          .send({ from: myaddress });
+        var tokenId = 0;
+        if (result.status) {
+          tokenId = parseInt(result.events.Transfer.returnValues.tokenId);
+          console.log("tokenId : " + tokenId);
+        }
+        const response = await NFTContract.methods.tokenURI(tokenId).call();
+        console.log(response);
+        if (response.status) {
+          console.log(response);
+        }
+      }
+    } catch (err) {
+      console.log("Error uploading the file: ", err);
+    }
+    alert("생성되었습니다.");
+    setNFTName("");
+    setItem(null);
+    setPrivKey("");
+    setLoading(false);
+  };
+
   return (
     <>
       <Helmet>
         <title>관리자페이지-Nft등록 | 여행조각</title>
       </Helmet>
       <Container>
-        <FormContainer>
-          <Title>Nft 등록</Title>
-          <input type="file" id="fileUpload" />
-          <TitleInput placeholder="NFT 스티커 이름" />
-          <TitleInput placeholder="개인키" />
-          <ButtonGroup>
-            <button type="button" className="register">
-              등록하기
-            </button>
-            <button type="button">취소하기</button>
-          </ButtonGroup>
-        </FormContainer>
+        {!loading && (
+          <FormContainer>
+            <Title>Nft 등록</Title>
+            <input
+              type="file"
+              id="fileUpload"
+              accept="image/png"
+              onChange={handleItem}
+              ref={fileInput}
+            />
+            <TitleInput
+              placeholder="NFT 스티커 이름"
+              onChange={(e) => handleNFTName(e)}
+              value={NFTName}
+            />
+            <TitleInput
+              placeholder="개인키"
+              onChange={(e) => handlePrivKey(e)}
+              value={privKey}
+            />
+            <ButtonGroup>
+              <button type="button" className="register" onClick={createNFT}>
+                등록하기
+              </button>
+              <button type="button">취소하기</button>
+            </ButtonGroup>
+          </FormContainer>
+        )}
+        {loading && <Title>NFT 등록중 . . .</Title>}
       </Container>
     </>
   );

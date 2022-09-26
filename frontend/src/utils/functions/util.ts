@@ -9,7 +9,7 @@ export const PadZero = (num: number | undefined) => {
   return String(num).padStart(2, "0");
 };
 
-export const changeDateForamtToDot = (date: Date): string => {
+export const changeDateForamtToDot = (date: string): string => {
   const _date = new Date(date);
   const year = String(_date.getFullYear()).substring(2);
 
@@ -46,5 +46,6 @@ export const getDatesStartToLast = (startDate: string, lastDate: string) => {
 };
 
 export const changeDateFormatToHyphen = (date: Date): string => {
-  return date.toISOString().split("T")[0];
+  const offset = date.getTimezoneOffset() * 60000;
+  return new Date(date.getTime() - offset).toISOString().split("T")[0];
 };

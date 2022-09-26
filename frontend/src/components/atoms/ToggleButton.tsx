@@ -12,17 +12,6 @@ const Background = styled.div`
   z-index: -10;
 `;
 
-const Toggled = styled.div`
-  position: relative;
-  width: 50%;
-  height: ${pixelToRem(45)};
-  border-radius: ${pixelToRem(20)};
-  background-color: ${(props) => props.theme.colors.mainDark};
-  z-index: 0;
-  left: ${({ toggle }) => (toggle === "off" ? "0" : "50%")};
-  transition: all 400ms cubic-bezier(0.175, 0.885, 0.32, 1.275);
-`;
-
 const TextBox = styled.div`
   position: relative;
   width: 100%;
@@ -39,7 +28,28 @@ const TextBox = styled.div`
   }
 `;
 
-export default function ToggleButton(props) {
+export default function ToggleButton(props: {
+  onClickLeft: () => void;
+  onClickRight: () => void;
+  textLeft:
+    | string
+    | number
+    | boolean
+    | React.ReactElement<any, string | React.JSXElementConstructor<any>>
+    | React.ReactFragment
+    | React.ReactPortal
+    | null
+    | undefined;
+  textRight:
+    | string
+    | number
+    | boolean
+    | React.ReactElement<any, string | React.JSXElementConstructor<any>>
+    | React.ReactFragment
+    | React.ReactPortal
+    | null
+    | undefined;
+}) {
   const [toggle, setToggle] = React.useState("off");
 
   function onClickLeft() {
@@ -53,7 +63,6 @@ export default function ToggleButton(props) {
 
   return (
     <Background>
-      <Toggled toggle={toggle} />
       <TextBox>
         <Box onClick={onClickLeft}>
           <p>{props.textLeft}</p>
