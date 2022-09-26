@@ -1,9 +1,6 @@
-import React from "react";
 import styled from "@emotion/styled";
 
 import Box from "@mui/material/Box";
-import { pixelToRem } from "../../utils/functions/util";
-
 import { ReactComponent as StarIcon } from "../../assets/svgs/starplus.svg";
 
 const MainBox = styled.div`
