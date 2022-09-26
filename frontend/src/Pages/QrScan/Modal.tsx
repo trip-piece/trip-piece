@@ -69,28 +69,25 @@ function NestedModal() {
   }, [recoilQrState.modalFlag]);
 
   return (
-    <>
-      <Button onClick={handleOpen}>Open modal</Button>
-      <Modal
-        open={open}
-        onClose={handleClose}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
-      >
-        <Container>
-          <Title>NFT 스티커 받으러가기</Title>
-          <MdOutlineAddReaction size="90" color="#FDD835" />
-          <ResultBox>
-            <ColoredRoundButton
-              text="  확인  "
-              color="mainLight"
-              type="button"
-              func={MoveToLink}
-            />
-          </ResultBox>
-        </Container>
-      </Modal>
-    </>
+    <Modal
+      open={open}
+      onClose={handleClose}
+      aria-labelledby="modal-modal-title"
+      aria-describedby="modal-modal-description"
+    >
+      <Container>
+        <Title>NFT 스티커 받으러가기</Title>
+        <MdOutlineAddReaction size="90" color="#FDD835" />
+        <ResultBox>
+          <ColoredRoundButton
+            text="  확인  "
+            color="mainLight"
+            type="button"
+            func={MoveToLink}
+          />
+        </ResultBox>
+      </Container>
+    </Modal>
   );
 }
 

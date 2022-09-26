@@ -17,12 +17,12 @@ const Box = styled.div`
   background: ${(props) => props.theme.colors.white};
 `;
 
-const GetNftButtonBox = styled.div`
-  border-bottom: solid 1px ${(props) => props.theme.colors.gray400};
+const BottonContainer = styled.div`
   display: flex;
   justify-content: center;
-  padding: 0 0 20% 0;
+  padding: 18% 0 30% 0;
   align-items: center;
+  font-size: ${(props) => props.theme.fontSizes.h4};
 `;
 
 function QrReaderComponent() {
@@ -53,7 +53,7 @@ function QrReaderComponent() {
         onResult={handleScan}
         constraints={{ facingMode: "environment" }}
       />
-      <GetNftButtonBox>버튼</GetNftButtonBox>
+      <BottonContainer>QR코드를 카메라에 비춰주세용</BottonContainer>
     </>
   );
 }
