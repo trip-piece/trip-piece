@@ -20,9 +20,9 @@ import {
 } from "react-icons/md";
 import { FaBook, FaEthereum } from "react-icons/fa";
 import { BsFillBookmarkHeartFill } from "react-icons/bs";
-import { pixelToRem } from "../../utils/functions/util";
 import { useNavigate } from "react-router-dom";
 import AppBar from "@mui/material/AppBar";
+import { pixelToRem } from "../../utils/functions/util";
 
 const DrawerHeader = styled.div`
   display: flex;
@@ -269,10 +269,16 @@ const OngoingTripBox = styled.div<{ active?: boolean | null }>`
   }
 `;
 
+const BoxContainer = styled(Box)`
+  width: 100%;
+  position: relative;
+`;
+
 export default function Navbar() {
   const [open, setOpen] = React.useState(false);
 
   const toggleDrawer =
+    // eslint-disable-next-line @typescript-eslint/no-shadow
     (open: boolean) => (event: React.KeyboardEvent | React.MouseEvent) => {
       if (
         event.type === "keydown" &&
@@ -322,8 +328,8 @@ export default function Navbar() {
   };
 
   return (
-    <Box sx={{ flexGrow: 1 }}>
-      <React.Fragment key={"top"}>
+    <BoxContainer sx={{ flexGrow: 1 }} className="boxContainer">
+      <React.Fragment key="right">
         <AppBar position="static" sx={{ bgcolor: "#282B44", boxShadow: 0 }}>
           <Toolbar>
             <Typography
@@ -338,7 +344,7 @@ export default function Navbar() {
           </Toolbar>
         </AppBar>
         <Drawer
-          anchor={"top"}
+          anchor="right"
           variant="persistent"
           open={open}
           onClose={toggleDrawer(false)}
@@ -346,17 +352,21 @@ export default function Navbar() {
             sx: {
               minWidth: "320px",
               maxWidth: "550px",
-              height: "100%",
+              height: "100vh",
+              width: "100%",
               margin: "auto",
+              position: "absolute",
+              right: 0,
+              top: 0,
             },
           }}
         >
           <Box role="presentation" onKeyDown={toggleDrawer(false)}>
             <DrawerHeader>
-              <button>
+              <button type="button">
                 <MdOutlineLogout />
               </button>
-              <button>
+              <button type="button">
                 <MdOutlineClose onClick={toggleDrawer(false)} />
               </button>
             </DrawerHeader>
@@ -365,7 +375,7 @@ export default function Navbar() {
                 <div className="username">
                   아무개
                   <h5>여행자님</h5>
-                  <button>
+                  <button type="button">
                     <MdModeEditOutline />
                   </button>
                 </div>
@@ -387,29 +397,29 @@ export default function Navbar() {
             </TopBackgroundBox>
             <BottomArea>
               <MiddleLongBox>
-                <button onClick={moveToSticker}>
+                <button type="button" onClick={moveToSticker}>
                   <MdOutlineAddReaction className="icon" />
                   보유 스티커
                 </button>
                 <div className="middle-bar" />
-                <button onClick={moveToFrame}>
+                <button type="button" onClick={moveToFrame}>
                   <BsFillBookmarkHeartFill className="icon" />
                   찜한 프레임
                 </button>
                 <div className="middle-bar" />
-                <button onClick={moveToTrip}>
+                <button type="button" onClick={moveToTrip}>
                   <FaBook className="icon" />내 다이어리
                 </button>
               </MiddleLongBox>
               <MiddleBoxes>
-                <button onClick={moveToShare}>
+                <button type="button" onClick={moveToShare}>
                   <BiShareAlt className="icon" />
                   프레임 공유
                 </button>
-                <button className="QRButton" onClick={moveToQR}>
+                <button type="button" className="QRButton" onClick={moveToQR}>
                   <MdQrCodeScanner className="QRIcon" />
                 </button>
-                <button onClick={moveToMarket}>
+                <button type="button" onClick={moveToMarket}>
                   <MdShoppingCart className="icon" /> NFT 마켓
                 </button>
               </MiddleBoxes>
@@ -422,7 +432,9 @@ export default function Navbar() {
                   <h5>
                     현재 발급할 수 있는 축제/스팟
                     <br />
-                    <button onClick={moveToPlace}>보러가기</button>
+                    <button type="button" onClick={moveToPlace}>
+                      보러가기
+                    </button>
                   </h5>
                 </div>
               </MiddleLongBox>
@@ -434,7 +446,7 @@ export default function Navbar() {
                       <p>현재 진행중인 여행이 없어요</p>
                       <p>여행을 등록해 주세요!</p>
                     </div>
-                    <button>등록하기</button>
+                    <button type="button">등록하기</button>
                   </div>
                 </div>
               </OngoingTripBox>
@@ -442,6 +454,6 @@ export default function Navbar() {
           </Box>
         </Drawer>
       </React.Fragment>
-    </Box>
+    </BoxContainer>
   );
 }
