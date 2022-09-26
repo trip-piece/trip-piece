@@ -13,7 +13,6 @@ import NftRegister from "./Pages/Admin/NftRegisterPage";
 import FrameSharePage from "./Pages/Share/FrameSharePage";
 import QrScanner from "./Pages/QrScan/QrReader";
 
-
 const Landing = lazy(() => import("./Pages/Landing/LandingPage"));
 const Main = lazy(() => import("./Pages/Main/MainPage"));
 const TripDiaryList = lazy(
