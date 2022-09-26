@@ -1,11 +1,13 @@
-import * as React from "react";
+import React, { useState, useEffect } from "react";
 import Modal from "@mui/material/Modal";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import styled from "@emotion/styled";
 import { MdOutlineAddReaction } from "react-icons/md";
+import { useRecoilState } from "recoil";
 import { pixelToRem } from "../../utils/functions/util";
 import ColoredRoundButton from "../../components/atoms/ColoredRoundButton";
+import { IQrInfo, QrInfoState } from "../../store/atom";
 // import { pixelToRem } from "../../utils/functions/util";
 // import ColoredRoundButton from "../../components/atoms/ColoredRoundButton";
 
@@ -40,24 +42,32 @@ const ResultBox = styled.div`
   align-items: center;
 `;
 
+// function MoveToLink(url: (string | Location) & Location): void {
+//   window.location = url;
+// }
+
 function NestedModal() {
-  const [open, setOpen] = React.useState(false);
-  // const [userInfo, setUserInfo] = useRecoilState(UserInfoState);
+  const [open, setOpen] = useState(false);
+  const [recoilQrState, setRecoilQrState] = useRecoilState(QrInfoState);
+
   const handleOpen = () => {
     setOpen(true);
+    setRecoilQrState({ url: recoilQrState.url, modalFlag: true });
   };
   const handleClose = () => {
     setOpen(false);
+    setRecoilQrState({ url: recoilQrState.url, modalFlag: false });
   };
-  // const { handleSubmit } = useForm<Inickname>();
 
-  // const onSubmit: SubmitHandler<Inickname> = async (data: Inickname) => {
-  //  let response = await axiosInstance.patch(userApis.modifyNickname, data);
+  const MoveToLink = () => {
+    window.location = recoilQrState.url;
+    setOpen(false);
+  };
 
-  // if (response.status === 200) {
-  // setUserInfo({ nickname: data.nickname });
-  //  }
-  // }
+  useEffect(() => {
+    if (recoilQrState.modalFlag === true) handleOpen();
+  }, []);
+
   return (
     <>
       <Button onClick={handleOpen}>Open modal</Button>
@@ -75,6 +85,7 @@ function NestedModal() {
               text="  확인  "
               color="mainLight"
               type="button"
+              func={MoveToLink}
             />
           </ResultBox>
         </Container>

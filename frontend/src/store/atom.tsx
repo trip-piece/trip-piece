@@ -8,7 +8,7 @@ import { atom } from "recoil";
 // });n
 export interface IUserInfo {
   address: string | null | undefined;
-  nickname: string;
+  nickname: string | undefined;
   balance: number;
   isLoggedIn: boolean;
   id: number;
@@ -18,8 +18,8 @@ export const UserInfoState = atom<IUserInfo[]>({
   key: "userInfoState",
   default: [
     {
-      address: "null",
-      nickname: "null",
+      address: null,
+      nickname: undefined,
       balance: 0.0,
       isLoggedIn: false,
       id: -1,
@@ -27,11 +27,12 @@ export const UserInfoState = atom<IUserInfo[]>({
   ],
 });
 
-interface IQrInfo {
-  url: string | null;
+export interface IQrInfo {
+  url: (string | Location) & Location;
+  modalFlag: boolean;
 }
 
-const initialQrInfoState: IQrInfo = { url: null };
+const initialQrInfoState: IQrInfo = { url: null, modalFlag: false };
 
 export const QrInfoState = atom({
   key: "recoilQrState",
