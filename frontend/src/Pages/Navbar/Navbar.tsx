@@ -3,9 +3,11 @@ import styled from "@emotion/styled";
 import Box from "@mui/material/Box";
 import Drawer from "@mui/material/Drawer";
 import { GiTicket } from "react-icons/gi";
-import { BiTrip, BiShareAlt, BiCaretDown, BiCaretUp } from "react-icons/bi";
+import { BiTrip, BiShareAlt } from "react-icons/bi";
+import { TbMenu2 } from "react-icons/tb";
 import {
   MdOutlineLogout,
+  MdOutlineClose,
   MdModeEditOutline,
   MdEditCalendar,
   MdOutlineAddReaction,
@@ -388,9 +390,9 @@ export default function Navbar() {
             </button>
           </div>
           <div style={{ width: "33%", textAlign: "right" }}>
-            <BiCaretDown
-              size="35%"
-              style={{ padding: "2vw" }}
+            <TbMenu2
+              size="30%"
+              style={{ paddingRight: "10px" }}
               onClick={toggleDrawer(true)}
             />
           </div>
@@ -416,7 +418,7 @@ export default function Navbar() {
                 <MdOutlineLogout />
               </button>
               <button type="button">
-                <BiCaretUp onClick={toggleDrawer(false)} />
+                <MdOutlineClose onClick={toggleDrawer(false)} />
               </button>
             </DrawerHeader>
             <TopBackgroundBox>
