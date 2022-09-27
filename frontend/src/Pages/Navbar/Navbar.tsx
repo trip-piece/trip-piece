@@ -2,13 +2,11 @@ import * as React from "react";
 import styled from "@emotion/styled";
 import Box from "@mui/material/Box";
 import Drawer from "@mui/material/Drawer";
-import Toolbar from "@mui/material/Toolbar";
-import Typography from "@mui/material/Typography";
 import { GiTicket } from "react-icons/gi";
 import { BiTrip, BiShareAlt } from "react-icons/bi";
+import { TbMenu2 } from "react-icons/tb";
 import {
   MdOutlineLogout,
-  MdOutlineMenu,
   MdOutlineClose,
   MdModeEditOutline,
   MdEditCalendar,
@@ -17,12 +15,16 @@ import {
   MdOutlineFestival,
   MdLocationOn,
   MdQrCodeScanner,
+  MdLuggage,
 } from "react-icons/md";
 import { FaBook, FaEthereum } from "react-icons/fa";
 import { BsFillBookmarkHeartFill } from "react-icons/bs";
 import { useNavigate } from "react-router-dom";
 import AppBar from "@mui/material/AppBar";
+import { useRecoilState } from "recoil";
 import { pixelToRem } from "../../utils/functions/util";
+import { UserInfoState } from "../../store/atom";
+import trippieceLogo from "../../assets/image/trippiece_logo.png";
 
 const DrawerHeader = styled.div`
   display: flex;
@@ -225,15 +227,14 @@ const MiddleBoxes = styled.div`
   }
 `;
 
-const OngoingTripBox = styled.div<{ active?: boolean | null }>`
+const OngoingTripBox = styled.div`
   margin: ${pixelToRem(15)};
   width: 93%;
   height: 24%;
   box-shadow: 0 0.18rem 0.25rem 0.125rem rgb(0 0 0/10%);
   background: ${(props) => props.theme.colors.white};
   border-radius: ${pixelToRem(20)};
-  color: ${(props) =>
-    props.active ? props.theme.colors.blue : props.theme.colors.gray400};
+  color: ${(props) => props.theme.colors.gray400};
   text-align: center;
   > .with-icon {
     display: flex;
@@ -243,10 +244,7 @@ const OngoingTripBox = styled.div<{ active?: boolean | null }>`
       margin-top: 9%;
       > .typo {
         > p {
-          color: ${(props) =>
-            props.active
-              ? props.theme.colors.mainDark
-              : props.theme.colors.gray400};
+          color: ${(props) => props.theme.colors.gray400};
         }
       }
       > button {
@@ -254,8 +252,7 @@ const OngoingTripBox = styled.div<{ active?: boolean | null }>`
         height: ${pixelToRem(30)};
         border-radius: ${pixelToRem(20)};
         margin-top: ${pixelToRem(10)};
-        background: ${(props) =>
-          props.active ? props.theme.colors.blue : props.theme.colors.gray400};
+        background: ${(props) => props.theme.colors.gray400};
         color: ${(props) => props.theme.colors.white};
       }
     }
@@ -263,15 +260,44 @@ const OngoingTripBox = styled.div<{ active?: boolean | null }>`
       margin-top: 8%;
       width: 20%;
       height: 100%;
-      color: ${(props) =>
-        props.active ? props.theme.colors.blue : props.theme.colors.gray400};
+      color: ${(props) => props.theme.colors.gray400};
+    }
+  }
+
+  .isTrip {
+    color: ${(props) => props.theme.colors.blue};
+    display: flex;
+    justify-content: space-evenly;
+    > .trip-notice {
+      display: block;
+      margin-top: 9%;
+      > .typo {
+        > p {
+          color: ${(props) => props.theme.colors.dark};
+          font-weight: bold;
+        }
+      }
+      > button {
+        width: 50%;
+        height: ${pixelToRem(30)};
+        border-radius: ${pixelToRem(20)};
+        margin-top: ${pixelToRem(10)};
+        background: ${(props) => props.theme.colors.yellow};
+        color: ${(props) => props.theme.colors.dark};
+      }
+    }
+    > .icon {
+      margin-top: 8%;
+      width: 20%;
+      height: 100%;
+      color: ${(props) => props.theme.colors.dark};
     }
   }
 `;
 
 const BoxContainer = styled(Box)`
   width: 100%;
-  position: relative;
+  height: 100%;
 `;
 
 export default function Navbar() {
@@ -327,24 +353,52 @@ export default function Navbar() {
     setOpen(false);
   };
 
+  const moveToMain = () => {
+    navigate("/main");
+  };
+
+  const [userInfo] = useRecoilState(UserInfoState);
+
   return (
     <BoxContainer sx={{ flexGrow: 1 }} className="boxContainer">
-      <React.Fragment key="right">
-        <AppBar position="static" sx={{ bgcolor: "#282B44", boxShadow: 0 }}>
-          <Toolbar>
-            <Typography
-              variant="h6"
-              noWrap
-              sx={{ flexGrow: 1 }}
-              component="div"
+      <React.Fragment key="top">
+        <AppBar
+          position="static"
+          sx={{
+            bgcolor: "#282B44",
+            boxShadow: 0,
+            height: "10vh",
+            textAlign: "center",
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "space-evenly",
+            alignItems: "center",
+          }}
+        >
+          <div style={{ width: "33%" }} />
+          <div style={{ width: "33%" }}>
+            <button
+              type="button"
+              onClick={moveToMain}
+              style={{ background: "transparent" }}
             >
-              여행조각
-            </Typography>
-            <MdOutlineMenu size="30px" onClick={toggleDrawer(true)} />
-          </Toolbar>
+              <img
+                src={trippieceLogo}
+                alt="기본이미지"
+                style={{ width: "100%" }}
+              />
+            </button>
+          </div>
+          <div style={{ width: "33%", textAlign: "right" }}>
+            <TbMenu2
+              size="30%"
+              style={{ paddingRight: "10px" }}
+              onClick={toggleDrawer(true)}
+            />
+          </div>
         </AppBar>
         <Drawer
-          anchor="right"
+          anchor="top"
           variant="persistent"
           open={open}
           onClose={toggleDrawer(false)}
@@ -355,9 +409,6 @@ export default function Navbar() {
               height: "100vh",
               width: "100%",
               margin: "auto",
-              position: "absolute",
-              right: 0,
-              top: 0,
             },
           }}
         >
@@ -373,7 +424,7 @@ export default function Navbar() {
             <TopBackgroundBox>
               <UserInformation>
                 <div className="username">
-                  아무개
+                  {userInfo.nickname}
                   <h5>여행자님</h5>
                   <button type="button">
                     <MdModeEditOutline />
@@ -381,17 +432,17 @@ export default function Navbar() {
                 </div>
                 <div className="wallet-info">
                   <FaEthereum className="icon" />
-                  <p>209509</p>
+                  <p>{userInfo.balance}</p>
                 </div>
               </UserInformation>
               <TopMainBox>
                 <div className="right-line">
                   <BiTrip className="icon" />
-                  <p>5번의 여정</p>
+                  <p>{userInfo.tripCount}번의 여정</p>
                 </div>
                 <div>
                   <MdEditCalendar className="icon" />
-                  <p>16일의 기록</p>
+                  <p>{userInfo.diaryCount}일의 기록</p>
                 </div>
               </TopMainBox>
             </TopBackgroundBox>
@@ -439,16 +490,29 @@ export default function Navbar() {
                 </div>
               </MiddleLongBox>
               <OngoingTripBox>
-                <div className="with-icon">
-                  <GiTicket className="icon" />
-                  <div className="trip-notice">
-                    <div className="typo">
-                      <p>현재 진행중인 여행이 없어요</p>
-                      <p>여행을 등록해 주세요!</p>
+                {userInfo === null ? (
+                  <div className="with-icon">
+                    <GiTicket className="icon" />
+                    <div className="trip-notice">
+                      <div className="typo">
+                        <p>현재 진행중인 여행이 없어요</p>
+                        <p>여행을 등록해 주세요!</p>
+                      </div>
+                      <button type="button">등록하기</button>
                     </div>
-                    <button type="button">등록하기</button>
                   </div>
-                </div>
+                ) : (
+                  <div className="isTrip">
+                    <MdLuggage className="icon" />
+                    <div className="trip-notice">
+                      <div className="typo">
+                        <p>서울 (startdate - enddate)</p>
+                        <p>[여행 제목]</p>
+                      </div>
+                      <button type="button">기록하기</button>
+                    </div>
+                  </div>
+                )}
               </OngoingTripBox>
             </BottomArea>
           </Box>
