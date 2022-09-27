@@ -97,9 +97,8 @@ const Picture = styled.picture`
   justify-content: center;
 `;
 
-const DiaryImag = styled.img`
-  max-width: 100%;
-  width: fit-content;
+const DiaryImg = styled.img<{ diaryWidth: number }>`
+  width: ${(props) => pixelToRem(props.diaryWidth / 8)};
 `;
 
 // const DragBox = styled.div`
@@ -108,37 +107,33 @@ const DiaryImag = styled.img`
 
 const TransparentRoundButton = styled.button`
   background-color: transparent;
-  height: 40px;
+  height: fit-content;
 `;
 
-interface ISticker {
+interface StickerProps {
   tokenId: number;
   tokenURI: string;
+}
+interface ISticker extends StickerProps {
   x: number;
   y: number;
 }
 
-interface ChildrenProps {
-  children: ReactNode;
-  onClick: () => void;
+interface ImageButtonProps {
+  onClick: (sticker: StickerProps) => void;
+  sticker: StickerProps;
+  diaryWidth: number;
 }
-const Button = memo(({ children, onClick }: ChildrenProps) => {
-  return (
-    <TransparentRoundButton type="button" onClick={onClick}>
-      {children}
-    </TransparentRoundButton>
-  );
-});
 
-function Tmp({ onClick, sticker }: any) {
+function ImageButton({ onClick, sticker, diaryWidth }: ImageButtonProps) {
   return (
     <TransparentRoundButton onClick={() => onClick(sticker)}>
-      <LazyImage src={sticker.tokenURI} key={v4()} />
+      <LazyImage src={sticker.tokenURI} key={v4()} diaryWidth={diaryWidth} />
     </TransparentRoundButton>
   );
 }
 
-const MemoTmp = memo(Tmp);
+const MemoizedImageButton = memo(ImageButton);
 
 function DiaryDecorationPage() {
   const [dottedDate, setDottedDate] = useState<string>("");
@@ -189,7 +184,7 @@ function DiaryDecorationPage() {
       stickerBoxRef.current.style.overflowY = "scroll";
     }
   };
-  const addSticker = useCallback((sticker) => {
+  const addSticker = useCallback((sticker: StickerProps) => {
     setStickerList((prev) => [
       ...prev,
       { tokenId: sticker.tokenId, tokenURI: sticker.tokenURI, x: 0, y: 0 },
@@ -226,27 +221,17 @@ function DiaryDecorationPage() {
                   // onStop={this.handleStop}
                 >
                   <div ref={nodeRef} style={{ position: "absolute" }}>
-                    <img
-                      className="handle"
+                    <DiaryImg
                       src={sticker.tokenURI}
                       alt="#"
-                      width="40"
+                      width="100"
+                      diaryWidth={diaryWidth}
                     />
                   </div>
                 </Draggable>
               ))}
 
               {diary.diary.content}
-              {imageSrc && (
-                <Picture>
-                  <DiaryImag
-                    src={imageSrc}
-                    alt="미리보기"
-                    width="550"
-                    loading="lazy"
-                  />
-                </Picture>
-              )}
             </DiaryContents>
           </div>
           <ButtonListContainer>
@@ -261,16 +246,13 @@ function DiaryDecorationPage() {
             <button type="button" onClick={onClick}>
               보유한 스티커
             </button>
-            <div ref={stickerBoxRef} role="buton">
+            <div ref={stickerBoxRef}>
               {dummyStickerList.map((sticker) => (
-                <MemoTmp
+                <MemoizedImageButton
                   onClick={addSticker}
-                  // onClick={() => addSticker(sticker)}
                   sticker={sticker}
+                  diaryWidth={diaryWidth}
                 />
-                // <Button onClick={addSticker}>
-                //   <LazyImage src={sticker.tokenURI} key={v4()} />
-                // </Button>
               ))}
             </div>
           </StickerZone>

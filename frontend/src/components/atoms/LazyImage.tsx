@@ -1,14 +1,28 @@
+import styled from "@emotion/styled";
 import { memo } from "react";
+import { pixelToRem } from "../../utils/functions/util";
 import useLazyImageObserver from "../../utils/hooks/useLazyImageObserver";
 
 interface LazyImageProps {
   src: string;
+  diaryWidth: number;
 }
 
-function Image({ src }: LazyImageProps) {
+const Img = styled.img<{ diaryWidth: number }>`
+  width: ${(props) => pixelToRem(props.diaryWidth / 8)};
+`;
+
+function Image({ src, diaryWidth }: LazyImageProps) {
   const { imageSrc, imageRef } = useLazyImageObserver({ src });
-  console.log("???");
-  return <img ref={imageRef} src={imageSrc} alt="#" width="40" />;
+  return (
+    <Img
+      ref={imageRef}
+      src={imageSrc}
+      alt="#"
+      width="100"
+      diaryWidth={diaryWidth}
+    />
+  );
 }
 
 const LazyImage = memo(Image);
