@@ -16,15 +16,17 @@ export interface IUserInfo {
   diaryCount: number;
 }
 
-export const UserInfoState = atom<IUserInfo>({
+const UserInfodata: IUserInfo = {
+  address: "",
+  nickname: "",
+  balance: 0.0,
+  isLoggedIn: false,
+  id: -1,
+  tripCount: 0,
+  diaryCount: 0,
+};
+
+export const UserInfoState = atom({
   key: "userInfoState",
-  default: {
-    address: "null",
-    nickname: "null",
-    balance: 0.0,
-    isLoggedIn: false,
-    id: -1,
-    tripCount: 0,
-    diaryCount: 0,
-  },
+  default: UserInfodata,
 });
