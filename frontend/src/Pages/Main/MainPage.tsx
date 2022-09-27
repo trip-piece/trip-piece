@@ -1,9 +1,9 @@
 import styled from "@emotion/styled";
 import { AxiosError, AxiosResponse } from "axios";
 import { useEffect, useState } from "react";
+import { Swiper, SwiperSlide } from "swiper/react";
 import { useQuery } from "react-query";
 import { useRecoilState } from "recoil";
-import { TiStarFullOutline } from "react-icons/ti";
 import { motion } from "framer-motion";
 import { ReactComponent as StarIcon } from "../../assets/svgs/starplus.svg";
 import { UserInfoState } from "../../store/atom";
@@ -13,6 +13,7 @@ import { changeDateFormatToHyphen } from "../../utils/functions/util";
 import { ITrip } from "../../utils/interfaces/trips.interface";
 import upcomingIcon from "../../assets/image/homeicon.png";
 import { REGIONLIST } from "../../utils/constants/constant";
+import Card from "./PlaceCard";
 
 const MainBox = styled.div`
   height: 60%;
@@ -24,9 +25,23 @@ const MainBox = styled.div`
   justify-content: center;
 `;
 
+const SubBox = styled.div`
+  height: 35%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+`;
+
 const MiddleTitle = styled.div`
+  width: 100%;
+  height: 15%;
+  padding: 0 1rem 0 1rem;
   font-size: ${(props) => props.theme.fontSizes.h5};
   letter-spacing: -2px;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: flex-end;
 
   span {
     font-size: ${(props) => props.theme.fontSizes.s1};
@@ -90,13 +105,32 @@ const InnerTextBody = styled.div`
 const MiddleTitlePosition = styled.div`
   margin: 1.25rem;
   background-color: ${(props) => props.theme.colors.white};
-  text-align: left;
+  text-align: center;
 `;
 
 const FooterText = styled.div`
   color: #434343;
   font-size: ${(props) => props.theme.fontSizes.s2};
   letter-spacing: 1px;
+`;
+
+const PlaceList = styled.div`
+  height: 80%;
+  padding: 0 20px 0 20px;
+  box-sizing: border-box;
+  overflow: hidden;
+
+  .swiper {
+    width: 100%;
+    height: 100%;
+    overflow-y: hidden;
+  }
+
+  .swiper-wrapper {
+    width: 100%;
+    height: 100%;
+    display: -webkit-inline-box;
+  }
 `;
 
 // NFT 알려주는 박스 - 추후 위치 기반으로 돌려서 여러개 자동 생성되도록 함
@@ -153,6 +187,44 @@ function MainPage() {
       setLoading(true);
     }
   }, [data]);
+
+  const result = [
+    {
+      placeId: 0,
+      image:
+        "https://www.infura-ipfs.io/ipfs/QmcqJiEjJon38JNzbsdgKhLBsjfWF8tZiUT5Mi7GQbtGP4",
+      name: "이이 축제",
+      regionId: 1,
+    },
+    {
+      placeId: 1,
+      image:
+        "https://www.infura-ipfs.io/ipfs/QmRkTWeyoREXuJ9s2vCtPTwvA1iaPjGS29Ei2fKZFZisGL",
+      name: "치킨 축제",
+      regionId: 12,
+    },
+    {
+      placeId: 2,
+      image:
+        "https://www.infura-ipfs.io/ipfs/QmXyV1fnFM4EYv42KyfAyzXNX8bu73zpqQndoJBQPbL5pF",
+      name: "춘식이 축제",
+      regionId: 11,
+    },
+    {
+      placeId: 3,
+      image:
+        "https://www.infura-ipfs.io/ipfs/QmPPEWSC7qX7rzxE76XJLkNQk2d95r6BSfiPMS3tNs4p1y",
+      name: "학생 축제",
+      regionId: 5,
+    },
+    {
+      placeId: 4,
+      image:
+        "https://www.infura-ipfs.io/ipfs/QmQyqcdu8HhnN3tfJtzAduS59GJt4ZNxjSXnTaim72fxCU",
+      name: "쭈압이 축제",
+      regionId: 8,
+    },
+  ];
 
   return (
     <motion.div
@@ -287,18 +359,45 @@ function MainPage() {
                 </InsideContent>
               </InsideLeftBox>
               <InsideRightBox>
-                <InsideContent>티켓 이미지 들어갈 공간</InsideContent>
+                {isProgress === 0 && (
+                  <InsideContent>여행이 없을때 티켓</InsideContent>
+                )}
+                {isProgress === 1 && (
+                  <InsideContent>여행이 진행중일때 티켓</InsideContent>
+                )}
+                {isProgress === 2 && (
+                  <InsideContent>예정된 여행이 있을때 티켓</InsideContent>
+                )}
               </InsideRightBox>
             </>
           )}
         </MainBox>
-        <MiddleTitlePosition>
+        <SubBox>
           <MiddleTitle>
             📍 내 주변에서 NFT 발급받기
-            <span>서울시 송파구 어쩌구</span>
+            <span style={{ width: "35%" }}>서울시 송파구 어쩌구</span>
+            <span
+              style={{
+                width: "10%",
+                textAlign: "right",
+                fontSize: "12pt",
+                color: "#4B659C",
+              }}
+            >
+              더보기
+            </span>
           </MiddleTitle>
-        </MiddleTitlePosition>
-        <GetStickerBox />
+          <PlaceList>
+            <Swiper slidesPerView={2.1} spaceBetween={13}>
+              {result.length &&
+                result.map((place, idx) => (
+                  <SwiperSlide key={idx}>
+                    <Card place={place} />
+                  </SwiperSlide>
+                ))}
+            </Swiper>
+          </PlaceList>
+        </SubBox>
         <MiddleTitlePosition>
           <FooterText style={{ textAlign: "center" }}>
             Copyright ⓒ2022 여행조각 All rights reserved.
