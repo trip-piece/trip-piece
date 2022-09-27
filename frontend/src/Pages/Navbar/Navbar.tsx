@@ -3,11 +3,9 @@ import styled from "@emotion/styled";
 import Box from "@mui/material/Box";
 import Drawer from "@mui/material/Drawer";
 import { GiTicket } from "react-icons/gi";
-import { BiTrip, BiShareAlt } from "react-icons/bi";
+import { BiTrip, BiShareAlt, BiCaretDown, BiCaretUp } from "react-icons/bi";
 import {
   MdOutlineLogout,
-  MdOutlineMenu,
-  MdOutlineClose,
   MdModeEditOutline,
   MdEditCalendar,
   MdOutlineAddReaction,
@@ -297,7 +295,7 @@ const OngoingTripBox = styled.div`
 
 const BoxContainer = styled(Box)`
   width: 100%;
-  position: relative;
+  height: 100%;
 `;
 
 export default function Navbar() {
@@ -361,7 +359,7 @@ export default function Navbar() {
 
   return (
     <BoxContainer sx={{ flexGrow: 1 }} className="boxContainer">
-      <React.Fragment key="right">
+      <React.Fragment key="top">
         <AppBar
           position="static"
           sx={{
@@ -371,11 +369,12 @@ export default function Navbar() {
             textAlign: "center",
             display: "flex",
             flexDirection: "row",
-            justifyContent: "space-evenly",
+            justifyContent: "center",
             alignItems: "center",
           }}
         >
-          <div style={{ width: "63%", textAlign: "right" }}>
+          <div style={{ width: "33%" }} />
+          <div style={{ width: "33%" }}>
             <button
               type="button"
               onClick={moveToMain}
@@ -384,16 +383,20 @@ export default function Navbar() {
               <img
                 src={trippieceLogo}
                 alt="기본이미지"
-                style={{ marginLeft: "13vw", width: "auto", height: "4vh" }}
+                style={{ width: "100%" }}
               />
             </button>
           </div>
-          <div style={{ width: "27%", textAlign: "right" }}>
-            <MdOutlineMenu size="30%" onClick={toggleDrawer(true)} />
+          <div style={{ width: "30%", textAlign: "right" }}>
+            <BiCaretDown
+              size="25%"
+              style={{ padding: "1vw" }}
+              onClick={toggleDrawer(true)}
+            />
           </div>
         </AppBar>
         <Drawer
-          anchor="right"
+          anchor="top"
           variant="persistent"
           open={open}
           onClose={toggleDrawer(false)}
@@ -404,9 +407,6 @@ export default function Navbar() {
               height: "100vh",
               width: "100%",
               margin: "auto",
-              position: "absolute",
-              right: 0,
-              top: 0,
             },
           }}
         >
@@ -416,7 +416,7 @@ export default function Navbar() {
                 <MdOutlineLogout />
               </button>
               <button type="button">
-                <MdOutlineClose onClick={toggleDrawer(false)} />
+                <BiCaretUp onClick={toggleDrawer(false)} />
               </button>
             </DrawerHeader>
             <TopBackgroundBox>
