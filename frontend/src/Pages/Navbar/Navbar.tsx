@@ -369,7 +369,7 @@ export default function Navbar() {
             textAlign: "center",
             display: "flex",
             flexDirection: "row",
-            justifyContent: "center",
+            justifyContent: "space-evenly",
             alignItems: "center",
           }}
         >
@@ -387,10 +387,10 @@ export default function Navbar() {
               />
             </button>
           </div>
-          <div style={{ width: "30%", textAlign: "right" }}>
+          <div style={{ width: "33%", textAlign: "right" }}>
             <BiCaretDown
-              size="25%"
-              style={{ padding: "1vw" }}
+              size="35%"
+              style={{ padding: "2vw" }}
               onClick={toggleDrawer(true)}
             />
           </div>
