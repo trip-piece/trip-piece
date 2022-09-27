@@ -9,11 +9,16 @@ import { ReactComponent as StarIcon } from "../../assets/svgs/starplus.svg";
 import { UserInfoState } from "../../store/atom";
 import axiosInstance from "../../utils/apis/api";
 import tripApis from "../../utils/apis/tripsApis";
-import { changeDateFormatToHyphen } from "../../utils/functions/util";
+import {
+  changeDateFormatToHyphen,
+  getLocation,
+} from "../../utils/functions/util";
 import { ITrip } from "../../utils/interfaces/trips.interface";
 import upcomingIcon from "../../assets/image/homeicon.png";
 import { REGIONLIST } from "../../utils/constants/constant";
 import Card from "./PlaceCard";
+import { IPlace } from "../../utils/interfaces/places.interface";
+import { placeApis } from "../../utils/apis/placeApis";
 
 const MainBox = styled.div`
   height: 60%;
@@ -40,7 +45,7 @@ const MiddleTitle = styled.div`
   letter-spacing: -2px;
   display: flex;
   flex-direction: row;
-  justify-content: flex-start;
+  justify-content: space-evenly;
   align-items: flex-end;
 
   span {
@@ -133,16 +138,6 @@ const PlaceList = styled.div`
   }
 `;
 
-// NFT 알려주는 박스 - 추후 위치 기반으로 돌려서 여러개 자동 생성되도록 함
-const GetStickerBox = styled.div`
-  width: 201px;
-  height: 170px;
-  background-color: ${(props) => props.theme.colors.gray200};
-  border-radius: 0.938rem;
-  box-shadow: 0 4px 4px 2px rgb(0 0 0/25%);
-  margin: 0.938rem;
-`;
-
 const BoxContainer = styled.div`
   background-color: ${(props) => props.theme.colors.white};
   width: 100%;
@@ -160,15 +155,17 @@ const BoxContainer = styled.div`
 
 function MainPage() {
   const [upcoming, setUpcoming] = useState<ITrip | any>();
+  const [places, setPlaces] = useState<IPlace[] | any>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [userInfo] = useRecoilState(UserInfoState);
   const today = changeDateFormatToHyphen(new Date());
   const [isProgress, setIsProgress] = useState(0);
-
-  const { isLoading, isSuccess, data } = useQuery<
-    AxiosResponse<ITrip>,
-    AxiosError
-  >(
+  const userLocation = getLocation();
+  const {
+    isLoading: isLoading1,
+    isSuccess: isSuccess1,
+    data: data1,
+  } = useQuery<AxiosResponse<ITrip>, AxiosError>(
     [`${userInfo.id}-upcomingTrip`],
     () => axiosInstance.get(tripApis.upcomingTrip(today)),
     {
@@ -178,15 +175,42 @@ function MainPage() {
     },
   );
 
+  const {
+    isLoading: isLoading2,
+    isSuccess: isSuccess2,
+    data: data2,
+  } = useQuery<AxiosResponse<IPlace[]>, AxiosError>(
+    [`${userInfo.id}-MyLocationPlaces`],
+    () => axiosInstance.get(placeApis.getLocationPlaces(lat, lng)),
+    {
+      refetchOnWindowFocus: false,
+      refetchOnReconnect: false,
+      refetchOnMount: true,
+    },
+  );
+
   useEffect(() => {
-    if (data) {
-      setUpcoming(data);
-      if (data?.data.startDate) {
+    if (data1) {
+      setUpcoming(data1);
+      if (data1?.data.startDate) {
         setIsProgress(2);
       } else setIsProgress(1);
-      setLoading(true);
     }
-  }, [data]);
+  }, [data1]);
+
+  useEffect(() => {
+    if (data2) {
+      setPlaces(data2);
+    }
+  }, [data2]);
+
+  useEffect(() => {
+    setLoading(true);
+  }, [data1, data2]);
+
+  useEffect(() => {
+    console.log(userLocation);
+  }, [userLocation]);
 
   const result = [
     {
@@ -235,7 +259,7 @@ function MainPage() {
     >
       <BoxContainer>
         <MainBox>
-          {isLoading && (
+          {isLoading1 && (
             <div
               style={{
                 width: "90%",
@@ -251,7 +275,7 @@ function MainPage() {
               <p>Loading...</p>
             </div>
           )}
-          {!isLoading && !isSuccess && (
+          {!isLoading1 && !isSuccess1 && (
             <div
               style={{
                 width: "90%",
@@ -267,7 +291,7 @@ function MainPage() {
               <p>ERROR !</p>
             </div>
           )}
-          {isSuccess && loading && (
+          {isSuccess1 && loading && (
             <>
               <InsideLeftBox>
                 <InsideContent>
@@ -388,14 +412,52 @@ function MainPage() {
             </span>
           </MiddleTitle>
           <PlaceList>
-            <Swiper slidesPerView={2.1} spaceBetween={13}>
-              {result.length &&
-                result.map((place, idx) => (
-                  <SwiperSlide key={idx}>
-                    <Card place={place} />
-                  </SwiperSlide>
-                ))}
-            </Swiper>
+            {isLoading2 && (
+              <div
+                style={{
+                  width: "100%",
+                  height: "90%",
+                  display: "flex",
+                  flexDirection: "column",
+                  textAlign: "center",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  borderRadius: "20px",
+                  border: "1px solid lightgray",
+                  marginTop: "7px",
+                }}
+              >
+                <p>Loading...</p>
+              </div>
+            )}
+            {!isLoading2 && !isSuccess2 && (
+              <div
+                style={{
+                  width: "100%",
+                  height: "90%",
+                  display: "flex",
+                  flexDirection: "column",
+                  textAlign: "center",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  borderRadius: "20px",
+                  border: "1px solid lightgray",
+                  marginTop: "7px",
+                }}
+              >
+                <p>ERROR !</p>
+              </div>
+            )}
+            {isSuccess2 && loading && (
+              <Swiper slidesPerView={2.1} spaceBetween={13}>
+                {places.length &&
+                  places.map((place: IPlace, idx: number) => (
+                    <SwiperSlide key={idx}>
+                      <Card place={place} />
+                    </SwiperSlide>
+                  ))}
+              </Swiper>
+            )}
           </PlaceList>
         </SubBox>
         <MiddleTitlePosition>

@@ -1,13 +1,22 @@
 import styled from "@emotion/styled";
 import { memo } from "react";
 import { REGIONLIST } from "../../utils/constants/constant";
+import { ISticker } from "../../utils/interfaces/places.interface";
 
 interface CardProps {
   place: {
     placeId: number;
-    regionId: number;
     name: string;
-    image: string;
+    regionId: number;
+    locationAddress: string;
+    lat: number;
+    lng: number;
+    startDate: string;
+    endDate: string;
+    type: number;
+    amount: number;
+    stickerList: ISticker[];
+    posterImage: string;
   };
 }
 
@@ -58,7 +67,7 @@ function Card({ place }: CardProps) {
   return (
     <Container>
       <div className="ImageBox">
-        <img src={place.image} />
+        <img src={place.posterImage} />
       </div>
       <p className="PlaceRegion">{REGIONLIST[place.regionId]} 지역</p>
       <p className="PlaceName">{place.name}</p>

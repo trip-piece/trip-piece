@@ -49,3 +49,27 @@ export const changeDateFormatToHyphen = (date: Date): string => {
   const offset = date.getTimezoneOffset() * 60000;
   return new Date(date.getTime() - offset).toISOString().split("T")[0];
 };
+
+export const getLocation = () => {
+  const result: number[] = [];
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(
+      function (position) {
+        result[0] = position.coords.latitude;
+        result[1] = position.coords.longitude;
+      },
+      function (error) {
+        console.error(error);
+      },
+      {
+        enableHighAccuracy: false,
+        maximumAge: 0,
+        timeout: Infinity,
+      },
+    );
+  } else {
+    result[0] = 0;
+    result[1] = 1;
+  }
+  return result;
+};
