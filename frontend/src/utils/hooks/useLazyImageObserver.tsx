@@ -1,17 +1,18 @@
 import { useEffect, useRef, useState } from "react";
+import skeleton from "../../assets/images/sticker-skeleton.png";
 
 interface UseLazyImageObserverProps {
   src: string;
 }
 
 function useLazyImageObserver({ src }: UseLazyImageObserverProps) {
-  const [imageSrc, setImageSrc] = useState("");
+  const [imageSrc, setImageSrc] = useState(skeleton);
   const imageRef = useRef<HTMLImageElement>(null);
 
   useEffect(() => {
     let observer: IntersectionObserver;
 
-    if (imageRef.current && !imageSrc) {
+    if (imageRef) {
       observer = new IntersectionObserver(
         ([entry]) => {
           if (entry.isIntersecting) {

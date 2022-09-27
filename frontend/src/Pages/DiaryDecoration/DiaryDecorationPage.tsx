@@ -1,6 +1,13 @@
 import styled from "@emotion/styled";
 import { Icon } from "@iconify/react/dist/offline";
-import { useCallback, useEffect, useRef, useState } from "react";
+import {
+  memo,
+  ReactNode,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { BsFillGeoAltFill } from "react-icons/bs";
 import { useParams } from "react-router-dom";
 import { useRecoilValue } from "recoil";
@@ -18,6 +25,12 @@ import { IWritedDiary } from "../../utils/interfaces/diarys.interface";
 import { dummyStickerList } from "../../utils/constants/dummyData";
 import LazyImage from "../../components/atoms/LazyImage";
 
+interface DiaryContentsProps {
+  fontType: number;
+  diaryWidth: number;
+  backgroundColor: number;
+}
+
 const PositionContainer = styled.div`
   > svg {
     color: ${(props) => props.theme.colors.red};
@@ -25,11 +38,7 @@ const PositionContainer = styled.div`
   color: ${(props) => props.theme.colors.gray400};
 `;
 
-const DiaryContents = styled.div<{
-  fontType: number;
-  diaryWidth: number;
-  backgroundColor: number;
-}>`
+const DiaryContents = styled.div<DiaryContentsProps>`
   white-space: pre-line;
   min-height: 60vh;
   background-color: ${(props) => DIARY_COLOR_LIST[props.backgroundColor]};
@@ -65,7 +74,6 @@ const StickerZone = styled.div`
 
   & > div {
     min-height: 50px;
-    /* overflow-y: ${(props) => (props.active ? "scroll" : "hidden")}; */
     padding: 0.5rem 1.5rem;
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -94,9 +102,9 @@ const DiaryImag = styled.img`
   width: fit-content;
 `;
 
-const DragBox = styled.div`
-  position: absolute;
-`;
+// const DragBox = styled.div`
+//   position: absolute;
+// `;
 
 const TransparentRoundButton = styled.button`
   background-color: transparent;
@@ -105,9 +113,32 @@ const TransparentRoundButton = styled.button`
 
 interface ISticker {
   tokenId: number;
+  tokenURI: string;
   x: number;
   y: number;
 }
+
+interface ChildrenProps {
+  children: ReactNode;
+  onClick: () => void;
+}
+const Button = memo(({ children, onClick }: ChildrenProps) => {
+  return (
+    <TransparentRoundButton type="button" onClick={onClick}>
+      {children}
+    </TransparentRoundButton>
+  );
+});
+
+function Tmp({ onClick, sticker }: any) {
+  return (
+    <TransparentRoundButton onClick={() => onClick(sticker)}>
+      <LazyImage src={sticker.tokenURI} key={v4()} />
+    </TransparentRoundButton>
+  );
+}
+
+const MemoTmp = memo(Tmp);
 
 function DiaryDecorationPage() {
   const [dottedDate, setDottedDate] = useState<string>("");
@@ -158,11 +189,13 @@ function DiaryDecorationPage() {
       stickerBoxRef.current.style.overflowY = "scroll";
     }
   };
-
-  const addSticker = (event) => {
-    setStickerList((prev) => [...prev, { tokenId: 0, x: 0, y: 0 }]);
-  };
-
+  const addSticker = useCallback((sticker) => {
+    setStickerList((prev) => [
+      ...prev,
+      { tokenId: sticker.tokenId, tokenURI: sticker.tokenURI, x: 0, y: 0 },
+    ]);
+  }, []);
+  console.log(stickerList);
   return (
     <Container>
       {diary && (
@@ -182,23 +215,26 @@ function DiaryDecorationPage() {
               ref={diaryRef}
               fontType={diary.diary.fontType}
             >
-              <Draggable
-                nodeRef={nodeRef}
-                defaultPosition={{ x: 0, y: 0 }}
-                scale={1}
-                // onStart={this.handleStart}
-                // onDrag={this.handleDrag}
-                // onStop={this.handleStop}
-              >
-                <div ref={nodeRef}>
-                  <img
-                    className="handle"
-                    src="https://cdn.pixabay.com/photo/2020/12/27/20/25/smile-5865209_1280.png"
-                    alt="#"
-                    width="40"
-                  />
-                </div>
-              </Draggable>
+              {stickerList.map((sticker) => (
+                <Draggable
+                  nodeRef={nodeRef}
+                  defaultPosition={{ x: 0, y: 0 }}
+                  scale={1}
+
+                  // onStart={this.handleStart}
+                  // onDrag={this.handleDrag}
+                  // onStop={this.handleStop}
+                >
+                  <div ref={nodeRef} style={{ position: "absolute" }}>
+                    <img
+                      className="handle"
+                      src={sticker.tokenURI}
+                      alt="#"
+                      width="40"
+                    />
+                  </div>
+                </Draggable>
+              ))}
 
               {diary.diary.content}
               {imageSrc && (
@@ -225,11 +261,16 @@ function DiaryDecorationPage() {
             <button type="button" onClick={onClick}>
               보유한 스티커
             </button>
-            <div ref={stickerBoxRef}>
+            <div ref={stickerBoxRef} role="buton">
               {dummyStickerList.map((sticker) => (
-                <TransparentRoundButton type="button">
-                  <LazyImage src={sticker.tokenURI} key={v4()} />
-                </TransparentRoundButton>
+                <MemoTmp
+                  onClick={addSticker}
+                  // onClick={() => addSticker(sticker)}
+                  sticker={sticker}
+                />
+                // <Button onClick={addSticker}>
+                //   <LazyImage src={sticker.tokenURI} key={v4()} />
+                // </Button>
               ))}
             </div>
           </StickerZone>

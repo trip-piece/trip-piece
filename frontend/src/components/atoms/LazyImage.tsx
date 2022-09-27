@@ -7,7 +7,7 @@ interface LazyImageProps {
 
 function Image({ src }: LazyImageProps) {
   const { imageSrc, imageRef } = useLazyImageObserver({ src });
-
+  console.log("???");
   return <img ref={imageRef} src={imageSrc} alt="#" width="40" />;
 }
 
