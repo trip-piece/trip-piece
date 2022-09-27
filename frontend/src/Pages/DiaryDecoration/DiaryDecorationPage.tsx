@@ -104,6 +104,7 @@ const DiaryImg = styled.img`
 
 const StickerImg = styled.img<{ isDragging: boolean }>`
   width: 20%;
+  position: absolute;
   cursor: move;
   -webkit-user-drag: none;
   user-select: none;
@@ -301,6 +302,14 @@ function DiaryDecorationPage() {
     [diaryWidth, diaryBox],
   );
 
+  const deleteSticker = (event, index) => {
+    if (event.detail === 2) {
+      nodeRef.current.style.display = "none";
+      setStickerList(stickerList.filter((_, idx) => idx !== index));
+    }
+  };
+  console.log(stickerList);
+
   return (
     <Container>
       {diary && (
@@ -328,16 +337,16 @@ function DiaryDecorationPage() {
                   onStart={(_, data) => handleStart(data, index)}
                   onDrag={(_, data) => handleDrag(data, index)}
                   onStop={() => handleStop(index)}
+                  key={sticker.tokenId}
                 >
                   <StickerImg
                     src={sticker.tokenURI}
                     ref={nodeRef}
-                    style={{ position: "absolute" }}
                     alt="#"
                     width="100"
                     isDragging={sticker.isDragging}
                     draggable
-                    onClick={() => console.log("fuck")}
+                    onClick={(event) => deleteSticker(event, index)}
                   />
                 </Draggable>
               ))}
