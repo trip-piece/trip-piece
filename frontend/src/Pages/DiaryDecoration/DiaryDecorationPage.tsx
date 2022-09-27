@@ -11,7 +11,7 @@ import {
 import { BsFillGeoAltFill } from "react-icons/bs";
 import { useParams } from "react-router-dom";
 import { useRecoilValue } from "recoil";
-import Draggable, { DraggableCore } from "react-draggable";
+import Draggable, { DraggableCore, DraggableData } from "react-draggable";
 import { v4 } from "uuid";
 import ColoredRoundButton from "../../components/atoms/ColoredRoundButton";
 import Container from "../../components/atoms/Container";
@@ -102,13 +102,13 @@ const DiaryImg = styled.img`
   width: fit-content;
 `;
 
-const StickerImg = styled.img`
+const StickerImg = styled.img<{ isDragging: boolean }>`
   width: 20%;
+  cursor: move;
+  -webkit-user-drag: none;
+  user-select: none;
+  opacity: ${(props) => (props.isDragging ? 0.6 : 1.0)};
 `;
-
-// const DragBox = styled.div`
-//   position: absolute;
-// `;
 
 const TransparentRoundButton = styled.button`
   background-color: transparent;
@@ -122,6 +122,9 @@ interface StickerProps {
 interface ISticker extends StickerProps {
   x: number;
   y: number;
+  isDragging: boolean;
+  originX: number;
+  originY: number;
 }
 
 interface ImageButtonProps {
@@ -144,8 +147,9 @@ function DiaryDecorationPage() {
   const [diaryWidth, setDiaryWidth] = useState<number>(320);
   const [imageSrc, setImageSrc] = useState<string | null>("");
   const [stickerList, setStickerList] = useState<ISticker[]>([]);
+  const [diaryBox, setDiaryBox] = useState({ width: 0, height: 0 });
   const { tripId, diaryDate } = useParams();
-  const nodeRef = useRef<HTMLDivElement>(null);
+  const nodeRef = useRef<HTMLImageElement>(null);
   const diary = useRecoilValue<IWritedDiary<File | null>>(
     writedDiaryState(`${tripId}-${diaryDate}`),
   );
@@ -172,10 +176,17 @@ function DiaryDecorationPage() {
   }, []);
 
   useEffect(() => {
+    if (diaryRef.current) {
+      const wrapperBox = diaryRef.current.getBoundingClientRect();
+      setDiaryBox({
+        width: wrapperBox.width,
+        height: wrapperBox.height,
+      });
+    }
     if (!diaryRef.current?.offsetWidth) return;
     const tmpSize = diaryRef.current.offsetWidth;
     setDiaryWidth(tmpSize);
-  }, [size]);
+  }, [size, diaryRef.current, imageSrc]);
 
   const onClick = () => {
     if (stickerRef.current.style.maxHeight === "50vh") {
@@ -191,10 +202,105 @@ function DiaryDecorationPage() {
   const addSticker = useCallback((sticker: StickerProps) => {
     setStickerList((prev) => [
       ...prev,
-      { tokenId: sticker.tokenId, tokenURI: sticker.tokenURI, x: 0, y: 0 },
+      {
+        tokenId: sticker.tokenId,
+        tokenURI: sticker.tokenURI,
+        originX: 0,
+        originY: 0,
+        x: 0,
+        y: 0,
+        isDragging: false,
+      },
     ]);
   }, []);
-  console.log(stickerList);
+
+  const handleStart = useCallback(
+    (data: DraggableData, index: number) => {
+      setStickerList((prevState) =>
+        prevState.map((state, idx) => {
+          if (idx === index) {
+            return {
+              ...state,
+              isDragging: false,
+              originX: data.x,
+              originY: data.y,
+            };
+          }
+          return state;
+        }),
+      );
+    },
+    [diaryWidth],
+  );
+
+  const handleDrag = useCallback(
+    (data: DraggableData, index: number): any => {
+      const imgSize = diaryWidth * 0.2;
+      setStickerList((prevState) =>
+        prevState.map((state, idx) => {
+          if (idx === index) {
+            if (data.x < 0) {
+              return {
+                ...state,
+                isDragging: true,
+                x: 0,
+                y: data.y,
+              };
+            }
+            if (data.x >= diaryBox.width - imgSize / 2) {
+              return {
+                ...state,
+                isDragging: true,
+                x: diaryBox.width - imgSize / 2,
+                y: data.y,
+              };
+            }
+            if (data.y < 0) {
+              return {
+                ...state,
+                isDragging: true,
+                x: data.x,
+                y: 0,
+              };
+            }
+            if (data.y > diaryBox.height - imgSize) {
+              return {
+                ...state,
+                isDragging: true,
+                x: data.x,
+                y: diaryBox.height - imgSize,
+              };
+            }
+            return {
+              ...state,
+              isDragging: true,
+              x: data.x,
+              y: data.y,
+            };
+          }
+          return state;
+        }),
+      );
+    },
+    [diaryWidth, diaryBox],
+  );
+  const handleStop = useCallback(
+    (index: number) => {
+      setStickerList((prevState) =>
+        prevState.map((state, idx) => {
+          if (idx === index) {
+            return {
+              ...state,
+              isDragging: false,
+            };
+          }
+          return state;
+        }),
+      );
+    },
+    [diaryWidth, diaryBox],
+  );
+
   return (
     <Container>
       {diary && (
@@ -214,19 +320,25 @@ function DiaryDecorationPage() {
               ref={diaryRef}
               fontType={diary.diary.fontType}
             >
-              {stickerList.map((sticker) => (
+              {stickerList.map((sticker, index) => (
                 <Draggable
                   nodeRef={nodeRef}
-                  defaultPosition={{ x: 0, y: 0 }}
-                  scale={1}
-
-                  // onStart={this.handleStart}
-                  // onDrag={this.handleDrag}
-                  // onStop={this.handleStop}
+                  position={{ x: sticker.x, y: sticker.y }}
+                  positionOffset={{ x: "-50%", y: "-50%" }}
+                  onStart={(_, data) => handleStart(data, index)}
+                  onDrag={(_, data) => handleDrag(data, index)}
+                  onStop={() => handleStop(index)}
                 >
-                  <div ref={nodeRef} style={{ position: "absolute" }}>
-                    <StickerImg src={sticker.tokenURI} alt="#" width="100" />
-                  </div>
+                  <StickerImg
+                    src={sticker.tokenURI}
+                    ref={nodeRef}
+                    style={{ position: "absolute" }}
+                    alt="#"
+                    width="100"
+                    isDragging={sticker.isDragging}
+                    draggable
+                    onClick={() => console.log("fuck")}
+                  />
                 </Draggable>
               ))}
 
@@ -256,8 +368,13 @@ function DiaryDecorationPage() {
               보유한 스티커
             </button>
             <div ref={stickerBoxRef}>
-              {dummyStickerList.map((sticker) => (
-                <MemoizedImageButton onClick={addSticker} sticker={sticker} />
+              {dummyStickerList.map((sticker, index) => (
+                <MemoizedImageButton
+                  onClick={addSticker}
+                  sticker={sticker}
+                  // eslint-disable-next-line react/no-array-index-key
+                  key={index}
+                />
               ))}
             </div>
           </StickerZone>
