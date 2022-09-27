@@ -25,6 +25,7 @@ import { useRecoilState } from "recoil";
 import { pixelToRem } from "../../utils/functions/util";
 import { UserInfoState } from "../../store/atom";
 import trippieceLogo from "../../assets/image/trippiece_logo.png";
+import { motion } from "framer-motion";
 
 const DrawerHeader = styled.div`
   display: flex;
@@ -377,7 +378,9 @@ export default function Navbar() {
         >
           <div style={{ width: "33%" }} />
           <div style={{ width: "33%" }}>
-            <button
+            <motion.button
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
               type="button"
               onClick={moveToMain}
               style={{ background: "transparent" }}
@@ -387,7 +390,7 @@ export default function Navbar() {
                 alt="기본이미지"
                 style={{ width: "100%" }}
               />
-            </button>
+            </motion.button>
           </div>
           <div style={{ width: "33%", textAlign: "right" }}>
             <TbMenu2
@@ -414,21 +417,33 @@ export default function Navbar() {
         >
           <Box role="presentation" onKeyDown={toggleDrawer(false)}>
             <DrawerHeader>
-              <button type="button">
+              <motion.button
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+                type="button"
+              >
                 <MdOutlineLogout />
-              </button>
-              <button type="button">
+              </motion.button>
+              <motion.button
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+                type="button"
+              >
                 <MdOutlineClose onClick={toggleDrawer(false)} />
-              </button>
+              </motion.button>
             </DrawerHeader>
             <TopBackgroundBox>
               <UserInformation>
                 <div className="username">
                   {userInfo.nickname}
                   <h5>여행자님</h5>
-                  <button type="button">
+                  <motion.button
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.9 }}
+                    type="button"
+                  >
                     <MdModeEditOutline />
-                  </button>
+                  </motion.button>
                 </div>
                 <div className="wallet-info">
                   <FaEthereum className="icon" />
@@ -448,31 +463,62 @@ export default function Navbar() {
             </TopBackgroundBox>
             <BottomArea>
               <MiddleLongBox>
-                <button type="button" onClick={moveToSticker}>
+                <motion.button
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                  type="button"
+                  onClick={moveToSticker}
+                >
                   <MdOutlineAddReaction className="icon" />
                   보유 스티커
-                </button>
+                </motion.button>
                 <div className="middle-bar" />
-                <button type="button" onClick={moveToFrame}>
+                <motion.button
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                  type="button"
+                  onClick={moveToFrame}
+                >
                   <BsFillBookmarkHeartFill className="icon" />
                   찜한 프레임
-                </button>
+                </motion.button>
                 <div className="middle-bar" />
-                <button type="button" onClick={moveToTrip}>
+                <motion.button
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                  type="button"
+                  onClick={moveToTrip}
+                >
                   <FaBook className="icon" />내 다이어리
-                </button>
+                </motion.button>
               </MiddleLongBox>
               <MiddleBoxes>
-                <button type="button" onClick={moveToShare}>
+                <motion.button
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                  type="button"
+                  onClick={moveToShare}
+                >
                   <BiShareAlt className="icon" />
                   프레임 공유
-                </button>
-                <button type="button" className="QRButton" onClick={moveToQR}>
+                </motion.button>
+                <motion.button
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                  type="button"
+                  className="QRButton"
+                  onClick={moveToQR}
+                >
                   <MdQrCodeScanner className="QRIcon" />
-                </button>
-                <button type="button" onClick={moveToMarket}>
+                </motion.button>
+                <motion.button
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                  type="button"
+                  onClick={moveToMarket}
+                >
                   <MdShoppingCart className="icon" /> NFT 마켓
-                </button>
+                </motion.button>
               </MiddleBoxes>
               <MiddleLongBox onClick={moveToPlace}>
                 <div className="check-spot">
@@ -483,9 +529,14 @@ export default function Navbar() {
                   <h5>
                     현재 발급할 수 있는 축제/스팟
                     <br />
-                    <button type="button" onClick={moveToPlace}>
+                    <motion.button
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.9 }}
+                      type="button"
+                      onClick={moveToPlace}
+                    >
                       보러가기
-                    </button>
+                    </motion.button>
                   </h5>
                 </div>
               </MiddleLongBox>
@@ -498,7 +549,13 @@ export default function Navbar() {
                         <p>현재 진행중인 여행이 없어요</p>
                         <p>여행을 등록해 주세요!</p>
                       </div>
-                      <button type="button">등록하기</button>
+                      <motion.button
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.9 }}
+                        type="button"
+                      >
+                        등록하기
+                      </motion.button>
                     </div>
                   </div>
                 ) : (
@@ -509,7 +566,13 @@ export default function Navbar() {
                         <p>서울 (startdate - enddate)</p>
                         <p>[여행 제목]</p>
                       </div>
-                      <button type="button">기록하기</button>
+                      <motion.button
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.9 }}
+                        type="button"
+                      >
+                        기록하기
+                      </motion.button>
                     </div>
                   </div>
                 )}
