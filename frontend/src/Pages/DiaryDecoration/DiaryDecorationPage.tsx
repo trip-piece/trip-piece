@@ -88,17 +88,22 @@ const StickerZone = styled.div`
   transition: all 0.8s ease-in;
 `;
 
-const ButtonListContainer = styled.div`
-  margin-bottom: 125px;
-`;
-
 const Picture = styled.picture`
   display: flex;
   justify-content: center;
 `;
 
-const DiaryImg = styled.img<{ diaryWidth: number }>`
-  width: ${(props) => pixelToRem(props.diaryWidth / 8)};
+const ButtonListContainer = styled.div`
+  margin-bottom: 125px;
+`;
+
+const DiaryImg = styled.img`
+  max-width: 100%;
+  width: fit-content;
+`;
+
+const StickerImg = styled.img`
+  width: 20%;
 `;
 
 // const DragBox = styled.div`
@@ -122,13 +127,12 @@ interface ISticker extends StickerProps {
 interface ImageButtonProps {
   onClick: (sticker: StickerProps) => void;
   sticker: StickerProps;
-  diaryWidth: number;
 }
 
-function ImageButton({ onClick, sticker, diaryWidth }: ImageButtonProps) {
+function ImageButton({ onClick, sticker }: ImageButtonProps) {
   return (
     <TransparentRoundButton onClick={() => onClick(sticker)}>
-      <LazyImage src={sticker.tokenURI} key={v4()} diaryWidth={diaryWidth} />
+      <LazyImage src={sticker.tokenURI} key={v4()} />
     </TransparentRoundButton>
   );
 }
@@ -221,17 +225,22 @@ function DiaryDecorationPage() {
                   // onStop={this.handleStop}
                 >
                   <div ref={nodeRef} style={{ position: "absolute" }}>
-                    <DiaryImg
-                      src={sticker.tokenURI}
-                      alt="#"
-                      width="100"
-                      diaryWidth={diaryWidth}
-                    />
+                    <StickerImg src={sticker.tokenURI} alt="#" width="100" />
                   </div>
                 </Draggable>
               ))}
 
               {diary.diary.content}
+              {imageSrc && (
+                <Picture>
+                  <DiaryImg
+                    src={imageSrc}
+                    alt="미리보기"
+                    width="550"
+                    loading="lazy"
+                  />
+                </Picture>
+              )}
             </DiaryContents>
           </div>
           <ButtonListContainer>
@@ -248,11 +257,7 @@ function DiaryDecorationPage() {
             </button>
             <div ref={stickerBoxRef}>
               {dummyStickerList.map((sticker) => (
-                <MemoizedImageButton
-                  onClick={addSticker}
-                  sticker={sticker}
-                  diaryWidth={diaryWidth}
-                />
+                <MemoizedImageButton onClick={addSticker} sticker={sticker} />
               ))}
             </div>
           </StickerZone>
