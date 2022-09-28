@@ -5,6 +5,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { useQuery } from "react-query";
 import { useRecoilState } from "recoil";
 import { motion } from "framer-motion";
+import { BiCurrentLocation } from "react-icons/bi";
 import { ReactComponent as StarIcon } from "../../assets/svgs/starplus.svg";
 import { UserInfoState } from "../../store/atom";
 import axiosInstance from "../../utils/apis/api";
@@ -35,6 +36,10 @@ const SubBox = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
+  span {
+    font-size: ${(props) => props.theme.fontSizes.s1};
+    color: ${(props) => props.theme.colors.gray400};
+  }
 `;
 
 const MiddleTitle = styled.div`
@@ -45,14 +50,8 @@ const MiddleTitle = styled.div`
   letter-spacing: -2px;
   display: flex;
   flex-direction: row;
-  justify-content: space-evenly;
-  align-items: flex-end;
-
-  span {
-    font-size: ${(props) => props.theme.fontSizes.s1};
-    color: ${(props) => props.theme.colors.gray400};
-    margin-left: 10px;
-  }
+  justify-content: space-between;
+  align-items: center;
 `;
 
 const InsideLeftBox = styled.div`
@@ -120,7 +119,7 @@ const FooterText = styled.div`
 `;
 
 const PlaceList = styled.div`
-  height: 80%;
+  height: 75%;
   padding: 0 20px 0 20px;
   box-sizing: border-box;
   overflow: hidden;
@@ -160,7 +159,10 @@ function MainPage() {
   const [userInfo] = useRecoilState(UserInfoState);
   const today = changeDateFormatToHyphen(new Date());
   const [isProgress, setIsProgress] = useState(0);
-  const userLocation = getLocation();
+  const [locationInfo, setLocationInfo] = useState("");
+  const [lat, setLat] = useState(0);
+  const [lng, setLng] = useState(0);
+
   const {
     isLoading: isLoading1,
     isSuccess: isSuccess1,
@@ -175,13 +177,37 @@ function MainPage() {
     },
   );
 
+  const myLocation = async () => {
+    const userLocation: any = await getLocation();
+    setLocationInfo(userLocation.location);
+    setLat(userLocation.latitude);
+    setLng(userLocation.longitude);
+  };
+
+  const updateLocation = async () => {
+    await myLocation();
+    axiosInstance
+      .get(placeApis.getLocationPlaces(lat, lng))
+      .then((response) => {
+        setPlaces(response.data);
+      });
+  };
+
   const {
     isLoading: isLoading2,
     isSuccess: isSuccess2,
     data: data2,
   } = useQuery<AxiosResponse<IPlace[]>, AxiosError>(
     [`${userInfo.id}-MyLocationPlaces`],
-    () => axiosInstance.get(placeApis.getLocationPlaces(lat, lng)),
+    async () => {
+      const userLocation: any = await getLocation();
+      const firstlat = userLocation.latitude;
+      const firstlng = userLocation.longitude;
+      setLat(firstlat);
+      setLng(firstlng);
+      setLocationInfo(userLocation.location);
+      return axiosInstance.get(placeApis.getLocationPlaces(firstlat, firstlng));
+    },
     {
       refetchOnWindowFocus: false,
       refetchOnReconnect: false,
@@ -207,48 +233,6 @@ function MainPage() {
   useEffect(() => {
     setLoading(true);
   }, [data1, data2]);
-
-  useEffect(() => {
-    console.log(userLocation);
-  }, [userLocation]);
-
-  const result = [
-    {
-      placeId: 0,
-      image:
-        "https://www.infura-ipfs.io/ipfs/QmcqJiEjJon38JNzbsdgKhLBsjfWF8tZiUT5Mi7GQbtGP4",
-      name: "이이 축제",
-      regionId: 1,
-    },
-    {
-      placeId: 1,
-      image:
-        "https://www.infura-ipfs.io/ipfs/QmRkTWeyoREXuJ9s2vCtPTwvA1iaPjGS29Ei2fKZFZisGL",
-      name: "치킨 축제",
-      regionId: 12,
-    },
-    {
-      placeId: 2,
-      image:
-        "https://www.infura-ipfs.io/ipfs/QmXyV1fnFM4EYv42KyfAyzXNX8bu73zpqQndoJBQPbL5pF",
-      name: "춘식이 축제",
-      regionId: 11,
-    },
-    {
-      placeId: 3,
-      image:
-        "https://www.infura-ipfs.io/ipfs/QmPPEWSC7qX7rzxE76XJLkNQk2d95r6BSfiPMS3tNs4p1y",
-      name: "학생 축제",
-      regionId: 5,
-    },
-    {
-      placeId: 4,
-      image:
-        "https://www.infura-ipfs.io/ipfs/QmQyqcdu8HhnN3tfJtzAduS59GJt4ZNxjSXnTaim72fxCU",
-      name: "쭈압이 축제",
-      regionId: 8,
-    },
-  ];
 
   return (
     <motion.div
@@ -308,7 +292,12 @@ function MainPage() {
                         <br />
                         여행을 등록해주세요.
                       </InnerTextBody>
-                      <button>등록하기</button>
+                      <motion.button
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.9 }}
+                      >
+                        등록하기
+                      </motion.button>
                     </>
                   )}
                   {isProgress === 1 && (
@@ -399,24 +388,49 @@ function MainPage() {
         <SubBox>
           <MiddleTitle>
             📍 내 주변에서 NFT 발급받기
-            <span style={{ width: "35%" }}>서울시 송파구 어쩌구</span>
-            <span
+            <motion.button
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
               style={{
-                width: "10%",
                 textAlign: "right",
-                fontSize: "12pt",
+                fontSize: "11pt",
                 color: "#4B659C",
+                background: "transparent",
               }}
             >
               더보기
-            </span>
+            </motion.button>
           </MiddleTitle>
           <PlaceList>
+            <span
+              style={{
+                width: "100%",
+                height: "fit-content",
+                display: "flex",
+                flexDirection: "row",
+                justifyContent: "flex-end",
+                alignItems: "center",
+              }}
+            >
+              <p>{locationInfo}</p>
+              <motion.button
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+                style={{
+                  color: "#D35B5B",
+                  background: "transparent",
+                  width: "7%",
+                }}
+                onClick={updateLocation}
+              >
+                <BiCurrentLocation size="18" />
+              </motion.button>
+            </span>
             {isLoading2 && (
               <div
                 style={{
                   width: "100%",
-                  height: "90%",
+                  height: "80%",
                   display: "flex",
                   flexDirection: "column",
                   textAlign: "center",
@@ -434,7 +448,7 @@ function MainPage() {
               <div
                 style={{
                   width: "100%",
-                  height: "90%",
+                  height: "80%",
                   display: "flex",
                   flexDirection: "column",
                   textAlign: "center",
@@ -451,11 +465,14 @@ function MainPage() {
             {isSuccess2 && loading && (
               <Swiper slidesPerView={2.1} spaceBetween={13}>
                 {places.length &&
-                  places.map((place: IPlace, idx: number) => (
-                    <SwiperSlide key={idx}>
+                  places.map((place: IPlace) => (
+                    <SwiperSlide>
                       <Card place={place} />
                     </SwiperSlide>
                   ))}
+                {places.length === 0 && (
+                  <p>근처에 발급 가능한 지역이 없어요.</p>
+                )}
               </Swiper>
             )}
           </PlaceList>
