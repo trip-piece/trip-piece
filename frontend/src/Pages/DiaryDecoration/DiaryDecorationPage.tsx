@@ -1,18 +1,10 @@
 import styled from "@emotion/styled";
 import { Icon } from "@iconify/react/dist/offline";
-import {
-  memo,
-  ReactNode,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { memo, useCallback, useEffect, useRef, useState } from "react";
 import { BsFillGeoAltFill } from "react-icons/bs";
 import { useParams } from "react-router-dom";
 import { useRecoilValue } from "recoil";
-import Draggable, { DraggableCore, DraggableData } from "react-draggable";
-import { v4 } from "uuid";
+import Draggable, { DraggableData } from "react-draggable";
 import ColoredRoundButton from "../../components/atoms/ColoredRoundButton";
 import Container from "../../components/atoms/Container";
 import DateContainer from "../../components/atoms/DateContainer";
@@ -21,9 +13,14 @@ import { DIARY_COLOR_LIST, FONTTYPELIST } from "../../utils/constants/constant";
 import { weatherList } from "../../utils/constants/weatherList";
 import { pixelToRem } from "../../utils/functions/util";
 import useWindowResize from "../../utils/hooks/useWindowResize";
-import { IWritedDiary } from "../../utils/interfaces/diarys.interface";
+import {
+  ISticker,
+  IWritedDiary,
+  StickerProps,
+} from "../../utils/interfaces/diarys.interface";
 import { dummyStickerList } from "../../utils/constants/dummyData";
 import LazyImage from "../../components/atoms/LazyImage";
+import Modal from "./Modal";
 
 interface DiaryContentsProps {
   fontType: number;
@@ -115,18 +112,6 @@ const TransparentRoundButton = styled.button`
   height: fit-content;
 `;
 
-interface StickerProps {
-  tokenId: number;
-  tokenURI: string;
-}
-interface ISticker extends StickerProps {
-  x: number;
-  y: number;
-  isDragging: boolean;
-  originX: number;
-  originY: number;
-}
-
 interface ImageButtonProps {
   onClick: (sticker: StickerProps) => void;
   sticker: StickerProps;
@@ -143,11 +128,11 @@ function ImageButton({ onClick, sticker }: ImageButtonProps) {
 const MemoizedImageButton = memo(ImageButton);
 
 function DiaryDecorationPage() {
+  const [open, setOpen] = useState(false);
   const [dottedDate, setDottedDate] = useState<string>("");
-  const [diaryWidth, setDiaryWidth] = useState<number>(320);
   const [imageSrc, setImageSrc] = useState<string | null>("");
   const [stickerList, setStickerList] = useState<ISticker[]>([]);
-  const [diaryBox, setDiaryBox] = useState({ width: 0, height: 0 });
+  const [diaryBox, setDiaryBox] = useState({ width: 0, height: 0, ratio: 0 });
   const { tripId, diaryDate } = useParams();
   const nodeRef = useRef<HTMLImageElement>(null);
   const diary = useRecoilValue<IWritedDiary<File | null>>(
@@ -182,11 +167,9 @@ function DiaryDecorationPage() {
       setDiaryBox({
         width: wrapperBox.width,
         height: wrapperBox.height,
+        ratio: wrapperBox.height / wrapperBox.width,
       });
     }
-    if (!diaryRef.current?.offsetWidth) return;
-    const tmpSize = diaryRef.current.offsetWidth;
-    setDiaryWidth(tmpSize);
   }, [size, diaryRef.current, imageSrc, imageRef.current]);
 
   useEffect(() => {
@@ -212,20 +195,23 @@ function DiaryDecorationPage() {
       stickerBoxRef.current.style.overflowY = "scroll";
     }
   };
-  const addSticker = useCallback((sticker: StickerProps) => {
-    setStickerList((prev) => [
-      ...prev,
-      {
-        tokenId: sticker.tokenId,
-        tokenURI: sticker.tokenURI,
-        originX: 0,
-        originY: 0,
-        x: 0,
-        y: 0,
-        isDragging: false,
-      },
-    ]);
-  }, []);
+  const addSticker = useCallback(
+    (sticker: StickerProps) => {
+      setStickerList((prev) => [
+        ...prev,
+        {
+          tokenId: sticker.tokenId,
+          tokenURI: sticker.tokenURI,
+          originX: 0,
+          originY: 0,
+          x: 50,
+          y: 50,
+          isDragging: false,
+        },
+      ]);
+    },
+    [stickerList],
+  );
 
   const handleStart = useCallback(
     (data: DraggableData, index: number) => {
@@ -243,12 +229,12 @@ function DiaryDecorationPage() {
         }),
       );
     },
-    [diaryWidth],
+    [diaryBox],
   );
 
   const handleDrag = useCallback(
     (data: DraggableData, index: number): any => {
-      const imgSize = diaryWidth * 0.2;
+      const imgSize = diaryBox.width * 0.2;
       setStickerList((prevState) =>
         prevState.map((state, idx) => {
           if (idx === index) {
@@ -260,11 +246,11 @@ function DiaryDecorationPage() {
                 y: data.y,
               };
             }
-            if (data.x >= diaryBox.width - imgSize / 2) {
+            if (data.x >= diaryBox.width - imgSize) {
               return {
                 ...state,
                 isDragging: true,
-                x: diaryBox.width - imgSize / 2,
+                x: diaryBox.width - imgSize,
                 y: data.y,
               };
             }
@@ -295,10 +281,10 @@ function DiaryDecorationPage() {
         }),
       );
     },
-    [diaryWidth, diaryBox],
+    [diaryBox],
   );
   const handleStop = useCallback(
-    (_, data, index: number) => {
+    (data: DraggableData, index: number) => {
       setStickerList((prevState) =>
         prevState.map((state, idx) => {
           if (idx === index) {
@@ -313,13 +299,16 @@ function DiaryDecorationPage() {
         }),
       );
     },
-    [diaryWidth, diaryBox],
+    [diaryBox],
   );
-  console.log(stickerList);
-  console.log(diaryBox);
+
   const deleteSticker = () => {
     setStickerList([]);
   };
+
+  const handleOpen = () => setOpen(true);
+
+  // FIXME: map key 변경하기
   return (
     <Container>
       {diary && (
@@ -337,7 +326,7 @@ function DiaryDecorationPage() {
               스티커 삭제하기
             </button>
             <DiaryContents
-              diaryWidth={diaryWidth}
+              diaryWidth={diaryBox.width}
               backgroundColor={diary.diary.backgroundColor}
               ref={diaryRef}
               fontType={diary.diary.fontType}
@@ -346,10 +335,11 @@ function DiaryDecorationPage() {
                 <Draggable
                   nodeRef={nodeRef}
                   position={{ x: sticker.x, y: sticker.y }}
-                  positionOffset={{ x: "-50%", y: "-50%" }}
+                  // positionOffset={{ x: "-50%", y: "-50%" }}
                   onStart={(_, data) => handleStart(data, index)}
                   onDrag={(_, data) => handleDrag(data, index)}
-                  onStop={(event, data) => handleStop(event, data, index)}
+                  onStop={(event, data) => handleStop(data, index)}
+                  // eslint-disable-next-line react/no-array-index-key
                   key={index}
                 >
                   <StickerImg
@@ -381,6 +371,7 @@ function DiaryDecorationPage() {
               text="일기 꾸미기"
               color="mainLight"
               type="button"
+              func={handleOpen}
             />
             <ColoredRoundButton text="취소" color="gray400" type="button" />
           </ButtonListContainer>
@@ -399,6 +390,14 @@ function DiaryDecorationPage() {
               ))}
             </div>
           </StickerZone>
+          {open && (
+            <Modal
+              setOpen={setOpen}
+              open={open}
+              stickerList={stickerList}
+              diaryBox={diaryBox}
+            />
+          )}
         </>
       )}
     </Container>

@@ -35,9 +35,9 @@ const FixedContainer = styled.div`
 `;
 
 function TripListPage() {
-  const [open, setOpen] = useState(false);
-  const [isEditMode, setIsEditMode] = useState(false);
-  const [isCreated, setIsCreated] = useState(false);
+  const [open, setOpen] = useState<boolean>(false);
+  const [isEditMode, setIsEditMode] = useState<boolean>(false);
+  const [isCreated, setIsCreated] = useState<boolean>(false);
 
   const handleOpen = () => setOpen(true);
   const handleEditMode = () => setIsEditMode(!isEditMode);

@@ -24,7 +24,7 @@ import {
   PadZero,
   pixelToRem,
 } from "../../utils/functions/util";
-import { REGIONLIST, WEEK } from "../../utils/constants/constant";
+import { MESSAGE_LIST, REGIONLIST, WEEK } from "../../utils/constants/constant";
 import DateInfomation from "./DateInfomation";
 import tripApis from "../../utils/apis/tripsApis";
 import { ITrip } from "../../utils/interfaces/trips.interface";
@@ -309,7 +309,7 @@ function BasicModal({
 
   const onDelete = async () => {
     // eslint-disable-next-line no-alert
-    if (!window.confirm("여행을 삭제하시겠습니까?")) return;
+    if (!window.confirm(MESSAGE_LIST.TRIP_DELETE)) return;
     try {
       const response = await axiosInstance.delete(
         tripApis.aTrip(tripInformation?.tripId),
@@ -324,93 +324,89 @@ function BasicModal({
   };
 
   return (
-    <div>
-      <div>
-        <Modal
-          open={open}
-          onClose={handleClose}
-          aria-labelledby="modal-modal-title"
-          aria-describedby="modal-modal-description"
-        >
-          <Wrapper>
-            <Form onSubmit={handleSubmit(onSubmit)}>
-              <TripInformationWrapper>
-                <ModalHeader>
-                  <h3>
-                    <label htmlFor="trip-destination">여행지</label>
-                  </h3>
-                  <SelectWrapper>
-                    <Select
-                      id="trip-destination"
-                      {...register("regionId", {
-                        required: true,
-                        valueAsNumber: true,
-                      })}
-                    >
-                      {REGIONLIST.slice(1).map((region, idx) => (
-                        <option value={idx + 1} key={region}>
-                          {region}
-                        </option>
-                      ))}
-                    </Select>
-                    <StyledAiFillCaretDown />
-                  </SelectWrapper>
-                </ModalHeader>
-                <TitleInputWrapper>
-                  <label htmlFor="title">여행 제목</label>
-                  <TitleInput
-                    {...register("title", {
-                      required: "제목을 입력해주세요.",
-                      maxLength: {
-                        value: 10,
-                        message: "제목은 10자 이내로 작성해주세요.",
-                      },
-                    })}
-                    placeholder="여행 제목을 입력하세요."
-                    maxLength={10}
-                  />
-                  <MessageWrapper>
-                    <p>{errors?.title?.message}</p>
-                  </MessageWrapper>
-                </TitleInputWrapper>
-
-                <DurationWrapper>
-                  <DateInfomation {...startDateInfomation} type="시작" />
-                  <DateInfomation {...endDateInfomation} type="종료" />
-                </DurationWrapper>
-              </TripInformationWrapper>
-              <DatePicker
-                selected={startDate}
-                onChange={onChange}
-                startDate={startDate}
-                endDate={endDate}
-                minDate={new Date()}
-                selectsRange
-                locale={ko}
-                inline
-                onMonthChange={handleMonthChange}
-                dayClassName={setDayColor}
-                popperPlacement="auto"
-              />
-              <ButtonContainer>
-                <SubmitButton
-                  color="mainLight"
-                  type="submit"
-                  disabled={!startDate || !endDate}
+    <Modal
+      open={open}
+      onClose={handleClose}
+      aria-labelledby="modal-modal-title"
+      aria-describedby="modal-modal-description"
+    >
+      <Wrapper>
+        <Form onSubmit={handleSubmit(onSubmit)}>
+          <TripInformationWrapper>
+            <ModalHeader>
+              <h3>
+                <label htmlFor="trip-destination">여행지</label>
+              </h3>
+              <SelectWrapper>
+                <Select
+                  id="trip-destination"
+                  {...register("regionId", {
+                    required: true,
+                    valueAsNumber: true,
+                  })}
                 >
-                  {tripInformation?.tripId ? "여행 수정" : "여행 추가"}
-                </SubmitButton>
-                {tripInformation?.tripId && (
-                  <SubmitButton color="red" type="button" onClick={onDelete}>
-                    삭제
-                  </SubmitButton>
-                )}
-              </ButtonContainer>
-            </Form>
-          </Wrapper>
-        </Modal>
-      </div>
-    </div>
+                  {REGIONLIST.slice(1).map((region, idx) => (
+                    <option value={idx + 1} key={region}>
+                      {region}
+                    </option>
+                  ))}
+                </Select>
+                <StyledAiFillCaretDown />
+              </SelectWrapper>
+            </ModalHeader>
+            <TitleInputWrapper>
+              <label htmlFor="title">여행 제목</label>
+              <TitleInput
+                {...register("title", {
+                  required: "제목을 입력해주세요.",
+                  maxLength: {
+                    value: 10,
+                    message: "제목은 10자 이내로 작성해주세요.",
+                  },
+                })}
+                placeholder="여행 제목을 입력하세요."
+                maxLength={10}
+              />
+              <MessageWrapper>
+                <p>{errors?.title?.message}</p>
+              </MessageWrapper>
+            </TitleInputWrapper>
+
+            <DurationWrapper>
+              <DateInfomation {...startDateInfomation} type="시작" />
+              <DateInfomation {...endDateInfomation} type="종료" />
+            </DurationWrapper>
+          </TripInformationWrapper>
+          <DatePicker
+            selected={startDate}
+            onChange={onChange}
+            startDate={startDate}
+            endDate={endDate}
+            minDate={new Date()}
+            selectsRange
+            locale={ko}
+            inline
+            onMonthChange={handleMonthChange}
+            dayClassName={setDayColor}
+            popperPlacement="auto"
+          />
+          <ButtonContainer>
+            <SubmitButton
+              color="mainLight"
+              type="submit"
+              disabled={!startDate || !endDate}
+            >
+              {tripInformation?.tripId ? "여행 수정" : "여행 추가"}
+            </SubmitButton>
+            {tripInformation?.tripId && (
+              <SubmitButton color="red" type="button" onClick={onDelete}>
+                삭제
+              </SubmitButton>
+            )}
+          </ButtonContainer>
+        </Form>
+      </Wrapper>
+    </Modal>
   );
 }
 
