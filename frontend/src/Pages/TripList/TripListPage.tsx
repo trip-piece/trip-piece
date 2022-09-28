@@ -12,7 +12,7 @@ const Container = styled.section`
   min-height: 100vh;
   background-color: ${(props) => props.theme.colors.white};
   border-radius: 30px 30px 0 0;
-  padding: 1rem;
+  padding: 1rem;setOpen={setOpen} open={open}
   position: relative;
 `;
 

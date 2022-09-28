@@ -10,7 +10,7 @@ import TripDiaryPage from "./Pages/TripDiary/TripDiaryPage";
 import Navbar from "./Pages/Navbar/Navbar";
 import Admin from "./Pages/Admin/AdminPage";
 import NftRegister from "./Pages/Admin/NftRegisterPage";
-import FrameSharePage from "./Pages/Share/FrameSharePage";
+import FrameSharePage from "./Pages/Frame/FrameSharePage";
 import QrScanner from "./Pages/QrScan/QrReader";
 
 const Landing = lazy(() => import("./Pages/Landing/LandingPage"));
@@ -47,7 +47,7 @@ function Router() {
         <Route path="trips" element={<TripList />} />
         <Route path="admin" element={<Admin />} />
         <Route path="admin/nft" element={<NftRegister />} />
-        <Route path="share" element={<FrameSharePage />} />
+        <Route path="frames" element={<FrameSharePage />} />
         <Route path="trips/:tripId/diarys" element={<TripDiaryList />}>
           <Route path=":diaryDate" element={<TripDiaryPage />} />
         </Route>
