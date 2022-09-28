@@ -79,7 +79,7 @@ public class UserService {
 
         User user = User.builder()
                 .walletAddress(walletAddress)
-                .nickname("undefined")
+                .nickname("unknown")
                 .firstBadge(0)
                 .secondBadge(0)
                 .thirdBadge(0)
