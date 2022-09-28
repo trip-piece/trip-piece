@@ -144,21 +144,16 @@ function DiaryDecorationPage() {
   const stickerBoxRef = useRef<HTMLDivElement>(null);
   const size = useWindowResize();
 
-  const encodeFileToBase64 = useCallback((fileBlob: File) => {
-    if (!fileBlob) return;
-    const reader = new FileReader();
-    reader.readAsDataURL(fileBlob);
-    reader.onload = () => {
-      const tmpImage = reader.result as string;
-      setImageSrc(tmpImage);
-    };
-  }, []);
-
   useEffect(() => {
     if (diaryDate) {
       setDottedDate(diaryDate?.replaceAll("-", "."));
     }
-    if (diary?.todayPhoto) encodeFileToBase64(diary.todayPhoto);
+    if (diary?.todayPhoto) {
+      import("../../utils/functions/changeFileType").then(async (change) => {
+        const base64Image = await change.encodeFileToBase64(diary.todayPhoto);
+        setImageSrc(base64Image);
+      });
+    }
   }, []);
 
   useEffect(() => {

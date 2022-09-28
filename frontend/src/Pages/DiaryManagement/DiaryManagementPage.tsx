@@ -25,6 +25,7 @@ import Container from "../../components/atoms/Container";
 import DateContainer from "../../components/atoms/DateContainer";
 import { weatherList } from "../../utils/constants/weatherList";
 import MyLocation from "../../components/modules/MyLocation";
+import { resizeImage } from "../../utils/functions/changeFileType";
 
 const Form = styled.form`
   display: flex;
@@ -278,15 +279,18 @@ function DiaryManagementPage() {
     }
   };
 
-  const onLoadFile = (event: ChangeEvent<HTMLInputElement>) => {
+  const onLoadFile = async (event: ChangeEvent<HTMLInputElement>) => {
     const {
       target: { files },
     } = event;
-    const file = files && files[0];
+    let file = files && files[0];
     if (file && file?.size > IMAGE_SIZE_LIMIT_NUMBER) {
       alert(MESSAGE_LIST.PHOTO_LIMIT);
       return;
     }
+    console.log("before", file);
+    file = await resizeImage(file);
+    console.log("after", file);
     if (file) {
       setTodayPhoto(file);
       encodeFileToBase64(file);
