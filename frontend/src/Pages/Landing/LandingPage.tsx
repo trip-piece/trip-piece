@@ -45,9 +45,6 @@ export default function LandingPage() {
 
   const [userInfoState, setUserInfoState] = useRecoilState(UserInfoState);
 
-  setCookie("accessToken", null);
-  setCookie("refreshToken", null);
-
   let userInfoInit: IUserInfo = {
     address: "",
     nickname: "",
