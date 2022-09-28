@@ -43,8 +43,7 @@ const DiaryContents = styled.div<DiaryContentsProps>`
   min-height: 60vh;
   background-color: ${(props) => DIARY_COLOR_LIST[props.backgroundColor]};
   font-family: ${(props) => FONTTYPELIST[props.fontType]};
-  padding: 1rem
-    ${(props) => `${pixelToRem(16 + (props.diaryWidth - 320) / 20)}`};
+  padding: ${(props) => `${pixelToRem(16 + (props.diaryWidth - 320) / 20)}`};
   resize: none;
   transition: background-color 0.5s ease-in;
   font-size: ${(props) => pixelToRem(props.diaryWidth / 20)};
@@ -136,7 +135,7 @@ interface ImageButtonProps {
 function ImageButton({ onClick, sticker }: ImageButtonProps) {
   return (
     <TransparentRoundButton onClick={() => onClick(sticker)}>
-      <LazyImage src={sticker.tokenURI} key={v4()} />
+      <LazyImage src={sticker.tokenURI} />
     </TransparentRoundButton>
   );
 }
@@ -155,6 +154,7 @@ function DiaryDecorationPage() {
     writedDiaryState(`${tripId}-${diaryDate}`),
   );
   const diaryRef = useRef<HTMLDivElement>(null);
+  const imageRef = useRef<HTMLImageElement>(null);
   const stickerRef = useRef<HTMLDivElement>(null);
   const stickerBoxRef = useRef<HTMLDivElement>(null);
   const size = useWindowResize();
@@ -187,7 +187,19 @@ function DiaryDecorationPage() {
     if (!diaryRef.current?.offsetWidth) return;
     const tmpSize = diaryRef.current.offsetWidth;
     setDiaryWidth(tmpSize);
-  }, [size, diaryRef.current, imageSrc]);
+  }, [size, diaryRef.current, imageSrc, imageRef.current]);
+
+  useEffect(() => {
+    setStickerList((prev) =>
+      prev.map((sticker) => {
+        return {
+          ...sticker,
+          x: sticker.originX * diaryBox.width,
+          y: sticker.originY * diaryBox.height,
+        };
+      }),
+    );
+  }, [diaryBox]);
 
   const onClick = () => {
     if (stickerRef.current.style.maxHeight === "50vh") {
@@ -286,13 +298,15 @@ function DiaryDecorationPage() {
     [diaryWidth, diaryBox],
   );
   const handleStop = useCallback(
-    (index: number) => {
+    (_, data, index: number) => {
       setStickerList((prevState) =>
         prevState.map((state, idx) => {
           if (idx === index) {
             return {
               ...state,
               isDragging: false,
+              originX: data.x / diaryBox.width,
+              originY: data.y / diaryBox.height,
             };
           }
           return state;
@@ -301,15 +315,11 @@ function DiaryDecorationPage() {
     },
     [diaryWidth, diaryBox],
   );
-
-  const deleteSticker = (event, index) => {
-    if (event.detail === 2) {
-      nodeRef.current.style.display = "none";
-      setStickerList(stickerList.filter((_, idx) => idx !== index));
-    }
-  };
   console.log(stickerList);
-
+  console.log(diaryBox);
+  const deleteSticker = () => {
+    setStickerList([]);
+  };
   return (
     <Container>
       {diary && (
@@ -323,6 +333,9 @@ function DiaryDecorationPage() {
               <BsFillGeoAltFill />
               서울 송파구
             </PositionContainer>
+            <button type="button" onClick={deleteSticker}>
+              스티커 삭제하기
+            </button>
             <DiaryContents
               diaryWidth={diaryWidth}
               backgroundColor={diary.diary.backgroundColor}
@@ -336,8 +349,8 @@ function DiaryDecorationPage() {
                   positionOffset={{ x: "-50%", y: "-50%" }}
                   onStart={(_, data) => handleStart(data, index)}
                   onDrag={(_, data) => handleDrag(data, index)}
-                  onStop={() => handleStop(index)}
-                  key={sticker.tokenId}
+                  onStop={(event, data) => handleStop(event, data, index)}
+                  key={index}
                 >
                   <StickerImg
                     src={sticker.tokenURI}
@@ -346,11 +359,9 @@ function DiaryDecorationPage() {
                     width="100"
                     isDragging={sticker.isDragging}
                     draggable
-                    onClick={(event) => deleteSticker(event, index)}
                   />
                 </Draggable>
               ))}
-
               {diary.diary.content}
               {imageSrc && (
                 <Picture>
@@ -359,6 +370,7 @@ function DiaryDecorationPage() {
                     alt="미리보기"
                     width="550"
                     loading="lazy"
+                    ref={imageRef}
                   />
                 </Picture>
               )}
