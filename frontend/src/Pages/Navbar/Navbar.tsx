@@ -22,10 +22,11 @@ import { BsFillBookmarkHeartFill } from "react-icons/bs";
 import { useNavigate } from "react-router-dom";
 import AppBar from "@mui/material/AppBar";
 import { useRecoilState } from "recoil";
+import { motion } from "framer-motion";
 import { pixelToRem } from "../../utils/functions/util";
 import { UserInfoState } from "../../store/atom";
 import trippieceLogo from "../../assets/image/trippiece_logo.png";
-import { motion } from "framer-motion";
+import { ReactComponent as EtherIcon } from "../../assets/svgs/etherIcon.svg";
 
 const DrawerHeader = styled.div`
   display: flex;
@@ -435,7 +436,7 @@ export default function Navbar() {
             <TopBackgroundBox>
               <UserInformation>
                 <div className="username">
-                  {userInfo.nickname}
+                  {userInfo.nickname}#000{userInfo.id}
                   <h5>여행자님</h5>
                   <motion.button
                     whileHover={{ scale: 1.1 }}
@@ -446,7 +447,7 @@ export default function Navbar() {
                   </motion.button>
                 </div>
                 <div className="wallet-info">
-                  <FaEthereum className="icon" />
+                  <EtherIcon className="icon" />
                   <p>{userInfo.balance}</p>
                 </div>
               </UserInformation>

@@ -6,6 +6,8 @@ import { useQuery } from "react-query";
 import { useRecoilState } from "recoil";
 import { motion } from "framer-motion";
 import { BiCurrentLocation } from "react-icons/bi";
+import { BsMoonStarsFill } from "react-icons/bs";
+import { useNavigate } from "react-router-dom";
 import { ReactComponent as StarIcon } from "../../assets/svgs/starplus.svg";
 import { UserInfoState } from "../../store/atom";
 import axiosInstance from "../../utils/apis/api";
@@ -20,10 +22,11 @@ import { REGIONLIST } from "../../utils/constants/constant";
 import Card from "./PlaceCard";
 import { IPlace } from "../../utils/interfaces/places.interface";
 import { placeApis } from "../../utils/apis/placeApis";
-import { useNavigate } from "react-router-dom";
+import activeTicket from "../../assets/image/activeTicket.png";
+import unactiveTicket from "../../assets/image/unactiveTicket.png";
 
 const MainBox = styled.div`
-  height: 60%;
+  height: 55%;
   box-shadow: 0 4px 4px 2px rgb(0 0 0/25%);
   border-radius: 0 0 1.25rem 1.25rem;
   padding: 30px 0 30px 0;
@@ -33,7 +36,7 @@ const MainBox = styled.div`
 `;
 
 const SubBox = styled.div`
-  height: 35%;
+  height: 40%;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -92,6 +95,105 @@ const InsideContent = styled.div`
   height: 85%;
   width: 100%;
   color: ${(props) => props.theme.colors.gray300};
+`;
+
+const RightInsideContent = styled.div`
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  img {
+    width: auto;
+    height: 80%;
+  }
+
+  .ticket {
+    width: 70%;
+    height: 80%;
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+
+    .ticketMain {
+      width: 95%;
+      height: 65%;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      text-align: center;
+      align-items: center;
+      justify-content: center;
+      border-radius: 3px;
+
+      .imageBox {
+        width: 100%;
+        height: 100%;
+        background-color: black;
+        position: absolute;
+        border-radius: 3px;
+
+        img {
+          display: block;
+          width: 100%;
+          height: 100%;
+          object-fit: fill;
+          opacity: 0.6;
+          border-radius: 3px;
+        }
+      }
+
+      .textBox {
+        width: 90%;
+        height: 80%;
+        position: absolute;
+        z-index: 999;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        p {
+          width: 100%;
+          color: ${(props) => props.theme.colors.white};
+        }
+
+        hr {
+          width: 80%;
+        }
+
+        .regionName {
+          height: 17%;
+          font-size: ${(props) => props.theme.fontSizes.h3};
+          font-weight: bold;
+        }
+
+        .tripTitle {
+          display: flex;
+          align-items: center;
+          height: 40%;
+          font-size: ${(props) => props.theme.fontSizes.s1};
+        }
+
+        .date {
+          height: fit-content;
+          text-align: left;
+          font-size: ${(props) => props.theme.fontSizes.s2};
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+        }
+      }
+    }
+    .ticketSub {
+      width: 90%;
+      height: 20%;
+      background-color: transparent;
+    }
+  }
 `;
 
 const InnerTextTitle = styled.div`
@@ -163,6 +265,7 @@ function MainPage() {
   const [locationInfo, setLocationInfo] = useState("");
   const [lat, setLat] = useState(0);
   const [lng, setLng] = useState(0);
+  const [regionImage, setRegionImage] = useState("");
 
   const {
     isLoading: isLoading1,
@@ -219,6 +322,7 @@ function MainPage() {
   useEffect(() => {
     if (data1) {
       setUpcoming(data1);
+      setRegionImage(`/image/region/${REGIONLIST[data1?.data.regionId]}.png`);
       if (data1?.data.startDate) {
         setIsProgress(2);
       } else setIsProgress(1);
@@ -387,13 +491,94 @@ function MainPage() {
               </InsideLeftBox>
               <InsideRightBox>
                 {isProgress === 0 && (
-                  <InsideContent>여행이 없을때 티켓</InsideContent>
+                  <RightInsideContent>
+                    <img src={unactiveTicket} alt="기본이미지" />
+                    <div className="ticket">
+                      <div
+                        className="ticketMain"
+                        style={{
+                          justifyContent: "space-evenly",
+                          alignItems: "center",
+                        }}
+                      >
+                        <BsMoonStarsFill
+                          style={{
+                            width: "auto",
+                            height: "35%",
+                            color: "#737373",
+                          }}
+                        />
+                        <div
+                          style={{
+                            width: "100%",
+                            height: "fit-content",
+                            color: "#737373",
+                          }}
+                        >
+                          등록된 티켓이
+                          <br />
+                          없어요 !
+                        </div>
+                      </div>
+                      <div className="ticketSub" />
+                    </div>
+                  </RightInsideContent>
                 )}
                 {isProgress === 1 && (
-                  <InsideContent>여행이 진행중일때 티켓</InsideContent>
+                  <RightInsideContent>
+                    <img src={activeTicket} alt="기본이미지" />
+                    <div className="ticket">
+                      <div className="ticketMain">
+                        <div className="imageBox">
+                          <img src={regionImage} alt="기본이미지" />
+                        </div>
+                        <div className="textBox">
+                          <p className="regionName">
+                            {REGIONLIST[upcoming.regionId]}
+                          </p>
+                          <hr />
+                          <p className="tripTitle">{upcoming.title}</p>
+                          <p className="date">
+                            <span>{upcoming.startDate} ~ </span>
+                            <span style={{ textAlign: "right" }}>
+                              {upcoming.endDate}
+                            </span>
+                          </p>
+                        </div>
+                      </div>
+                      <div className="ticketSub" />
+                    </div>
+                  </RightInsideContent>
                 )}
                 {isProgress === 2 && (
-                  <InsideContent>예정된 여행이 있을때 티켓</InsideContent>
+                  <RightInsideContent>
+                    <img src={unactiveTicket} alt="기본이미지" />
+                    <div className="ticket">
+                      <div className="ticketMain">
+                        <div className="imageBox">
+                          <img
+                            src={regionImage}
+                            alt="기본이미지"
+                            style={{ filter: "grayscale(90%)" }}
+                          />
+                        </div>
+                        <div className="textBox">
+                          <p className="regionName">
+                            {REGIONLIST[upcoming.regionId]}
+                          </p>
+                          <hr />
+                          <p className="tripTitle">{upcoming.title}</p>
+                          <p className="date">
+                            <span>{upcoming.startDate} ~ </span>
+                            <span style={{ textAlign: "right" }}>
+                              {upcoming.endDate}
+                            </span>
+                          </p>
+                        </div>
+                      </div>
+                      <div className="ticketSub" />
+                    </div>
+                  </RightInsideContent>
                 )}
               </InsideRightBox>
             </>

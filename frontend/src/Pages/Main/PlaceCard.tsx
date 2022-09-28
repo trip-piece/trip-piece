@@ -67,7 +67,7 @@ function Card({ place }: CardProps) {
   return (
     <Container>
       <div className="ImageBox">
-        <img src={place.posterImage} />
+        <img src={place.posterImage} alt="기본이미지" />
       </div>
       <p className="PlaceRegion">{REGIONLIST[place.regionId]} 지역</p>
       <p className="PlaceName">{place.name}</p>
