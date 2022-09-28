@@ -14,6 +14,8 @@ export interface IUserInfo {
   id: number;
   tripCount: number;
   diaryCount: number;
+
+  setBalance?: () => {};
 }
 
 const UserInfodata: IUserInfo = {
