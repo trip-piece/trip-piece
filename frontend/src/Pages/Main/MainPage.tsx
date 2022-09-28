@@ -20,6 +20,7 @@ import { REGIONLIST } from "../../utils/constants/constant";
 import Card from "./PlaceCard";
 import { IPlace } from "../../utils/interfaces/places.interface";
 import { placeApis } from "../../utils/apis/placeApis";
+import { useNavigate } from "react-router-dom";
 
 const MainBox = styled.div`
   height: 60%;
@@ -234,6 +235,17 @@ function MainPage() {
     setLoading(true);
   }, [data1, data2]);
 
+  const navigate = useNavigate();
+  const moveToDiary = () => {
+    navigate(`/trips/${upcoming.tripId}/diarys`);
+  };
+  const moveToPlace = () => {
+    navigate("/places/map");
+  };
+  const moveToTrip = () => {
+    navigate("/trips");
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -295,6 +307,7 @@ function MainPage() {
                       <motion.button
                         whileHover={{ scale: 1.1 }}
                         whileTap={{ scale: 0.9 }}
+                        onClick={moveToTrip}
                       >
                         등록하기
                       </motion.button>
@@ -329,6 +342,7 @@ function MainPage() {
                       <motion.button
                         whileHover={{ scale: 1.1 }}
                         whileTap={{ scale: 0.9 }}
+                        onClick={moveToDiary}
                       >
                         기록하기
                       </motion.button>
@@ -396,9 +410,11 @@ function MainPage() {
                 fontSize: "11pt",
                 color: "#4B659C",
                 background: "transparent",
+                width: "fit-content",
               }}
+              onClick={moveToPlace}
             >
-              더보기
+              전체 보기
             </motion.button>
           </MiddleTitle>
           <PlaceList>
