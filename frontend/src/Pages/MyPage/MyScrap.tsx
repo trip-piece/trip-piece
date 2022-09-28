@@ -4,7 +4,7 @@ import UserInfo from "./UserInfo";
 import Tap from "./Tap";
 import MyScrapList from "./MyScrapList";
 
-function MyPage() {
+function MyScrap() {
   return (
     <>
       <Helmet>
@@ -18,4 +18,4 @@ function MyPage() {
   );
 }
 
-export default MyPage;
+export default MyScrap;
