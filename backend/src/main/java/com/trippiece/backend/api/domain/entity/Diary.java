@@ -8,6 +8,7 @@ import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Getter
@@ -20,6 +21,12 @@ public class Diary extends BaseEntity {
 
     @Column(nullable = false)
     private LocalDateTime createDate = LocalDateTime.now();
+
+    @Column(nullable = false)
+    private LocalDate diaryDate;
+
+    @Column(nullable = false)
+    private String location;
 
     @Column
     private String todayPhoto;
