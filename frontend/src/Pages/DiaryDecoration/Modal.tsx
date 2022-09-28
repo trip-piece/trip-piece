@@ -23,7 +23,7 @@ const Wrapper = styled(Box)<{ diarywidth: number }>`
 `;
 
 const DiaryFrame = styled.div<DiaryProps>`
-  background-color: red;
+  border: 2px solid black;
   position: relative;
   width: ${(props) => pixelToRem(props.diaryWidth * 0.7)};
   height: ${(props) => pixelToRem(props.diaryWidth * 0.7 * props.diaryRatio)};
@@ -54,10 +54,17 @@ function DecorationModal({ setOpen, open, stickerList, diaryBox }: ModalProps) {
   const [imgSrc, setImageSrc] = useState("");
   const imageRef = useRef<HTMLDivElement>(null);
   const onClick = () => {
-    html2canvas(imageRef.current).then(function (canvas) {
-      setImageSrc(canvas.toDataURL("image/jpeg"));
+    html2canvas(imageRef.current, {
+      logging: true,
+      useCORS: true,
+    }).then((canvas) => {
+      const imageData = canvas.toDataURL("image/png");
+      setImageSrc(imageData);
+      const src = encodeURI(imageData);
+      console.log(src);
     });
   };
+
   return (
     <Modal
       open={open}
@@ -72,10 +79,8 @@ function DecorationModal({ setOpen, open, stickerList, diaryBox }: ModalProps) {
           diaryRatio={diaryBox.ratio}
           ref={imageRef}
         >
-          <div>아이고~</div>
           {stickerList.map((sticker, index) => (
             <StickerImg
-              ref={imageRef}
               top={sticker.originY * diaryBox.height * 0.7}
               left={sticker.originX * diaryBox.width * 0.7}
               src={sticker.tokenURI}
@@ -83,7 +88,7 @@ function DecorationModal({ setOpen, open, stickerList, diaryBox }: ModalProps) {
             />
           ))}
         </DiaryFrame>
-        <img src={imgSrc} alt="#" />
+        <img src={imgSrc} alt="#" width="200px" />
         <button type="button" onClick={onClick}>
           버튼 찰칼
         </button>
