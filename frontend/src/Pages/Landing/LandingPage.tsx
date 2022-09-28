@@ -3,10 +3,11 @@ import React, { useEffect, useRef } from "react";
 import { Helmet } from "react-helmet-async";
 import { InjectedConnector } from "@web3-react/injected-connector";
 import { useWeb3React } from "@web3-react/core";
-import { useNavigate } from "react-router-dom";
+import { NavigateFunction, useNavigate } from "react-router-dom";
 // import { useRecoilState } from "recoil";
 import { useRecoilState } from "recoil";
 import Web3 from "web3";
+import { EmotionJSX } from "@emotion/react/types/jsx-namespace";
 import { getCookie, setCookie } from "../../utils/cookie";
 // import { IUserInfo, UserInfoState } from "../../store/atom";
 
@@ -16,7 +17,8 @@ import Content from "./Text";
 
 import userApis, { walletAddress } from "../../utils/apis/userApis";
 import axiosInstance from "../../utils/apis/api";
-import { UserInfoState } from "../../store/atom";
+import { IUserInfo, UserInfoState } from "../../store/atom";
+import getAddressFrom from "../../utils/AddressExtractor";
 
 const injected = new InjectedConnector({});
 
@@ -33,14 +35,87 @@ deactivate: dapp 월렛 연결 해제 수행 함수
 // const onClickDeactivate = () => {
 //   deactivate();
 // };
+function moveToMain(func: NavigateFunction) {
+  const navigate = func;
+  navigate("/main");
+}
 
-function LandingPage() {
-  const { activate, active, deactivate, account } = useWeb3React();
-
+export default function LandingPage() {
+  const { activate, active, account } = useWeb3React();
   const navigate = useNavigate();
   const address: walletAddress = { walletAddress: account };
-  const { isLoggedIn, setIsLoggendIn, setBalance } =
-    useRecoilState(UserInfoState);
+
+  const [userInfoState, setUserInfoState] = useRecoilState(UserInfoState);
+
+  let userInfoInit: IUserInfo = {
+    address: "",
+    nickname: "",
+    balance: "0.0",
+    isLoggedIn: false,
+    id: -2,
+    tripCount: 0,
+    diaryCount: 0,
+  };
+  const getUserBalance = () => {
+    const testnet = "https://ropsten.infura.io/";
+    const web3 = new Web3(
+      new Web3.providers.HttpProvider(
+        "https://ropsten.infura.io/v3/30efd277df944219b2c456fbb66f632d",
+      ),
+    );
+    console.log("web3 연결");
+    if (account) {
+      const address_temp = account;
+      console.log(address_temp);
+
+      // console.log(pubKey);
+
+      const userBalance = web3.eth
+        .getBalance(address_temp)
+        .then((balance) => {
+          console.log(balance);
+          return web3.utils.fromWei(balance, "ether");
+        })
+        .then((eth) => {
+          console.log(eth);
+        });
+
+      console.log(userBalance);
+      // userInfoInit.balance = userBalance;
+      setUserInfoState(userInfoInit);
+    }
+  };
+  const getUserInfo = () => {
+    console.log("정보가져와");
+
+    axiosInstance.get(userApis.getUser).then(
+      (response: {
+        data: {
+          userId: number;
+          walletAddress: string;
+          nickName: string;
+          tripCount: number;
+          diaryCount: number;
+        };
+      }) => {
+        console.log("test : " + response.data.walletAddress);
+
+        userInfoInit = {
+          address: response.data.walletAddress,
+          nickname: response.data.nickName,
+          balance: "-1.0",
+          isLoggedIn: true,
+          id: response.data.userId,
+          tripCount: response.data.tripCount,
+          diaryCount: response.data.diaryCount,
+        };
+        console.log(`response${userInfoInit.balance}`);
+        setUserInfoState(userInfoInit);
+        console.log(userInfoState);
+        getUserBalance();
+      },
+    );
+  };
 
   const login = async (
     data: string | null | undefined | walletAddress,
@@ -52,61 +127,50 @@ function LandingPage() {
         (response: { data: { accessToken: string; refreshToken: string } }) => {
           setCookie("accessToken", response.data.accessToken);
           setCookie("refreshToken", response.data.refreshToken);
-          setIsLoggendIn(true);
-          navigate("/main");
+          console.log("로그인완료");
+          getUserInfo();
         },
       );
   };
-
   const mounted = useRef(false);
   useEffect(() => {
     if (!mounted.current) {
       mounted.current = true;
     } else {
       login(address);
+      //getUserInfo();
+      //getUserBalance();
+      //setUserInfoState(userInfoInit);
+      // moveToMain(navigate);
     }
   }, [account]);
 
-  useEffect(() => {
-    let address_temp: string;
-
-    if (!mounted.current) {
-      mounted.current = true;
-    } else {
-      const testnet = "https://ropsten.infura.io/";
-
-      if (account) {
-        address_temp = account;
-        const web3 = new Web3(new Web3.providers.HttpProvider(testnet));
-        let balance = web3.eth.getBalance(address_temp); // Will give value in.
-
-        balance = web3.fromWei(balance, "ether");
-        //balance = web3.toDecimal(balance);
-      }
-
-      //getUser정보
-    }
-  }, [isLoggedIn]);
-
   const handleActivate = async (event: Event) => {
     event.preventDefault();
-    console.log(active);
+    console.log(`연결상태 : ${active}`);
+
+    setCookie("accessToken", null);
+    setCookie("refreshToken", null);
 
     if (active) {
-      const token = getCookie("accessToken");
+      console.log("메타마스크 연결되있지롱 ~");
+      login(address);
+      //getUserInfo();
+      // getUserBalance();
+      //setUserInfoState(userInfoInit);
+      //moveToMain(navigate);
 
-      if (token) {
-        login(address);
-      }
       // 여기서 쿠키 체크
       // 메타마스크와 연결되있으면 바로 main으로
       // login(address);
       // deactivate();
-      console.log(account);
+      // console.log(userInfoInit);
       return;
     }
 
-    activate(injected, async () => {});
+    if (!active) {
+      activate(injected, async () => {});
+    }
   };
   return (
     <>
@@ -121,4 +185,4 @@ function LandingPage() {
   );
 }
 
-export default LandingPage;
+//export default LandingPage;

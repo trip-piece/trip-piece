@@ -1,5 +1,5 @@
 /* eslint-disable import/prefer-default-export */
-import { atom } from "recoil";
+import { atom, selector } from "recoil";
 // import { v1 } from "uuid";
 
 // export const loggedInState = atom({
@@ -9,7 +9,7 @@ import { atom } from "recoil";
 export interface IUserInfo {
   address: string | null | undefined;
   nickname: string;
-  balance: number;
+  balance: string;
   isLoggedIn: boolean;
   id: number;
   tripCount: number;
@@ -19,14 +19,25 @@ export interface IUserInfo {
 const UserInfodata: IUserInfo = {
   address: "",
   nickname: "",
-  balance: 0.0,
+  balance: "0.0",
   isLoggedIn: false,
-  id: -1,
+  id: 0,
   tripCount: 0,
   diaryCount: 0,
 };
 
-export const UserInfoState = atom({
+export const UserInfoState = atom<IUserInfo>({
   key: "userInfoState",
   default: UserInfodata,
 });
+
+// export const setUserInfo = selector<IUserInfo>({
+//   key: "setUserInfoState",
+//   get: ({ get }) => {
+//     const info = get(UserInfoState);
+//     return info;
+//   },
+//   set: ({ set }, newValue) => {
+//     set(UserInfoState, newValue);
+//   },
+// });
