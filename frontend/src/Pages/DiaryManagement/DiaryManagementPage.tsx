@@ -24,6 +24,7 @@ import { IWritedDiary } from "../../utils/interfaces/diarys.interface";
 import Container from "../../components/atoms/Container";
 import DateContainer from "../../components/atoms/DateContainer";
 import { weatherList } from "../../utils/constants/weatherList";
+import MyLocation from "../../components/modules/MyLocation";
 
 const Form = styled.form`
   display: flex;
@@ -347,10 +348,11 @@ function DiaryManagementPage() {
                 />
               ))}
             </ColorButtonListContainer>
-            <PositionContainer>
+            <MyLocation />
+            {/* <PositionContainer>
               <BsFillGeoAltFill />
               서울 송파구
-            </PositionContainer>
+            </PositionContainer> */}
           </ColorAndPositionContainer>
           <Controller
             name="content"

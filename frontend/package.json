@@ -30,8 +30,8 @@
     "dayjs": "^1.11.5",
     "dotenv": "^16.0.2",
     "ethers": "^5.7.1",
-    "html2canvas": "^1.4.1",
     "framer-motion": "^7.4.0",
+    "html2canvas": "^1.4.1",
     "http-proxy-middleware": "^2.0.6",
     "ipfs-http-client": "^58.0.1",
     "react": "^18.2.0",
@@ -48,7 +48,6 @@
     "react-select": "^5.4.0",
     "recoil": "^0.7.5",
     "swiper": "^8.4.2",
-    "use-react-screenshot": "^3.0.0",
     "uuid": "^9.0.0",
     "vite-plugin-svgr": "^2.2.1",
     "web3": "^1.8.0"

@@ -1,4 +1,5 @@
 import axios from "axios";
+import { ICoordinate } from "../interfaces/places.interface";
 
 /* eslint-disable import/prefer-default-export */
 export const isQueryError = (error: unknown): error is Error => {
@@ -52,7 +53,7 @@ export const changeDateFormatToHyphen = (date: Date): string => {
   return new Date(date.getTime() - offset).toISOString().split("T")[0];
 };
 
-export const getLocation = () => {
+export const getLocation = (): Promise<ICoordinate> => {
   return new Promise((resolve, reject) => {
     if (navigator.geolocation) {
       const now = new Date();
@@ -106,10 +107,6 @@ export const getLocationAddress = async (lat: number, lng: number) => {
     );
     const location = await response.data.documents[1].address_name;
     return location;
-    // .then((response) => {
-    //   const location = response.data.documents[1].address_name;
-    //   return location;
-    // });
   } catch (error) {
     console.log(error);
   }

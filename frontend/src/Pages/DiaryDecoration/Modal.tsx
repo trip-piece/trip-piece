@@ -2,7 +2,8 @@ import Modal from "@mui/material/Modal";
 import Box from "@mui/material/Box";
 import styled from "@emotion/styled";
 import html2canvas from "html2canvas";
-import { useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
+import { v4 } from "uuid";
 import { ISticker } from "../../utils/interfaces/diarys.interface";
 import { pixelToRem } from "../../utils/functions/util";
 
@@ -53,15 +54,40 @@ function DecorationModal({ setOpen, open, stickerList, diaryBox }: ModalProps) {
   const handleClose = () => setOpen(false);
   const [imgSrc, setImageSrc] = useState("");
   const imageRef = useRef<HTMLDivElement>(null);
+
+  const encodeFileToBase64 = useCallback((fileBlob: File) => {
+    if (!fileBlob) return;
+    const reader = new FileReader();
+    reader.readAsDataURL(fileBlob);
+    reader.onload = () => {
+      const tmpImage = reader.result as string;
+      setImageSrc(tmpImage);
+    };
+  }, []);
+
+  const dataURLtoFile = (dataurl: string, fileName: string) => {
+    const arr = dataurl.split(",");
+    const mime = arr[0].match(/:(.*?);/)[1];
+    const bstr = atob(arr[1]);
+    let n = bstr.length;
+    const u8arr = new Uint8Array(n);
+
+    // eslint-disable-next-line no-plusplus
+    while (n--) {
+      u8arr[n] = bstr.charCodeAt(n);
+    }
+
+    return new File([u8arr], fileName, { type: mime });
+  };
+
   const onClick = () => {
     html2canvas(imageRef.current, {
       logging: true,
       useCORS: true,
     }).then((canvas) => {
       const imageData = canvas.toDataURL("image/png");
-      setImageSrc(imageData);
-      const src = encodeURI(imageData);
-      console.log(src);
+      const file = dataURLtoFile(imageData, v4());
+      encodeFileToBase64(file);
     });
   };
 
@@ -84,13 +110,14 @@ function DecorationModal({ setOpen, open, stickerList, diaryBox }: ModalProps) {
               top={sticker.originY * diaryBox.height * 0.7}
               left={sticker.originX * diaryBox.width * 0.7}
               src={sticker.tokenURI}
+              // eslint-disable-next-line react/no-array-index-key
               key={index}
             />
           ))}
         </DiaryFrame>
-        <img src={imgSrc} alt="#" width="200px" />
+        {imgSrc && <img src={imgSrc} alt="#" width="200px" />}
         <button type="button" onClick={onClick}>
-          버튼 찰칼
+          버튼 찰칵
         </button>
       </Wrapper>
     </Modal>
