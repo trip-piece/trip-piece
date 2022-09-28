@@ -3,6 +3,7 @@ import { getCookie } from "../cookie";
 
 const axiosInstance: AxiosInstance = axios.create({
   baseURL: "http://j7a607.q.ssafy.io:8080",
+  //baseURL: "https://j7a607.q.ssafy.io/api",
   headers: {
     "Content-Type": "application/json",
     ACCESS_TOKEN: getCookie("accessToken"),
