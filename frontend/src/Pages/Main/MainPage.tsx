@@ -414,7 +414,7 @@ function MainPage() {
               }}
               onClick={moveToPlace}
             >
-              전체 보기
+              더보기
             </motion.button>
           </MiddleTitle>
           <PlaceList>
