@@ -9,6 +9,6 @@ import java.time.LocalDate;
 import java.util.List;
 
 public interface DiaryRepository extends JpaRepository<Diary, Long> {
-    Diary findByTripAndCreateDate(Trip trip, LocalDate date);
+    Diary findByTripAndDiaryDate(Trip trip, LocalDate diaryDate);
     List<Diary> findAllByUser(User user);
 }

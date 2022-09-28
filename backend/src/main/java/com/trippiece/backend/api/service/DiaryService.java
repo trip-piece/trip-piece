@@ -40,6 +40,8 @@ public class DiaryService {
                 .content(diaryRegister.getContent())
                 .createDate(LocalDateTime.now())
                 .fontType(diaryRegister.getFontType())
+                .diaryDate(diaryRegister.getDiaryDate())
+                .location(diaryRegister.getLocation())
                 .backgroundColor(diaryRegister.getBackgroundColor())
                 .weather(diaryRegister.getWeather())
                 .todayPhoto(diaryRegister.getTodayPhoto())
@@ -106,10 +108,10 @@ public class DiaryService {
 
     /*일기 조회*/
     @Transactional
-    public DiaryResponseDto findDiary(final long tripId, LocalDate date) {
+    public DiaryResponseDto findDiary(final long tripId, LocalDate diaryDate) {
         boolean isShare = false;
         Trip trip = tripRepository.findById(tripId).orElseThrow(() -> new CustomException(ErrorCode.DATA_NOT_FOUND));
-        Diary diary = diaryRepository.findByTripAndCreateDate(trip, date);
+        Diary diary = diaryRepository.findByTripAndDiaryDate(trip, diaryDate);
         List<Decoration> list = decorationRepository.findAllByDiary(diary);
         List<StickerDecorationDto> deco = list.stream().map(StickerDecorationDto::new).collect(Collectors.toList());
 
