@@ -7,7 +7,7 @@ import { NavigateFunction, useNavigate } from "react-router-dom";
 // import { useRecoilState } from "recoil";
 import { useRecoilState } from "recoil";
 import Web3 from "web3";
-import { setCookie } from "../../utils/cookie";
+import { getCookie, setCookie } from "../../utils/cookie";
 // import { IUserInfo, UserInfoState } from "../../store/atom";
 
 import LoginButton from "./LoginButton";
@@ -45,6 +45,9 @@ export default function LandingPage() {
 
   const [userInfoState, setUserInfoState] = useRecoilState(UserInfoState);
 
+  setCookie("accessToken", null);
+  setCookie("refreshToken", null);
+
   let userInfoInit: IUserInfo = {
     address: "",
     nickname: "",
@@ -75,32 +78,34 @@ export default function LandingPage() {
         });
     }
   };
-  const getUserInfo = () => {
-    axiosInstance.get(userApis.getUser).then(
-      (response: {
-        data: {
-          userId: number;
-          walletAddress: string;
-          nickName: string;
-          tripCount: number;
-          diaryCount: number;
-        };
-      }) => {
-        userInfoInit = {
-          address: response.data.walletAddress,
-          nickname: response.data.nickName,
-          balance: "-1.0",
-          isLoggedIn: true,
-          id: response.data.userId,
-          tripCount: response.data.tripCount,
-          diaryCount: response.data.diaryCount,
-        };
+  const getUserInfo = (token: string | number | boolean) => {
+    axiosInstance
+      .get(userApis.getUser, { headers: { ACCESS_TOKEN: token } })
+      .then(
+        (response: {
+          data: {
+            userId: number;
+            walletAddress: string;
+            nickName: string;
+            tripCount: number;
+            diaryCount: number;
+          };
+        }) => {
+          userInfoInit = {
+            address: response.data.walletAddress,
+            nickname: response.data.nickName,
+            balance: "-1.0",
+            isLoggedIn: true,
+            id: response.data.userId,
+            tripCount: response.data.tripCount,
+            diaryCount: response.data.diaryCount,
+          };
 
-        setUserInfoState(userInfoInit);
+          setUserInfoState(userInfoInit);
 
-        getUserBalance();
-      },
-    );
+          getUserBalance();
+        },
+      );
   };
 
   const login = async (
@@ -113,7 +118,8 @@ export default function LandingPage() {
         (response: { data: { accessToken: string; refreshToken: string } }) => {
           setCookie("accessToken", response.data.accessToken);
           setCookie("refreshToken", response.data.refreshToken);
-          getUserInfo();
+
+          getUserInfo(response.data.accessToken);
         },
       );
   };
@@ -129,12 +135,9 @@ export default function LandingPage() {
   const handleActivate = async (event: Event) => {
     event.preventDefault();
 
-    setCookie("accessToken", null);
-    setCookie("refreshToken", null);
-
     if (active) {
       login(address);
-      return;
+      console.log();
     }
 
     if (!active) {

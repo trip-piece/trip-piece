@@ -33,13 +33,3 @@ export const UserInfoState = atom<IUserInfo>({
   default: UserInfodata,
 });
 
-// export const setUserInfo = selector<IUserInfo>({
-//   key: "setUserInfoState",
-//   get: ({ get }) => {
-//     const info = get(UserInfoState);
-//     return info;
-//   },
-//   set: ({ set }, newValue) => {
-//     set(UserInfoState, newValue);
-//   },
-// });
