@@ -21,6 +21,8 @@ public class PlaceRequestDto {
         private String managerEmail;
         private float lat;
         private float lng;
+        private String SstartDate;
+        private String SendDate;
         private LocalDate startDate;
         private LocalDate endDate;
         private int type;
@@ -39,6 +41,8 @@ public class PlaceRequestDto {
         private String managerEmail;
         private float lat;
         private float lng;
+        private String SstartDate;
+        private String SendDate;
         private LocalDate startDate;
         private LocalDate endDate;
         private int type;
