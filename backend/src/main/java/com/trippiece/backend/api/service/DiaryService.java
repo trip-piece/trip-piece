@@ -9,6 +9,7 @@ import com.trippiece.backend.api.domain.entity.*;
 import com.trippiece.backend.api.domain.repository.*;
 import com.trippiece.backend.exception.CustomException;
 import com.trippiece.backend.exception.ErrorCode;
+import com.trippiece.backend.util.DateConverter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,17 +31,18 @@ public class DiaryService {
 
     private final StickerRepository stickerRepository;
     private final FrameRepository frameRepository;
+    private final DateConverter dateConverter;
 
     /*일기 내용 추가*/
     @Transactional
     public long addDiary(User user, DiaryRequestDto.DiaryRegister diaryRegister) {
         Trip trip = tripRepository.findById(diaryRegister.getTripId()).orElseThrow(() -> new CustomException(ErrorCode.DATA_NOT_FOUND));
-        ;
+        LocalDate convertedDate = dateConverter.convert(diaryRegister.getDiaryDate());
         Diary diary = Diary.builder()
                 .content(diaryRegister.getContent())
                 .createDate(LocalDateTime.now())
                 .fontType(diaryRegister.getFontType())
-                .diaryDate(diaryRegister.getDiaryDate())
+                .diaryDate(convertedDate)
                 .location(diaryRegister.getLocation())
                 .backgroundColor(diaryRegister.getBackgroundColor())
                 .weather(diaryRegister.getWeather())
