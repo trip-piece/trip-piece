@@ -1,14 +1,6 @@
-import React, { useEffect, useState } from "react";
 import styled from "@emotion/styled";
-import { useQuery } from "react-query";
-import { useNavigate, useParams } from "react-router-dom";
 import { MdLocationOn } from "react-icons/md";
-import {
-  changeDateFormatToHyphen,
-  pixelToRem,
-} from "../../utils/functions/util";
-import ColoredRoundButton from "../../components/atoms/ColoredRoundButton";
-import axiosInstance from "../../utils/apis/api";
+import { pixelToRem } from "../../utils/functions/util";
 
 const Container = styled.div`
   min-height: 100vh;

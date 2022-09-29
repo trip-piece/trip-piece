@@ -24,9 +24,9 @@ const DiaryManagement = lazy(
 const DiaryDecoration = lazy(
   () => import("./Pages/DiaryDecoration/DiaryDecorationPage"),
 );
-const StickerMapMain = lazy(() => import("./Pages/StickerMap/StickerMapMain"));
+const StickerMapMain = lazy(() => import("./Pages/Place/PlaceMainPage"));
 const StickerMapFiltering = lazy(
-  () => import("./Pages/StickerMap/SpotFestivalMap"),
+  () => import("./Pages/Place/PlaceListPage"),
 );
 
 const NftResponse = lazy(() => import("./Pages/QrScan/NftResponse"));

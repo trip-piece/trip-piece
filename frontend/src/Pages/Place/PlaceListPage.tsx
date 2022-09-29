@@ -3,12 +3,7 @@ import styled from "@emotion/styled";
 import { useQuery } from "react-query";
 import { useNavigate, useParams } from "react-router-dom";
 import { MdLocationOn } from "react-icons/md";
-import {
-  changeDateFormatToHyphen,
-  pixelToRem,
-} from "../../utils/functions/util";
-import ColoredRoundButton from "../../components/atoms/ColoredRoundButton";
-import axiosInstance from "../../utils/apis/api";
+import { pixelToRem } from "../../utils/functions/util";
 import ToggleButton from "@mui/material/ToggleButton";
 import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 
