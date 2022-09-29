@@ -69,7 +69,7 @@ public class TripController {
             return new ResponseEntity<String>("티켓 삭제 실패", HttpStatus.INTERNAL_SERVER_ERROR);
 
         }
-
+   
     }
 
     @PatchMapping

@@ -18,7 +18,7 @@ public class TripRequestDto {
     String title;
 
     @ApiModelProperty(name = "시작날짜", example = "2022-09-13")
-    String startDate;
+    String startDate;  
 
     @ApiModelProperty(name = "종료날짜", example = "2022-09-19")
     String endDate;
