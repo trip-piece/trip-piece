@@ -320,7 +320,7 @@ function MainPage() {
   );
 
   useEffect(() => {
-    if (data1) {
+    if (data1?.data) {
       setUpcoming(data1.data);
       setRegionImage(`/image/region/${REGIONLIST[data1?.data.regionId]}.png`);
       if (data1.data.startDate) {
