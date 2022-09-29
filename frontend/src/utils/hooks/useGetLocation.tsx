@@ -9,7 +9,7 @@ function useGetLocation() {
   const userInfo = useRecoilValue(UserInfoState);
 
   const {
-    isFetching: IslocationFetching,
+    isFetching: isFetchingLocation,
     data: locationData,
     refetch: refetchLocation,
   } = useQuery<ICoordinate, AxiosError>(
@@ -21,7 +21,7 @@ function useGetLocation() {
       refetchOnMount: true,
     },
   );
-  return { IslocationFetching, locationData, refetchLocation };
+  return { isFetchingLocation, locationData, refetchLocation };
 }
 
 export default useGetLocation;

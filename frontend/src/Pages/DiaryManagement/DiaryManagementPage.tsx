@@ -24,7 +24,6 @@ import Container from "../../components/atoms/Container";
 import DateContainer from "../../components/atoms/DateContainer";
 import { weatherList } from "../../utils/constants/weatherList";
 import MyLocation from "../../components/modules/MyLocation";
-import { resizeImage } from "../../utils/functions/changeFileType";
 import useGetLocation from "../../utils/hooks/useGetLocation";
 
 const Form = styled.form`
