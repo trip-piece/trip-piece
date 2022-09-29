@@ -24,10 +24,8 @@ const DiaryManagement = lazy(
 const DiaryDecoration = lazy(
   () => import("./Pages/DiaryDecoration/DiaryDecorationPage"),
 );
-const StickerMapMain = lazy(() => import("./Pages/Place/PlaceMainPage"));
-const StickerMapFiltering = lazy(
-  () => import("./Pages/Place/PlaceListPage"),
-);
+const PlaceMainPage = lazy(() => import("./Pages/Place/PlaceMainPage"));
+const PlaceListPage = lazy(() => import("./Pages/Place/PlaceListPage"));
 
 const NftResponse = lazy(() => import("./Pages/QrScan/NftResponse"));
 
@@ -63,8 +61,8 @@ function Router() {
         <Route path="market/register" element={<MarketRegisterPage />} />
         <Route path="user/scraps" element={<MyScrap />} />
         <Route path="user/stickers" element={<MySticker />} />
-        <Route path="places/map" element={<StickerMapMain />} />
-        <Route path="places/information" element={<StickerMapFiltering />} />
+        <Route path="places/map" element={<PlaceMainPage />} />
+        <Route path="places/:regionId/list" element={<PlaceListPage />} />
         <Route path="qrscan" element={<QrScanner />} />
         <Route path="/places/:placeId" element={<NftResponse />} />
       </Routes>

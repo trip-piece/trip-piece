@@ -1,14 +1,11 @@
 import styled from "@emotion/styled";
 import { MdLocationOn } from "react-icons/md";
+import { Helmet } from "react-helmet-async";
+import { useNavigate } from "react-router-dom";
 import { pixelToRem } from "../../utils/functions/util";
-
-const Container = styled.div`
-  min-height: 100vh;
-  width: 100%;
-  background-color: ${(props) => props.theme.colors.gray0};
-  border-radius: 10px;
-  padding: 1rem;
-`;
+import { REGIONLIST } from "../../utils/constants/constant";
+import Container from "../../components/atoms/Container";
+import puzzle from "../../assets/image/puzzle.png";
 
 const TitleGroup = styled.div`
   width: 100%;
@@ -54,35 +51,103 @@ const NearbyMyLocationBtn = styled.button`
 `;
 
 const KoreaMap = styled.div`
-  margin: ${pixelToRem(10)} 0;
+  padding: ${pixelToRem(40)} ${pixelToRem(10)};
   width: 100%;
   height: 100%;
-  > .colorized {
-    width: 100%;
-    height: 90vh;
-    background: ${(props) => props.theme.colors.red};
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  position: relative;
+
+  img {
+    z-index: 998;
+    position: absolute;
+    width: auto;
+    height: 80%;
   }
-  > svg {
-    margin: ${pixelToRem(10)};
+
+  div {
+    z-index: 999;
+    width: 100%;
+    height: 20%;
+
+    button {
+      background-color: transparent;
+      width: 90px;
+      height: 90px;
+    }
   }
 `;
 
-function StickerMapMain() {
+function PlaceMainPage() {
+  const navigate = useNavigate();
+  const moveToList = (regionId: number) => {
+    navigate(`/places/${regionId}/list`);
+  };
+  const moveToMyLocation = () => {
+    navigate(`/places/list/mylocation`);
+  };
   return (
-    <Container>
-      <TitleGroup>
-        <h1 className="main">발급 지역 확인</h1>
-        <h1>관심 지역의 스티커를 확인하세요</h1>
-        <NearbyMyLocationBtn>
-          <MdLocationOn />
-          <p>내 주변</p>
-        </NearbyMyLocationBtn>
-      </TitleGroup>
-      <KoreaMap>
-        <div className="colorized">여기에 지도가 들어감</div>
-      </KoreaMap>
-    </Container>
+    <>
+      <Helmet>
+        <title>이벤트 지역 | 여행조각</title>
+      </Helmet>
+      <Container hasPadding>
+        <TitleGroup>
+          <h1 className="main">발급 가능 지역</h1>
+          <h1>관심 지역의 스티커를 확인하세요</h1>
+          <NearbyMyLocationBtn onClick={moveToMyLocation}>
+            <MdLocationOn />
+            <p>내 주변</p>
+          </NearbyMyLocationBtn>
+        </TitleGroup>
+        <KoreaMap>
+          <img src={puzzle} alt="기본이미지" />
+          <div className="first">
+            {REGIONLIST.map(
+              (region, idx) =>
+                idx > 0 &&
+                idx <= 4 && (
+                  <button type="button" onClick={() => moveToList(idx)} />
+                ),
+            )}
+          </div>
+          <div className="second">
+            {REGIONLIST.map(
+              (region, idx) =>
+                idx > 4 &&
+                idx <= 8 && (
+                  <button type="button" onClick={() => moveToList(idx)} />
+                ),
+            )}
+          </div>
+          <div className="third">
+            {REGIONLIST.map(
+              (region, idx) =>
+                idx > 8 &&
+                idx <= 12 && (
+                  <button type="button" onClick={() => moveToList(idx)} />
+                ),
+            )}
+          </div>
+          <div className="fourth">
+            {REGIONLIST.map(
+              (region, idx) =>
+                idx > 12 &&
+                idx <= 16 && (
+                  <button type="button" onClick={() => moveToList(idx)} />
+                ),
+            )}
+          </div>
+          <div className="fifth">
+            <button type="button" onClick={() => moveToList(17)} />
+          </div>
+        </KoreaMap>
+      </Container>
+    </>
   );
 }
 
-export default StickerMapMain;
+export default PlaceMainPage;
