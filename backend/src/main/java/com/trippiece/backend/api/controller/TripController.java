@@ -104,7 +104,7 @@ public class TripController {
         }
     }
 
-    @GetMapping("/{tripId}")
+    @GetMapping("/{tripId}/detail")
     @ApiOperation(value = "여행 티켓 한 개 조회", notes = "사용자가 등록했던 모든 여행의 일정 중 선택된 하나만 조회한다. ")
     public ResponseEntity<?> getTrip(@RequestHeader("ACCESS_TOKEN") final String accessToken, @PathVariable("tripId") long tripId) {
         long userId = jwtTokenUtil.getUserIdFromToken(accessToken);
@@ -117,14 +117,14 @@ public class TripController {
 
     @GetMapping("/{todayDate}")
     @ApiOperation(value = "진행중 및 예정된 여행티켓", notes = "홈 화면에 보여줄 현재 진행중인 여행. 현재 진행중인 여행이 없다면, 가장 가깝게 예정된 여행 반환 .예정된 여행마저 없다면 null")
-    public ResponseEntity<?> getInprogressTrip(@RequestHeader("ACCESS_TOKEN") final String accessToken, @PathVariable("todayDate") String date) {
+    public ResponseEntity<?> getInprogressTrip(@RequestHeader("ACCESS_TOKEN") final String accessToken, @PathVariable("todayDate") LocalDate date) {
         long userId = jwtTokenUtil.getUserIdFromToken(accessToken);
         User user = userService.findOneUser(userId);
         if (user == null) return new ResponseEntity<String>("로그인된 회원을 찾을 수 없습니다.", HttpStatus.NOT_FOUND);
         else {
-            LocalDate todayDate = dateConverter.convert(date);
+            //LocalDate todayDate = dateConverter.convert(date);
 
-            return new ResponseEntity<>(tripService.isInTrip(user, todayDate), HttpStatus.OK);
+            return new ResponseEntity<>(tripService.isInTrip(user, date), HttpStatus.OK);
         }
     }
 }
