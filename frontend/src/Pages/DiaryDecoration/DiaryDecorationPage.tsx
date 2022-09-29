@@ -14,6 +14,7 @@ import { weatherList } from "../../utils/constants/weatherList";
 import { pixelToRem } from "../../utils/functions/util";
 import useWindowResize from "../../utils/hooks/useWindowResize";
 import {
+  IFrameImageObj,
   ISticker,
   IWritedDiary,
   StickerProps,
@@ -23,6 +24,8 @@ import LazyImage from "../../components/atoms/LazyImage";
 import Modal from "./Modal";
 import useGetLocation from "../../utils/hooks/useGetLocation";
 import MyLocation from "../../components/modules/MyLocation";
+import useWriteDiary from "../../utils/hooks/useWriteDiary";
+import useDecorateDiary from "../../utils/hooks/useDecorateDiary";
 
 interface DiaryContentsProps {
   fontType: number;
@@ -135,6 +138,10 @@ function DiaryDecorationPage() {
   const [imageSrc, setImageSrc] = useState<string | null>("");
   const [stickerList, setStickerList] = useState<ISticker[]>([]);
   const [diaryBox, setDiaryBox] = useState({ width: 0, height: 0, ratio: 0 });
+  const [frameImageObj, setFrameImageObj] = useState<IFrameImageObj>({
+    frameImage: null,
+    frameImageBase64: null,
+  });
   const { tripId, diaryDate } = useParams();
   const nodeRef = useRef<HTMLImageElement>(null);
   const diary = useRecoilValue<IWritedDiary<File | null>>(
@@ -145,6 +152,8 @@ function DiaryDecorationPage() {
   const stickerRef = useRef<HTMLDivElement>(null);
   const stickerBoxRef = useRef<HTMLDivElement>(null);
   const size = useWindowResize();
+  const { mutate: mutateWriting } = useWriteDiary();
+  const { mutate: mutateDecoration } = useDecorateDiary();
   const { isFetchingLocation, locationData, refetchLocation } =
     useGetLocation();
 
@@ -159,6 +168,43 @@ function DiaryDecorationPage() {
       });
     }
   }, []);
+
+  const makeDiaryData = () => {
+    if (diary.todayPhoto) {
+      const formData = new FormData();
+      formData.append("file", diary.todayPhoto);
+      return { diary: diary.diary, todayPhto: formData };
+    }
+  };
+
+  const makeDecorationData = (diaryId: number) => {
+    const _stickerList = stickerList.map((sticker) => {
+      return {
+        tokenId: sticker.tokenId,
+        x: sticker.originX,
+        y: sticker.originY,
+      };
+    });
+    if (frameImageObj.frameImage) {
+      const formData = new FormData();
+      formData.append("file", frameImageObj.frameImage);
+      return {
+        decoration: { diaryId, stickerList: _stickerList },
+        frameImage: formData,
+      };
+    }
+    return { decoration: { diaryId, stickerList: _stickerList } };
+  };
+
+  const onSubmit = () => {
+    mutateWriting(makeDiaryData(), {
+      onSuccess: (data) => {
+        mutateDecoration(makeDecorationData(data.data.diaryId), {
+          onSuccess: (data2) => console.log(data2),
+        });
+      },
+    });
+  };
 
   useEffect(() => {
     if (diaryRef.current) {
@@ -355,6 +401,13 @@ function DiaryDecorationPage() {
                 </Draggable>
               ))}
               {diary.diary.content}
+              {frameImageObj.frameImageBase64 && (
+                <img
+                  src={frameImageObj.frameImageBase64}
+                  alt="# "
+                  width="400"
+                />
+              )}
               {imageSrc && (
                 <Picture>
                   <DiaryImg
@@ -375,7 +428,12 @@ function DiaryDecorationPage() {
               type="button"
               func={handleOpen}
             />
-            <ColoredRoundButton text="취소" color="gray400" type="button" />
+            <ColoredRoundButton
+              text="취소"
+              color="gray400"
+              type="button"
+              func={onSubmit}
+            />
           </ButtonListContainer>
           <StickerZone ref={stickerRef}>
             <button type="button" onClick={onClick}>
@@ -398,6 +456,8 @@ function DiaryDecorationPage() {
               open={open}
               stickerList={stickerList}
               diaryBox={diaryBox}
+              frameImageObj={frameImageObj}
+              setFrameImageObj={setFrameImageObj}
             />
           )}
         </>

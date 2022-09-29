@@ -2,9 +2,12 @@ import Modal from "@mui/material/Modal";
 import Box from "@mui/material/Box";
 import styled from "@emotion/styled";
 import html2canvas from "html2canvas";
-import { useRef, useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import { v4 } from "uuid";
-import { ISticker } from "../../utils/interfaces/diarys.interface";
+import {
+  IFrameImageObj,
+  ISticker,
+} from "../../utils/interfaces/diarys.interface";
 import { pixelToRem } from "../../utils/functions/util";
 
 const Wrapper = styled(Box)<{ diarywidth: number }>`
@@ -38,6 +41,19 @@ const StickerImg = styled.img<{ top: number; left: number }>`
   position: absolute;
 `;
 
+const LoadingContainer = styled.div`
+  position: absolute;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.2);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 20px;
+  z-index: 10;
+`;
+
 interface DiaryProps {
   diaryWidth: number;
   diaryRatio: number;
@@ -48,25 +64,38 @@ interface ModalProps {
   open: boolean;
   stickerList: ISticker[];
   diaryBox: any;
+  frameImageObj: IFrameImageObj;
+  setFrameImageObj: Dispatch<SetStateAction<IFrameImageObj>>;
 }
 
-function DecorationModal({ setOpen, open, stickerList, diaryBox }: ModalProps) {
+function DecorationModal({
+  setOpen,
+  open,
+  stickerList,
+  diaryBox,
+  frameImageObj,
+  setFrameImageObj,
+}: ModalProps) {
   const handleClose = () => setOpen(false);
-  const [imgSrc, setImageSrc] = useState("");
-  const imageRef = useRef<HTMLDivElement>(null);
 
-  const onClick = () => {
-    html2canvas(imageRef.current, {
+  const onClick = (dom: HTMLElement) => {
+    html2canvas(dom, {
       logging: true,
       useCORS: true,
     }).then((canvas) => {
       const imageData = canvas.toDataURL("image/png");
-      import("../../utils/functions/changeFileType").then(async (change) => {
+      import("../../utils/functions/changeFileType").then((change) => {
         const file = change.dataURLtoFile(imageData, v4());
-        const base64Image = await change.encodeFileToBase64(file);
-        setImageSrc(base64Image);
+        setFrameImageObj({ frameImage: file, frameImageBase64: imageData });
+        handleClose();
       });
     });
+  };
+
+  const elRef = (node: HTMLElement) => {
+    if (node !== null) {
+      onClick(node);
+    }
   };
 
   return (
@@ -77,11 +106,11 @@ function DecorationModal({ setOpen, open, stickerList, diaryBox }: ModalProps) {
       aria-describedby="modal-modal-description"
     >
       <Wrapper diarywidth={diaryBox.width}>
-        <h3>프레임 </h3>
+        <LoadingContainer>프레임 공유중</LoadingContainer>
         <DiaryFrame
           diaryWidth={diaryBox.width}
           diaryRatio={diaryBox.ratio}
-          ref={imageRef}
+          ref={elRef}
         >
           {stickerList.map((sticker, index) => (
             <StickerImg
@@ -93,10 +122,9 @@ function DecorationModal({ setOpen, open, stickerList, diaryBox }: ModalProps) {
             />
           ))}
         </DiaryFrame>
-        {imgSrc && <img src={imgSrc} alt="#" width="200px" />}
-        <button type="button" onClick={onClick}>
-          버튼 찰칵
-        </button>
+        {frameImageObj.frameImageBase64 && (
+          <img src={frameImageObj.frameImageBase64} alt="#" width="200px" />
+        )}
       </Wrapper>
     </Modal>
   );

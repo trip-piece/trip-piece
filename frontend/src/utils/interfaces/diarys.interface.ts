@@ -8,7 +8,7 @@ export interface IDiary {
 
 export interface IWritedDiary<T> {
   diary: IDiary;
-  todayPhoto: T;
+  todayPhoto?: T;
 }
 
 export interface IDiaryListState<T> {
@@ -29,4 +29,9 @@ export interface ISticker extends StickerProps {
   isDragging: boolean;
   originX: number;
   originY: number;
+}
+
+export interface IFrameImageObj {
+  frameImage: File | null;
+  frameImageBase64: string | null;
 }
