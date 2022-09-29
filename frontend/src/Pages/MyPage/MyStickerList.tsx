@@ -5,6 +5,8 @@ import { MemoInfiniteList } from "../../components/modules/infinite/InfiniteList
 import userApis from "../../utils/apis/userApis";
 import { MemoCard } from "./Card";
 import Skeleton from "./Skeleton";
+import { useRecoilState } from "recoil";
+import { UserInfoState } from "../../store/atom";
 
 const StickerBox = styled.div`
   box-shadow: 0 4px 4px 2px rgb(0 0 0/25%);
@@ -53,13 +55,16 @@ const StickerContainer = styled.div`
 `;
 
 function MyStickerList() {
+  const { userInfo } = useRecoilState(UserInfoState);
+  // 솔리디티 연결
+
   return (
     <StickerBox>
       <TitleBox>
         <Title>보유NFT스티커</Title>
       </TitleBox>
       <StickerContainer>
-        <MemoInfiniteList
+        {/* <MemoInfiniteList
           url={`scraps`}
           queryKey={["scrapList"]}
           CardComponent={MemoCard}
@@ -68,7 +73,7 @@ function MyStickerList() {
           count={3}
           listName="scrapList"
         />
-        {userApis.getMyScraps}
+        {userApis.getMyScraps} */}
       </StickerContainer>
     </StickerBox>
   );

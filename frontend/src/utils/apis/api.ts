@@ -3,13 +3,12 @@ import { getCookie, setCookie } from "../cookie";
 import userApis from "./userApis";
 
 const axiosInstance: AxiosInstance = axios.create({
-  //baseURL: "http://j7a607.q.ssafy.io:8080",
+  baseURL: "http://j7a607.q.ssafy.io:8080",
   //baseURL: "https://j7a607.q.ssafy.io/api",
-  baseURL: "api",
+  // baseURL: "api",
   headers: {
     "Content-Type": "application/json",
     ACCESS_TOKEN: getCookie("accessToken"),
-    "Access-Control-Allow-Origin": "*",
   },
 });
 
@@ -24,6 +23,9 @@ axiosInstance.interceptors.response.use(
     return res;
   },
   async (err) => {
+    console.log("인터셉터 발동");
+    console.log(err.response.status);
+    console.log(err.response);
     if (err.response) {
       if (
         err.response.status === 401 &&

@@ -4,7 +4,7 @@ import { QueryClient, QueryClientProvider } from "react-query";
 import { ReactQueryDevtools } from "react-query/devtools";
 import { useRecoilState } from "recoil";
 import Web3 from "web3";
-import LoginButton from "./Pages/Landing/LoginButton";
+
 import Router from "./Router";
 import { IUserInfo, UserInfoState } from "./store/atom";
 import axiosInstance from "./utils/apis/api";
@@ -74,12 +74,12 @@ function App() {
   };
 
   // 브라우저에 렌더링 시 한 번만 실행하는 코드
-  useEffect(() => {
-    (() => {
-      getUserInfo();
-    })();
-  }, []);
-  
+  // useEffect(() => {
+  //   (() => {
+  //     getUserInfo();
+  //   })();
+  // }, []);
+
   return (
     <AppContainer>
       <QueryClientProvider client={queryClient}>

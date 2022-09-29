@@ -1,5 +1,5 @@
 /* eslint-disable import/prefer-default-export */
-import { atom, selector } from "recoil";
+import { atom } from "recoil";
 // import { v1 } from "uuid";
 
 // export const loggedInState = atom({
@@ -32,4 +32,3 @@ export const UserInfoState = atom<IUserInfo>({
   key: "userInfoState",
   default: UserInfodata,
 });
-
