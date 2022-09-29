@@ -62,12 +62,12 @@ function MyScrapList() {
       </TitleBox>
       <StickerContainer>
         <MemoInfiniteList
-          url={userApis.getMyScraps}
+          url="user/scraps"
           queryKey={["scrapList"]}
           CardComponent={MemoCard}
           SkeletonCardComponent={Skeleton}
           zeroDataText="스크랩이 존재하지..않습니다"
-          count={3}
+          count={2}
           listName="scrapList"
         />
         {userApis.getMyScraps}
