@@ -47,7 +47,7 @@ function App() {
           return web3.utils.fromWei(balance, "ether");
         })
         .then((eth) => {
-          userInfoInit = { ...userInfoInit, balance: Number(eth) };
+          userInfoInit = { ...userInfoInit, balance: eth };
           setUserInfoState(userInfoInit);
           console.log(userInfoInit.nickname);
         });
@@ -68,7 +68,7 @@ function App() {
         userInfoInit = {
           address: response.data.walletAddress,
           nickname: response.data.nickName,
-          balance: -1.0,
+          balance: "-1.0",
           isLoggedIn: true,
           id: response.data.userId,
           tripCount: response.data.tripCount,
