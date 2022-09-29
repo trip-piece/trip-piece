@@ -6,6 +6,7 @@ import com.trippiece.backend.api.domain.entity.User;
 import com.trippiece.backend.api.service.PlaceService;
 import com.trippiece.backend.api.service.S3Service;
 import com.trippiece.backend.api.service.UserService;
+import com.trippiece.backend.util.DateConverter;
 import com.trippiece.backend.util.JwtTokenUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -31,6 +32,7 @@ public class PlaceController {
     private final S3Service s3Service;
     private final UserService userService;
     private final JwtTokenUtil jwtTokenUtil;
+    private final DateConverter dateConverter;
 
     @PostMapping
     @ApiOperation(value = "스팟/축제 등록", notes = "이벤트가 열릴 스팟이나 축제를 등록한다.")
@@ -45,6 +47,8 @@ public class PlaceController {
                 return new ResponseEntity<String>("jpg, jpeg, png의 이미지 파일만 업로드해주세요", HttpStatus.FORBIDDEN);
             }
             String posterImagePath = s3Service.upload("",posterImage);
+            place.setStartDate(dateConverter.convert(place.getSstartDate()));
+            place.setEndDate(dateConverter.convert(place.getSendDate()));
             placeService.insertPlace(place, posterImagePath);
             return new ResponseEntity<String>("이벤트 스팟/축제 등록 성공", HttpStatus.OK);
         } catch (Exception e) {
@@ -69,6 +73,8 @@ public class PlaceController {
                 }
                 posterImagePath = s3Service.upload("", posterImage);
             }
+            place.setStartDate(dateConverter.convert(place.getSstartDate()));
+            place.setEndDate(dateConverter.convert(place.getSendDate()));
             placeService.updatePlace(place, posterImagePath);
             return new ResponseEntity<String>("이벤트 스팟/축제 수정 성공", HttpStatus.OK);
         } catch (Exception e) {

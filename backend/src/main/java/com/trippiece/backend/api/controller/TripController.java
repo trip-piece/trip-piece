@@ -5,6 +5,7 @@ import com.trippiece.backend.api.domain.dto.response.TripResponseDto;
 import com.trippiece.backend.api.domain.entity.User;
 import com.trippiece.backend.api.service.TripService;
 import com.trippiece.backend.api.service.UserService;
+import com.trippiece.backend.util.DateConverter;
 import com.trippiece.backend.util.JwtTokenUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -28,6 +29,8 @@ public class TripController {
     private final TripService tripService;
     private final UserService userService;
     private final JwtTokenUtil jwtTokenUtil;
+
+    private final DateConverter dateConverter;
 
     @PostMapping
     @ApiOperation(value = "여행 티켓추가", notes = "가고자 하는 여행지와 일정을 추가한다.")
@@ -66,7 +69,7 @@ public class TripController {
             return new ResponseEntity<String>("티켓 삭제 실패", HttpStatus.INTERNAL_SERVER_ERROR);
 
         }
-
+   
     }
 
     @PatchMapping
@@ -114,11 +117,13 @@ public class TripController {
 
     @GetMapping("/{todayDate}")
     @ApiOperation(value = "진행중 및 예정된 여행티켓", notes = "홈 화면에 보여줄 현재 진행중인 여행. 현재 진행중인 여행이 없다면, 가장 가깝게 예정된 여행 반환 .예정된 여행마저 없다면 null")
-    public ResponseEntity<?> getInprogressTrip(@RequestHeader("ACCESS_TOKEN") final String accessToken, @PathVariable("todayDate") LocalDate todayDate) {
+    public ResponseEntity<?> getInprogressTrip(@RequestHeader("ACCESS_TOKEN") final String accessToken, @PathVariable("todayDate") String date) {
         long userId = jwtTokenUtil.getUserIdFromToken(accessToken);
         User user = userService.findOneUser(userId);
         if (user == null) return new ResponseEntity<String>("로그인된 회원을 찾을 수 없습니다.", HttpStatus.NOT_FOUND);
         else {
+            LocalDate todayDate = dateConverter.convert(date);
+
             return new ResponseEntity<>(tripService.isInTrip(user, todayDate), HttpStatus.OK);
         }
     }

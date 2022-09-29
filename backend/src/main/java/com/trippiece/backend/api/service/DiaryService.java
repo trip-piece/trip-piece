@@ -9,6 +9,7 @@ import com.trippiece.backend.api.domain.entity.*;
 import com.trippiece.backend.api.domain.repository.*;
 import com.trippiece.backend.exception.CustomException;
 import com.trippiece.backend.exception.ErrorCode;
+import com.trippiece.backend.util.DateConverter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,16 +31,19 @@ public class DiaryService {
 
     private final StickerRepository stickerRepository;
     private final FrameRepository frameRepository;
+    private final DateConverter dateConverter;
 
     /*일기 내용 추가*/
     @Transactional
     public long addDiary(User user, DiaryRequestDto.DiaryRegister diaryRegister) {
         Trip trip = tripRepository.findById(diaryRegister.getTripId()).orElseThrow(() -> new CustomException(ErrorCode.DATA_NOT_FOUND));
-        ;
+        LocalDate convertedDate = dateConverter.convert(diaryRegister.getDiaryDate());
         Diary diary = Diary.builder()
                 .content(diaryRegister.getContent())
                 .createDate(LocalDateTime.now())
                 .fontType(diaryRegister.getFontType())
+                .diaryDate(convertedDate)
+                .location(diaryRegister.getLocation())
                 .backgroundColor(diaryRegister.getBackgroundColor())
                 .weather(diaryRegister.getWeather())
                 .todayPhoto(diaryRegister.getTodayPhoto())
@@ -106,10 +110,10 @@ public class DiaryService {
 
     /*일기 조회*/
     @Transactional
-    public DiaryResponseDto findDiary(final long tripId, LocalDate date) {
+    public DiaryResponseDto findDiary(final long tripId, LocalDate diaryDate) {
         boolean isShare = false;
         Trip trip = tripRepository.findById(tripId).orElseThrow(() -> new CustomException(ErrorCode.DATA_NOT_FOUND));
-        Diary diary = diaryRepository.findByTripAndCreateDate(trip, date);
+        Diary diary = diaryRepository.findByTripAndDiaryDate(trip, diaryDate);
         List<Decoration> list = decorationRepository.findAllByDiary(diary);
         List<StickerDecorationDto> deco = list.stream().map(StickerDecorationDto::new).collect(Collectors.toList());
 
