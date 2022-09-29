@@ -26,25 +26,29 @@ const MotionButton = styled(motion.button)`
 `;
 
 interface LocationProps {
-  isFetching: boolean;
-  data: ICoordinate;
-  refetch: <TPageData>(
+  isFetchingLocation: boolean;
+  locationData: ICoordinate;
+  refetchLocation: <TPageData>(
     options?: RefetchOptions & RefetchQueryFilters<TPageData>,
   ) => Promise<QueryObserverResult<ICoordinate, AxiosError<unknown, any>>>;
 }
-function Location({ isFetching, data, refetch }: LocationProps) {
-  const refetchLocation = () => {
-    refetch();
+function Location({
+  isFetchingLocation,
+  locationData,
+  refetchLocation,
+}: LocationProps) {
+  const refetch = () => {
+    refetchLocation();
   };
 
   return (
     <Container>
-      <p>{isFetching ? "위치 찾는 중" : data?.location}</p>
+      <p>{isFetchingLocation ? "위치 찾는 중" : locationData?.location}</p>
       <MotionButton
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.9 }}
         type="button"
-        onClick={refetchLocation}
+        onClick={refetch}
       >
         <BiCurrentLocation size="18" />
       </MotionButton>

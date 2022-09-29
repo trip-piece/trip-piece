@@ -1,7 +1,7 @@
 import styled from "@emotion/styled";
 import React, { lazy } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { MyPage } from "./Pages";
+import { MySticker, MyScrap } from "./Pages";
 import MarketListPage from "./Pages/Market/MarketListPage";
 import MarketMainPage from "./Pages/Market/MarketMainPage";
 import MarketRegisterPage from "./Pages/Market/MarketRegisterPage";
@@ -61,7 +61,8 @@ function Router() {
         <Route path="market/:regionId" element={<MarketListPage />} />
         <Route path="market/:marketId/detail" element={<StickerDetailPage />} />
         <Route path="market/register" element={<MarketRegisterPage />} />
-        <Route path="user/scraps" element={<MyPage />} />
+        <Route path="user/scraps" element={<MyScrap />} />
+        <Route path="user/stickers" element={<MySticker />} />
         <Route path="places/map" element={<StickerMapMain />} />
         <Route path="places/information" element={<StickerMapFiltering />} />
         <Route path="qrscan" element={<QrScanner />} />

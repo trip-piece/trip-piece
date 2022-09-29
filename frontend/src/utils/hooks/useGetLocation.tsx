@@ -8,7 +8,11 @@ import { ICoordinate } from "../interfaces/places.interface";
 function useGetLocation() {
   const userInfo = useRecoilValue(UserInfoState);
 
-  const { isFetching, data, refetch } = useQuery<ICoordinate, AxiosError>(
+  const {
+    isFetching: IslocationFetching,
+    data: locationData,
+    refetch: refetchLocation,
+  } = useQuery<ICoordinate, AxiosError>(
     [`${userInfo.id}-MyCoordinate`],
     getLocation,
     {
@@ -17,7 +21,7 @@ function useGetLocation() {
       refetchOnMount: true,
     },
   );
-  return { isFetching, data, refetch };
+  return { IslocationFetching, locationData, refetchLocation };
 }
 
 export default useGetLocation;

@@ -215,7 +215,8 @@ function DiaryManagementPage() {
     writedDiaryState(`${tripId}-${diaryDate}`),
   );
   const { state } = useLocation();
-  const { isFetching, data, refetch } = useGetLocation();
+  const { isFetchingLocation, locationData, refetchLocation } =
+    useGetLocation();
   const { register, handleSubmit, control, watch, setValue } =
     useForm<IFormInput>({});
   const navigate = useNavigate();
@@ -349,7 +350,9 @@ function DiaryManagementPage() {
                 />
               ))}
             </ColorButtonListContainer>
-            <MyLocation {...{ isFetching, data, refetch }} />
+            <MyLocation
+              {...{ isFetchingLocation, locationData, refetchLocation }}
+            />
             {/* <PositionContainer>
               <BsFillGeoAltFill />
               서울 송파구

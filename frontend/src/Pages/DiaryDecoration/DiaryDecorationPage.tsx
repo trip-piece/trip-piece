@@ -21,6 +21,8 @@ import {
 import { dummyStickerList } from "../../utils/constants/dummyData";
 import LazyImage from "../../components/atoms/LazyImage";
 import Modal from "./Modal";
+import useGetLocation from "../../utils/hooks/useGetLocation";
+import MyLocation from "../../components/modules/MyLocation";
 
 interface DiaryContentsProps {
   fontType: number;
@@ -143,6 +145,8 @@ function DiaryDecorationPage() {
   const stickerRef = useRef<HTMLDivElement>(null);
   const stickerBoxRef = useRef<HTMLDivElement>(null);
   const size = useWindowResize();
+  const { isFetchingLocation, locationData, refetchLocation } =
+    useGetLocation();
 
   useEffect(() => {
     if (diaryDate) {
@@ -313,10 +317,13 @@ function DiaryDecorationPage() {
             <Icon icon={weatherList[diary.diary.weather]} />
           </DateContainer>
           <div>
-            <PositionContainer>
+            <MyLocation
+              {...{ isFetchingLocation, locationData, refetchLocation }}
+            />
+            {/* <PositionContainer>
               <BsFillGeoAltFill />
               서울 송파구
-            </PositionContainer>
+            </PositionContainer> */}
             <button type="button" onClick={deleteSticker}>
               스티커 삭제하기
             </button>

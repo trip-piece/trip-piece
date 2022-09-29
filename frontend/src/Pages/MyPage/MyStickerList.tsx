@@ -1,8 +1,6 @@
 import React from "react";
 import styled from "@emotion/styled";
-import { Modal, Select } from "@mui/material";
 import { pixelToRem } from "../../utils/functions/util";
-import NestedModal from "./Modal";
 import { MemoInfiniteList } from "../../components/modules/infinite/InfiniteList";
 import userApis from "../../utils/apis/userApis";
 import { MemoCard } from "./Card";
@@ -54,15 +52,15 @@ const StickerContainer = styled.div`
   display: inline-block;
 `;
 
-function MyScrapList() {
+function MyStickerList() {
   return (
     <StickerBox>
       <TitleBox>
-        <Title>내가 스크랩한 프레임</Title>
+        <Title>보유NFT스티커</Title>
       </TitleBox>
       <StickerContainer>
         <MemoInfiniteList
-          url={userApis.getMyScraps}
+          url={`scraps`}
           queryKey={["scrapList"]}
           CardComponent={MemoCard}
           SkeletonCardComponent={Skeleton}
@@ -76,4 +74,4 @@ function MyScrapList() {
   );
 }
 
-export default MyScrapList;
+export default MyStickerList;

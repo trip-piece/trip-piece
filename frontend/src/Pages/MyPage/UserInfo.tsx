@@ -3,6 +3,8 @@ import styled from "@emotion/styled";
 import { pixelToRem } from "../../utils/functions/util";
 import { ReactComponent as EtherIcon } from "../../assets/svgs/etherIcon.svg";
 import NestedModal from "./Modal";
+import { UserInfoState } from "../../store/atom";
+import { useRecoilState } from "recoil";
 
 const InfoBox = styled.div`
   box-shadow: 0 4px 4px 2px rgb(0 0 0/25%);
@@ -61,17 +63,20 @@ const ModifyNickNameButton = styled.div`
 `;
 
 function UserInfo() {
+  const [userInfoState] = useRecoilState(UserInfoState);
+
   return (
     <InfoBox>
       <InfoContent>
         <ContentTop>
-          <Name>유지연</Name>
+          <Name>
+            {userInfoState.nickname}#000{userInfoState.id}
+          </Name>
           <NameSuffix>여행자님</NameSuffix>
         </ContentTop>
 
         <WalletBalance>
-          <EtherIcon />
-          <WalletBalanceText>123.456</WalletBalanceText>
+          <WalletBalanceText>{userInfoState.balance}</WalletBalanceText>
         </WalletBalance>
       </InfoContent>
 
