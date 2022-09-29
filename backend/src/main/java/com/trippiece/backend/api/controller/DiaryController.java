@@ -39,7 +39,7 @@ public class DiaryController {
     private final FrameRepository frameRepository;
 
     private final JwtTokenUtil jwtTokenUtil;
-
+  
 
     @PostMapping("/write")
     @ApiOperation(value = "일기 추가", notes = "새로운 일기를 작성한다")

@@ -28,7 +28,7 @@ public class DiaryRequestDto {
         int fontType;
 
         @ApiModelProperty(name = "내가 작성하려는 일기 날짜 ", example = "2022-09-19")
-        private LocalDate diaryDate;
+        private String diaryDate;
 
         @ApiModelProperty(name = "최초 작성한 위치", example = "서울특별시 강남구 어쩌구동")
         private String location;

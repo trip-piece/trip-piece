@@ -10,6 +10,7 @@ import com.trippiece.backend.api.domain.repository.TripRepository;
 import com.trippiece.backend.api.domain.repository.UserRepository;
 import com.trippiece.backend.exception.CustomException;
 import com.trippiece.backend.exception.ErrorCode;
+import com.trippiece.backend.util.DateConverter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -26,18 +27,20 @@ import java.util.List;
 public class TripService {
     private final TripRepository tripRepository;
     private final RegionRepository regionRepository;
-    private final UserRepository userRepository;
+
+    private final DateConverter dateConverter;
 
     @Transactional
-    public void addTrip(User user,TripRequestDto tripRequestDto) {
+    public void addTrip(User user, TripRequestDto tripRequestDto) {
         Region region = regionRepository.findById(tripRequestDto.getRegionId()).orElseThrow(() -> new CustomException(ErrorCode.DATA_NOT_FOUND));
-
+        LocalDate convertStartDate = dateConverter.convert(tripRequestDto.getStartDate());
+        LocalDate convertEndDate = dateConverter.convert(tripRequestDto.getEndDate());
         Trip trip = Trip.builder()
                 .region(region)
                 .user(user)
                 .title(tripRequestDto.getTitle())
-                .startDate(tripRequestDto.getStartDate())
-                .endDate(tripRequestDto.getEndDate())
+                .startDate(convertStartDate)
+                .endDate(convertEndDate)
                 .build();
         tripRepository.save(trip);
     }
@@ -60,7 +63,9 @@ public class TripService {
         Region region = regionRepository.findById(tripRequestDto.getRegionId()).orElseThrow(() -> new CustomException(ErrorCode.DATA_NOT_FOUND));
         if (!trip.getUser().equals(user)) resultCode = 406;
         else {
-            trip.update(tripRequestDto.getTitle(), tripRequestDto.getStartDate(), tripRequestDto.getEndDate(), user, region);
+            LocalDate convertStartDate = dateConverter.convert(tripRequestDto.getStartDate());
+            LocalDate convertEndDate = dateConverter.convert(tripRequestDto.getEndDate());
+            trip.update(tripRequestDto.getTitle(), convertStartDate, convertEndDate, user, region);
         }
         return resultCode;
     }
