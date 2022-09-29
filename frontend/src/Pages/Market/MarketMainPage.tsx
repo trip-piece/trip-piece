@@ -176,20 +176,18 @@ function MarketMainPage() {
   //   },
   // ];
 
-  const url:string = marketApis.marketList("hello",1,1);
+  const url: string = marketApis.marketList("hello", 1, 1);
   const [hasError, setHasError] = useState(false);
-  const marketList = async ({
-    pageParam = 0,
-  }: QueryFunctionContext) => {
+  const marketList = async ({ pageParam = 0 }: QueryFunctionContext) => {
     try {
-      const res = await axiosInstance.get(`${url}?page=${pageParam}`);
+      const res = await axiosInstance.get(`${url}&page=${pageParam}`);
       return { result: res?.data, page: pageParam };
     } catch (_) {
       setHasError(true);
       return undefined;
     }
   };
-
+  console.log(typeof marketList);
   const region = REGIONLIST;
 
   const [keyword, setKeyword] = useState("");
