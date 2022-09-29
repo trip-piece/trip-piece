@@ -1,5 +1,5 @@
 import styled from "@emotion/styled";
-import React, { Suspense, useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { ReactQueryDevtools } from "react-query/devtools";
 import { useRecoilState } from "recoil";
@@ -16,7 +16,17 @@ const AppContainer = styled.div`
   scroll-behavior: smooth;
 `;
 function App() {
-  const [queryClient] = useState(() => new QueryClient());
+  const [queryClient] = useState(
+    () =>
+      new QueryClient({
+        defaultOptions: {
+          queries: {
+            retry: 0,
+            // suspense: true,
+          },
+        },
+      }),
+  );
 
   const [userInfoState, setUserInfoState] = useRecoilState(UserInfoState);
   // 새로고침 막기 변수
@@ -37,7 +47,7 @@ function App() {
           return web3.utils.fromWei(balance, "ether");
         })
         .then((eth) => {
-          userInfoInit = { ...userInfoInit, balance: eth };
+          userInfoInit = { ...userInfoInit, balance: Number(eth) };
           setUserInfoState(userInfoInit);
           console.log(userInfoInit.nickname);
         });
@@ -58,7 +68,7 @@ function App() {
         userInfoInit = {
           address: response.data.walletAddress,
           nickname: response.data.nickName,
-          balance: "-1.0",
+          balance: -1.0,
           isLoggedIn: true,
           id: response.data.userId,
           tripCount: response.data.tripCount,
@@ -79,7 +89,7 @@ function App() {
       getUserInfo();
     })();
   }, []);
-  
+
   return (
     <AppContainer>
       <QueryClientProvider client={queryClient}>

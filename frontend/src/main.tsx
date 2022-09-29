@@ -1,4 +1,3 @@
-import React, { useEffect } from "react";
 import ReactDOM from "react-dom/client";
 import { RecoilRoot } from "recoil";
 import { HelmetProvider } from "react-helmet-async";
@@ -18,8 +17,6 @@ import theme, { themes } from "./style/theme";
 //   worker.start();
 // }
 
-
-
 const getLibrary = (provider: any): ethers.providers.Web3Provider => {
   const library = new ethers.providers.Web3Provider(provider);
   library.pollingInterval = 12000;
@@ -27,7 +24,6 @@ const getLibrary = (provider: any): ethers.providers.Web3Provider => {
 };
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
-  
   // <React.StrictMode>
   <Web3ReactProvider getLibrary={getLibrary}>
     <RecoilRoot>

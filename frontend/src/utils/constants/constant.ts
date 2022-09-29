@@ -37,6 +37,7 @@ export const MESSAGE_LIST = {
   DIARY_INTRO: "오늘의 여행은 어땠나요?",
   DIARY_CANCEL: "다이어리 작성을 취소하시겠습니까?",
   PHOTO_LIMIT: "10MB 이하의 이미지를 넣어주세요.",
+  TRIP_DELETE: "여행을 삭제하시겠습니까?",
 };
 
 export const IMAGE_SIZE_LIMIT_NUMBER = 10 * 1024 * 1024;

@@ -19,3 +19,11 @@ export interface ISticker {
   tokenName: string;
   tokenURL: string;
 }
+
+export interface ICoordinate {
+  err?: number;
+  time?: string;
+  latitude?: number;
+  longitude?: number;
+  location?: string;
+}
