@@ -8,5 +8,5 @@ import java.util.List;
 
 public interface TripRepository extends JpaRepository<Trip, Long> {
     List<Trip> findAllByUser(User user);
-    List<Trip> findFirstByStartDateAndUserOrderByStartDate(User user, LocalDate todayDate);
+    List<Trip> findFirstByStartDateAndUserOrderByStartDate(LocalDate todayDate,User user);
 }
