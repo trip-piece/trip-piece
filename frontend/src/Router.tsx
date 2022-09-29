@@ -26,6 +26,9 @@ const DiaryDecoration = lazy(
 );
 const PlaceMainPage = lazy(() => import("./Pages/Place/PlaceMainPage"));
 const PlaceListPage = lazy(() => import("./Pages/Place/PlaceListPage"));
+const MyLocationListPage = lazy(
+  () => import("./Pages/Place/MyLocationListPage"),
+);
 
 const NftResponse = lazy(() => import("./Pages/QrScan/NftResponse"));
 
@@ -63,6 +66,7 @@ function Router() {
         <Route path="user/stickers" element={<MySticker />} />
         <Route path="places/map" element={<PlaceMainPage />} />
         <Route path="places/:regionId/list" element={<PlaceListPage />} />
+        <Route path="places/list/mylocation" element={<MyLocationListPage />} />
         <Route path="qrscan" element={<QrScanner />} />
         <Route path="/places/:placeId" element={<NftResponse />} />
       </Routes>
