@@ -1,5 +1,5 @@
 import styled from "@emotion/styled";
-import React, { Suspense, useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { ReactQueryDevtools } from "react-query/devtools";
 import { useRecoilState } from "recoil";
@@ -16,7 +16,17 @@ const AppContainer = styled.div`
   scroll-behavior: smooth;
 `;
 function App() {
-  const [queryClient] = useState(() => new QueryClient());
+  const [queryClient] = useState(
+    () =>
+      new QueryClient({
+        defaultOptions: {
+          queries: {
+            retry: 0,
+            // suspense: true,
+          },
+        },
+      }),
+  );
 
   const [userInfoState, setUserInfoState] = useRecoilState(UserInfoState);
   // 새로고침 막기 변수
@@ -74,11 +84,11 @@ function App() {
   };
 
   // 브라우저에 렌더링 시 한 번만 실행하는 코드
-  // useEffect(() => {
-  //   (() => {
-  //     getUserInfo();
-  //   })();
-  // }, []);
+  useEffect(() => {
+    (() => {
+      getUserInfo();
+    })();
+  }, []);
 
   return (
     <AppContainer>
