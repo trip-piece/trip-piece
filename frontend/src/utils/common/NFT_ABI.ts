@@ -2,7 +2,7 @@ import Web3 from "web3";
 
 export const NFT_ABI = [
   {
-    inputs: [],
+    inputs: [] as any[],
     stateMutability: "nonpayable",
     type: "constructor",
   },
