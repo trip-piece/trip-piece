@@ -1,5 +1,5 @@
 import styled from "@emotion/styled";
-import React, { Suspense, useState } from "react";
+import { Suspense, useState } from "react";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { ReactQueryDevtools } from "react-query/devtools";
 import Router from "./Router";
@@ -10,7 +10,17 @@ const AppContainer = styled.div`
   scroll-behavior: smooth;
 `;
 function App() {
-  const [queryClient] = useState(() => new QueryClient());
+  const [queryClient] = useState(
+    () =>
+      new QueryClient({
+        defaultOptions: {
+          queries: {
+            retry: 0,
+            // suspense: true,
+          },
+        },
+      }),
+  );
 
   return (
     <AppContainer>

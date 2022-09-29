@@ -1,13 +1,13 @@
 import { AxiosError } from "axios";
 import React, { memo } from "react";
 import { BiCurrentLocation } from "react-icons/bi";
-import { useQuery } from "react-query";
-import { useRecoilState } from "recoil";
+import {
+  QueryObserverResult,
+  RefetchOptions,
+  RefetchQueryFilters,
+} from "react-query";
 import { motion } from "framer-motion";
 import styled from "@emotion/styled";
-import { UserInfoState } from "../../store/atom";
-
-import { getLocation } from "../../utils/functions/util";
 import { ICoordinate } from "../../utils/interfaces/places.interface";
 
 const Container = styled.div`
@@ -25,19 +25,14 @@ const MotionButton = styled(motion.button)`
   width: 7%;
 `;
 
-function Location() {
-  const [userInfo] = useRecoilState(UserInfoState);
-
-  const { isFetching, data, refetch } = useQuery<ICoordinate, AxiosError>(
-    [`${userInfo.id}-MyCoordinate`],
-    getLocation,
-    {
-      refetchOnWindowFocus: false,
-      refetchOnReconnect: false,
-      refetchOnMount: true,
-    },
-  );
-
+interface LocationProps {
+  isFetching: boolean;
+  data: ICoordinate;
+  refetch: <TPageData>(
+    options?: RefetchOptions & RefetchQueryFilters<TPageData>,
+  ) => Promise<QueryObserverResult<ICoordinate, AxiosError<unknown, any>>>;
+}
+function Location({ isFetching, data, refetch }: LocationProps) {
   const refetchLocation = () => {
     refetch();
   };

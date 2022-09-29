@@ -12,7 +12,6 @@ import { useRecoilState } from "recoil";
 import {
   DIARY_COLOR_LIST,
   FONTTYPELIST,
-  IMAGE_SIZE_LIMIT_NUMBER,
   MESSAGE_LIST,
 } from "../../utils/constants/constant";
 import ColoredRoundButton from "../../components/atoms/ColoredRoundButton";
@@ -26,6 +25,7 @@ import DateContainer from "../../components/atoms/DateContainer";
 import { weatherList } from "../../utils/constants/weatherList";
 import MyLocation from "../../components/modules/MyLocation";
 import { resizeImage } from "../../utils/functions/changeFileType";
+import useGetLocation from "../../utils/hooks/useGetLocation";
 
 const Form = styled.form`
   display: flex;
@@ -126,6 +126,7 @@ const ColorAndPositionContainer = styled.div`
   align-items: center;
   justify-content: space-evenly;
   background-color: ${(props) => props.theme.colors.lightBlue};
+  padding: 0 1rem;
 `;
 
 const Label = styled.label`
@@ -214,7 +215,7 @@ function DiaryManagementPage() {
     writedDiaryState(`${tripId}-${diaryDate}`),
   );
   const { state } = useLocation();
-
+  const { isFetching, data, refetch } = useGetLocation();
   const { register, handleSubmit, control, watch, setValue } =
     useForm<IFormInput>({});
   const navigate = useNavigate();
@@ -254,14 +255,14 @@ function DiaryManagementPage() {
     }
   }, []);
 
-  const onSubmit = (data: IFormInput) => {
+  const onSubmit = (formInputData: IFormInput) => {
     // const formData = new FormData();
     // if (todayPhoto) {
     //   formData.append("file", todayPhoto);
     // }
     const body = {
       diary: {
-        ...data,
+        ...formInputData,
         weather,
         backgroundColor: diaryColor,
         tripId: Number(tripId),
@@ -283,17 +284,13 @@ function DiaryManagementPage() {
     const {
       target: { files },
     } = event;
-    let file = files && files[0];
-    if (file && file?.size > IMAGE_SIZE_LIMIT_NUMBER) {
-      alert(MESSAGE_LIST.PHOTO_LIMIT);
-      return;
-    }
-    console.log("before", file);
-    file = await resizeImage(file);
-    console.log("after", file);
+    const file = files && files[0];
     if (file) {
-      setTodayPhoto(file);
-      encodeFileToBase64(file);
+      import("../../utils/functions/changeFileType").then(async (change) => {
+        const resizedFile = await change.resizeImage(file);
+        setTodayPhoto(resizedFile);
+        encodeFileToBase64(resizedFile);
+      });
     }
   };
 
@@ -352,7 +349,7 @@ function DiaryManagementPage() {
                 />
               ))}
             </ColorButtonListContainer>
-            <MyLocation />
+            <MyLocation {...{ isFetching, data, refetch }} />
             {/* <PositionContainer>
               <BsFillGeoAltFill />
               서울 송파구

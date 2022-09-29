@@ -27,10 +27,7 @@ export const dataURLtoFile = (dataurl: string, fileName: string) => {
   return new File([u8arr], fileName, { type: mime });
 };
 
-export const resizeImage = async (imageFile) => {
-  console.log("originalFile instanceof Blob", imageFile instanceof Blob);
-  console.log(`originalFile size ${imageFile.size / 1024 / 1024} MB`);
-
+export const resizeImage = async (imageFile: File) => {
   const options = {
     maxSizeMB: 1,
     maxWidthOrHeight: 550,
@@ -38,13 +35,8 @@ export const resizeImage = async (imageFile) => {
   };
   try {
     const compressedFile = await imageCompression(imageFile, options);
-    console.log(
-      "compressedFile instanceof Blob",
-      compressedFile instanceof Blob,
-    ); // true
-    console.log(`compressedFile size ${compressedFile.size / 1024 / 1024} MB`); //
     return compressedFile;
-  } catch (err) {
-    console.log(error);
+  } catch {
+    return imageFile;
   }
 };
