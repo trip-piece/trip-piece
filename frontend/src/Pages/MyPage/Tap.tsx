@@ -3,7 +3,7 @@ import styled from "@emotion/styled";
 import { ReactComponent as BookMarkIcon } from "../../assets/svgs/bookmarkIcon.svg";
 import { ReactComponent as StickerIcon } from "../../assets/svgs/stickerIcon.svg";
 import { pixelToRem } from "../../utils/functions/util";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const TapBox = styled.div`
   box-shadow: 0 4px 4px 2px rgb(0 0 0/25%);
@@ -32,15 +32,27 @@ const TapButton = styled.button`
 `;
 
 function Tap() {
+  const [open, setOpen] = React.useState(false);
+  const navigate = useNavigate();
+  const moveToSticker = () => {
+    navigate("/user/stickers");
+    setOpen(false);
+  };
+
+  const moveToScrap = () => {
+    navigate("/user/scraps");
+    setOpen(false);
+  };
+
   return (
     <TapBox>
       <LeftTap>
-        <TapButton>
+        <TapButton onClick={moveToSticker}>
           <StickerIcon width="32" height="32" />
         </TapButton>
       </LeftTap>
       <RightTap>
-        <TapButton>
+        <TapButton onClick={moveToScrap}>
           <BookMarkIcon width="31" height="31" />
         </TapButton>
       </RightTap>

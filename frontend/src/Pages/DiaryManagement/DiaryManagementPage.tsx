@@ -2,10 +2,6 @@ import styled from "@emotion/styled";
 import { ChangeEvent, useEffect, useRef, useState, useCallback } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { Icon } from "@iconify/react/dist/offline";
-import sunIcon from "@iconify/icons-twemoji/sun";
-import cloudIcon from "@iconify/icons-noto-v1/cloud";
-import umbrellaWithRainDrops from "@iconify/icons-twemoji/umbrella-with-rain-drops";
-import snowmanwithoutsnowIcon from "@iconify/icons-fxemoji/snowmanwithoutsnow";
 import { v4 } from "uuid";
 import { Controller, useForm } from "react-hook-form";
 import { TextareaAutosize } from "@mui/material";
@@ -16,39 +12,19 @@ import { useRecoilState } from "recoil";
 import {
   DIARY_COLOR_LIST,
   FONTTYPELIST,
-  IMAGE_SIZE_LIMIT_NUMBER,
   MESSAGE_LIST,
 } from "../../utils/constants/constant";
 import ColoredRoundButton from "../../components/atoms/ColoredRoundButton";
 import { pixelToRem } from "../../utils/functions/util";
 import { shake } from "../../style/animations";
-import axiosInstance from "../../utils/apis/api";
-import diaryApis from "../../utils/apis/diaryApis";
-import useWriteDiary from "../../utils/hooks/useWriteDiary";
 import useWindowResize from "../../utils/hooks/useWindowResize";
 import { writedDiaryState } from "../../store/diaryAtoms";
-import {
-  IDiaryListState,
-  IWritedDiary,
-} from "../../utils/interfaces/diarys.interface";
-
-const Container = styled.section`
-  height: 1px;
-  min-height: 90vh;
-  background-color: ${(props) => props.theme.colors.white};
-  border-radius: 30px 30px 0 0;
-  position: relative;
-`;
-
-const DateConatiner = styled.div`
-  padding: 1rem;
-  text-align: center;
-  > h2 {
-    font-size: ${(props) => props.theme.fontSizes.h4};
-    height: ${(props) => props.theme.fontSizes.h4};
-    font-weight: bold;
-  }
-`;
+import { IWritedDiary } from "../../utils/interfaces/diarys.interface";
+import Container from "../../components/atoms/Container";
+import DateContainer from "../../components/atoms/DateContainer";
+import { weatherList } from "../../utils/constants/weatherList";
+import MyLocation from "../../components/modules/MyLocation";
+import useGetLocation from "../../utils/hooks/useGetLocation";
 
 const Form = styled.form`
   display: flex;
@@ -149,6 +125,7 @@ const ColorAndPositionContainer = styled.div`
   align-items: center;
   justify-content: space-evenly;
   background-color: ${(props) => props.theme.colors.lightBlue};
+  padding: 0 1rem;
 `;
 
 const Label = styled.label`
@@ -213,11 +190,6 @@ const DeleteButton = styled.button`
   }
 `;
 
-interface RouteState {
-  state: {
-    date: string;
-  };
-}
 interface IDiaryStyle {
   fonttype: number;
   backgroundcolor: string;
@@ -227,13 +199,6 @@ interface IFormInput {
   fontType: number;
   content: string;
 }
-
-const weatherList = [
-  sunIcon,
-  cloudIcon,
-  umbrellaWithRainDrops,
-  snowmanwithoutsnowIcon,
-];
 
 function DiaryManagementPage() {
   const [weather, setWeather] = useState<number>(0);
@@ -248,15 +213,15 @@ function DiaryManagementPage() {
   const [diary, setDiary] = useRecoilState<IWritedDiary<File | null>>(
     writedDiaryState(`${tripId}-${diaryDate}`),
   );
-  const {
-    state: { date },
-  } = useLocation() as RouteState;
+  const { state } = useLocation();
+  const { isFetchingLocation, locationData, refetchLocation } =
+    useGetLocation();
   const { register, handleSubmit, control, watch, setValue } =
     useForm<IFormInput>({});
   const navigate = useNavigate();
   const size = useWindowResize();
   useEffect(() => {
-    if (date) setDottedDate(date?.replaceAll("-", "."));
+    if (state?.date) setDottedDate(state?.date?.replaceAll("-", "."));
     else if (diaryDate) {
       setDottedDate(diaryDate?.replaceAll("-", "."));
     }
@@ -290,18 +255,18 @@ function DiaryManagementPage() {
     }
   }, []);
 
-  const onSubmit = (data: IFormInput) => {
+  const onSubmit = (formInputData: IFormInput) => {
     // const formData = new FormData();
     // if (todayPhoto) {
     //   formData.append("file", todayPhoto);
     // }
     const body = {
       diary: {
-        ...data,
+        ...formInputData,
         weather,
         backgroundColor: diaryColor,
         tripId: Number(tripId),
-        date,
+        date: diaryDate,
       },
       todayPhoto: todayPhoto || null,
     };
@@ -315,18 +280,17 @@ function DiaryManagementPage() {
     }
   };
 
-  const onLoadFile = (event: ChangeEvent<HTMLInputElement>) => {
+  const onLoadFile = async (event: ChangeEvent<HTMLInputElement>) => {
     const {
       target: { files },
     } = event;
     const file = files && files[0];
-    if (file && file?.size > IMAGE_SIZE_LIMIT_NUMBER) {
-      alert(MESSAGE_LIST.PHOTO_LIMIT);
-      return;
-    }
     if (file) {
-      setTodayPhoto(file);
-      encodeFileToBase64(file);
+      import("../../utils/functions/changeFileType").then(async (change) => {
+        const resizedFile = await change.resizeImage(file);
+        setTodayPhoto(resizedFile);
+        encodeFileToBase64(resizedFile);
+      });
     }
   };
 
@@ -341,9 +305,9 @@ function DiaryManagementPage() {
         <title>다이어리 | 여행조각</title>
       </Helmet>
       <Container>
-        <DateConatiner>
+        <DateContainer>
           <h2>{dottedDate}</h2>
-        </DateConatiner>
+        </DateContainer>
         <Form onSubmit={handleSubmit(onSubmit)}>
           <DiaryStyleContainer>
             <Select
@@ -385,10 +349,13 @@ function DiaryManagementPage() {
                 />
               ))}
             </ColorButtonListContainer>
-            <PositionContainer>
+            <MyLocation
+              {...{ isFetchingLocation, locationData, refetchLocation }}
+            />
+            {/* <PositionContainer>
               <BsFillGeoAltFill />
               서울 송파구
-            </PositionContainer>
+            </PositionContainer> */}
           </ColorAndPositionContainer>
           <Controller
             name="content"
