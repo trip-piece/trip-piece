@@ -2,12 +2,8 @@ import Modal from "@mui/material/Modal";
 import Box from "@mui/material/Box";
 import styled from "@emotion/styled";
 import html2canvas from "html2canvas";
-import { Dispatch, SetStateAction, useState } from "react";
 import { v4 } from "uuid";
-import {
-  IFrameImageObj,
-  ISticker,
-} from "../../utils/interfaces/diarys.interface";
+import { ISticker } from "../../utils/interfaces/diarys.interface";
 import { pixelToRem } from "../../utils/functions/util";
 
 const Wrapper = styled(Box)<{ diarywidth: number }>`
@@ -64,8 +60,7 @@ interface ModalProps {
   open: boolean;
   stickerList: ISticker[];
   diaryBox: any;
-  frameImageObj: IFrameImageObj;
-  setFrameImageObj: Dispatch<SetStateAction<IFrameImageObj>>;
+  postData: (frameImage?: File) => void;
 }
 
 function DecorationModal({
@@ -73,8 +68,7 @@ function DecorationModal({
   open,
   stickerList,
   diaryBox,
-  frameImageObj,
-  setFrameImageObj,
+  postData,
 }: ModalProps) {
   const handleClose = () => setOpen(false);
 
@@ -86,7 +80,7 @@ function DecorationModal({
       const imageData = canvas.toDataURL("image/png");
       import("../../utils/functions/changeFileType").then((change) => {
         const file = change.dataURLtoFile(imageData, v4());
-        setFrameImageObj({ frameImage: file, frameImageBase64: imageData });
+        postData(file);
         handleClose();
       });
     });
@@ -122,9 +116,6 @@ function DecorationModal({
             />
           ))}
         </DiaryFrame>
-        {frameImageObj.frameImageBase64 && (
-          <img src={frameImageObj.frameImageBase64} alt="#" width="200px" />
-        )}
       </Wrapper>
     </Modal>
   );

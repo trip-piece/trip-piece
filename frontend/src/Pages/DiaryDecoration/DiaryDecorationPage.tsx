@@ -2,9 +2,10 @@ import styled from "@emotion/styled";
 import { Icon } from "@iconify/react/dist/offline";
 import { memo, useCallback, useEffect, useRef, useState } from "react";
 import { BsFillGeoAltFill } from "react-icons/bs";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useRecoilValue } from "recoil";
 import Draggable, { DraggableData } from "react-draggable";
+import Checkbox from "@mui/material/Checkbox";
 import ColoredRoundButton from "../../components/atoms/ColoredRoundButton";
 import Container from "../../components/atoms/Container";
 import DateContainer from "../../components/atoms/DateContainer";
@@ -133,16 +134,15 @@ function ImageButton({ onClick, sticker }: ImageButtonProps) {
 const MemoizedImageButton = memo(ImageButton);
 
 function DiaryDecorationPage() {
+  const [isShared, setIsShared] = useState(false);
   const [open, setOpen] = useState(false);
   const [dottedDate, setDottedDate] = useState<string>("");
   const [imageSrc, setImageSrc] = useState<string | null>("");
   const [stickerList, setStickerList] = useState<ISticker[]>([]);
   const [diaryBox, setDiaryBox] = useState({ width: 0, height: 0, ratio: 0 });
-  const [frameImageObj, setFrameImageObj] = useState<IFrameImageObj>({
-    frameImage: null,
-    frameImageBase64: null,
-  });
+
   const { tripId, diaryDate } = useParams();
+  const navigate = useNavigate();
   const nodeRef = useRef<HTMLImageElement>(null);
   const diary = useRecoilValue<IWritedDiary<File | null>>(
     writedDiaryState(`${tripId}-${diaryDate}`),
@@ -177,7 +177,7 @@ function DiaryDecorationPage() {
     }
   };
 
-  const makeDecorationData = (diaryId: number) => {
+  const makeDecorationData = (diaryId: number, frameImage?: File) => {
     const _stickerList = stickerList.map((sticker) => {
       return {
         tokenId: sticker.tokenId,
@@ -185,25 +185,15 @@ function DiaryDecorationPage() {
         y: sticker.originY,
       };
     });
-    if (frameImageObj.frameImage) {
+    if (frameImage) {
       const formData = new FormData();
-      formData.append("file", frameImageObj.frameImage);
+      formData.append("file", frameImage);
       return {
         decoration: { diaryId, stickerList: _stickerList },
         frameImage: formData,
       };
     }
     return { decoration: { diaryId, stickerList: _stickerList } };
-  };
-
-  const onSubmit = () => {
-    mutateWriting(makeDiaryData(), {
-      onSuccess: (data) => {
-        mutateDecoration(makeDecorationData(data.data.diaryId), {
-          onSuccess: (data2) => console.log(data2),
-        });
-      },
-    });
   };
 
   useEffect(() => {
@@ -353,6 +343,22 @@ function DiaryDecorationPage() {
 
   const handleOpen = () => setOpen(true);
 
+  const postData = (frameImage?: File) => {
+    mutateWriting(makeDiaryData(), {
+      onSuccess: (data) => {
+        mutateDecoration(makeDecorationData(data.data.diaryId, frameImage), {
+          onSuccess: () => navigate(`/trips/${tripId}/diarys/${diaryDate}`),
+        });
+      },
+    });
+  };
+
+  const onSubmit = () => {
+    if (isShared) {
+      handleOpen();
+    } else postData();
+  };
+
   // FIXME: map key 변경하기
   return (
     <Container>
@@ -401,13 +407,6 @@ function DiaryDecorationPage() {
                 </Draggable>
               ))}
               {diary.diary.content}
-              {frameImageObj.frameImageBase64 && (
-                <img
-                  src={frameImageObj.frameImageBase64}
-                  alt="# "
-                  width="400"
-                />
-              )}
               {imageSrc && (
                 <Picture>
                   <DiaryImg
@@ -422,11 +421,20 @@ function DiaryDecorationPage() {
             </DiaryContents>
           </div>
           <ButtonListContainer>
+            <label htmlFor="isShared">
+              <Checkbox
+                id="isShared"
+                name="isShared"
+                checked={isShared}
+                onChange={() => setIsShared((prev) => !prev)}
+              />
+              다른 사람에게 프레임 공유하기
+            </label>
             <ColoredRoundButton
               text="일기 꾸미기"
               color="mainLight"
               type="button"
-              func={handleOpen}
+              func={onSubmit}
             />
             <ColoredRoundButton
               text="취소"
@@ -456,8 +464,7 @@ function DiaryDecorationPage() {
               open={open}
               stickerList={stickerList}
               diaryBox={diaryBox}
-              frameImageObj={frameImageObj}
-              setFrameImageObj={setFrameImageObj}
+              postData={postData}
             />
           )}
         </>

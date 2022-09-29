@@ -20,11 +20,7 @@ interface DecorationProps {
 
 function useDecorateDiary() {
   return useMutation((decoration: DecorationProps) =>
-    axiosInstance.post(diaryApis.diaryDecoration, decoration, {
-      headers: {
-        "Content-Type": "multipart/form-data:",
-      },
-    }),
+    axiosInstance.post(diaryApis.diaryDecoration, decoration),
   );
 }
 
