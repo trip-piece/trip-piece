@@ -256,8 +256,8 @@ const BoxContainer = styled.div`
 `;
 
 function MainPage() {
-  const [upcoming, setUpcoming] = useState<ITrip | any>();
-  const [places, setPlaces] = useState<IPlace[] | any>([]);
+  const [upcoming, setUpcoming] = useState<ITrip>();
+  const [places, setPlaces] = useState<IPlace[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [userInfo] = useRecoilState(UserInfoState);
   const today = changeDateFormatToHyphen(new Date());
@@ -320,10 +320,10 @@ function MainPage() {
   );
 
   useEffect(() => {
-    if (data1) {
-      setUpcoming(data1);
+    if (data1?.data) {
+      setUpcoming(data1.data);
       setRegionImage(`/image/region/${REGIONLIST[data1?.data.regionId]}.png`);
-      if (data1?.data.startDate) {
+      if (data1.data.startDate) {
         setIsProgress(2);
       } else setIsProgress(1);
     }
@@ -331,7 +331,9 @@ function MainPage() {
 
   useEffect(() => {
     if (data2) {
-      setPlaces(data2);
+      if (data2.data.length) {
+        setPlaces(data2.data);
+      }
     }
   }, [data2]);
 
@@ -341,7 +343,7 @@ function MainPage() {
 
   const navigate = useNavigate();
   const moveToDiary = () => {
-    navigate(`/trips/${upcoming.tripId}/diarys`);
+    navigate(`/trips/${upcoming?.tripId}/diarys`);
   };
   const moveToPlace = () => {
     navigate("/places/map");
@@ -417,7 +419,7 @@ function MainPage() {
                       </motion.button>
                     </>
                   )}
-                  {isProgress === 1 && (
+                  {isProgress === 1 && upcoming && (
                     <>
                       <RegionTextTitle>
                         {REGIONLIST[upcoming.regionId]}
@@ -438,10 +440,10 @@ function MainPage() {
                           style={{ width: "85px", height: "85px" }}
                         />
                       </motion.div>
-                      <InnerTextTitle>{upcoming.title}</InnerTextTitle>
+                      <InnerTextTitle>{upcoming?.title}</InnerTextTitle>
                       <InnerTextBody>
-                        {upcoming.startDate} ~ <br />
-                        {upcoming.endDate}
+                        {upcoming?.startDate} ~ <br />
+                        {upcoming?.endDate}
                       </InnerTextBody>
                       <motion.button
                         whileHover={{ scale: 1.1 }}
@@ -452,7 +454,7 @@ function MainPage() {
                       </motion.button>
                     </>
                   )}
-                  {isProgress === 2 && (
+                  {isProgress === 2 && upcoming && (
                     <>
                       <RegionTextTitle>
                         {REGIONLIST[upcoming.regionId]}
@@ -473,10 +475,10 @@ function MainPage() {
                           style={{ width: "85px", height: "85px" }}
                         />
                       </motion.div>
-                      <InnerTextTitle>{upcoming.title}</InnerTextTitle>
+                      <InnerTextTitle>{upcoming?.title}</InnerTextTitle>
                       <InnerTextBody>
-                        {upcoming.startDate} ~ <br />
-                        {upcoming.endDate}
+                        {upcoming?.startDate} ~ <br />
+                        {upcoming?.endDate}
                       </InnerTextBody>
                       <InnerTextBody
                         style={{
@@ -524,7 +526,7 @@ function MainPage() {
                     </div>
                   </RightInsideContent>
                 )}
-                {isProgress === 1 && (
+                {isProgress === 1 && upcoming && (
                   <RightInsideContent>
                     <img src={activeTicket} alt="기본이미지" />
                     <div className="ticket">
@@ -537,11 +539,11 @@ function MainPage() {
                             {REGIONLIST[upcoming.regionId]}
                           </p>
                           <hr />
-                          <p className="tripTitle">{upcoming.title}</p>
+                          <p className="tripTitle">{upcoming?.title}</p>
                           <p className="date">
-                            <span>{upcoming.startDate} ~ </span>
+                            <span>{upcoming?.startDate} ~ </span>
                             <span style={{ textAlign: "right" }}>
-                              {upcoming.endDate}
+                              {upcoming?.endDate}
                             </span>
                           </p>
                         </div>
@@ -550,7 +552,7 @@ function MainPage() {
                     </div>
                   </RightInsideContent>
                 )}
-                {isProgress === 2 && (
+                {isProgress === 2 && upcoming && (
                   <RightInsideContent>
                     <img src={unactiveTicket} alt="기본이미지" />
                     <div className="ticket">
@@ -664,17 +666,22 @@ function MainPage() {
               </div>
             )}
             {isSuccess2 && loading && (
-              <Swiper slidesPerView={2.1} spaceBetween={13}>
-                {places.length &&
-                  places.map((place: IPlace) => (
-                    <SwiperSlide>
-                      <Card place={place} />
-                    </SwiperSlide>
-                  ))}
-                {places.length === 0 && (
-                  <p>근처에 발급 가능한 지역이 없어요.</p>
+              <>
+                {places?.length ? (
+                  <Swiper slidesPerView={2.1} spaceBetween={13}>
+                    {places.map((place: IPlace) => (
+                      <SwiperSlide>
+                        <Card place={place} />
+                      </SwiperSlide>
+                    ))}
+                  </Swiper>
+                ) : (
+                  <p>
+                    <br />
+                    근처에 발급 가능한 지역이 없어요.
+                  </p>
                 )}
-              </Swiper>
+              </>
             )}
           </PlaceList>
         </SubBox>
