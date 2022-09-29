@@ -40,7 +40,7 @@ public class FrameService {
         }
         List<FrameResponseDto> responseList = new ArrayList<>();
         for (Frame frame : list) {
-            responseList.add(new FrameResponseDto(frame, scrapRepository.existsByFrameAndUser(user, frame)));
+            responseList.add(new FrameResponseDto(frame, scrapRepository.existsByFrameAndUser(frame, user)));
         }
         int start = (int) pageable.getOffset();
         int end = Math.min((start + pageable.getPageSize()), responseList.size());
@@ -90,7 +90,7 @@ public class FrameService {
         for (Decoration decoration : decorationList) {
             stickerList.add(new StickerDecorationDto(decoration));
         }
-        boolean isScrapped = scrapRepository.existsByFrameAndUser(user, frame);
+        boolean isScrapped = scrapRepository.existsByFrameAndUser(frame, user);
         StickerFrameResponseDto result = new StickerFrameResponseDto(stickerList, isScrapped);
         return result;
     }
@@ -122,7 +122,7 @@ public class FrameService {
     @Transactional
     public void deleteFrameScrap(final User user, final long frameId) {
         Frame frame = frameRepository.findById(frameId).orElseThrow(() -> new CustomException(ErrorCode.DATA_NOT_FOUND));
-        Scrap scrap = scrapRepository.findByFrameAndUser(user, frame);
+        Scrap scrap = scrapRepository.findByFrameAndUser(frame, user);
         scrapRepository.delete(scrap);
     }
 }
