@@ -32,16 +32,20 @@ function MyLocationListPage() {
   const [locationInfo, setLocationInfo] = useState("");
   const [lat, setLat] = useState(0);
   const [lng, setLng] = useState(0);
+  const [loading, setLoading] = useState(true);
 
   const myLocation = async () => {
     const userLocation: any = await getLocation();
     setLocationInfo(userLocation.location);
     setLat(userLocation.latitude);
     setLng(userLocation.longitude);
+    setLoading(false);
   };
 
   const updateLocation = async () => {
+    setLoading(true);
     await myLocation();
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -88,15 +92,18 @@ function MyLocationListPage() {
           </div>
         </TitleGroup>
         <PlaceList>
-          <MemoInfiniteList
-            url={placeApis.getLocationPlaces(lat, lng)}
-            queryKey={["mylocationList"]}
-            CardComponent={MemoCard}
-            SkeletonCardComponent={Skeleton}
-            zeroDataText="발급 가능한 위치가 없습니다."
-            count={1}
-            listName="content"
-          />
+          {loading && <div>loading . . .</div>}{" "}
+          {!loading && (
+            <MemoInfiniteList
+              url={placeApis.getLocationPlaces(lat, lng)}
+              queryKey={["mylocationList"]}
+              CardComponent={MemoCard}
+              SkeletonCardComponent={Skeleton}
+              zeroDataText="발급 가능한 위치가 없습니다."
+              count={1}
+              listName="content"
+            />
+          )}
         </PlaceList>
       </Container>
     </>
