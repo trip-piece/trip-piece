@@ -84,7 +84,7 @@ function MyLocationListPage() {
   return (
     <>
       <Helmet>
-        <title>이벤트 지역 | 여행조각</title>
+        <title>내 주변 지역 | 여행조각</title>
       </Helmet>
       <Container hasPadding>
         <TitleGroup>

@@ -6,11 +6,14 @@ import { REGIONLIST } from "../../utils/constants/constant";
 import { pixelToRem } from "../../utils/functions/util";
 import Container from "../../components/atoms/Container";
 import { IPlace } from "../../utils/interfaces/places.interface";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AxiosError, AxiosResponse } from "axios";
 import axiosInstance from "../../utils/apis/api";
 import { placeApis } from "../../utils/apis/placeApis";
 import { useQuery } from "react-query";
+import { MemoInfiniteList } from "../../components/modules/infinite/ParamsInfiniteList";
+import { MemoCard } from "./Card";
+import Skeleton from "./Skeleton";
 
 const TitleGroup = styled.div`
   width: 100%;
@@ -55,39 +58,71 @@ const NearbyMyLocationBtn = styled.button`
   }
 `;
 
+const ToggleGroup = styled.div`
+  width: 35%;
+  height: 30px;
+  background-color: ${(props) => props.theme.colors.gray200};
+  text-align: center;
+  margin: auto;
+  border-radius: 15px;
+  margin-bottom: 1.5rem;
+
+  .inactive {
+    width: 50%;
+    height: 100%;
+    border-radius: 15px;
+    background-color: transparent;
+    font-size: ${(props) => props.theme.fontSizes.h5};
+  }
+
+  .active {
+    width: 50%;
+    height: 100%;
+    border-radius: 15px;
+    background-color: ${(props) => props.theme.colors.mainDark};
+    color: ${(props) => props.theme.colors.white};
+    font-size: ${(props) => props.theme.fontSizes.h5};
+  }
+`;
+
 const PlaceList = styled.div``;
 
 function PlaceListPage() {
-  const [festivals, setFestivals] = useState<IPlace[]>([]);
-  const [spots, setSpots] = useState<IPlace[]>([]);
-  const [loading, setLoading] = useState<boolean>(false);
+  const [type, setType] = useState(0);
   const { regionId } = useParams();
   const navigate = useNavigate();
   const moveToMyLocation = () => {
     navigate(`/places/list/mylocation`);
   };
 
-  const {
-    isLoading: isLoading1,
-    isSuccess: isSuccess1,
-    data: data1,
-  } = useQuery<AxiosResponse<IPlace[]>, AxiosError>(
-    [`${regionId}-festivals`],
-    () => axiosInstance.get(placeApis.getPlaces(Number(regionId), 0)),
-    {
-      refetchOnWindowFocus: false,
-      refetchOnReconnect: false,
-      refetchOnMount: true,
-    },
-  );
+  const changeType = (type: number) => {
+    setType(type);
+  };
 
   return (
     <>
       <Helmet>
-        <title>이벤트 지역 | 여행조각</title>
+        <title>이벤트 리스트 | 여행조각</title>
       </Helmet>
       <Container hasPadding>
         <TitleGroup>
+          <div style={{ width: "100%", textAlign: "left" }}>지도 가기</div>
+          <ToggleGroup>
+            <button
+              type="button"
+              className={type === 0 ? "active" : "inactive"}
+              onClick={() => changeType(0)}
+            >
+              스팟
+            </button>
+            <button
+              type="button"
+              className={type === 1 ? "active" : "inactive"}
+              onClick={() => changeType(1)}
+            >
+              축제
+            </button>
+          </ToggleGroup>
           <h1 className="main">{REGIONLIST[Number(regionId)]}</h1>
           <h1>현재 발급 가능한 00 곳의 스팟이 있어요 !</h1>
           <div style={{ width: "100%", textAlign: "right" }}>
@@ -97,7 +132,32 @@ function PlaceListPage() {
             </NearbyMyLocationBtn>
           </div>
         </TitleGroup>
-        <PlaceList></PlaceList>
+        {type === 0 && (
+          <PlaceList>
+            <MemoInfiniteList
+              url={placeApis.getPlaces(Number(regionId), type)}
+              queryKey={["spotList"]}
+              CardComponent={MemoCard}
+              SkeletonCardComponent={Skeleton}
+              zeroDataText="NFT 스티커 발급 가능한 스팟이 없습니다."
+              count={1}
+              listName="spotList"
+            />
+          </PlaceList>
+        )}
+        {type === 1 && (
+          <PlaceList>
+            <MemoInfiniteList
+              url={placeApis.getPlaces(Number(regionId), type)}
+              queryKey={["festivalList"]}
+              CardComponent={MemoCard}
+              SkeletonCardComponent={Skeleton}
+              zeroDataText="NFT 스티커 발급 가능한 축제가 없습니다."
+              count={1}
+              listName="festivalList"
+            />
+          </PlaceList>
+        )}
       </Container>
     </>
   );

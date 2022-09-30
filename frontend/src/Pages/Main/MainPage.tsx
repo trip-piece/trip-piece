@@ -327,17 +327,11 @@ function MainPage() {
         setIsProgress(2);
       } else setIsProgress(1);
     }
-  }, [data1]);
-
-  useEffect(() => {
-    if (data2) {
+    if (data2?.data) {
       if (data2.data.length) {
         setPlaces(data2.data);
       }
     }
-  }, [data2]);
-
-  useEffect(() => {
     setLoading(true);
   }, [data1, data2]);
 
