@@ -1,10 +1,10 @@
 import React from "react";
 import styled from "@emotion/styled";
+import { useRecoilState } from "recoil";
 import { pixelToRem } from "../../utils/functions/util";
 import { ReactComponent as EtherIcon } from "../../assets/svgs/etherIcon.svg";
 import NestedModal from "./Modal";
 import { UserInfoState } from "../../store/atom";
-import { useRecoilState } from "recoil";
 
 const InfoBox = styled.div`
   box-shadow: 0 4px 4px 2px rgb(0 0 0/25%);
@@ -43,20 +43,27 @@ const WalletBalanceText = styled.div`
 const Name = styled.div`
   font-size: ${(props) => props.theme.fontSizes.h2};
   padding: 0 ${pixelToRem(7)} 0 0;
+  margin-top: auto;
   font-weight: bold;
   display: flex;
 `;
 
 const NameSuffix = styled.div`
-  font-size: ${(props) => props.theme.fontSizes.h4};
-
-  margin: 5% 0 0 0;
+  font-size: ${(props) => props.theme.fontSizes.h6};
+  width: 35%;
+  margin-top: auto;
+  font-weight: bold;
+`;
+const IdCode = styled.div`
+  font-size: ${(props) => props.theme.fontSizes.paragraph};
+  margin-top: auto;
   font-weight: bold;
 `;
 
 const ModifyNickNameButton = styled.div`
   float: right;
-  margin: ${pixelToRem(11)} ${pixelToRem(18)} 0 0;
+  margin: ${pixelToRem(11)} 0 0 0;
+
   background-color: transparent;
   height: ${pixelToRem(25)};
   margin-left: auto;
@@ -69,11 +76,13 @@ function UserInfo() {
     <InfoBox>
       <InfoContent>
         <ContentTop>
-          <Name>{userInfoState.nickname}</Name>#000{userInfoState.id}
+          <Name>{userInfoState.nickname}</Name>
           <NameSuffix>여행자님</NameSuffix>
+          <IdCode>#000{userInfoState.id}</IdCode>
         </ContentTop>
 
         <WalletBalance>
+          <EtherIcon />
           <WalletBalanceText>{userInfoState.balance}</WalletBalanceText>
         </WalletBalance>
       </InfoContent>
