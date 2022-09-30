@@ -5,6 +5,7 @@ import html2canvas from "html2canvas";
 import { v4 } from "uuid";
 import { ISticker } from "../../utils/interfaces/diarys.interface";
 import { pixelToRem } from "../../utils/functions/util";
+import StickerImg from "../../components/atoms/StickerImg";
 
 const Wrapper = styled(Box)<{ diarywidth: number }>`
   position: absolute;
@@ -28,13 +29,6 @@ const DiaryFrame = styled.div<DiaryProps>`
   width: ${(props) => pixelToRem(props.diaryWidth * 0.7)};
   height: ${(props) => pixelToRem(props.diaryWidth * 0.7 * props.diaryRatio)};
   border-radius: 15px;
-`;
-
-const StickerImg = styled.img<{ top: number; left: number }>`
-  top: ${(props) => `${props.top}px`};
-  left: ${(props) => `${props.left}px`};
-  width: 20%;
-  position: absolute;
 `;
 
 const LoadingContainer = styled.div`
@@ -108,9 +102,10 @@ function DecorationModal({
         >
           {stickerList.map((sticker, index) => (
             <StickerImg
-              top={sticker.originY * diaryBox.height * 0.7}
+              up={sticker.originY * diaryBox.height * 0.7}
               left={sticker.originX * diaryBox.width * 0.7}
               src={sticker.tokenURI}
+              alt="스티커"
               // eslint-disable-next-line react/no-array-index-key
               key={index}
             />

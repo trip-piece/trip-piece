@@ -14,22 +14,22 @@ const data = {
       tripId: 134,
       regionId: 2,
       title: "간장공장장2",
-      startDate: "2022-09-15",
-      endDate: "2022-10-05",
+      startDate: "2022-10-06",
+      endDate: "2022-10-15",
     },
     {
       tripId: 145,
       regionId: 3,
       title: "간장공장장3",
-      startDate: "2022-09-15",
-      endDate: "2022-10-05",
+      startDate: "2022-10-16",
+      endDate: "2022-10-21",
     },
     {
       tripId: 156,
       regionId: 4,
       title: "간장공장장4",
-      startDate: "2022-09-15",
-      endDate: "2022-10-05",
+      startDate: "2022-10-22",
+      endDate: "2023-01-05",
     },
   ],
   last: true,
@@ -51,7 +51,7 @@ export const handlers = [
   rest.delete(`/trip/123`, (req, res, ctx) => {
     return res(ctx.status(200));
   }),
-  rest.get(`/trip/123`, (req, res, ctx) => {
+  rest.get(`/trip/123/detail`, (req, res, ctx) => {
     return res(
       ctx.status(200),
       ctx.json({

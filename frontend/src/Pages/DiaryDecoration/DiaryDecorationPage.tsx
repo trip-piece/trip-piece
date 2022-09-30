@@ -10,12 +10,9 @@ import ColoredRoundButton from "../../components/atoms/ColoredRoundButton";
 import Container from "../../components/atoms/Container";
 import DateContainer from "../../components/atoms/DateContainer";
 import { writedDiaryState } from "../../store/diaryAtoms";
-import { DIARY_COLOR_LIST, FONTTYPELIST } from "../../utils/constants/constant";
 import { weatherList } from "../../utils/constants/weatherList";
-import { pixelToRem } from "../../utils/functions/util";
 import useWindowResize from "../../utils/hooks/useWindowResize";
 import {
-  IFrameImageObj,
   ISticker,
   IWritedDiary,
   StickerProps,
@@ -27,29 +24,14 @@ import useGetLocation from "../../utils/hooks/useGetLocation";
 import MyLocation from "../../components/modules/MyLocation";
 import useWriteDiary from "../../utils/hooks/useWriteDiary";
 import useDecorateDiary from "../../utils/hooks/useDecorateDiary";
-
-interface DiaryContentsProps {
-  fontType: number;
-  diaryWidth: number;
-  backgroundColor: number;
-}
+import DiaryContentContainer from "../../components/modules/DiaryContentContainer";
+import TodayPhoto from "../../components/atoms/TodayPhoto";
 
 const PositionContainer = styled.div`
   > svg {
     color: ${(props) => props.theme.colors.red};
   }
   color: ${(props) => props.theme.colors.gray400};
-`;
-
-const DiaryContents = styled.div<DiaryContentsProps>`
-  white-space: pre-line;
-  min-height: 60vh;
-  background-color: ${(props) => DIARY_COLOR_LIST[props.backgroundColor]};
-  font-family: ${(props) => FONTTYPELIST[props.fontType]};
-  padding: ${(props) => `${pixelToRem(16 + (props.diaryWidth - 320) / 20)}`};
-  resize: none;
-  transition: background-color 0.5s ease-in;
-  font-size: ${(props) => pixelToRem(props.diaryWidth / 20)};
 `;
 
 const StickerZone = styled.div`
@@ -101,7 +83,7 @@ const ButtonListContainer = styled.div`
 
 const DiaryImg = styled.img`
   max-width: 100%;
-  width: fit-content;
+  width: 100%;
 `;
 
 const StickerImg = styled.img<{ isDragging: boolean }>`
@@ -173,7 +155,10 @@ function DiaryDecorationPage() {
     if (diary.todayPhoto) {
       const formData = new FormData();
       formData.append("file", diary.todayPhoto);
-      return { diary: diary.diary, todayPhto: formData };
+      return {
+        diary: { ...diary.diary, location: locationData.location },
+        todayPhto: formData,
+      };
     }
   };
 
@@ -187,7 +172,7 @@ function DiaryDecorationPage() {
     });
     if (frameImage) {
       const formData = new FormData();
-      formData.append("file", frameImage);
+      formData.append("frameImage", frameImage);
       return {
         decoration: { diaryId, stickerList: _stickerList },
         frameImage: formData,
@@ -379,7 +364,7 @@ function DiaryDecorationPage() {
             <button type="button" onClick={deleteSticker}>
               스티커 삭제하기
             </button>
-            <DiaryContents
+            <DiaryContentContainer
               diaryWidth={diaryBox.width}
               backgroundColor={diary.diary.backgroundColor}
               ref={diaryRef}
@@ -408,17 +393,9 @@ function DiaryDecorationPage() {
               ))}
               {diary.diary.content}
               {imageSrc && (
-                <Picture>
-                  <DiaryImg
-                    src={imageSrc}
-                    alt="미리보기"
-                    width="550"
-                    loading="lazy"
-                    ref={imageRef}
-                  />
-                </Picture>
+                <TodayPhoto src={imageSrc} alt="미리보기" ref={imageRef} />
               )}
-            </DiaryContents>
+            </DiaryContentContainer>
           </div>
           <ButtonListContainer>
             <label htmlFor="isShared">

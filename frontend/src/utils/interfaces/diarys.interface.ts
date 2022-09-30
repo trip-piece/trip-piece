@@ -35,3 +35,12 @@ export interface IFrameImageObj {
   frameImage: File | null;
   frameImageBase64: string | null;
 }
+
+export interface ISavedSticker {
+  stickerId: number;
+  tokenId: number;
+  tokenName: string;
+  tokenURL: string;
+  x: number;
+  y: number;
+}
