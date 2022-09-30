@@ -33,6 +33,7 @@ public class DiaryService {
     private final FrameRepository frameRepository;
     private final DateConverter dateConverter;
 
+
     /*일기 내용 추가*/
     @Transactional
     public long addDiary(User user, DiaryRequestDto.DiaryRegister diaryRegister) {
@@ -110,10 +111,14 @@ public class DiaryService {
 
     /*일기 조회*/
     @Transactional
-    public DiaryResponseDto findDiary(final long tripId, LocalDate diaryDate) {
+    public DiaryResponseDto findDiary(final long tripId, String date) {
         boolean isShare = false;
         Trip trip = tripRepository.findById(tripId).orElseThrow(() -> new CustomException(ErrorCode.DATA_NOT_FOUND));
+        LocalDate diaryDate = dateConverter.convert(date);
         Diary diary = diaryRepository.findByTripAndDiaryDate(trip, diaryDate);
+        if(diary==null){
+            return null;
+        }
         List<Decoration> list = decorationRepository.findAllByDiary(diary);
         List<StickerDecorationDto> deco = list.stream().map(StickerDecorationDto::new).collect(Collectors.toList());
 
