@@ -4,6 +4,7 @@ import com.trippiece.backend.api.domain.entity.Diary;
 import com.trippiece.backend.api.domain.entity.Trip;
 import com.trippiece.backend.api.service.S3Service;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -23,6 +24,8 @@ public class DiaryResponseDto {
     private int backgroundColor;
     private int weather;
 
+    private float ratio;
+
     private String location;
     private List<StickerDecorationDto> stickerList;
     private boolean isShare;
@@ -37,6 +40,7 @@ public class DiaryResponseDto {
         this.fontType = diary.getFontType();
         this.backgroundColor = diary.getBackgroundColor();
         this.weather = diary.getWeather();
+        this.ratio = diary.getRatio();
         this.location = diary.getLocation();
         this.tripId = diary.getTrip().getId();
         this.stickerList = stickerList;
