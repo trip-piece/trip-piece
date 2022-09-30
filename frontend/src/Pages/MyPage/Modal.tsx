@@ -4,14 +4,17 @@ import Modal from "@mui/material/Modal";
 import Button from "@mui/material/Button";
 import styled from "@emotion/styled";
 import { pixelToRem } from "../../utils/functions/util";
-import ColoredRoundButton from "../../components/atoms/ColoredRoundButton";
+import ColoredRoundButton, {
+  CustomRoundButton,
+} from "../../components/atoms/ColoredRoundButton";
 import { ReactComponent as PencilIcon } from "../../assets/svgs/pencilIcon.svg";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRecoilState } from "recoil";
 import { IUserInfo, UserInfoState } from "../../store/atom";
-import { SubmitHandler, useForm } from "react-hook-form";
+import { FieldErrors, SubmitHandler, useForm } from "react-hook-form";
 import userApis, { Inickname } from "../../utils/apis/userApis";
 import axiosInstance from "../../utils/apis/api";
+import NickNameValidation from "./validation";
 // import axiosInstance from "../../utils/apis/api";
 // import userApis, { Inickname } from "../../utils/apis/userApis";
 // import { useRecoilState } from "recoil";
@@ -40,12 +43,14 @@ const Container = styled.div`
 `;
 
 const LeftContainer = styled.div`
+  display: flex;
   float: left;
-  margin-left: 1.3rem;
+  width: 50%;
 `;
 const RightContainer = styled.div`
+  display: flex;
   float: right;
-  margin-right: 1.3rem;
+  width: 50%;
 `;
 
 const Title = styled.div`
@@ -76,27 +81,48 @@ const InputBox = styled.input`
 export default function NestedModal() {
   const [open, setOpen] = useState(false);
   const [userInfoState, setUserInfoState] = useRecoilState(UserInfoState);
-  // const [userInfo, setUserInfo] = useRecoilState(UserInfoState);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    resetField,
+  } = useForm<Inickname>({
+    mode: "onSubmit",
+    //validate: NickNameValidation,
+  });
 
   const handleOpen = () => {
     setOpen(true);
   };
   const handleClose = () => {
+    resetField("nickname");
     setOpen(false);
   };
-  const { register, handleSubmit } = useForm<Inickname>();
+  // let validationChk: boolean = true;
+
+  //useEffect();
 
   const onSubmit: SubmitHandler<Inickname> = async (data: Inickname) => {
-    console.log("zz");
+    // if (data.nickname.length === 0) {
+    //   validationChk = false;
+    // }
+    // validationChk = true;
+    console.log(errors);
+    if (data.nickname.length >= 1 && data.nickname.length <= 8) {
+      console.log(data.nickname.length);
+      const response = await axiosInstance.patch(userApis.modifyNickname, data);
 
-    const response = await axiosInstance.patch(userApis.modifyNickname, data);
+      if (response.status === 200) {
+        const info: IUserInfo = { ...userInfoState, nickname: data.nickname };
+        // /console.log(userInfoSta);
 
-    if (response.status === 200) {
-      const info: IUserInfo = { ...userInfoState, nickname: data.nickname };
-      setUserInfoState(info);
+        setUserInfoState(info);
+      }
+
+      handleClose();
     }
-    handleClose();
   };
+
   return (
     <>
       <Button onClick={handleOpen}>
@@ -113,18 +139,24 @@ export default function NestedModal() {
             <Title>닉네임 수정</Title>
             <Form onSubmit={handleSubmit(onSubmit)}>
               <InputBox
-                placeholder="1 ~ 8자 이내로 입력"
-                {...register("nickname")}
+                placeholder="1~8자 사이로 입력해주세요"
+                minLength={1}
+                maxLength={8}
+                {...register("nickname", {
+                  minLength: { value: 1, message: "1글자" },
+                  maxLength: { value: 8, message: "8글자" },
+                })}
               />
+              {errors.nickname === "required" && "First name is required"}
               <LeftContainer>
-                <ColoredRoundButton
+                <CustomRoundButton
                   text=" 수정 "
                   color="mainLight"
                   type="submit"
                 />
               </LeftContainer>
               <RightContainer>
-                <ColoredRoundButton
+                <CustomRoundButton
                   text="취소"
                   color="gray400"
                   type="button"

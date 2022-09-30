@@ -69,9 +69,7 @@ function UserInfo() {
     <InfoBox>
       <InfoContent>
         <ContentTop>
-          <Name>
-            {userInfoState.nickname}#000{userInfoState.id}
-          </Name>
+          <Name>{userInfoState.nickname}</Name>#000{userInfoState.id}
           <NameSuffix>여행자님</NameSuffix>
         </ContentTop>
 

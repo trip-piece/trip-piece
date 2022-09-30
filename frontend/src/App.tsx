@@ -60,14 +60,14 @@ function App() {
         data: {
           userId: number;
           walletAddress: string;
-          nickName: string;
+          nickname: string;
           tripCount: number;
           diaryCount: number;
         };
       }) => {
         userInfoInit = {
           address: response.data.walletAddress,
-          nickname: response.data.nickName,
+          nickname: response.data.nickname,
           balance: "-1.0",
           isLoggedIn: true,
           id: response.data.userId,
@@ -77,6 +77,7 @@ function App() {
         console.log("실행");
 
         setUserInfoState(userInfoInit);
+        console.log(`유저정보 가져오기 ${userInfoInit.nickname}`);
 
         getUserBalance(response.data.walletAddress);
       },
@@ -86,7 +87,7 @@ function App() {
   // 브라우저에 렌더링 시 한 번만 실행하는 코드
   useEffect(() => {
     (() => {
-      if (userInfoState.isLoggedIn) getUserInfo();
+      getUserInfo();
     })();
   }, []);
 
