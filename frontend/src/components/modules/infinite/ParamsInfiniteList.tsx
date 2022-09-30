@@ -107,9 +107,13 @@ function InfiniteList({
           {zeroDataText}
         </div>
       )}
-      {isLoading && <div>Loading ...</div>}
+      {isLoading && (
+        <div style={{ textAlign: "center", marginTop: "20px" }}>
+          Loading ...
+        </div>
+      )}
       {isError && isQueryError(error) && <p>{error?.message}</p>}
-      {isSuccess && (targetList?.length < 1 || targetList[0] === undefined) && (
+      {isSuccess && !(targetList?.length < 1 || targetList[0] === undefined) && (
         <GridContainer gridColumnCount={count}>
           {targetList?.map((target, idx) => (
             <CardComponent

@@ -1,16 +1,12 @@
 import styled from "@emotion/styled";
 import { useNavigate, useParams } from "react-router-dom";
-import { MdLocationOn } from "react-icons/md";
+import { MdLocationOn, MdArrowBack } from "react-icons/md";
 import { Helmet } from "react-helmet-async";
+import { useState } from "react";
 import { REGIONLIST } from "../../utils/constants/constant";
 import { pixelToRem } from "../../utils/functions/util";
 import Container from "../../components/atoms/Container";
-import { IPlace } from "../../utils/interfaces/places.interface";
-import { useEffect, useState } from "react";
-import { AxiosError, AxiosResponse } from "axios";
-import axiosInstance from "../../utils/apis/api";
 import { placeApis } from "../../utils/apis/placeApis";
-import { useQuery } from "react-query";
 import { MemoInfiniteList } from "../../components/modules/infinite/ParamsInfiniteList";
 import { MemoCard } from "./Card";
 import Skeleton from "./Skeleton";
@@ -35,7 +31,6 @@ const NearbyMyLocationBtn = styled.button`
   height: ${pixelToRem(30)};
   border-radius: ${pixelToRem(10)};
   background: ${(props) => props.theme.colors.mainDark};
-  padding: ${pixelToRem(3)};
   margin-top: ${pixelToRem(7)};
   color: ${(props) => props.theme.colors.gray0};
   font-size: ${(props) => props.theme.fontSizes.s1};
@@ -106,7 +101,9 @@ function PlaceListPage() {
       </Helmet>
       <Container hasPadding>
         <TitleGroup>
-          <div style={{ width: "100%", textAlign: "left" }}>지도 가기</div>
+          <div style={{ width: "100%", textAlign: "left" }}>
+            <MdArrowBack size="30" />
+          </div>
           <ToggleGroup>
             <button
               type="button"
@@ -124,7 +121,6 @@ function PlaceListPage() {
             </button>
           </ToggleGroup>
           <h1 className="main">{REGIONLIST[Number(regionId)]}</h1>
-          <h1>현재 발급 가능한 00 곳의 스팟이 있어요 !</h1>
           <div style={{ width: "100%", textAlign: "right" }}>
             <NearbyMyLocationBtn onClick={moveToMyLocation}>
               <MdLocationOn />

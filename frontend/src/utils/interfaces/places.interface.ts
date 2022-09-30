@@ -11,10 +11,10 @@ export interface IPlace {
   type: number;
   amount: number;
   enableStickerList: ISticker[];
-  distinctStickerList: ISticker[];
-  qrImage:string,
+  distinctStickerList: IDistinctSticker[];
+  qrImage: string;
   posterImage: string;
-  code: string,
+  code: string;
 }
 
 export interface ISticker {
@@ -22,6 +22,14 @@ export interface ISticker {
   tokenId: number;
   tokenName: string;
   tokenURL: string;
+}
+
+export interface IDistinctSticker {
+  stickerId: number;
+  tokenId: number;
+  tokenName: string;
+  tokenURL: string;
+  amount: number;
 }
 
 export interface ICoordinate {
