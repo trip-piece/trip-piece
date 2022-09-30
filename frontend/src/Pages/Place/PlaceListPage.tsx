@@ -89,6 +89,9 @@ function PlaceListPage() {
   const moveToMyLocation = () => {
     navigate(`/places/list/mylocation`);
   };
+  const moveToMap = () => {
+    navigate(`/places/map`);
+  };
 
   const changeType = (type: number) => {
     setType(type);
@@ -102,7 +105,7 @@ function PlaceListPage() {
       <Container hasPadding>
         <TitleGroup>
           <div style={{ width: "100%", textAlign: "left" }}>
-            <MdArrowBack size="30" />
+            <MdArrowBack size="30" onClick={moveToMap} />
           </div>
           <ToggleGroup>
             <button
@@ -135,7 +138,7 @@ function PlaceListPage() {
               queryKey={["spotList"]}
               CardComponent={MemoCard}
               SkeletonCardComponent={Skeleton}
-              zeroDataText="NFT 스티커 발급 가능한 스팟이 없습니다."
+              zeroDataText="발급 가능한 스팟이 없습니다."
               count={1}
               listName="spotList"
             />
@@ -148,7 +151,7 @@ function PlaceListPage() {
               queryKey={["festivalList"]}
               CardComponent={MemoCard}
               SkeletonCardComponent={Skeleton}
-              zeroDataText="NFT 스티커 발급 가능한 축제가 없습니다."
+              zeroDataText="발급 가능한 축제가 없습니다."
               count={1}
               listName="festivalList"
             />
