@@ -208,8 +208,8 @@ type FormValues = {
 };
 
 function AdminPage() {
-  const [sstartDate, setSStartDate] = useState<Date | null>(new Date());
-  const [sendDate, setSEndDate] = useState<Date | null>(new Date());
+  const [startDate, setStartDate] = useState<Date | null>(new Date());
+  const [endDate, setEndDate] = useState<Date | null>(new Date());
   const [loading, setLoading] = useState<boolean>(true);
   const [NFTDetailList, setNFTDetailList] = useState<TokenDetail[]>([]);
   const [NFTList, setNFTList] = useState<NFT[]>([]);
@@ -230,24 +230,24 @@ function AdminPage() {
   };
 
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
-    if (!sstartDate || !sendDate) return;
+    if (!startDate || !endDate) return;
     if (type !== 1 && type !== 0) return;
     if (!posterImage) return;
     const stickerList: React.SetStateAction<Sticker[]> = [];
     checked.map((item) => {
       const sticker = {
-        tokenId: NFTList[item].tokenId,
+        tokenId: Number(NFTList[item].tokenId),
         tokenURL: NFTList[item].tokenURI,
         tokenName: NFTDetailList[item].tokenName,
       };
       stickerList.push(sticker);
     });
-    const startDate = changeDateFormatToHyphen(sstartDate);
-    const endDate = changeDateFormatToHyphen(sendDate);
+    const sstartDate = changeDateFormatToHyphen(startDate);
+    const sendDate = changeDateFormatToHyphen(endDate);
     const body = {
       place: {
-        startDate,
-        endDate,
+        sstartDate,
+        sendDate,
         type,
         stickerList,
         ...data,
@@ -342,23 +342,9 @@ function AdminPage() {
     } = event;
     const file = files && files[0];
     if (file) {
-      import("../../utils/functions/changeFileType").then(async (change) => {
-        const resizedFile = await change.resizeImage(file);
-        setPosterImage(resizedFile);
-        encodeFileToBase64(resizedFile);
-      });
+      setPosterImage(file);
     }
   };
-
-  const encodeFileToBase64 = useCallback((fileBlob: File) => {
-    if (!fileBlob) return;
-    const reader = new FileReader();
-    reader.readAsDataURL(fileBlob);
-    reader.onload = () => {
-      const tmpImage = reader.result as string;
-      setImageSrc(tmpImage);
-    };
-  }, []);
 
   return (
     <>
@@ -449,20 +435,20 @@ function AdminPage() {
           />
           <Flex>
             <DatePicker
-              selected={sstartDate}
-              onChange={(date) => setSStartDate(date)}
+              selected={startDate}
+              onChange={(date) => setStartDate(date)}
               selectsStart
-              startDate={sstartDate}
-              endDate={sendDate}
+              startDate={startDate}
+              endDate={endDate}
               dateFormat="yyyy-MM-dd"
             />
             <DatePicker
-              selected={sendDate}
-              onChange={(date) => setSEndDate(date)}
+              selected={endDate}
+              onChange={(date) => setEndDate(date)}
               selectsEnd
-              startDate={sstartDate}
-              endDate={sendDate}
-              minDate={sstartDate}
+              startDate={startDate}
+              endDate={endDate}
+              minDate={startDate}
               dateFormat="yyyy-MM-dd"
             />
           </Flex>
@@ -508,7 +494,7 @@ function AdminPage() {
             <SubmitButton
               color="mainLight"
               type="submit"
-              disabled={!sstartDate || !sendDate}
+              disabled={!startDate || !endDate}
             >
               등록
             </SubmitButton>
