@@ -1,10 +1,10 @@
 import styled from "@emotion/styled";
-import { memo } from "react";
+import { memo, useState } from "react";
 // import { InfiniteData, QueryObserverResult } from "react-query";
-import { Link } from "react-router-dom";
-import { BsFillBookmarkHeartFill } from "react-icons/bs";
-import { BsBookmarkHeart } from "react-icons/bs";
- import { frameApis } from "../../utils/apis/frameApis";
+import { Link, useNavigate } from "react-router-dom";
+import { BsFillBookmarkHeartFill, BsBookmarkHeart } from "react-icons/bs";
+import { frameApis } from "../../utils/apis/frameApis";
+import axiosInstance from "../../utils/apis/api";
 
 interface FrameProps {
   frame: {
@@ -37,7 +37,7 @@ const Container = styled.div`
   background-color: transparent;
 `;
 
-const LinkContainer = styled(Link)`
+const LiContainer = styled.div`
   height: 100%;
   display: block;
   position: relative;
@@ -45,7 +45,14 @@ const LinkContainer = styled(Link)`
 
   .scrapicon {
     height: auto;
-    width: 15%;
+    width: 20%;
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+  }
+  .unscrapicon {
+    height: auto;
+    width: 20%;
     position: absolute;
     top: 1rem;
     left: 1rem;
@@ -60,21 +67,59 @@ const LinkContainer = styled(Link)`
   }
 `;
 function Card({ frame }: FrameProps) {
+  const [scrap, setScrap] = useState<boolean>(frame.isScrapped);
+  // const checkScrap = () => {
+  //   if (frame.isScrapped) {
+  //     <BsFillBookmarkHeartFill className="scrapicon" />;
+  //   } else {
+  //     <BsBookmarkHeart className="unscrapicon" />;
+  //   }
+  // };
+  // const postSaveFrame = (frameId: number) => {
+  //   const body = {
+  //     frameId,
+  //   };
+  //   axiosInstance.post(frameApis.saveFrame, body);
+  // };
+
+  const changeScrap = () => {
+    // if (scrap === false) {
+    //   // 스크랩 설정하는 api 요청
+    // } else {
+    //   // 스크랩 해제하는 api 요청
+    // }
+    setScrap(!scrap);
+  };
+
+  const navigate = useNavigate();
+  const moveToFrame = () => {
+    navigate(`/frames/${frame.frameId}`);
+  };
+
   return (
     <Container>
-      <LinkContainer to={`${frame.frameId}`}>
-        {/* <div onClick={frameApis.save}>
-          {frame.isScrapped ? (
-            <BsFillBookmarkHeartFill className="scrapicon" />
-          ) : (
+      <LiContainer>
+        {scrap ? (
+          <div onClick={changeScrap}>
+            <BsFillBookmarkHeartFill className="scrapicon" />{" "}
+          </div>
+        ) : (
+          <div onClick={changeScrap}>
             <BsBookmarkHeart className="unscrapicon" />
-          )}
-        </div> */}
+          </div>
+        )}
 
-        <img src={frame.image} alt="기본이미지" />
-      </LinkContainer>
+        {/* <button type="button" onClick={() => postSaveFrame(frame.frameId)}>
+          gdgd
+        </button> */}
+
+        <div onClick={moveToFrame}>
+          <img src={frame.image} alt="기본이미지" />
+        </div>
+      </LiContainer>
     </Container>
   );
 }
+
 export default Card;
 export const MemoCard = memo(Card);
