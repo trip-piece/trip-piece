@@ -2,5 +2,10 @@
 import { setupWorker } from "msw";
 import { diaryHandlers } from "./diaryHandlers";
 import { handlers } from "./handlers";
+import { scrapHandlers } from "./scrapsDumy";
 
-export const worker = setupWorker(...handlers, ...diaryHandlers);
+export const worker = setupWorker(
+  ...handlers,
+  ...diaryHandlers,
+  ...scrapHandlers,
+);

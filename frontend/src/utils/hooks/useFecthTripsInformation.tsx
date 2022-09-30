@@ -21,7 +21,7 @@ const useFetchTripsInformation = ({
         const {
           result: { last },
         } = lastPage;
-        if (last) return lastPage.page + 1;
+        if (!last) return lastPage.page + 1;
         return false;
       }
       return false;

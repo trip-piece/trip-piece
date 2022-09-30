@@ -1,4 +1,3 @@
-import React from "react";
 import ReactDOM from "react-dom/client";
 import { RecoilRoot } from "recoil";
 import { HelmetProvider } from "react-helmet-async";
@@ -12,11 +11,11 @@ import { ethers } from "ethers";
 import App from "./App";
 import GlobalStyle from "./style/GlobalStyle";
 import theme, { themes } from "./style/theme";
-import { worker } from "./mocks/browser";
+// import { worker } from "./mocks/browser";
 
-if (process.env.NODE_ENV === "development") {
-  worker.start();
-}
+// if (process.env.NODE_ENV === "development") {
+//   worker.start();
+// }
 
 const getLibrary = (provider: any): ethers.providers.Web3Provider => {
   const library = new ethers.providers.Web3Provider(provider);

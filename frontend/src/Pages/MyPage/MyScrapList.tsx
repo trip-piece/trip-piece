@@ -70,6 +70,7 @@ function MyScrapList() {
           count={3}
           listName="scrapList"
         />
+        {userApis.getMyScraps}
       </StickerContainer>
     </StickerBox>
   );

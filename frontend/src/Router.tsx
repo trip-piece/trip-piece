@@ -1,7 +1,7 @@
 import styled from "@emotion/styled";
 import React, { lazy } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { MyPage } from "./Pages";
+import { MySticker, MyScrap } from "./Pages";
 import MarketListPage from "./Pages/Market/MarketListPage";
 import MarketMainPage from "./Pages/Market/MarketMainPage";
 import MarketRegisterPage from "./Pages/Market/MarketRegisterPage";
@@ -25,9 +25,10 @@ const DiaryManagement = lazy(
 const DiaryDecoration = lazy(
   () => import("./Pages/DiaryDecoration/DiaryDecorationPage"),
 );
-const StickerMapMain = lazy(() => import("./Pages/StickerMap/StickerMapMain"));
-const StickerMapFiltering = lazy(
-  () => import("./Pages/StickerMap/SpotFestivalMap"),
+const PlaceMainPage = lazy(() => import("./Pages/Place/PlaceMainPage"));
+const PlaceListPage = lazy(() => import("./Pages/Place/PlaceListPage"));
+const MyLocationListPage = lazy(
+  () => import("./Pages/Place/MyLocationListPage"),
 );
 
 const NftResponse = lazy(() => import("./Pages/QrScan/NftResponse"));
@@ -63,9 +64,11 @@ function Router() {
         <Route path="market/:regionId" element={<MarketListPage />} />
         <Route path="market/:marketId/detail" element={<StickerDetailPage />} />
         <Route path="market/register" element={<MarketRegisterPage />} />
-        <Route path="user/scraps" element={<MyPage />} />
-        <Route path="places/map" element={<StickerMapMain />} />
-        <Route path="places/information" element={<StickerMapFiltering />} />
+        <Route path="user/scraps" element={<MyScrap />} />
+        <Route path="user/stickers" element={<MySticker />} />
+        <Route path="places/map" element={<PlaceMainPage />} />
+        <Route path="places/:regionId/list" element={<PlaceListPage />} />
+        <Route path="places/list/mylocation" element={<MyLocationListPage />} />
         <Route path="qrscan" element={<QrScanner />} />
         <Route path="/places/:placeId" element={<NftResponse />} />
       </Routes>
