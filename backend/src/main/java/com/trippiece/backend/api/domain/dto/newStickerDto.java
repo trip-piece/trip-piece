@@ -9,6 +9,9 @@ public class newStickerDto {
     private String tokenName;
     private String tokenURL;
 
+    public newStickerDto() {
+
+    }
     public newStickerDto(Sticker sticker) {
         this.tokenId = sticker.getTokenId();
         this.tokenName = sticker.getTokenName();
