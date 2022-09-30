@@ -95,7 +95,7 @@ function MyLocationListPage() {
             SkeletonCardComponent={Skeleton}
             zeroDataText="발급 가능한 위치가 없습니다."
             count={1}
-            listName="mylocationList"
+            listName="content"
           />
         </PlaceList>
       </Container>

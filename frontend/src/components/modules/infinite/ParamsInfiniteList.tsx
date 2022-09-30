@@ -82,7 +82,6 @@ function InfiniteList({
     [data],
   );
 
-  console.log(targetList);
   const refetchData = () => {
     refetch();
   };
