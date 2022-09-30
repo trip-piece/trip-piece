@@ -31,7 +31,7 @@ public class TripService {
     private final DateConverter dateConverter;
 
     @Transactional
-    public void addTrip(User user, TripRequestDto tripRequestDto) {
+    public void addTrip(User user, TripRequestDto.TripRegister tripRequestDto) {
         Region region = regionRepository.findById(tripRequestDto.getRegionId()).orElseThrow(() -> new CustomException(ErrorCode.DATA_NOT_FOUND));
         LocalDate convertStartDate = dateConverter.convert(tripRequestDto.getStartDate());
         LocalDate convertEndDate = dateConverter.convert(tripRequestDto.getEndDate());
@@ -57,7 +57,8 @@ public class TripService {
     }
 
     @Transactional
-    public int updateTrip(User user, final long tripId, TripRequestDto tripRequestDto) {
+    public int updateTrip(User user, TripRequestDto.TripEdit tripRequestDto) {
+        long tripId = tripRequestDto.getTripId();
         int resultCode = 200;
         Trip trip = tripRepository.findById(tripId).orElseThrow(() -> new CustomException(ErrorCode.DATA_NOT_FOUND));
         Region region = regionRepository.findById(tripRequestDto.getRegionId()).orElseThrow(() -> new CustomException(ErrorCode.DATA_NOT_FOUND));

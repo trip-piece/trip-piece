@@ -18,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.util.Map;
 
 @Api(value = "여행티켓 관련 API", tags = {"Trip"})
 @RestController
@@ -34,7 +35,7 @@ public class TripController {
 
     @PostMapping
     @ApiOperation(value = "여행 티켓추가", notes = "가고자 하는 여행지와 일정을 추가한다.")
-    public ResponseEntity<?> addTrip(@RequestHeader("ACCESS_TOKEN") final String accessToken, @RequestBody TripRequestDto tripRequestDto) {
+    public ResponseEntity<?> addTrip(@RequestHeader("ACCESS_TOKEN") final String accessToken, @RequestBody TripRequestDto.TripRegister tripRequestDto) {
         try {
             long userId = jwtTokenUtil.getUserIdFromToken(accessToken);
             User user = userService.findOneUser(userId);
@@ -54,7 +55,8 @@ public class TripController {
 
     @DeleteMapping
     @ApiOperation(value = "여행 티켓 삭제", notes = "등록해 놓은 여행 일정을 삭제한다.")
-    public ResponseEntity<?> deleteTrip(@RequestHeader("ACCESS_TOKEN") final String accessToken, @PathVariable long tripId) {
+    public ResponseEntity<?> deleteTrip(@RequestHeader("ACCESS_TOKEN") final String accessToken, @RequestBody final Map<String, Long> request) {
+        long tripId = request.get("tripId");
         try {
             long userId = jwtTokenUtil.getUserIdFromToken(accessToken);
             User user = userService.findOneUser(userId);
@@ -74,11 +76,12 @@ public class TripController {
 
     @PatchMapping
     @ApiOperation(value = "여행 티켓 수정", notes = "등록한 여행 일정을 수정한다.")
-    public ResponseEntity<?> updateTrip(@RequestHeader("ACCESS_TOKEN") final String accessToken, @PathVariable("tripId") long tripId, @RequestBody TripRequestDto tripRequestDto) {
+    public ResponseEntity<?> updateTrip(@RequestHeader("ACCESS_TOKEN") final String accessToken, @RequestBody TripRequestDto.TripEdit tripRequestDto) {
+
         try {
             long userId = jwtTokenUtil.getUserIdFromToken(accessToken);
             User user = userService.findOneUser(userId);
-            int updateResult = tripService.updateTrip(user, tripId, tripRequestDto);
+            int updateResult = tripService.updateTrip(user, tripRequestDto);
             if (updateResult == 406)
                 return new ResponseEntity<String>("사용자가 티켓의 소유자가 아닙니다.", HttpStatus.NOT_ACCEPTABLE);
             else {

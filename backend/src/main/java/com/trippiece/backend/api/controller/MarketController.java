@@ -63,7 +63,7 @@ public class MarketController {
 
     @GetMapping("/{marketId}")
     @ApiOperation(value = "스티커 상세 조회", notes = "사용자가 클릭한 스티커 조회")
-    public ResponseEntity<?> getMarketStickerDetail(@RequestHeader("ACCESS_TOKEN") final String accessToken, @RequestParam long marketId) {
+    public ResponseEntity<?> getMarketStickerDetail(@RequestHeader("ACCESS_TOKEN") final String accessToken, @PathVariable(value="marketId") long marketId) {
         long userId = jwtTokenUtil.getUserIdFromToken(accessToken);
         User user = userService.findOneUser(userId);
         if (user == null) return new ResponseEntity<String>("로그인된 회원을 찾을 수 없습니다.", HttpStatus.NOT_FOUND);
