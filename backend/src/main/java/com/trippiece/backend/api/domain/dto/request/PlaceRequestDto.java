@@ -1,6 +1,7 @@
 package com.trippiece.backend.api.domain.dto.request;
 
 import com.trippiece.backend.api.domain.dto.StickerDto;
+import com.trippiece.backend.api.domain.dto.newStickerDto;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -27,7 +28,7 @@ public class PlaceRequestDto {
         private LocalDate endDate;
         private int type;
         private int amount;
-        private List<StickerDto> stickerList;
+        private List<newStickerDto> stickerList;
     }
 
     @Getter

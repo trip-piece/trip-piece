@@ -28,8 +28,10 @@ public class Sticker extends BaseEntity {
     private Place place;
 
     @Builder
-    public Sticker(long tokenId, Place place){
+    public Sticker(long tokenId, String tokenName, String tokenURL, Place place){
         this.tokenId=tokenId;
+        this.tokenName=tokenName;
+        this.tokenURL=tokenURL;
         this.place=place;
     }
 }
