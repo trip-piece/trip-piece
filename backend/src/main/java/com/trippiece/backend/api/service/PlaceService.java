@@ -2,6 +2,7 @@ package com.trippiece.backend.api.service;
 
 import com.trippiece.backend.api.domain.dto.DistinctStickerDto;
 import com.trippiece.backend.api.domain.dto.StickerDto;
+import com.trippiece.backend.api.domain.dto.newStickerDto;
 import com.trippiece.backend.api.domain.dto.request.PlaceRequestDto;
 import com.trippiece.backend.api.domain.dto.response.PlaceResponseDto;
 import com.trippiece.backend.api.domain.entity.*;
@@ -141,6 +142,7 @@ public class PlaceService {
                 .posterImage(posterImage)
                 .amount(request.getAmount())
                 .activated(activated)
+                .managerEmail(request.getManagerEmail())
                 .build();
         Place place = placeRepository.save(placeBuilder);
         if(activated) {
@@ -151,10 +153,12 @@ public class PlaceService {
             emailService.sendQRCode(place, qrImage);
         }
 
-        List<StickerDto> list = request.getStickerList();
-        for(StickerDto stickerDto : list) {
+        List<newStickerDto> list = request.getStickerList();
+        for(newStickerDto stickerDto : list) {
             Sticker sticker = Sticker.builder()
                     .tokenId(stickerDto.getTokenId())
+                    .tokenName(stickerDto.getTokenName())
+                    .tokenURL(stickerDto.getTokenURL())
                     .place(place)
                     .build();
             stickerRepository.save(sticker);
@@ -209,7 +213,7 @@ public class PlaceService {
             if(updateStickerList.size()!=0) {
                 for(StickerDto stickerDto : updateStickerList) {
                     Sticker sticker = stickerRepository.findById(stickerDto.getId()).orElseThrow(() -> new CustomException(ErrorCode.DATA_NOT_FOUND));
-                    stickerRepository.save(new Sticker(sticker.getTokenId(), place));
+                    stickerRepository.save(new Sticker(sticker.getTokenId(), stickerDto.getTokenName(), stickerDto.getTokenURL(), place));
                 }
             }
         }

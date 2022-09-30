@@ -43,7 +43,7 @@ public class DiaryController {
 
     @PostMapping("/write")
     @ApiOperation(value = "일기 추가", notes = "새로운 일기를 작성한다")
-    public ResponseEntity<?> addDiary(@RequestHeader("ACCESS_TOKEN") final String accessToken, @RequestPart(value = "diaryRequestDto") DiaryRequestDto.DiaryRegister diaryRegister, @RequestPart(value = "file", required = false) MultipartFile todayPhoto) throws IOException {
+    public ResponseEntity<?> addDiary(@RequestHeader("ACCESS_TOKEN") final String accessToken, @RequestPart(value = "diary") DiaryRequestDto.DiaryRegister diaryRegister, @RequestPart(value = "todayPhoto", required = false) MultipartFile todayPhoto) throws IOException {
         try {
             long userId = jwtTokenUtil.getUserIdFromToken(accessToken);
             User user = userService.findOneUser(userId);
@@ -74,7 +74,7 @@ public class DiaryController {
 
     @PostMapping("/decoration")
     @ApiOperation(value = "일기 꾸미기", notes = "일기를 보유스티커로 꾸미고 공유할거면 이미지화 해서 저장")
-    public ResponseEntity<?> decoDiary(@RequestHeader("ACCESS_TOKEN") final String accessToken, @RequestPart(value = "diaryRequestDto") DecoRequestDto.DecoRegister decoRequestDto, @RequestPart(value = "file", required = false) MultipartFile frameImage) throws IOException {
+    public ResponseEntity<?> decoDiary(@RequestHeader("ACCESS_TOKEN") final String accessToken, @RequestPart(value = "decoration") DecoRequestDto.DecoRegister decoRequestDto, @RequestPart(value = "frameImage", required = false) MultipartFile frameImage) throws IOException {
         try {
             long userId = jwtTokenUtil.getUserIdFromToken(accessToken);
             User user = userService.findOneUser(userId);
@@ -104,9 +104,9 @@ public class DiaryController {
     }
 
 
-    @PatchMapping
+    @PostMapping
     @ApiOperation(value = "일기 꾸미기 수정", notes = "일기 꾸민 스티커 위치 조정,추가,삭제 등 모두 수정")
-    public ResponseEntity<?> editDecoDiary(@RequestHeader("ACCESS_TOKEN") final String accessToken, @RequestPart(value = "diaryRequestDto") DecoRequestDto.DecoEdit decoRequestDto, @RequestPart(value = "file", required = false) MultipartFile frameImage) throws IOException {
+    public ResponseEntity<?> editDecoDiary(@RequestHeader("ACCESS_TOKEN") final String accessToken, @RequestPart(value = "decoration") DecoRequestDto.DecoEdit decoRequestDto, @RequestPart(value = "frameImage", required = false) MultipartFile frameImage) throws IOException {
 
         try {
             long userId = jwtTokenUtil.getUserIdFromToken(accessToken);
@@ -138,7 +138,7 @@ public class DiaryController {
 
     @GetMapping
     @ApiOperation(value = "일기조회", notes = "작성한 일기 내용을 조회")
-    public ResponseEntity<?> getDiary(@RequestHeader("ACCESS_TOKEN") final String accessToken, @PathVariable("trip_id") long tripId, @PathVariable("date") LocalDate date) {
+    public ResponseEntity<?> getDiary(@RequestHeader("ACCESS_TOKEN") final String accessToken, @RequestParam final long tripId, @RequestParam String date) {
         long userId = jwtTokenUtil.getUserIdFromToken(accessToken);
         User user = userService.findOneUser(userId);
         if (user == null) return new ResponseEntity<String>("로그인된 회원을 찾을 수 없습니다.", HttpStatus.NOT_FOUND);
@@ -149,7 +149,7 @@ public class DiaryController {
 
     @PostMapping("/edit")
     @ApiOperation(value = "일기 내용 수정", notes = "일기 내용 수정한다")
-    public ResponseEntity<?> editDiary(@RequestHeader("ACCESS_TOKEN") final String accessToken, @RequestPart(value = "diaryRequestDto") DiaryRequestDto.DiaryEdit diaryEdit, @RequestPart(value = "file", required = false) MultipartFile todayPhoto) throws IOException {
+    public ResponseEntity<?> editDiary(@RequestHeader("ACCESS_TOKEN") final String accessToken, @RequestPart(value = "diary") DiaryRequestDto.DiaryEdit diaryEdit, @RequestPart(value = "todayPhoto", required = false) MultipartFile todayPhoto) throws IOException {
         try {
             long userId = jwtTokenUtil.getUserIdFromToken(accessToken);
             User user = userService.findOneUser(userId);
