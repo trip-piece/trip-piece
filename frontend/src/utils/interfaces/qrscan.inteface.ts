@@ -8,3 +8,7 @@ export interface ContentProps {
   stickerName?: string | null;
   stickerUrl?: string | null;
 }
+
+export interface CodeProps {
+  id: number;
+}

@@ -1,9 +1,9 @@
 import React from "react";
 import styled from "@emotion/styled";
+import { useNavigate } from "react-router-dom";
 import { ReactComponent as BookMarkIcon } from "../../assets/svgs/bookmarkIcon.svg";
 import { ReactComponent as StickerIcon } from "../../assets/svgs/stickerIcon.svg";
 import { pixelToRem } from "../../utils/functions/util";
-import { Link, useNavigate } from "react-router-dom";
 
 const TapBox = styled.div`
   box-shadow: 0 4px 4px 2px rgb(0 0 0/25%);
@@ -48,7 +48,7 @@ function Tap() {
     <TapBox>
       <LeftTap>
         <TapButton onClick={moveToSticker}>
-          <StickerIcon width="32" height="32" />
+          <StickerIcon width="32" height="32" color="#2C5166" />
         </TapButton>
       </LeftTap>
       <RightTap>

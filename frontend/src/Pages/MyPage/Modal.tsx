@@ -96,7 +96,6 @@ export default function NestedModal() {
     // validationChk = true;
     console.log(errors);
     if (data.nickname.length >= 1 && data.nickname.length <= 8) {
-      console.log(data.nickname.length);
       const response = await axiosInstance.patch(userApis.modifyNickname, data);
 
       if (response.status === 200) {
