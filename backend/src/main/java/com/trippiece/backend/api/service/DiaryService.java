@@ -48,6 +48,7 @@ public class DiaryService {
                 .backgroundColor(diaryRegister.getBackgroundColor())
                 .weather(diaryRegister.getWeather())
                 .todayPhoto(diaryRegister.getTodayPhoto())
+                .ratio(diaryRegister.getRatio())
                 .trip(trip)
                 .user(user)
                 .build();

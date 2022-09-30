@@ -40,6 +40,9 @@ public class Diary extends BaseEntity {
     @Column(nullable = false, columnDefinition="TINYINT")
     private int weather;
 
+    @Column(nullable = false)
+    private float ratio;
+
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     @OnDelete(action= OnDeleteAction.CASCADE)
@@ -52,7 +55,7 @@ public class Diary extends BaseEntity {
 
     @Builder
     public Diary(String content, LocalDateTime createDate, String todayPhoto,LocalDate diaryDate,String location,
-                 int fontType, int backgroundColor, int weather, User user, Trip trip){
+                 int fontType, int backgroundColor, int weather, float ratio, User user, Trip trip){
       this.content=content;
       this.createDate = createDate;
       this.todayPhoto = todayPhoto;
@@ -61,6 +64,7 @@ public class Diary extends BaseEntity {
       this.fontType = fontType;
       this.backgroundColor = backgroundColor;
       this.weather = weather;
+      this.ratio = ratio;
       this.user = user;
       this.trip = trip;
     }
@@ -71,6 +75,7 @@ public class Diary extends BaseEntity {
         if(!this.content.equals(diaryEdit.getWeather())) this.weather = diaryEdit.getWeather();
         if(this.fontType!= diaryEdit.getFontType()) this.fontType = diaryEdit.getFontType();
         if(this.backgroundColor!= diaryEdit.getBackgroundColor()) this.backgroundColor = diaryEdit.getBackgroundColor();
+        if(this.ratio!= diaryEdit.getRatio()) this.ratio = diaryEdit.getRatio();
         if(this.trip.getId()!=diaryEdit.getTripId()) this.trip = trip;
     }
 }
