@@ -1,54 +1,80 @@
-// import React, { useState } from "react";
+import React, { useState } from "react";
 import styled from "@emotion/styled";
 import { Helmet } from "react-helmet-async";
 import { Swiper, SwiperSlide } from "swiper/react";
-
-// import { MemoInfiniteList } from "../../components/modules/infinite/InfiniteList";
-// import { frameApis } from "../../utils/apis/frameApis";
-// import { FrameCard } from "./Card";
-// import Skeleton from "./Skeleton";
-
-import * as React from "react";
 import { Global } from "@emotion/react";
 import CssBaseline from "@mui/material/CssBaseline";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import SwipeableDrawer from "@mui/material/SwipeableDrawer";
+import RegionButton from "./RegionButton";
 import Card from "./Card";
 import { REGIONLIST } from "../../utils/constants/constant";
 
 const drawerBleeding = 56;
 
-interface Props {
-  /**
-   * Injected by the documentation to work in an iframe.
-   * You won't need it on your project.
-   */
-  window?: () => Window;
-}
 const Root = styled.div`
-  height: "100%";
+  height: "90%";
   background: ${(props) => props.theme.colors.gray100};
 `;
 
 const StyledBox = styled(Box)`
   background: ${(props) => props.theme.colors.white};
-`;
-const ButtonList = styled.div`
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  row-gap: 10px;
-  column-gap: 10px;
-  .RegionButton {
-    font-size: 5vw;
-    width: 100%;
-    height: 3rem;
-    border-radius: 25px;
-    border: 2px solid ${(props) => props.theme.colors.mainDark};
-    background: ${(props) => props.theme.colors.white};
 
-    &.active {
+  .CheckAll {
+    width: 30%;
+    height: 10%;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    font-size: ${(props) => props.theme.fontSizes.h4};
+    border-radius: 25px;
+    background-color: ${(props) => props.theme.colors.mainDark};
+    color: ${(props) => props.theme.colors.white};
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid ${(props) => props.theme.colors.mainDark};
+  }
+
+  .noCheckAll {
+    width: 30%;
+    height: 10%;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    font-size: ${(props) => props.theme.fontSizes.h4};
+    border-radius: 25px;
+    background-color: ${(props) => props.theme.colors.white};
+    color: ${(props) => props.theme.colors.mainDark};
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid ${(props) => props.theme.colors.mainDark};
+  }
+
+  .ButtonList {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    row-gap: 10px;
+    column-gap: 10px;
+    height: 60%;
+  }
+  .searchPart {
+    width: 100%;
+    height: 20%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin-top: 1rem;
+    border-top: 1px solid ${(props) => props.theme.colors.gray300};
+
+    .searchButton {
+      width: 100%;
+      height: 60%;
+      text-align: center;
+      background: yellow;
+      border-radius: 15px;
       color: ${(props) => props.theme.colors.white};
+      font-size: ${(props) => props.theme.fontSizes.h4};
       background: ${(props) => props.theme.colors.mainDark};
     }
   }
@@ -93,16 +119,52 @@ const Container = styled.section`
     }
   }
 `;
+interface Props {
+  /**
+   * Injected by the documentation to work in an iframe.
+   * You won't need it on your project.
+   */
+  window?: () => Window;
+}
 
 function FrameSharePage(props: Props) {
   const { window } = props;
   const [open, setOpen] = React.useState(false);
-  const [btnActive, setBtnActive] = React.useState("");
+  const [isAll, setIsAll] = useState<boolean>(false);
+  const [scrap, setScrap] = useState<boolean>(false);
+
   const toggleDrawer = (newOpen: boolean) => () => {
     setOpen(newOpen);
   };
   const container =
     window !== undefined ? () => window().document.body : undefined;
+
+  const [checkedItems, setCheckedItems] = useState<string[]>([]);
+
+  const checkedItemHandler = (code: any, isChecked: any) => {
+    if (isChecked) {
+      // 체크 추가할때
+      setCheckedItems([...checkedItems, code]);
+    } else if (!isChecked && checkedItems.find((one: any) => one === code)) {
+      // 체크해제할때checkedItem에 있는 경우
+      const filter = checkedItems.filter((one: any) => one !== code);
+      setCheckedItems([...filter]);
+    }
+  };
+  const onCheckAll = (checked: boolean) => {
+    if (checked) {
+      const checkedItemArray: ((prevState: never[]) => never[]) | string[] = [];
+      REGIONLIST.forEach((region) => checkedItemArray.push(region));
+      setCheckedItems(checkedItemArray);
+      setIsAll(true);
+    } else {
+      setIsAll(false);
+      setCheckedItems([]);
+    }
+  };
+  const scrapAddHandler = () => {
+    setScrap(!scrap);
+  };
 
   const result = [
     {
@@ -141,13 +203,7 @@ function FrameSharePage(props: Props) {
       diaryId: 123.5,
     },
   ];
-  // const regionList = useState<[] | undefined>([0]);
 
-  const toggleActive = (e) => {
-    setBtnActive(() => {
-      return e.target.value;
-    });
-  };
   return (
     <>
       <Helmet>
@@ -223,20 +279,36 @@ function FrameSharePage(props: Props) {
                 overflow: "auto",
               }}
             >
-              <ButtonList>
-                {REGIONLIST.map((region, idx) => (
-                  <button
-                    type="button"
-                    value={idx}
-                    className={`RegionButton${
-                      idx == btnActive ? " active" : ""
-                    }`}
-                    onClick={toggleActive}
-                  >
-                    {region}
-                  </button>
-                ))}
-              </ButtonList>
+              <label onClick={onCheckAll}>
+                <input
+                  type="checkbox"
+                  name="meal"
+                  onChange={(e) => onCheckAll(e.target.checked)}
+                  hidden
+                />
+                {isAll ? (
+                  <p className="CheckAll">전제해제</p>
+                ) : (
+                  <p className="noCheckAll">전체선택</p>
+                )}
+              </label>
+              <div className="ButtonList">
+                {REGIONLIST.map(
+                  (region, idx) =>
+                    idx !== 0 && (
+                      <RegionButton
+                        data={region}
+                        checkedItems={checkedItems}
+                        checkedItemHandler={checkedItemHandler}
+                      />
+                    ),
+                )}
+              </div>
+              <div className="searchPart">
+                <button type="button" className="searchButton">
+                  스티커 검색!
+                </button>
+              </div>
             </StyledBox>
           </SwipeableDrawer>
         </Root>
