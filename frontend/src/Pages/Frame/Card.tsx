@@ -75,19 +75,28 @@ function Card({ frame }: FrameProps) {
   //     <BsBookmarkHeart className="unscrapicon" />;
   //   }
   // };
-  // const postSaveFrame = (frameId: number) => {
-  //   const body = {
-  //     frameId,
-  //   };
-  //   axiosInstance.post(frameApis.saveFrame, body);
-  // };
+  const postSaveFrame = (frameId: number) => {
+    const body = {
+      frameId,
+    };
+    axiosInstance.post(frameApis.saveFrame, body);
+  };
+
+  const deleteScrappedFrame = (frameId: number) => {
+    const body = {
+      frameId,
+    };
+    axiosInstance.delete(frameApis.deleteScrappedFrame, { data: body });
+  };
 
   const changeScrap = () => {
-    // if (scrap === false) {
-    //   // 스크랩 설정하는 api 요청
-    // } else {
-    //   // 스크랩 해제하는 api 요청
-    // }
+    if (scrap === false) {
+      // 스크랩 설정하는 api 요청
+      postSaveFrame(frame.frameId);
+    } else {
+      // 스크랩 해제하는 api 요청
+      deleteScrappedFrame(frame.frameId);
+    }
     setScrap(!scrap);
   };
 
