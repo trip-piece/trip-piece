@@ -260,7 +260,7 @@ function AdminPage() {
       new Blob([bodyString], { type: "application/json" }),
     );
     if (posterImage) {
-      formData.append("file", posterImage);
+      formData.append("posterImage", posterImage);
     }
     let response;
     response = await axiosInstance.post(placeApis.place, formData, {
