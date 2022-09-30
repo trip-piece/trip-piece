@@ -245,13 +245,11 @@ function AdminPage() {
     const sstartDate = changeDateFormatToHyphen(startDate);
     const sendDate = changeDateFormatToHyphen(endDate);
     const body = {
-      place: {
-        sstartDate,
-        sendDate,
-        type,
-        stickerList,
-        ...data,
-      },
+      sstartDate,
+      sendDate,
+      type,
+      stickerList,
+      ...data,
     };
     const formData = new FormData();
     const bodyString = JSON.stringify(body);
