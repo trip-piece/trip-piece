@@ -42,6 +42,9 @@ public class DiaryRequestDto {
         @ApiModelProperty(name = "오늘의포토", example = "임상빈.png")
         String todayPhoto;
 
+        @ApiModelProperty(name = "화면 비율", example = "69.69")
+        float ratio;
+
     }
 
     @Getter
@@ -71,6 +74,9 @@ public class DiaryRequestDto {
 
         @ApiModelProperty(name = "티켓아이디", example = "1")
         long tripId;
+
+        @ApiModelProperty(name = "화면 비율", example = "69.69")
+        float ratio;
     }
 
 
