@@ -327,17 +327,11 @@ function MainPage() {
         setIsProgress(2);
       } else setIsProgress(1);
     }
-  }, [data1]);
-
-  useEffect(() => {
-    if (data2) {
+    if (data2?.data) {
       if (data2.data.length) {
         setPlaces(data2.data);
       }
     }
-  }, [data2]);
-
-  useEffect(() => {
     setLoading(true);
   }, [data1, data2]);
 
@@ -375,22 +369,6 @@ function MainPage() {
               }}
             >
               <p>Loading...</p>
-            </div>
-          )}
-          {!isLoading1 && !isSuccess1 && (
-            <div
-              style={{
-                width: "90%",
-                border: "0.188rem solid #F8F8F8",
-                borderRadius: "1.25rem",
-                textAlign: "center",
-                color: "#F8F8F8",
-                display: "flex",
-                justifyContent: "center",
-                flexDirection: "column",
-              }}
-            >
-              <p>ERROR !</p>
             </div>
           )}
           {isSuccess1 && loading && (
@@ -645,24 +623,6 @@ function MainPage() {
                 }}
               >
                 <p>Loading...</p>
-              </div>
-            )}
-            {!isLoading2 && !isSuccess2 && (
-              <div
-                style={{
-                  width: "100%",
-                  height: "80%",
-                  display: "flex",
-                  flexDirection: "column",
-                  textAlign: "center",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  borderRadius: "20px",
-                  border: "1px solid lightgray",
-                  marginTop: "7px",
-                }}
-              >
-                <p>ERROR !</p>
               </div>
             )}
             {isSuccess2 && loading && (
