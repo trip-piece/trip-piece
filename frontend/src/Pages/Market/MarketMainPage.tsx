@@ -9,7 +9,9 @@ import { useNavigate } from "react-router-dom";
 import { REGIONLIST } from "../../utils/constants/constant";
 import { marketApis } from "../../utils/apis/marketApis";
 import axiosInstance from "../../utils/apis/api";
-import { QueryFunctionContext } from "react-query";
+import { QueryFunctionContext, useQuery } from "react-query";
+import { getStickerList } from "../../utils/interfaces/markets.interface";
+import { AxiosError, AxiosResponse } from "axios";
 
 const Container = styled.article`
   min-height: 90vh;
@@ -176,18 +178,18 @@ function MarketMainPage() {
   //   },
   // ];
 
-  const url: string = marketApis.marketList("hello", 1, 1);
-  const [hasError, setHasError] = useState(false);
-  const marketList = async ({ pageParam = 0 }: QueryFunctionContext) => {
-    try {
-      const res = await axiosInstance.get(`${url}&page=${pageParam}`);
-      return { result: res?.data, page: pageParam };
-    } catch (_) {
-      setHasError(true);
-      return undefined;
-    }
-  };
-  console.log(typeof marketList);
+  const res = useQuery<AxiosResponse<getStickerList>, AxiosError>(
+    ["marketStickerList"],
+    () => axiosInstance.get(marketApis.getMarketList("", 0, 0)),
+    {
+      refetchOnWindowFocus: false,
+      refetchOnReconnect: false,
+      refetchOnMount: true,
+    },
+  );
+
+  const marketList = res.data;
+  console.log(marketList);
   const region = REGIONLIST;
 
   const [keyword, setKeyword] = useState("");
@@ -234,14 +236,14 @@ function MarketMainPage() {
             <button onClick={() => moveToListPage(0)}>전체 보기</button>
           </div>
           <div className="CardList">
-            <Swiper slidesPerView={1.2} spaceBetween={13}>
+            {/* <Swiper slidesPerView={1.2} spaceBetween={13}>
               {marketList.length &&
                 marketList.map((sticker, idx) => (
                   <SwiperSlide key={idx}>
                     <Card sticker={sticker} />
                   </SwiperSlide>
                 ))}
-            </Swiper>
+            </Swiper> */}
           </div>
         </CardContainer>
         <CateContainer>
