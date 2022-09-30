@@ -18,3 +18,15 @@ export interface IDiaryListState<T> {
 export interface AccessIDiaryListState<T> {
   keyName: keyof IDiaryListState<T>;
 }
+
+export interface StickerProps {
+  tokenId: number;
+  tokenURI: string;
+}
+export interface ISticker extends StickerProps {
+  x: number;
+  y: number;
+  isDragging: boolean;
+  originX: number;
+  originY: number;
+}
