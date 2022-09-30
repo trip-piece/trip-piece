@@ -9,7 +9,9 @@ import java.time.LocalDate;
 public class DateConverter {
 
     public LocalDate convert(String date) {
+        System.out.println(date);
         LocalDate convertedDate = LocalDate.parse(date);
+        System.out.println(convertedDate);
         return convertedDate;
     }
 }
