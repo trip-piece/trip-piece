@@ -7,7 +7,8 @@ import { IChildren } from "../../utils/interfaces/common.interface";
 const DiaryContents = styled.div<DiaryContentsProps>`
   position: relative;
   white-space: pre-line;
-  min-height: 60vh;
+  /* min-height: 60vh; */
+  height: fit-content;
   width: 100%;
   background-color: ${(props) => DIARY_COLOR_LIST[props.backgroundColor]};
   font-family: ${(props) => FONTTYPELIST[props.fontType]};

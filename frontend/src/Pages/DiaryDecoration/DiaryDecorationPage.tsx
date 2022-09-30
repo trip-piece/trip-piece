@@ -72,18 +72,8 @@ const StickerZone = styled.div`
   transition: all 0.8s ease-in;
 `;
 
-const Picture = styled.picture`
-  display: flex;
-  justify-content: center;
-`;
-
 const ButtonListContainer = styled.div`
   margin-bottom: 125px;
-`;
-
-const DiaryImg = styled.img`
-  max-width: 100%;
-  width: 100%;
 `;
 
 const StickerImg = styled.img<{ isDragging: boolean }>`
@@ -152,14 +142,17 @@ function DiaryDecorationPage() {
   }, []);
 
   const makeDiaryData = () => {
+    const formData = new FormData();
     if (diary.todayPhoto) {
-      const formData = new FormData();
-      formData.append("file", diary.todayPhoto);
-      return {
-        diary: { ...diary.diary, location: locationData.location },
-        todayPhto: formData,
-      };
+      formData.append("todayPhoto", diary.todayPhoto);
     }
+    const _diary = JSON.stringify({
+      ...diary.diary,
+      location: locationData.location,
+      ratio: diaryBox.ratio,
+    });
+    formData.append("diary", new Blob([_diary], { type: "application/json" }));
+    return formData;
   };
 
   const makeDecorationData = (diaryId: number, frameImage?: File) => {
@@ -170,15 +163,17 @@ function DiaryDecorationPage() {
         y: sticker.originY,
       };
     });
+
+    const formData = new FormData();
+    const _decoration = JSON.stringify({ diaryId, stickerList: _stickerList });
+    formData.append(
+      "decoration",
+      new Blob([_decoration], { type: "application/json" }),
+    );
     if (frameImage) {
-      const formData = new FormData();
       formData.append("frameImage", frameImage);
-      return {
-        decoration: { diaryId, stickerList: _stickerList },
-        frameImage: formData,
-      };
     }
-    return { decoration: { diaryId, stickerList: _stickerList } };
+    return formData;
   };
 
   useEffect(() => {
@@ -374,7 +369,7 @@ function DiaryDecorationPage() {
                 <Draggable
                   nodeRef={nodeRef}
                   position={{ x: sticker.x, y: sticker.y }}
-                  // positionOffset={{ x: "-50%", y: "-50%" }}
+                  positionOffset={{ x: "-50%", y: "-50%" }}
                   onStart={(_, data) => handleStart(data, index)}
                   onDrag={(_, data) => handleDrag(data, index)}
                   onStop={(event, data) => handleStop(data, index)}

@@ -10,6 +10,7 @@ const diary = {
   date: "2022-09-30",
   fontType: 1,
   location: "서울특별시 송파구 송파1동",
+  ratio: 1.53,
   tripId: 123,
   weather: 1,
   todayPhoto:
@@ -18,8 +19,8 @@ const diary = {
     {
       stickerId: 2,
       tokenId: 2,
-      x: 0.01090909090909091,
-      y: 0.7111903965510834,
+      x: 0.008753255208333333,
+      y: 0.7148475294520454,
       tokenName: "smile",
       tokenURL:
         "https://cdn.pixabay.com/photo/2016/08/21/18/48/emoticon-1610518_960_720.png",
@@ -27,8 +28,8 @@ const diary = {
     {
       stickerId: 3,
       tokenId: 3,
-      x: 0.5490909090909091,
-      y: 0.6731333853644034,
+      x: 0.5622232259114583,
+      y: 0.6833699638535335,
       tokenName: "smile",
       tokenURL:
         "https://cdn.pixabay.com/photo/2016/09/10/14/54/emoticon-1659235_960_720.png",

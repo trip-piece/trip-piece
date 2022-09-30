@@ -36,11 +36,20 @@ export interface IFrameImageObj {
   frameImageBase64: string | null;
 }
 
-export interface ISavedSticker {
+export interface IRequestedSticker {
   stickerId: number;
   tokenId: number;
   tokenName: string;
   tokenURL: string;
   x: number;
   y: number;
+}
+
+export interface IRequestedDiary extends IDiary {
+  date: string;
+  diaryId: number;
+  location: string;
+  ratio: number;
+  todayPhoto: string;
+  stickerList: IRequestedSticker[];
 }

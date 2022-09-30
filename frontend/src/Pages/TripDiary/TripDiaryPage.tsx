@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { useQuery } from "react-query";
 import { useNavigate, useParams } from "react-router-dom";
 import { HiPencilAlt } from "react-icons/hi";
+import { AxiosResponse } from "axios";
 import diaryApis from "../../utils/apis/diaryApis";
 import { changeDateFormatToHyphen } from "../../utils/functions/util";
 import ColoredRoundButton from "../../components/atoms/ColoredRoundButton";
@@ -10,7 +11,10 @@ import axiosInstance from "../../utils/apis/api";
 import DiaryContentContainer from "../../components/modules/DiaryContentContainer";
 import useWindowResize from "../../utils/hooks/useWindowResize";
 import StickerImg from "../../components/atoms/StickerImg";
-import { ISavedSticker } from "../../utils/interfaces/diarys.interface";
+import {
+  IRequestedDiary,
+  IRequestedSticker,
+} from "../../utils/interfaces/diarys.interface";
 import TodayPhoto from "../../components/atoms/TodayPhoto";
 
 const Container = styled.article`
@@ -37,15 +41,13 @@ const NoDiaryContainer = styled.div`
     text-align: center;
   }
 `;
-
 function TripDiaryPage() {
   const [selectedDiaryDate, setSelectedDiaryDate] = useState<string>(() =>
     changeDateFormatToHyphen(new Date()),
   );
-  const [diaryBox, setDiaryBox] = useState({ width: 0, height: 0, ratio: 0 });
+  const [diaryBox, setDiaryBox] = useState({ width: 0 });
 
   const { tripId, diaryDate } = useParams();
-  console.log(diaryDate);
   const navigate = useNavigate();
   const size = useWindowResize();
   const diaryRef = useRef<HTMLDivElement>(null);
@@ -55,30 +57,25 @@ function TripDiaryPage() {
     if (diaryDate) setSelectedDiaryDate(diaryDate);
   }, []);
 
+  const getDiary = (date: string) =>
+    axiosInstance.get(diaryApis.diary(Number(tripId), date));
+
+  const { isLoading, data, isSuccess } = useQuery<
+    AxiosResponse<IRequestedDiary, null>
+  >([`${diaryDate}-diary`], () => getDiary(diaryDate), {
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+    refetchOnMount: true,
+  });
+
   useEffect(() => {
     if (diaryRef.current) {
       const wrapperBox = diaryRef.current.getBoundingClientRect();
       setDiaryBox({
         width: wrapperBox.width,
-        height: wrapperBox.height,
-        ratio: wrapperBox.height / wrapperBox.width,
       });
     }
-  }, [size, diaryRef.current, imageRef, imageRef.current]);
-
-  const getDiary = (date: string) =>
-    axiosInstance.get(diaryApis.diary(Number(tripId), date));
-
-  const { isLoading, data } = useQuery(
-    [`${diaryDate}-diary`],
-    () => getDiary(diaryDate),
-    {
-      refetchOnWindowFocus: false,
-      refetchOnReconnect: false,
-      refetchOnMount: true,
-    },
-  );
-  console.log(data);
+  }, [size, diaryRef.current, diaryRef, imageRef, imageRef.current]);
 
   const moveToWriteDiary = () => {
     navigate(`/trips/${tripId}/diarys/${diaryDate}/write`, {
@@ -89,7 +86,7 @@ function TripDiaryPage() {
   return (
     <Container>
       {isLoading && <div>Loading...</div>}
-      {/* {!isLoading && (
+      {isSuccess && !data.data && (
         <NoDiaryContainer>
           <HiPencilAlt />
           <p>
@@ -102,30 +99,40 @@ function TripDiaryPage() {
             func={moveToWriteDiary}
           />
         </NoDiaryContainer>
-      )} */}
-      <DiaryContentContainer
-        diaryWidth={diaryBox.width}
-        backgroundColor={data?.data?.backgroundColor}
-        fontType={data?.data?.fontType}
-        ref={diaryRef}
-      >
-        {data?.data?.content}
-        {data?.data?.stickerList?.map((sticker: ISavedSticker) => (
-          <StickerImg
-            up={sticker.y * diaryBox.height}
-            left={sticker.x * diaryBox.width}
-            alt={sticker.tokenName}
-            src={sticker.tokenURL}
-          />
-        ))}
-        {data?.data?.todayPhoto && (
-          <TodayPhoto
-            src={data.data.todayPhoto}
-            alt={`${diaryDate}-photo`}
-            ref={imageRef}
-          />
-        )}
-      </DiaryContentContainer>
+      )}
+      {isSuccess && data.data && (
+        <DiaryContentContainer
+          diaryWidth={diaryBox.width}
+          backgroundColor={data?.data?.backgroundColor}
+          fontType={data?.data?.fontType}
+          ref={diaryRef}
+        >
+          {data?.data?.content}
+
+          {data?.data?.todayPhoto && (
+            <TodayPhoto
+              src={data.data.todayPhoto}
+              alt={`${diaryDate}-photo`}
+              ref={imageRef}
+            />
+          )}
+          {data?.data?.stickerList?.map((sticker: IRequestedSticker) => (
+            <StickerImg
+              up={
+                16 +
+                sticker.y * (diaryBox.width * data.data.ratio) +
+                (diaryBox.width - 320) / 20
+              }
+              left={
+                16 + sticker.x * diaryBox.width + (diaryBox.width - 320) / 20
+              }
+              alt={sticker.tokenName}
+              src={sticker.tokenURL}
+              key={sticker.y}
+            />
+          ))}
+        </DiaryContentContainer>
+      )}
     </Container>
   );
 }
