@@ -1,4 +1,5 @@
 export const placeApis = {
+  place: "/places",
   getPlaces: (regionId: number, type: number, page: number): string =>
     `/places?regionId=${regionId}&type=${type}&page=${page}`,
   getLocationPlaces: (lat: number, lng: number): string =>
