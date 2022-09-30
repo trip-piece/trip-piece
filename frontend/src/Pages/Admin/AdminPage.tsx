@@ -242,11 +242,6 @@ function AdminPage() {
       };
       stickerList.push(sticker);
     });
-    const formData = new FormData();
-    if (posterImage) {
-      formData.append("file", posterImage);
-    }
-
     const startDate = changeDateFormatToHyphen(sstartDate);
     const endDate = changeDateFormatToHyphen(sendDate);
     const body = {
@@ -257,10 +252,23 @@ function AdminPage() {
         stickerList,
         ...data,
       },
-      posterImage: formData,
     };
+    const formData = new FormData();
+    const bodyString = JSON.stringify(body);
+    formData.append(
+      "place",
+      new Blob([bodyString], { type: "application/json" }),
+    );
+    if (posterImage) {
+      formData.append("file", posterImage);
+    }
     let response;
-    response = await axiosInstance.post(placeApis.place, body);
+    response = await axiosInstance.post(placeApis.place, formData, {
+      headers: {
+        "Content-Type": `multipart/form-data`,
+      },
+    });
+
     try {
       if (response.status === 200) {
         alert("등록되었습니다.");
