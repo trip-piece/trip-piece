@@ -4,7 +4,7 @@ import { memo } from "react";
 import { Link } from "react-router-dom";
 import { BsFillBookmarkHeartFill } from "react-icons/bs";
 import { BsBookmarkHeart } from "react-icons/bs";
-// import { frameApis } from "../../utils/apis/frameApis";
+ import { frameApis } from "../../utils/apis/frameApis";
 
 interface FrameProps {
   frame: {
@@ -60,23 +60,16 @@ const LinkContainer = styled(Link)`
   }
 `;
 function Card({ frame }: FrameProps) {
-  const scrapAddHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setScrap(e.target.checked);
-  };
-
-  const saveFrame = (date: string) =>
-  axiosInstance.get(diaryApis.diary(Number(tripId), date));
-
   return (
     <Container>
       <LinkContainer to={`${frame.frameId}`}>
-        <div onClick={scrapAddHandler}>
+        {/* <div onClick={frameApis.save}>
           {frame.isScrapped ? (
             <BsFillBookmarkHeartFill className="scrapicon" />
           ) : (
             <BsBookmarkHeart className="unscrapicon" />
           )}
-        </div>
+        </div> */}
 
         <img src={frame.image} alt="기본이미지" />
       </LinkContainer>
@@ -84,4 +77,4 @@ function Card({ frame }: FrameProps) {
   );
 }
 export default Card;
-export const FrameCard = memo(Card);
+export const MemoCard = memo(Card);

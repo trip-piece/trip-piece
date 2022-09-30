@@ -1,15 +1,17 @@
 import React, { useState } from "react";
 import styled from "@emotion/styled";
 import { Helmet } from "react-helmet-async";
-import { Swiper, SwiperSlide } from "swiper/react";
 import { Global } from "@emotion/react";
 import CssBaseline from "@mui/material/CssBaseline";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import SwipeableDrawer from "@mui/material/SwipeableDrawer";
 import RegionButton from "./RegionButton";
-import Card from "./Card";
+import { MemoCard } from "./Card";
 import { REGIONLIST } from "../../utils/constants/constant";
+import Skeleton from "./Skeleton";
+import { frameApis } from "../../utils/apis/frameApis";
+import { MemoInfiniteList } from "../../components/modules/infinite/ParamsInfiniteList";
 
 const drawerBleeding = 56;
 
@@ -162,9 +164,6 @@ function FrameSharePage(props: Props) {
       setCheckedItems([]);
     }
   };
-  const scrapAddHandler = () => {
-    setScrap(!scrap);
-  };
 
   const result = [
     {
@@ -213,24 +212,17 @@ function FrameSharePage(props: Props) {
         <button onClick={toggleDrawer(true)} type="button">
           지역별 조회
         </button>
-        {/* <MemoInfiniteList
-          url={frameApis.getSharedFrames(regionList, 2)}
-          queryKey={["frameList"]}
-          CardComponent={FrameCard}
-          SkeletonCardComponent={Skeleton}
-          zeroDataText="공유한 프레임 없슴미다.."
-          count={2}
-          listName="frameList"
-        /> */}
+
         <div className="CardList">
-          <Swiper slidesPerView={4} spaceBetween={13}>
-            {result.length &&
-              result.map((frame) => (
-                <SwiperSlide>
-                  <Card frame={frame} />
-                </SwiperSlide>
-              ))}
-          </Swiper>
+          <MemoInfiniteList
+            url={frameApis.getSharedFrames(REGIONLIST)}
+            queryKey={["frameList"]}
+            CardComponent={MemoCard}
+            SkeletonCardComponent={Skeleton}
+            zeroDataText="공유한 프레임 없슴미다.."
+            count={2}
+            listName="frameList"
+          />
         </div>
         <Root>
           <CssBaseline />
