@@ -60,7 +60,7 @@ function TripDiaryPage() {
   const getDiary = (date: string) =>
     axiosInstance.get(diaryApis.diary(Number(tripId), date));
 
-  const { isLoading, data, isSuccess } = useQuery<
+  const { isLoading, data, isSuccess, isError } = useQuery<
     AxiosResponse<IRequestedDiary, null>
   >([`${diaryDate}-diary`], () => getDiary(diaryDate), {
     refetchOnWindowFocus: false,

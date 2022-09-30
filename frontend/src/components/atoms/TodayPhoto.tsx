@@ -7,7 +7,6 @@ const Picture = styled.picture`
 `;
 
 const DiaryImg = styled.img`
-  max-width: 100%;
   width: 100%;
 `;
 
