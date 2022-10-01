@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { pixelToRem } from "../../utils/functions/util";
 import { MdOutlineAddReaction } from "react-icons/md";
 import { BsFillBookmarkHeartFill } from "react-icons/bs";
+import { motion } from "framer-motion";
 const TapBox = styled.div`
   box-shadow: 0 4px 4px 2px rgb(0 0 0/25%);
   border-radius: 1rem 1rem 1rem 1rem;
@@ -27,7 +28,7 @@ const RightTap = styled.div`
   margin: 6px 0 10px 0;
 `;
 
-const TapButton = styled.button`
+const TapButton = styled(motion.button)`
   background-color: transparent;
 `;
 
@@ -47,12 +48,12 @@ function Tap() {
   return (
     <TapBox>
       <LeftTap>
-        <TapButton onClick={moveToSticker}>
+        <TapButton onClick={moveToSticker} whileHover={{ scale: 1.1 }}>
           <MdOutlineAddReaction size="40" color="#2C5166" />
         </TapButton>
       </LeftTap>
       <RightTap>
-        <TapButton onClick={moveToScrap}>
+        <TapButton onClick={moveToScrap} whileHover={{ scale: 1.1 }}>
           <BsFillBookmarkHeartFill size="35" height="31" />
         </TapButton>
       </RightTap>
