@@ -19,7 +19,7 @@ function Loading() {
     <>
       <Helmet>스티커 발급중 | 여행조각</Helmet>
       로딩페이지
-      <Title title="NFT 스티커 발급" location="현재 GPS위치" />
+      <Title title="NFT 스티커 발급" />
       <Box />
     </>
   );

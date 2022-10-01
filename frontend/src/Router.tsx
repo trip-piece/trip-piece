@@ -11,6 +11,7 @@ import Navbar from "./Pages/Navbar/Navbar";
 import Admin from "./Pages/Admin/AdminPage";
 import NftRegister from "./Pages/Admin/NftRegisterPage";
 import QrScanner from "./Pages/QrScan/QrReader";
+import Loading from "./Pages/QrScan/Loading";
 
 const Landing = lazy(() => import("./Pages/Landing/LandingPage"));
 const Main = lazy(() => import("./Pages/Main/MainPage"));
@@ -69,6 +70,7 @@ function Router() {
         <Route path="places/list/mylocation" element={<MyLocationListPage />} />
         <Route path="qrscan" element={<QrScanner />} />
         <Route path="/places/:placeId" element={<NftResponse />} />
+        <Route path="/places/:placeId/:code" element={<Loading />} />
       </Routes>
     </BrowserRouter>
   );
