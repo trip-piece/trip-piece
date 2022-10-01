@@ -1,13 +1,17 @@
 import styled from "@emotion/styled";
 import { memo } from "react";
 import { REGIONLIST } from "../../utils/constants/constant";
-import { ISticker } from "../../utils/interfaces/places.interface";
+import {
+  IDistinctSticker,
+  ISticker,
+} from "../../utils/interfaces/places.interface";
 
 interface CardProps {
   place: {
-    placeId: number;
+    id: number;
     name: string;
     regionId: number;
+    regionName: string;
     locationAddress: string;
     lat: number;
     lng: number;
@@ -15,8 +19,11 @@ interface CardProps {
     endDate: string;
     type: number;
     amount: number;
-    stickerList: ISticker[];
+    enableStickerList: ISticker[];
+    distinctStickerList: IDistinctSticker[];
+    qrImage: string;
     posterImage: string;
+    code: string;
   };
 }
 

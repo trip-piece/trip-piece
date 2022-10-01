@@ -1,7 +1,8 @@
 export interface IPlace {
-  placeId: number;
+  id: number;
   name: string;
   regionId: number;
+  regionName: string;
   locationAddress: string;
   lat: number;
   lng: number;
@@ -9,8 +10,11 @@ export interface IPlace {
   endDate: string;
   type: number;
   amount: number;
-  stickerList: ISticker[];
+  enableStickerList: ISticker[];
+  distinctStickerList: IDistinctSticker[];
+  qrImage: string;
   posterImage: string;
+  code: string;
 }
 
 export interface ISticker {
@@ -18,6 +22,14 @@ export interface ISticker {
   tokenId: number;
   tokenName: string;
   tokenURL: string;
+}
+
+export interface IDistinctSticker {
+  stickerId: number;
+  tokenId: number;
+  tokenName: string;
+  tokenURL: string;
+  amount: number;
 }
 
 export interface ICoordinate {
