@@ -1,11 +1,11 @@
 /* eslint-disable react/require-default-props */
-import React from "react";
+import { ReactNode } from "react";
 import { Navigate, Outlet } from "react-router-dom";
 import { useRecoilState } from "recoil";
 import { UserInfoState } from "../../../store/atom";
 
 interface RouteProps {
-  children?: React.ReactNode;
+  children?: ReactNode;
 }
 
 function ProtectedRoute({ children }: RouteProps) {

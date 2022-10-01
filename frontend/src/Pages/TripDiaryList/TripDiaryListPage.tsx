@@ -11,11 +11,10 @@ import { AxiosError, AxiosResponse } from "axios";
 import tripApis from "../../utils/apis/tripsApis";
 import { getDatesStartToLast, pixelToRem } from "../../utils/functions/util";
 import TripDate from "./TripDate";
-
-import "swiper/css";
 import { ITrip } from "../../utils/interfaces/trips.interface";
 import axiosInstance from "../../utils/apis/api";
 import { REGIONLIST } from "../../utils/constants/constant";
+import "swiper/css";
 
 const TripDiary = lazy(() => import("../TripDiary/TripDiaryPage"));
 
@@ -71,7 +70,6 @@ function TripDiaryListPage() {
         data?.data.startDate,
         data?.data.endDate,
       );
-
       setResult(_result);
       const today = new Date();
       const idx = _result.findIndex((date) => isSameDay(date, today));

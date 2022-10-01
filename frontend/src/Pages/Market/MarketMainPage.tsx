@@ -6,6 +6,7 @@ import Card from "./StickerCard";
 import { AiOutlineSearch, AiFillPlusCircle } from "react-icons/ai";
 import { SetStateAction, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { REGIONLIST } from "../../utils/constants/constant";
 
 const Container = styled.article`
   min-height: 90vh;
@@ -172,76 +173,7 @@ function MarketMainPage() {
     },
   ];
 
-  const region = [
-    {
-      regionId: 1,
-      name: "서울",
-    },
-    {
-      regionId: 2,
-      name: "부산",
-    },
-    {
-      regionId: 3,
-      name: "대구",
-    },
-    {
-      regionId: 4,
-      name: "인천",
-    },
-    {
-      regionId: 5,
-      name: "광주",
-    },
-    {
-      regionId: 6,
-      name: "대전",
-    },
-    {
-      regionId: 7,
-      name: "울산",
-    },
-    {
-      regionId: 8,
-      name: "세종",
-    },
-    {
-      regionId: 9,
-      name: "경기",
-    },
-    {
-      regionId: 10,
-      name: "강원",
-    },
-    {
-      regionId: 11,
-      name: "충북",
-    },
-    {
-      regionId: 12,
-      name: "충남",
-    },
-    {
-      regionId: 13,
-      name: "전북",
-    },
-    {
-      regionId: 14,
-      name: "전남",
-    },
-    {
-      regionId: 15,
-      name: "경북",
-    },
-    {
-      regionId: 16,
-      name: "경남",
-    },
-    {
-      regionId: 17,
-      name: "제주",
-    },
-  ];
+  const region = REGIONLIST;
 
   const [keyword, setKeyword] = useState("");
 
@@ -305,11 +237,14 @@ function MarketMainPage() {
           <div className="CateList">
             <Swiper slidesPerView={1.9} spaceBetween={13}>
               {region.length &&
-                region.map((region, idx) => (
-                  <SwiperSlide key={idx}>
-                    <RegionCard region={region} />
-                  </SwiperSlide>
-                ))}
+                region.map(
+                  (region, idx) =>
+                    idx !== 0 && (
+                      <SwiperSlide key={idx}>
+                        <RegionCard name={region} id={idx} />
+                      </SwiperSlide>
+                    ),
+                )}
             </Swiper>
           </div>
         </CateContainer>

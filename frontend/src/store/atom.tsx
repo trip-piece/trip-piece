@@ -8,23 +8,29 @@ import { atom } from "recoil";
 // });n
 export interface IUserInfo {
   address: string | null | undefined;
-  nickname: string | undefined;
-  balance: number;
+  nickname: string;
+  balance: string;
   isLoggedIn: boolean;
   id: number;
+  tripCount: number;
+  diaryCount: number;
+
+  setBalance?: () => {};
 }
 
-export const UserInfoState = atom<IUserInfo[]>({
+const UserInfodata: IUserInfo = {
+  address: "",
+  nickname: "누군가",
+  balance: "0.0",
+  isLoggedIn: false,
+  id: 0,
+  tripCount: 0,
+  diaryCount: 0,
+};
+
+export const UserInfoState = atom<IUserInfo>({
   key: "userInfoState",
-  default: [
-    {
-      address: null,
-      nickname: undefined,
-      balance: 0.0,
-      isLoggedIn: false,
-      id: -1,
-    },
-  ],
+  default: UserInfodata,
 });
 
 export interface IQrInfo {

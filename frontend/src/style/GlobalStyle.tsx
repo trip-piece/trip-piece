@@ -146,6 +146,7 @@ export default function GlobalStyle() {
             min-height: 100vh;
             margin: 0 auto;
             background-color: ${themes.colors.mainDark};
+            overflow-x: hidden;
           }
           html,
           body {
@@ -171,6 +172,24 @@ export default function GlobalStyle() {
           button {
             cursor: pointer;
             border: none;
+          }
+          *::-webkit-scrollbar {
+            width: 5px;
+          }
+          *::-webkit-scrollbar-track {
+            background-color: darkgrey;
+          }
+          *::-webkit-scrollbar-thumb {
+            box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+          }
+          * {
+            scrollbar-width: thin;
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+            &::-webkit-scrollbar {
+              display: none;
+            }
           }
           @font-face {
             font-family: "잘하고있어";

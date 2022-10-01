@@ -109,7 +109,7 @@ export const Market_ABI = [
   },
 ];
 
-const web3 = new Web3((window as any).web3.currentProvider);
+const web3 = new Web3((window as any).ethereum);
 
 export const MarketContract = new web3.eth.Contract(
   Market_ABI as any,
