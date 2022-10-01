@@ -31,20 +31,6 @@ const Title = styled.div`
   font-size: ${(props) => props.theme.fontSizes.h5};
 `;
 
-const Filter = styled.select`
-  border: none;
-  border-radius: 5px;
-  width: ${pixelToRem(10)};
-  padding: 0 0.5rem;
-  font-size: ${(props) => props.theme.fontSizes.h4};
-  height: ${pixelToRem(10)};
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  appearance: none;
-  color: ${(props) => props.theme.colors.gray900};
-  margin-left: auto;
-`;
-
 const StickerContainer = styled.div`
   width: 100%;
   height: 100%;
@@ -61,7 +47,7 @@ function MyScrapList() {
       </TitleBox>
       <StickerContainer>
         <MemoInfiniteList
-          url="user/scraps"
+          url={userApis.getMyScraps}
           queryKey={["scrapList"]}
           CardComponent={MemoCard}
           SkeletonCardComponent={Skeleton}
@@ -69,7 +55,6 @@ function MyScrapList() {
           count={2}
           listName="scrapList"
         />
-        {userApis.getMyScraps}
       </StickerContainer>
     </StickerBox>
   );

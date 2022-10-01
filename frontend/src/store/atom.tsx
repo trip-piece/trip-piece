@@ -20,7 +20,7 @@ export interface IUserInfo {
 
 const UserInfodata: IUserInfo = {
   address: "",
-  nickname: "없지롱",
+  nickname: "누군가",
   balance: "0.0",
   isLoggedIn: false,
   id: 0,

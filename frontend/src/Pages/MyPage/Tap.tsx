@@ -1,17 +1,17 @@
 import React from "react";
 import styled from "@emotion/styled";
 import { useNavigate } from "react-router-dom";
-import { ReactComponent as BookMarkIcon } from "../../assets/svgs/bookmarkIcon.svg";
-import { ReactComponent as StickerIcon } from "../../assets/svgs/stickerIcon.svg";
-import { pixelToRem } from "../../utils/functions/util";
 
+import { pixelToRem } from "../../utils/functions/util";
+import { MdOutlineAddReaction } from "react-icons/md";
+import { BsFillBookmarkHeartFill } from "react-icons/bs";
 const TapBox = styled.div`
   box-shadow: 0 4px 4px 2px rgb(0 0 0/25%);
   border-radius: 1rem 1rem 1rem 1rem;
   padding: 0 0 ${pixelToRem(30)}0;
   margin: ${pixelToRem(15)};
 
-  height: ${pixelToRem(45)};
+  height: ${pixelToRem(55)};
   background: ${(props) => props.theme.colors.white};
   display: flex;
   justify-content: center;
@@ -48,12 +48,12 @@ function Tap() {
     <TapBox>
       <LeftTap>
         <TapButton onClick={moveToSticker}>
-          <StickerIcon width="32" height="32" color="#2C5166" />
+          <MdOutlineAddReaction size="40" color="#2C5166" />
         </TapButton>
       </LeftTap>
       <RightTap>
         <TapButton onClick={moveToScrap}>
-          <BookMarkIcon width="31" height="31" />
+          <BsFillBookmarkHeartFill size="35" height="31" />
         </TapButton>
       </RightTap>
     </TapBox>

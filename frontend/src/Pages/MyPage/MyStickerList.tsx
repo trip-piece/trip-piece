@@ -1,14 +1,10 @@
-import React, { JSXElementConstructor, useState } from "react";
+import React, { useState } from "react";
 import styled from "@emotion/styled";
-import { pixelToRem } from "../../utils/functions/util";
-import { MemoInfiniteList } from "../../components/modules/infinite/InfiniteList";
-import userApis from "../../utils/apis/userApis";
-import { MemoCard } from "./Card";
-import Skeleton from "./Skeleton";
 import { useRecoilState } from "recoil";
+
+import { pixelToRem } from "../../utils/functions/util";
 import { UserInfoState } from "../../store/atom";
-import { MenuItem } from "@mui/material";
-import { selectprps } from "../../utils/interfaces/my.interface";
+import { REGIONLIST } from "../../utils/constants/constant";
 
 const StickerBox = styled.div`
   box-shadow: 0 4px 4px 2px rgb(0 0 0/25%);
@@ -23,30 +19,17 @@ const StickerBox = styled.div`
 `;
 
 const TitleBox = styled.div`
-  height: 8%;
+  height: 10%;
   width: 100%;
-  padding: ${pixelToRem(17)} 0 0 0;
+  padding: ${pixelToRem(17)} 0 ${pixelToRem(5)} 0;
   border-bottom: solid 1px ${(props) => props.theme.colors.gray400};
   justify-content: center;
   display: flex;
 `;
 const Title = styled.div`
   font-weight: bold;
-  font-size: ${(props) => props.theme.fontSizes.h5};
-`;
 
-const Filter = styled.select`
-  border: none;
-  border-radius: 5px;
-  width: ${pixelToRem(10)};
-  padding: 0 0.5rem;
   font-size: ${(props) => props.theme.fontSizes.h4};
-  height: ${pixelToRem(10)};
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  appearance: none;
-  color: ${(props) => props.theme.colors.gray900};
-  margin-left: auto;
 `;
 
 const StickerContainer = styled.div`
@@ -58,20 +41,23 @@ const StickerContainer = styled.div`
 `;
 
 const Select = styled.select`
-  width: ${pixelToRem(100)};
-  border-radius: 5px;
-  height: 35px;
+  width: ${pixelToRem(60)};
+  border-radius: ${pixelToRem(10)};
+  height: ${pixelToRem(30)};
   background: ${(props) => props.theme.colors.gray300};
-  font-size: ${(props) => props.theme.fontSizes.h4};
+  font-size: ${(props) => props.theme.fontSizes.h6};
   color: ${(props) => props.theme.colors.gray500};
   padding-left: 5px;
   border: none;
+
   margin-left: auto;
   display: flex;
 
   option {
-    color: black;
-    background: white;
+    border: none;
+    color: ${(props) => props.theme.colors.gray800};
+    background: ${(props) => props.theme.colors.gray200};
+    border-radius: ${pixelToRem(10)};
     display: flex;
     white-space: pre;
     min-height: 20px;
@@ -79,24 +65,25 @@ const Select = styled.select`
   }
 `;
 
+// const TestSelect = styled;
+
 function AreaSelectBox() {
   const [selectedOption, setSelectedOption] = useState<String>();
 
   // This function is triggered when the select changes
-  const selectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    const value = event.target.value;
+  const selectChange = (event) => {
+    const { value } = event.target;
+
     setSelectedOption(value);
   };
 
   return (
-    <Select>
-      <option value="" hidden>
-        Type
-      </option>
-      <option value="1">Audi</option>
-      <option value="2">BMW</option>
-      <option value="3">Citroen</option>
-      <option value="4">Ford</option>
+    <Select onChange={selectChange} label="area">
+      {REGIONLIST.map((item, index) => (
+        <option key={item} value={index}>
+          {item}
+        </option>
+      ))}
     </Select>
   );
 }
