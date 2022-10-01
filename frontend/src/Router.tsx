@@ -51,13 +51,14 @@ function Router() {
           <Route path=":diaryDate" element={<TripDiaryPage />} />
         </Route>
         <Route
-          path="trips/:tripId/diarys/write"
+          path="trips/:tripId/diarys/diary/write"
           element={<DiaryManagement />}
         />
         <Route
-          path="trips/:tripId/diarys/decoration"
+          path="trips/:tripId/diarys/diary/decoration"
           element={<DiaryDecoration />}
         />
+
         <Route path="market" element={<MarketMainPage />} />
         <Route path="market/:regionId" element={<MarketListPage />} />
         <Route path="market/:marketId/detail" element={<StickerDetailPage />} />

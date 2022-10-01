@@ -88,8 +88,8 @@ function TripDiaryPage() {
   }, [size, diaryRef.current, diaryRef, imageRef, imageRef.current]);
 
   const moveToWriteDiary = () => {
-    navigate(`/trips/${tripId}/diarys/write`, {
-      state: { date: diaryDate },
+    navigate(`/trips/${tripId}/diarys/diary/write`, {
+      state: { diaryDate },
     });
   };
 

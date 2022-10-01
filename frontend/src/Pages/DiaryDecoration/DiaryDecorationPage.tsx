@@ -9,7 +9,7 @@ import {
   useState,
 } from "react";
 import { BsFillGeoAltFill } from "react-icons/bs";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useRecoilValue } from "recoil";
 import Draggable, { DraggableData } from "react-draggable";
 import Checkbox from "@mui/material/Checkbox";
@@ -34,7 +34,6 @@ import useDecorateDiary from "../../utils/hooks/useDecorateDiary";
 import DiaryContentContainer from "../../components/modules/DiaryContentContainer";
 import TodayPhoto from "../../components/atoms/TodayPhoto";
 import { NFTContract } from "../../utils/common/NFT_ABI";
-import { UserInfoState } from "../../store/atom";
 
 const PositionContainer = styled.div`
   > svg {
@@ -134,19 +133,19 @@ function DiaryDecorationPage() {
   const [NFTDetailList, setNFTDetailList] = useState<TokenDetail[]>([]);
   const [NFTList, setNFTList] = useState<NFT[]>([]);
 
-  const { tripId, diaryDate } = useParams();
+  const { tripId } = useParams();
+  const { state } = useLocation();
   const navigate = useNavigate();
   const nodeRef = useRef<HTMLImageElement>(null);
   const diary = useRecoilValue<IWritedDiary<File | null>>(
-    writedDiaryState(`${tripId}-${diaryDate}`),
+    writedDiaryState(`${tripId}-${state?.diaryDate}`),
   );
   const diaryRef = useRef<HTMLDivElement>(null);
   const imageRef = useRef<HTMLImageElement>(null);
   const stickerRef = useRef<HTMLDivElement>(null);
   const stickerBoxRef = useRef<HTMLDivElement>(null);
   const size = useWindowResize();
-  const userInfo = useRecoilValue(UserInfoState);
-  // console.log(userInfo);
+
   const { mutate: mutateWriting } = useWriteDiary();
   const { mutate: mutateDecoration } = useDecorateDiary();
   const { isFetchingLocation, locationData, refetchLocation } =
@@ -184,8 +183,9 @@ function DiaryDecorationPage() {
   };
   console.log(NFTList, NFTDetailList);
   useEffect(() => {
-    if (diaryDate) {
-      setDottedDate(diaryDate?.replaceAll("-", "."));
+    if (!state?.diaryDate) navigate(-1);
+    if (state?.diaryDate) {
+      setDottedDate(state.diaryDate?.replaceAll("-", "."));
     }
     if (diary?.todayPhoto) {
       import("../../utils/functions/changeFileType").then(async (change) => {
@@ -382,7 +382,8 @@ function DiaryDecorationPage() {
     mutateWriting(makeDiaryData(), {
       onSuccess: (data) => {
         mutateDecoration(makeDecorationData(data.data.diaryId, frameImage), {
-          onSuccess: () => navigate(`/trips/${tripId}/diarys/${diaryDate}`),
+          onSuccess: () =>
+            navigate(`/trips/${tripId}/diarys/${state?.diaryDate}`),
         });
       },
     });

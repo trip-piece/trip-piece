@@ -110,7 +110,7 @@ function TripDiaryListPage() {
             </Swiper>
           )}
         </Header>
-        <Suspense fallback={<div>Loading...</div>}>
+        <Suspense fallback={<div>Diary Loading...</div>}>
           <NestedRoute>
             <Routes>
               <Route path="/" element={<TripDiary />} />

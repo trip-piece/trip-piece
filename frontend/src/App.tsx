@@ -93,7 +93,7 @@ function App() {
   return (
     <AppContainer>
       <QueryClientProvider client={queryClient}>
-        <Suspense fallback={<div>Loading...</div>}>
+        <Suspense fallback={<div>App Loading...</div>}>
           <Router />
         </Suspense>
         <ReactQueryDevtools initialIsOpen={false} />

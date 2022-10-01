@@ -209,11 +209,11 @@ function DiaryManagementPage() {
   const [imageSrc, setImageSrc] = useState<string | null>("");
   const fileInput = useRef<HTMLInputElement>(null);
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
-  const { tripId, diaryDate } = useParams();
-  const [diary, setDiary] = useRecoilState<IWritedDiary<File | null>>(
-    writedDiaryState(`${tripId}-${diaryDate}`),
-  );
+  const { tripId } = useParams();
   const { state } = useLocation();
+  const [diary, setDiary] = useRecoilState<IWritedDiary<File | null>>(
+    writedDiaryState(`${tripId}-${state?.diaryDate}`),
+  );
   const { isFetchingLocation, locationData, refetchLocation } =
     useGetLocation();
   const { register, handleSubmit, control, watch, setValue } =
@@ -221,10 +221,8 @@ function DiaryManagementPage() {
   const navigate = useNavigate();
   const size = useWindowResize();
   useEffect(() => {
-    if (state?.date) setDottedDate(state?.date?.replaceAll("-", "."));
-    else if (diaryDate) {
-      setDottedDate(diaryDate?.replaceAll("-", "."));
-    }
+    if (!state?.diaryDate) navigate(-1);
+    if (state?.diaryDate) setDottedDate(state?.diaryDate?.replaceAll("-", "."));
   }, []);
 
   useEffect(() => {
@@ -256,22 +254,20 @@ function DiaryManagementPage() {
   }, []);
 
   const onSubmit = (formInputData: IFormInput) => {
-    // const formData = new FormData();
-    // if (todayPhoto) {
-    //   formData.append("file", todayPhoto);
-    // }
     const body = {
       diary: {
         ...formInputData,
         weather,
         backgroundColor: diaryColor,
         tripId: Number(tripId),
-        date: diaryDate,
+        date: state?.diaryDate,
       },
       todayPhoto: todayPhoto || null,
     };
     setDiary(body);
-    navigate(`../trips/${tripId}/diarys/${diaryDate}/decoration`);
+    navigate(`../trips/${tripId}/diarys/decoration`, {
+      state: { diaryDate: state?.diaryDate },
+    });
   };
 
   const onCancel = () => {
