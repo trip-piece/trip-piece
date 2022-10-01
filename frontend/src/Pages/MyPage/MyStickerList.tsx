@@ -1,4 +1,4 @@
-import React from "react";
+import React, { JSXElementConstructor, useState } from "react";
 import styled from "@emotion/styled";
 import { pixelToRem } from "../../utils/functions/util";
 import { MemoInfiniteList } from "../../components/modules/infinite/InfiniteList";
@@ -7,6 +7,8 @@ import { MemoCard } from "./Card";
 import Skeleton from "./Skeleton";
 import { useRecoilState } from "recoil";
 import { UserInfoState } from "../../store/atom";
+import { MenuItem } from "@mui/material";
+import { selectprps } from "../../utils/interfaces/my.interface";
 
 const StickerBox = styled.div`
   box-shadow: 0 4px 4px 2px rgb(0 0 0/25%);
@@ -26,6 +28,7 @@ const TitleBox = styled.div`
   padding: ${pixelToRem(17)} 0 0 0;
   border-bottom: solid 1px ${(props) => props.theme.colors.gray400};
   justify-content: center;
+  display: flex;
 `;
 const Title = styled.div`
   font-weight: bold;
@@ -54,14 +57,61 @@ const StickerContainer = styled.div`
   display: inline-block;
 `;
 
+const Select = styled.select`
+  width: ${pixelToRem(100)};
+  border-radius: 5px;
+  height: 35px;
+  background: ${(props) => props.theme.colors.gray300};
+  font-size: ${(props) => props.theme.fontSizes.h4};
+  color: ${(props) => props.theme.colors.gray500};
+  padding-left: 5px;
+  border: none;
+  margin-left: auto;
+  display: flex;
+
+  option {
+    color: black;
+    background: white;
+    display: flex;
+    white-space: pre;
+    min-height: 20px;
+    padding: 0px 2px 1px;
+  }
+`;
+
+function AreaSelectBox() {
+  const [selectedOption, setSelectedOption] = useState<String>();
+
+  // This function is triggered when the select changes
+  const selectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const value = event.target.value;
+    setSelectedOption(value);
+  };
+
+  return (
+    <Select>
+      <option value="" hidden>
+        Type
+      </option>
+      <option value="1">Audi</option>
+      <option value="2">BMW</option>
+      <option value="3">Citroen</option>
+      <option value="4">Ford</option>
+    </Select>
+  );
+}
+
 function MyStickerList() {
   const { userInfo } = useRecoilState(UserInfoState);
+
+  // const options: selectprps = [{ value: "area", name: "지역" }];
   // 솔리디티 연결
 
   return (
     <StickerBox>
       <TitleBox>
         <Title>보유NFT스티커</Title>
+        <AreaSelectBox />
       </TitleBox>
       <StickerContainer>
         {/* <MemoInfiniteList

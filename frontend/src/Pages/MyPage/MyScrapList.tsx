@@ -2,7 +2,6 @@ import React from "react";
 import styled from "@emotion/styled";
 import { Modal, Select } from "@mui/material";
 import { pixelToRem } from "../../utils/functions/util";
-import NestedModal from "./Modal";
 import { MemoInfiniteList } from "../../components/modules/infinite/InfiniteList";
 import userApis from "../../utils/apis/userApis";
 import { MemoCard } from "./Card";
