@@ -11,7 +11,7 @@ function NftResponse() {
       <Helmet>
         <title>QR 스캔 | 여행조각</title>
       </Helmet>
-      <Title title="서울 SEOUL" location="멀티캠퍼스" />
+      <Title title="서울 SEOUL" />
       <Content
         result="success"
         stickerName="2022 역삼 멀티캠퍼스"

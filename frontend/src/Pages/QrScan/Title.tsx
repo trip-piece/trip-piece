@@ -21,11 +21,7 @@ const TitleBox = styled.h3`
 const GpsBox = styled.div`
   display: flex;
 `;
-const GpsText = styled.h1`
-  font-size: ${(props) => props.theme.fontSizes.s1};
-  margin: 1% 0;
-  color: ${(props) => props.theme.colors.white};
-`;
+
 function Title({ title }: TitleProps) {
   const { isFetchingLocation, locationData, refetchLocation } =
     useGetLocation();
