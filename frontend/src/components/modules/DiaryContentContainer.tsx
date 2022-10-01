@@ -7,7 +7,7 @@ import { IChildren } from "../../utils/interfaces/common.interface";
 const DiaryContents = styled.div<DiaryContentsProps>`
   position: relative;
   white-space: pre-line;
-  /* min-height: 60vh; */
+  min-height: ${(props) => props.active && "60vh"};
   height: fit-content;
   width: 100%;
   background-color: ${(props) => DIARY_COLOR_LIST[props.backgroundColor]};
@@ -15,20 +15,24 @@ const DiaryContents = styled.div<DiaryContentsProps>`
   padding: ${(props) => `${pixelToRem(16 + (props.diaryWidth - 320) / 20)}`};
   resize: none;
   transition: background-color 0.5s ease-in;
-  font-size: ${(props) => pixelToRem(props.diaryWidth / 20)};
+  font-size: ${(props) =>
+    pixelToRem(props.diaryWidth / 20)
+      ? pixelToRem(props.diaryWidth / 20)
+      : pixelToRem(16)};
 `;
 
 interface DiaryContentsProps {
   fontType: number;
   diaryWidth: number;
   backgroundColor: number;
+  active?: boolean;
 }
 
 interface IDiaryContent extends IChildren, DiaryContentsProps {}
 
 const DiaryContentContainer = forwardRef(
   (
-    { children, fontType, diaryWidth, backgroundColor }: IDiaryContent,
+    { children, fontType, diaryWidth, backgroundColor, active }: IDiaryContent,
     ref?: LegacyRef<HTMLDivElement>,
   ) => {
     return (
@@ -36,6 +40,7 @@ const DiaryContentContainer = forwardRef(
         fontType={fontType}
         diaryWidth={diaryWidth}
         backgroundColor={backgroundColor}
+        active={active}
         ref={ref}
       >
         {children}

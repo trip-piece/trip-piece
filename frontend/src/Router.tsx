@@ -51,11 +51,11 @@ function Router() {
           <Route path=":diaryDate" element={<TripDiaryPage />} />
         </Route>
         <Route
-          path="trips/:tripId/diarys/:diaryDate/write"
+          path="trips/:tripId/diarys/write"
           element={<DiaryManagement />}
         />
         <Route
-          path="trips/:tripId/diarys/:diaryDate/decoration"
+          path="trips/:tripId/diarys/decoration"
           element={<DiaryDecoration />}
         />
         <Route path="market" element={<MarketMainPage />} />

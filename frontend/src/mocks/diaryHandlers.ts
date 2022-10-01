@@ -57,4 +57,7 @@ export const diaryHandlers = [
     }
     return res(ctx.status(200), ctx.json(null));
   }),
+  rest.delete("/diary", (req, res, ctx) => {
+    return res(ctx.status(200));
+  }),
 ];

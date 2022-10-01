@@ -345,7 +345,6 @@ function MainPage() {
   const moveToTrip = () => {
     navigate("/trips");
   };
-
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -625,23 +624,19 @@ function MainPage() {
                 <p>Loading...</p>
               </div>
             )}
-            {isSuccess2 && loading && (
-              <>
-                {places?.length ? (
-                  <Swiper slidesPerView={2.1} spaceBetween={13}>
-                    {places.map((place: IPlace) => (
-                      <SwiperSlide>
-                        <Card place={place} />
-                      </SwiperSlide>
-                    ))}
-                  </Swiper>
-                ) : (
-                  <p>
-                    <br />
-                    근처에 발급 가능한 지역이 없어요.
-                  </p>
-                )}
-              </>
+            {isSuccess2 && loading && places?.length ? (
+              <Swiper slidesPerView={2.1} spaceBetween={13}>
+                {places?.map((place: IPlace) => (
+                  <SwiperSlide>
+                    <Card place={place} />
+                  </SwiperSlide>
+                ))}
+              </Swiper>
+            ) : (
+              <p>
+                <br />
+                근처에 발급 가능한 지역이 없어요.
+              </p>
             )}
           </PlaceList>
         </SubBox>

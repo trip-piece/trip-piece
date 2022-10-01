@@ -1,6 +1,6 @@
 import styled from "@emotion/styled";
 import { useEffect, useRef, useState } from "react";
-import { useQuery } from "react-query";
+import { useQuery, useQueryClient } from "react-query";
 import { useNavigate, useParams } from "react-router-dom";
 import { HiPencilAlt } from "react-icons/hi";
 import { AxiosResponse } from "axios";
@@ -16,6 +16,7 @@ import {
   IRequestedSticker,
 } from "../../utils/interfaces/diarys.interface";
 import TodayPhoto from "../../components/atoms/TodayPhoto";
+import useDeleteDiary from "../../utils/hooks/useDeleteDiary";
 
 const Container = styled.article`
   min-height: 75vh;
@@ -52,21 +53,30 @@ function TripDiaryPage() {
   const size = useWindowResize();
   const diaryRef = useRef<HTMLDivElement>(null);
   const imageRef = useRef<HTMLImageElement>(null);
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     if (diaryDate) setSelectedDiaryDate(diaryDate);
   }, []);
 
   const getDiary = (date: string) =>
-    axiosInstance.get(diaryApis.diary(Number(tripId), date));
+    axiosInstance.get(diaryApis.targetDiary(Number(tripId), date));
 
-  const { isLoading, data, isSuccess, isError } = useQuery<
+  const { isLoading, data, isSuccess } = useQuery<
     AxiosResponse<IRequestedDiary, null>
   >([`${diaryDate}-diary`], () => getDiary(diaryDate), {
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
     refetchOnMount: true,
   });
+  const { mutate } = useDeleteDiary();
+
+  const onDelete = () => {
+    if (window.confirm("다이어리를 삭제하시겠습니까?"))
+      mutate(data?.data?.diaryId, {
+        onSuccess: () => queryClient.invalidateQueries([`${diaryDate}-diary`]),
+      });
+  };
 
   useEffect(() => {
     if (diaryRef.current) {
@@ -78,7 +88,7 @@ function TripDiaryPage() {
   }, [size, diaryRef.current, diaryRef, imageRef, imageRef.current]);
 
   const moveToWriteDiary = () => {
-    navigate(`/trips/${tripId}/diarys/${diaryDate}/write`, {
+    navigate(`/trips/${tripId}/diarys/write`, {
       state: { date: diaryDate },
     });
   };
@@ -101,37 +111,45 @@ function TripDiaryPage() {
         </NoDiaryContainer>
       )}
       {isSuccess && data.data && (
-        <DiaryContentContainer
-          diaryWidth={diaryBox.width}
-          backgroundColor={data?.data?.backgroundColor}
-          fontType={data?.data?.fontType}
-          ref={diaryRef}
-        >
-          {data?.data?.content}
+        <>
+          <div>
+            <button>수정</button>
+            <button type="button" onClick={onDelete}>
+              삭제
+            </button>
+          </div>
+          <DiaryContentContainer
+            diaryWidth={diaryBox.width}
+            backgroundColor={data?.data?.backgroundColor}
+            fontType={data?.data?.fontType}
+            ref={diaryRef}
+          >
+            {data?.data?.content}
 
-          {data?.data?.todayPhoto && (
-            <TodayPhoto
-              src={data.data.todayPhoto}
-              alt={`${diaryDate}-photo`}
-              ref={imageRef}
-            />
-          )}
-          {data?.data?.stickerList?.map((sticker: IRequestedSticker) => (
-            <StickerImg
-              up={
-                16 +
-                sticker.y * (diaryBox.width * data.data.ratio) +
-                (diaryBox.width - 320) / 20
-              }
-              left={
-                16 + sticker.x * diaryBox.width + (diaryBox.width - 320) / 20
-              }
-              alt={sticker.tokenName}
-              src={sticker.tokenURL}
-              key={sticker.y}
-            />
-          ))}
-        </DiaryContentContainer>
+            {data?.data?.todayPhoto && (
+              <TodayPhoto
+                src={data.data.todayPhoto}
+                alt={`${diaryDate}-photo`}
+                ref={imageRef}
+              />
+            )}
+            {data?.data?.stickerList?.map((sticker: IRequestedSticker) => (
+              <StickerImg
+                up={
+                  16 +
+                  sticker.y * (diaryBox.width * data.data.ratio) +
+                  (diaryBox.width - 320) / 20
+                }
+                left={
+                  16 + sticker.x * diaryBox.width + (diaryBox.width - 320) / 20
+                }
+                alt={sticker.tokenName}
+                src={sticker.tokenURL}
+                key={sticker.y}
+              />
+            ))}
+          </DiaryContentContainer>
+        </>
       )}
     </Container>
   );

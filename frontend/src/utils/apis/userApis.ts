@@ -1,7 +1,7 @@
 const userApis = {
-  login: "user/login",
-  getUser: "user",
-  modifyNickname: "user/nickname",
+  login: "/user/login",
+  getUser: "/user",
+  modifyNickname: "/user/nickname",
   getMyScraps: `/user/scraps`,
 };
 

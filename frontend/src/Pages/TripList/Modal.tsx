@@ -19,6 +19,7 @@ import { AiFillCaretDown } from "react-icons/ai";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { InfiniteData, QueryObserverResult } from "react-query";
 import {
+  changeDateFormatToHyphen,
   createDate,
   getDayName,
   PadZero,
@@ -282,7 +283,11 @@ function BasicModal({
 
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
     if (!startDate || !endDate) return;
-    const body = { startDate, endDate, ...data };
+    const body = {
+      startDate: changeDateFormatToHyphen(startDate),
+      endDate: changeDateFormatToHyphen(endDate),
+      ...data,
+    };
     let response;
     if (tripInformation?.tripId) {
       response = await axiosInstance.patch(

@@ -1,6 +1,13 @@
 import styled from "@emotion/styled";
 import { Icon } from "@iconify/react/dist/offline";
-import { memo, useCallback, useEffect, useRef, useState } from "react";
+import {
+  memo,
+  SetStateAction,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { BsFillGeoAltFill } from "react-icons/bs";
 import { useNavigate, useParams } from "react-router-dom";
 import { useRecoilValue } from "recoil";
@@ -26,6 +33,8 @@ import useWriteDiary from "../../utils/hooks/useWriteDiary";
 import useDecorateDiary from "../../utils/hooks/useDecorateDiary";
 import DiaryContentContainer from "../../components/modules/DiaryContentContainer";
 import TodayPhoto from "../../components/atoms/TodayPhoto";
+import { NFTContract } from "../../utils/common/NFT_ABI";
+import { UserInfoState } from "../../store/atom";
 
 const PositionContainer = styled.div`
   > svg {
@@ -105,6 +114,16 @@ function ImageButton({ onClick, sticker }: ImageButtonProps) {
 
 const MemoizedImageButton = memo(ImageButton);
 
+interface TokenDetail {
+  tokenName: string;
+  imagePath: string;
+}
+
+interface NFT {
+  tokenId: number;
+  tokenURI: string;
+}
+
 function DiaryDecorationPage() {
   const [isShared, setIsShared] = useState(false);
   const [open, setOpen] = useState(false);
@@ -112,6 +131,8 @@ function DiaryDecorationPage() {
   const [imageSrc, setImageSrc] = useState<string | null>("");
   const [stickerList, setStickerList] = useState<ISticker[]>([]);
   const [diaryBox, setDiaryBox] = useState({ width: 0, height: 0, ratio: 0 });
+  const [NFTDetailList, setNFTDetailList] = useState<TokenDetail[]>([]);
+  const [NFTList, setNFTList] = useState<NFT[]>([]);
 
   const { tripId, diaryDate } = useParams();
   const navigate = useNavigate();
@@ -124,11 +145,44 @@ function DiaryDecorationPage() {
   const stickerRef = useRef<HTMLDivElement>(null);
   const stickerBoxRef = useRef<HTMLDivElement>(null);
   const size = useWindowResize();
+  const userInfo = useRecoilValue(UserInfoState);
+  // console.log(userInfo);
   const { mutate: mutateWriting } = useWriteDiary();
   const { mutate: mutateDecoration } = useDecorateDiary();
   const { isFetchingLocation, locationData, refetchLocation } =
     useGetLocation();
 
+  const getNFTList = async () => {
+    try {
+      // setLoading(true);
+      const result = await NFTContract.methods
+        .getStickerList("0xBBE5b2e56a1CB9dd1Fa529DfaDDA0ef1c28E9C76")
+        .call();
+      console.log("여긴왜...", result);
+      if (result) {
+        setNFTList(result);
+        const tokenList: SetStateAction<TokenDetail[]> = [];
+        for (let i = 0; i < result.length; i++) {
+          fetch(`https://www.infura-ipfs.io/ipfs/${result[i].tokenURI}`)
+            .then((res) => {
+              return res.json();
+            })
+            .then((data) => {
+              const token: TokenDetail = {
+                tokenName: String(data[0].name),
+                imagePath: String(data[0].image),
+              };
+              tokenList.push(token);
+            });
+        }
+        setNFTDetailList(tokenList);
+        // setLoading(false);
+      }
+    } catch (err) {
+      console.log("Error getSticker : ", err);
+    }
+  };
+  console.log(NFTList, NFTDetailList);
   useEffect(() => {
     if (diaryDate) {
       setDottedDate(diaryDate?.replaceAll("-", "."));
@@ -139,6 +193,7 @@ function DiaryDecorationPage() {
         setImageSrc(base64Image);
       });
     }
+    getNFTList();
   }, []);
 
   const makeDiaryData = () => {
@@ -364,6 +419,7 @@ function DiaryDecorationPage() {
               backgroundColor={diary.diary.backgroundColor}
               ref={diaryRef}
               fontType={diary.diary.fontType}
+              active
             >
               {stickerList.map((sticker, index) => (
                 <Draggable

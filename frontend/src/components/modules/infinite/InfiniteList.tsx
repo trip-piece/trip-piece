@@ -16,7 +16,6 @@ interface InifinteListProps {
   zeroDataText: string;
   func?: object;
   count: number;
-  listName: string;
   isEditMode?: boolean;
   isCreated?: boolean;
 }
@@ -41,7 +40,6 @@ function InfiniteList({
   zeroDataText,
   func,
   count,
-  listName,
   isEditMode,
   isCreated,
 }: InifinteListProps) {
@@ -76,9 +74,10 @@ function InfiniteList({
 
   const targetList = useMemo(
     () =>
-      data
-        ? data.pages?.flatMap((page) => page?.result && page?.result[listName])
-        : [],
+      data &&
+      data.pages?.flatMap(
+        (page) => page?.result?.content && page?.result.content,
+      ),
     [data],
   );
 
@@ -104,18 +103,20 @@ function InfiniteList({
       {isSuccess && targetList?.length < 1 && <div>{zeroDataText}</div>}
       {isLoading && <div>Loading ...</div>}
       {isError && isQueryError(error) && <p>{error?.message}</p>}
-      <GridContainer gridColumnCount={count}>
-        {targetList?.map((target, idx) => (
-          <CardComponent
-            {...target}
-            index={idx}
-            key={v4()}
-            func={func}
-            isEditMode={isEditMode}
-            refetch={refetchData}
-          />
-        ))}
-      </GridContainer>
+      {targetList && (
+        <GridContainer gridColumnCount={count}>
+          {targetList?.map((target, idx) => (
+            <CardComponent
+              {...target}
+              index={idx}
+              key={v4()}
+              func={func}
+              isEditMode={isEditMode}
+              refetch={refetchData}
+            />
+          ))}
+        </GridContainer>
+      )}
       <div ref={bottom} />
       {isFetchingNextPage && (
         <GridContainer gridColumnCount={count}>
