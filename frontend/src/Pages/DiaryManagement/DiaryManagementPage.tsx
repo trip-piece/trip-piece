@@ -265,7 +265,7 @@ function DiaryManagementPage() {
       todayPhoto: todayPhoto || null,
     };
     setDiary(body);
-    navigate(`../trips/${tripId}/diarys/decoration`, {
+    navigate(`../trips/${tripId}/diarys/diary/decoration`, {
       state: { diaryDate: state?.diaryDate },
     });
   };

@@ -4,8 +4,13 @@ import { useQuery, useQueryClient } from "react-query";
 import { useNavigate, useParams } from "react-router-dom";
 import { HiPencilAlt } from "react-icons/hi";
 import { AxiosResponse } from "axios";
+import { Icon } from "@iconify/react/dist/offline";
+import { BsFillGeoAltFill } from "react-icons/bs";
 import diaryApis from "../../utils/apis/diaryApis";
-import { changeDateFormatToHyphen } from "../../utils/functions/util";
+import {
+  changeDateForamtToDot,
+  changeDateFormatToHyphen,
+} from "../../utils/functions/util";
 import ColoredRoundButton from "../../components/atoms/ColoredRoundButton";
 import axiosInstance from "../../utils/apis/api";
 import DiaryContentContainer from "../../components/modules/DiaryContentContainer";
@@ -17,6 +22,8 @@ import {
 } from "../../utils/interfaces/diarys.interface";
 import TodayPhoto from "../../components/atoms/TodayPhoto";
 import useDeleteDiary from "../../utils/hooks/useDeleteDiary";
+import DateContainer from "../../components/atoms/DateContainer";
+import { weatherList } from "../../utils/constants/weatherList";
 
 const Container = styled.article`
   min-height: 75vh;
@@ -42,7 +49,13 @@ const NoDiaryContainer = styled.div`
     text-align: center;
   }
 `;
-function TripDiaryPage() {
+
+interface TripListProps {
+  startDate?: string;
+  today?: string;
+  endDate?: string;
+}
+function TripDiaryPage({ startDate, today, endDate }: TripListProps) {
   const [selectedDiaryDate, setSelectedDiaryDate] = useState<string>(() =>
     changeDateFormatToHyphen(new Date()),
   );
@@ -61,14 +74,18 @@ function TripDiaryPage() {
 
   const getDiary = (date: string) =>
     axiosInstance.get(diaryApis.targetDiary(Number(tripId), date));
-
+  console.log(diaryDate);
   const { isLoading, data, isSuccess } = useQuery<
     AxiosResponse<IRequestedDiary, null>
-  >([`${diaryDate}-diary`], () => getDiary(diaryDate), {
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
-    refetchOnMount: true,
-  });
+  >(
+    [`${diaryDate || selectedDiaryDate}-diary`],
+    () => getDiary(diaryDate || selectedDiaryDate),
+    {
+      refetchOnWindowFocus: false,
+      refetchOnReconnect: false,
+      refetchOnMount: true,
+    },
+  );
   const { mutate } = useDeleteDiary();
 
   const onDelete = () => {
@@ -89,9 +106,12 @@ function TripDiaryPage() {
 
   const moveToWriteDiary = () => {
     navigate(`/trips/${tripId}/diarys/diary/write`, {
-      state: { diaryDate },
+      state: { diaryDate: selectedDiaryDate },
     });
   };
+
+  if (startDate > selectedDiaryDate || diaryDate > today)
+    return <div>아직 멀었다.</div>;
 
   return (
     <Container>
@@ -118,6 +138,14 @@ function TripDiaryPage() {
               삭제
             </button>
           </div>
+          <DateContainer>
+            <h2>{changeDateForamtToDot(selectedDiaryDate)} </h2>
+            <Icon icon={weatherList[data?.data?.weather]} />
+          </DateContainer>
+          {/* <PositionContainer> */}
+          <BsFillGeoAltFill />
+          {data?.data?.location}
+          {/* </PositionContainer> */}
           <DiaryContentContainer
             diaryWidth={diaryBox.width}
             backgroundColor={data?.data?.backgroundColor}

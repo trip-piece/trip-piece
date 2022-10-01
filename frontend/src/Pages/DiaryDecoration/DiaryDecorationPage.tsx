@@ -181,7 +181,7 @@ function DiaryDecorationPage() {
       console.log("Error getSticker : ", err);
     }
   };
-  console.log(NFTList, NFTDetailList);
+
   useEffect(() => {
     if (!state?.diaryDate) navigate(-1);
     if (state?.diaryDate) {

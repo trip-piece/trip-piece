@@ -1,7 +1,13 @@
 import { lazy, Suspense, useEffect, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { useQuery } from "react-query";
-import { Route, Routes, useLocation, useParams } from "react-router-dom";
+import {
+  Outlet,
+  Route,
+  Routes,
+  useLocation,
+  useParams,
+} from "react-router-dom";
 import { v4 } from "uuid";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination, Scrollbar, A11y } from "swiper";
@@ -9,7 +15,11 @@ import styled from "@emotion/styled";
 import { isSameDay } from "date-fns";
 import { AxiosError, AxiosResponse } from "axios";
 import tripApis from "../../utils/apis/tripsApis";
-import { getDatesStartToLast, pixelToRem } from "../../utils/functions/util";
+import {
+  changeDateFormatToHyphen,
+  getDatesStartToLast,
+  pixelToRem,
+} from "../../utils/functions/util";
 import TripDate from "./TripDate";
 import { ITrip } from "../../utils/interfaces/trips.interface";
 import axiosInstance from "../../utils/apis/api";
@@ -47,6 +57,7 @@ function TripDiaryListPage() {
   const [result, setResult] = useState<Date[]>([]);
   const [todayIndex, setTodayIndex] = useState<number>(5);
   const [loading, setLoading] = useState<boolean>(false);
+  const [today] = useState(() => changeDateFormatToHyphen(new Date()));
   const { tripId } = useParams();
 
   const { state } = useLocation() as RouteState;
@@ -56,7 +67,7 @@ function TripDiaryListPage() {
     AxiosError
   >(
     [`${tripId}-diaryList`],
-    () => axiosInstance.get(tripApis.aTrip(Number(tripId))),
+    () => axiosInstance.get(tripApis.tripDetail(Number(tripId))),
     {
       refetchOnWindowFocus: false,
       refetchOnReconnect: false,
@@ -113,8 +124,26 @@ function TripDiaryListPage() {
         <Suspense fallback={<div>Diary Loading...</div>}>
           <NestedRoute>
             <Routes>
-              <Route path="/" element={<TripDiary />} />
-              <Route path=":diaryDate" element={<TripDiary />} />
+              <Route
+                path="/"
+                element={
+                  <TripDiary
+                    startDate={data?.data.startDate}
+                    endDate={data?.data.endDate}
+                    today={today}
+                  />
+                }
+              />
+              <Route
+                path=":diaryDate"
+                element={
+                  <TripDiary
+                    startDate={data?.data.startDate}
+                    endDate={data?.data.endDate}
+                    today={today}
+                  />
+                }
+              />
             </Routes>
           </NestedRoute>
         </Suspense>

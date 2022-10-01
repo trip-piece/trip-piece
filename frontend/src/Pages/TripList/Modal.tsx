@@ -290,15 +290,15 @@ function BasicModal({
     };
     let response;
     if (tripInformation?.tripId) {
-      response = await axiosInstance.patch(
-        tripApis.aTrip(tripInformation.tripId),
-        body,
-      );
+      response = await axiosInstance.patch(tripApis.trip, {
+        ...body,
+        tripId: tripInformation?.tripId,
+      });
     } else {
       response = await axiosInstance.post(tripApis.trip, body);
     }
     try {
-      if (response.status === 200) {
+      if (response.status === 200 || response.status === 201) {
         if (refetch) refetch();
         handleClose();
         setValue("regionId", 1);
@@ -316,10 +316,11 @@ function BasicModal({
     // eslint-disable-next-line no-alert
     if (!window.confirm(MESSAGE_LIST.TRIP_DELETE)) return;
     try {
-      const response = await axiosInstance.delete(
-        tripApis.aTrip(tripInformation?.tripId),
-      );
-      if (response.status === 200) {
+      const response = await axiosInstance.delete(tripApis.trip, {
+        data: { tripId: tripInformation?.tripId },
+      });
+
+      if (response.status === 200 || response.status === 204) {
         if (refetch) refetch();
         handleClose();
       }

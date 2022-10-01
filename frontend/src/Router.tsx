@@ -47,11 +47,15 @@ function Router() {
         <Route path="trips" element={<TripList />} />
         <Route path="admin" element={<Admin />} />
         <Route path="admin/nft" element={<NftRegister />} />
-        <Route path="trips/:tripId/diarys" element={<TripDiaryList />}>
+        <Route path="trips/:tripId/diarys/*" element={<TripDiaryList />}>
           <Route path=":diaryDate" element={<TripDiaryPage />} />
         </Route>
         <Route
           path="trips/:tripId/diarys/diary/write"
+          element={<DiaryManagement />}
+        />
+        <Route
+          path="trips/:tripId/diarys/diary/:diaryId/edit"
           element={<DiaryManagement />}
         />
         <Route
