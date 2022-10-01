@@ -22,13 +22,13 @@ const StickerBox = styled.div`
 const TitleBox = styled.div`
   height: 8%;
   width: 100%;
-  padding: ${pixelToRem(17)} 0 0 0;
+  padding: ${pixelToRem(17)} 0 ${pixelToRem(5)} 0;
   border-bottom: solid 1px ${(props) => props.theme.colors.gray400};
   justify-content: center;
 `;
 const Title = styled.div`
   font-weight: bold;
-  font-size: ${(props) => props.theme.fontSizes.h5};
+  font-size: ${(props) => props.theme.fontSizes.h4};
 `;
 
 const StickerContainer = styled.div`

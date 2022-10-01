@@ -26,7 +26,7 @@ const LeftTap = styled.div`
 `;
 const RightTap = styled.div`
   padding: 0 0 0 18%;
-  margin: 6px 0 10px 0;
+  margin: 7px 0 10px 0;
 `;
 
 const TapButton = styled(motion.button)`
@@ -57,7 +57,7 @@ function Tap({ type }: options) {
       <RightTap>
         <TapButton onClick={moveToScrap} whileHover={{ scale: 1.1 }}>
           <BsFillBookmarkHeartFill
-            size="35"
+            size="37"
             height="31"
             color={colors[type][1]}
           />
