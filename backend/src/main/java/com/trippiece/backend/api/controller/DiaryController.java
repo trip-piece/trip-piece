@@ -159,6 +159,10 @@ public class DiaryController {
                     String currentFilePath = diaryRepository.findById(diaryEdit.getDiaryId()).orElseThrow(() -> new CustomException(ErrorCode.DATA_NOT_FOUND)).getTodayPhoto();
                     String fileName = s3Service.upload(currentFilePath, todayPhoto); //입력하면 업로드하러 넘어감
                     diaryEdit.setTodayPhoto(fileName);
+                } else {
+                    if(diaryEdit.getTodayPhoto().equals("") || diaryEdit.getTodayPhoto().equals(null)) {
+                        diaryEdit.setTodayPhoto(null);
+                    }
                 }
                 int updateResult = diaryService.updateDiary(user, diaryEdit, diaryEdit.getDiaryId());
                 if (updateResult == 406)
