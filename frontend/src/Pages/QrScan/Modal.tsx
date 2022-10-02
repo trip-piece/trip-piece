@@ -8,6 +8,7 @@ import { useRecoilState } from "recoil";
 import { pixelToRem } from "../../utils/functions/util";
 import ColoredRoundButton from "../../components/atoms/ColoredRoundButton";
 import { IQrInfo, QrInfoState } from "../../store/atom";
+import { urlSource } from "ipfs-http-client/dist/src";
 // import { pixelToRem } from "../../utils/functions/util";
 // import ColoredRoundButton from "../../components/atoms/ColoredRoundButton";
 
@@ -42,11 +43,7 @@ const ResultBox = styled.div`
   align-items: center;
 `;
 
-// function MoveToLink(url: (string | Location) & Location): void {
-//   window.location = url;
-// }
-
-function NestedModal() {
+function NestedModal({ validateLink }) {
   const [open, setOpen] = useState(false);
   const [recoilQrState, setRecoilQrState] = useRecoilState(QrInfoState);
 
@@ -60,7 +57,21 @@ function NestedModal() {
   };
 
   const MoveToLink = () => {
-    window.location = recoilQrState.url;
+    const url: string = recoilQrState.url as string;
+    // const baseUrl = "j7a607.q.ssafy.io";
+    // const baseUrl2 = "http://localhost:3000/";
+
+    // 정규표현식
+    const regax =
+      /^(http(s)?:\/\/)(localhost:3000)(\/)(places)(\/)([\d]{1,2})(\/)([a-zA-Z0-9!@#$%^&]{10})/g;
+    if (regax.test(url)) {
+      validateLink(true);
+      window.location = recoilQrState.url;
+    } else {
+      validateLink(true);
+      console.log("올바르지않은 URL 형식");
+    }
+
     setOpen(false);
   };
 

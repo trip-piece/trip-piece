@@ -1,6 +1,4 @@
 import React from "react";
-import styled from "@emotion/styled";
-import { pixelToRem } from "../../utils/functions/util";
 import { Helmet } from "react-helmet-async";
 import Title from "./Title";
 import Content from "./Content";

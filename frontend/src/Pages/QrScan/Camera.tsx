@@ -59,10 +59,14 @@ function QrReaderComponent() {
 }
 
 function Camera() {
+  const validateLink = (result: boolean) => {
+    console.log(result);
+  };
+
   return (
     <Box>
       <QrReaderComponent />
-      <NestedModal />
+      <NestedModal validateLink={validateLink} />
     </Box>
   );
 }
