@@ -295,6 +295,7 @@ function MainPage() {
       .get(placeApis.getLocationPlaces(lat, lng))
       .then((response) => {
         setPlaces(response.data);
+        refetch();
       });
   };
 
@@ -302,6 +303,7 @@ function MainPage() {
     isLoading: isLoading2,
     isSuccess: isSuccess2,
     data: data2,
+    refetch,
   } = useQuery<AxiosResponse<IPlace[]>, AxiosError>(
     [`${userInfo.id}-MyLocationPlaces`],
     async () => {
