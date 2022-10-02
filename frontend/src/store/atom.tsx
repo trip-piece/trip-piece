@@ -36,9 +36,14 @@ export const UserInfoState = atom<IUserInfo>({
 export interface IQrInfo {
   url: (string | Location) & Location;
   modalFlag: boolean;
+  correct?: boolean;
 }
 
-const initialQrInfoState: IQrInfo = { url: null, modalFlag: false };
+const initialQrInfoState: IQrInfo = {
+  url: null,
+  modalFlag: false,
+  correct: false,
+};
 
 export const QrInfoState = atom({
   key: "recoilQrState",

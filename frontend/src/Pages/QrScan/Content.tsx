@@ -5,6 +5,7 @@ import { EmotionJSX } from "@emotion/react/types/jsx-namespace";
 import { pixelToRem } from "../../utils/functions/util";
 import { ContentProps } from "../../utils/interfaces/qrscan.inteface";
 
+// eslint-disable-next-line import/no-named-as-default
 import ColoredRoundButton from "../../components/atoms/ColoredRoundButton";
 
 const Box = styled.div`
@@ -83,9 +84,9 @@ function QrInfo({ stickerName, stickerUrl }: ContentProps) {
 
 function Result({ result }: ContentProps): EmotionJSX.Element {
   const flag: string = result;
-
+  let jsx: EmotionJSX.Element = <div>ss</div>;
   if (flag === "success") {
-    return (
+    jsx = (
       <>
         <ResultIconBox>
           <BsCheckLg size="70" color="#2C5166" />
@@ -95,9 +96,8 @@ function Result({ result }: ContentProps): EmotionJSX.Element {
         </ResultBox>
       </>
     );
-  }
-  if (flag === "fail") {
-    return (
+  } else if (flag === "fail") {
+    jsx = (
       <>
         <ResultIconBox>
           <BsXLg size="70" color="#D35B5B" />
@@ -107,9 +107,8 @@ function Result({ result }: ContentProps): EmotionJSX.Element {
         </ResultBox>
       </>
     );
-  }
-  if (flag === "incorrect") {
-    return (
+  } else if (flag === "incorrect") {
+    jsx = (
       <>
         <ResultIconBox>
           <BsXLg size="70" color="#D35B5B" />
@@ -119,9 +118,9 @@ function Result({ result }: ContentProps): EmotionJSX.Element {
         </ResultBox>
       </>
     );
-  }
+  } else jsx = <div>ss</div>;
 
-  return <div>ss</div>;
+  return jsx;
 }
 
 function Content({ result, stickerName, stickerUrl }: ContentProps) {

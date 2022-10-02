@@ -62,10 +62,8 @@ function NestedModal() {
     const url: string = recoilQrState.url.toString();
     // const baseUrl = "j7a607.q.ssafy.io";
     // const baseUrl2 = "http://localhost:3000/";
-    console.log("실행");
 
-    let urlArray = url.split("/");
-    console.log(urlArray); // 3 4 5
+    const urlArray = url.split("/");
 
     const uri = urlArray[3];
     const placeId = urlArray[4];

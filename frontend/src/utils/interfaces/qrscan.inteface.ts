@@ -3,7 +3,7 @@ export interface TitleProps {
 }
 
 export interface ContentProps {
-  result: "success" | "fail" | "incorrect" | string;
+  result: string;
   stickerName?: string | null;
   stickerUrl?: string | null;
 }
@@ -11,3 +11,12 @@ export interface ContentProps {
 export interface CodeProps {
   id: number;
 }
+interface test {
+  content: CodeProps[];
+}
+
+export const contentPropsInit: ContentProps = {
+  result: "fuck",
+  stickerName: null,
+  stickerUrl: null,
+};
