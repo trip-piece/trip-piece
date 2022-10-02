@@ -1,8 +1,11 @@
 import styled from "@emotion/styled";
-import { SetStateAction, useState } from "react";
+import { SetStateAction, useEffect, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { useNavigate } from "react-router-dom";
+import { useRecoilState } from "recoil";
 import { Navigation } from "swiper";
+import { UserInfoState } from "../../store/atom";
+import { NFTContract } from "../../utils/common/NFT_ABI";
 
 const Container = styled.article`
   min-height: 90vh;
@@ -99,47 +102,63 @@ const Button = styled.article`
   }
 `;
 
-interface StickerProps {
-  image: string;
-  name: string;
+interface TokenDetail {
+  tokenName: string;
+  imagePath: string;
 }
 
-function StickerDetailPage() {
-  const result = [
-    {
-      image:
-        "https://www.infura-ipfs.io/ipfs/QmcqJiEjJon38JNzbsdgKhLBsjfWF8tZiUT5Mi7GQbtGP4",
-      name: "NFT카드1",
-    },
-    {
-      image:
-        "https://www.infura-ipfs.io/ipfs/QmRkTWeyoREXuJ9s2vCtPTwvA1iaPjGS29Ei2fKZFZisGL",
-      name: "NFT카드2",
-    },
-    {
-      image:
-        "https://www.infura-ipfs.io/ipfs/QmXyV1fnFM4EYv42KyfAyzXNX8bu73zpqQndoJBQPbL5pF",
-      name: "NFT카드3",
-    },
-    {
-      image:
-        "https://www.infura-ipfs.io/ipfs/QmPPEWSC7qX7rzxE76XJLkNQk2d95r6BSfiPMS3tNs4p1y",
-      name: "NFT카드4",
-    },
-    {
-      image:
-        "https://www.infura-ipfs.io/ipfs/QmQyqcdu8HhnN3tfJtzAduS59GJt4ZNxjSXnTaim72fxCU",
-      name: "NFT카드5",
-    },
-  ];
+interface NFT {
+  tokenId: number;
+  tokenURI: string;
+}
 
-  const [sticker, setSticker] = useState<StickerProps>(result[0]);
+function MarketRegisterPage() {
+  const [userInfo] = useRecoilState(UserInfoState);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [NFTList, setNFTList] = useState<NFT[]>([]);
+  const [NFTDetailList, setNFTDetailList] = useState<TokenDetail[]>([]);
+  console.log(userInfo.address);
+
+  const getNFTList = async () => {
+    try {
+      setLoading(true);
+      const result = await NFTContract.methods
+        .getStickerList(userInfo.address)
+        .call();
+      if (result) {
+        setNFTList(result);
+        const tokenList: React.SetStateAction<TokenDetail[]> = [];
+        for (var i = 0; i < result.length; i++) {
+          await fetch(`https://www.infura-ipfs.io/ipfs/${result[i].tokenURI}`)
+            .then((res) => {
+              return res.json();
+            })
+            .then((data) => {
+              const token: TokenDetail = {
+                tokenName: String(data[0].name),
+                imagePath: String(data[0].image),
+              };
+              tokenList.push(token);
+            });
+        }
+        setNFTDetailList(tokenList);
+        setLoading(false);
+      }
+    } catch (err) {
+      console.log("Error getSticker : ", err);
+    }
+  };
+  useEffect(() => {
+    getNFTList();
+  }, []);
+
+  const [sticker, setSticker] = useState<TokenDetail>(NFTDetailList[0]);
   const [price, setPrice] = useState(Number);
 
   const handleChangeSticker = (e: {
     target: { value: SetStateAction<string> };
   }) => {
-    setSticker(result[Number(e.target.value)]);
+    setSticker(NFTDetailList[Number(e.target.value)]);
   };
 
   const handleChangePrice = (e: {
@@ -162,8 +181,8 @@ function StickerDetailPage() {
         <StickerCard>
           {sticker !== undefined && (
             <>
-              <img src={sticker.image} />
-              <p>{sticker.name}</p>
+              <img src={sticker.imagePath} />
+              <p>{sticker.tokenName}</p>
             </>
           )}
         </StickerCard>
@@ -172,9 +191,9 @@ function StickerDetailPage() {
             placeholder="스티커를 선택해주세요."
             onChange={(e) => handleChangeSticker(e)}
           >
-            {result.length &&
-              result.map((sticker, idx) => (
-                <option value={idx}>{sticker.name}</option>
+            {NFTDetailList?.length &&
+              NFTDetailList?.map((sticker, idx) => (
+                <option value={idx}>{sticker.tokenName}</option>
               ))}
           </select>
           <input
@@ -194,4 +213,4 @@ function StickerDetailPage() {
   );
 }
 
-export default StickerDetailPage;
+export default MarketRegisterPage;
