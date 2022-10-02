@@ -336,7 +336,7 @@ export default function Navbar() {
   };
 
   const moveToPlace = () => {
-    navigate("/place/map");
+    navigate("/places/map");
     setOpen(false);
   };
 

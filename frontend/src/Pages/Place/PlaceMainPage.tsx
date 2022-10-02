@@ -4,8 +4,17 @@ import { Helmet } from "react-helmet-async";
 import { useNavigate } from "react-router-dom";
 import { pixelToRem } from "../../utils/functions/util";
 import { REGIONLIST } from "../../utils/constants/constant";
-import Container from "../../components/atoms/Container";
 import puzzle from "../../assets/image/puzzle.png";
+
+const Container = styled.div`
+  min-height: 90vh;
+  background-color: ${(props) => props.theme.colors.white};
+  border-radius: 30px 30px 0 0;
+  padding: 1rem;
+  position: relative;
+  width: inherit;
+  overflow-x: hidden;
+`;
 
 const TitleGroup = styled.div`
   width: 100%;
@@ -94,7 +103,7 @@ function PlaceMainPage() {
       <Helmet>
         <title>이벤트 지역 | 여행조각</title>
       </Helmet>
-      <Container hasPadding>
+      <Container>
         <TitleGroup>
           <h1 className="main">발급 가능 지역</h1>
           <h1>관심 지역의 스티커를 확인하세요</h1>
