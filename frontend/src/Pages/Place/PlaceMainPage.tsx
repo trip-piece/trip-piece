@@ -13,7 +13,6 @@ const Container = styled.div`
   padding: 1rem;
   position: relative;
   width: inherit;
-  overflow-x: hidden;
 `;
 
 const TitleGroup = styled.div`
@@ -119,7 +118,11 @@ function PlaceMainPage() {
               (region, idx) =>
                 idx > 0 &&
                 idx <= 4 && (
-                  <button type="button" onClick={() => moveToList(idx)} />
+                  <button
+                    key={idx}
+                    type="button"
+                    onClick={() => moveToList(idx)}
+                  />
                 ),
             )}
           </div>
@@ -128,7 +131,11 @@ function PlaceMainPage() {
               (region, idx) =>
                 idx > 4 &&
                 idx <= 8 && (
-                  <button type="button" onClick={() => moveToList(idx)} />
+                  <button
+                    key={idx}
+                    type="button"
+                    onClick={() => moveToList(idx)}
+                  />
                 ),
             )}
           </div>
@@ -137,7 +144,11 @@ function PlaceMainPage() {
               (region, idx) =>
                 idx > 8 &&
                 idx <= 12 && (
-                  <button type="button" onClick={() => moveToList(idx)} />
+                  <button
+                    key={idx}
+                    type="button"
+                    onClick={() => moveToList(idx)}
+                  />
                 ),
             )}
           </div>
@@ -146,7 +157,11 @@ function PlaceMainPage() {
               (region, idx) =>
                 idx > 12 &&
                 idx <= 16 && (
-                  <button type="button" onClick={() => moveToList(idx)} />
+                  <button
+                    key={idx}
+                    type="button"
+                    onClick={() => moveToList(idx)}
+                  />
                 ),
             )}
           </div>
