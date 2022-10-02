@@ -42,7 +42,7 @@ public class TripController {
             if (user == null) return new ResponseEntity<String>("로그인된 회원을 찾을 수 없습니다.", HttpStatus.NOT_FOUND);
             else {
                 tripService.addTrip(user, tripRequestDto);
-                return new ResponseEntity<String>("티켓 추가 성공!", HttpStatus.CREATED);
+                return new ResponseEntity<String>("티켓 추가 성공!", HttpStatus.OK);
             }
         } catch (Exception e) {
             e.printStackTrace();
