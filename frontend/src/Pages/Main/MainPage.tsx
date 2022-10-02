@@ -14,6 +14,7 @@ import axiosInstance from "../../utils/apis/api";
 import tripApis from "../../utils/apis/tripsApis";
 import {
   changeDateFormatToHyphen,
+  changeHyphenToDateFormat,
   getLocation,
 } from "../../utils/functions/util";
 import { ITrip } from "../../utils/interfaces/trips.interface";
@@ -323,7 +324,7 @@ function MainPage() {
     if (data1?.data) {
       setUpcoming(data1.data);
       setRegionImage(`/image/region/${REGIONLIST[data1?.data.regionId]}.png`);
-      if (data1.data.startDate) {
+      if (changeHyphenToDateFormat(data1.data.startDate) > new Date()) {
         setIsProgress(2);
       } else setIsProgress(1);
     }
@@ -631,7 +632,7 @@ function MainPage() {
                 {places?.length ? (
                   <Swiper slidesPerView={2.1} spaceBetween={13}>
                     {places.map((place: IPlace) => (
-                      <SwiperSlide>
+                      <SwiperSlide key={place.id}>
                         <Card place={place} />
                       </SwiperSlide>
                     ))}

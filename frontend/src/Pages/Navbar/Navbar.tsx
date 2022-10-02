@@ -1,4 +1,3 @@
-import * as React from "react";
 import styled from "@emotion/styled";
 import Box from "@mui/material/Box";
 import Drawer from "@mui/material/Drawer";
@@ -23,10 +22,21 @@ import { useNavigate } from "react-router-dom";
 import AppBar from "@mui/material/AppBar";
 import { useRecoilState } from "recoil";
 import { motion } from "framer-motion";
-import { pixelToRem } from "../../utils/functions/util";
+import {
+  changeDateFormatToHyphen,
+  pixelToRem,
+} from "../../utils/functions/util";
 import { UserInfoState } from "../../store/atom";
 import trippieceLogo from "../../assets/image/trippiece_logo.png";
 import { ReactComponent as EtherIcon } from "../../assets/svgs/etherIcon.svg";
+import { useEffect, useState } from "react";
+import { useQuery } from "react-query";
+import axiosInstance from "../../utils/apis/api";
+import { AxiosError, AxiosResponse } from "axios";
+import { ITrip } from "../../utils/interfaces/trips.interface";
+import tripApis from "../../utils/apis/tripsApis";
+import React from "react";
+import { REGIONLIST } from "../../utils/constants/constant";
 
 const DrawerHeader = styled.div`
   display: flex;
@@ -303,7 +313,12 @@ const BoxContainer = styled(Box)`
 `;
 
 export default function Navbar() {
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = useState(false);
+  const [userInfo] = useRecoilState(UserInfoState);
+  const [upcoming, setUpcoming] = useState<ITrip>();
+  const [loading, setLoading] = useState<boolean>(false);
+  const today = changeDateFormatToHyphen(new Date());
+  const [isProgress, setIsProgress] = useState(0);
 
   const toggleDrawer =
     // eslint-disable-next-line @typescript-eslint/no-shadow
@@ -359,7 +374,29 @@ export default function Navbar() {
     navigate("/main");
   };
 
-  const [userInfo] = useRecoilState(UserInfoState);
+  const {
+    isLoading: isLoading,
+    isSuccess: isSuccess,
+    data: data,
+  } = useQuery<AxiosResponse<ITrip>, AxiosError>(
+    [`${userInfo.id}-upcomingTrip`],
+    () => axiosInstance.get(tripApis.upcomingTrip(today)),
+    {
+      refetchOnWindowFocus: false,
+      refetchOnReconnect: false,
+      refetchOnMount: true,
+    },
+  );
+
+  useEffect(() => {
+    if (data?.data) {
+      setUpcoming(data.data);
+      if (data.data.startDate) {
+        setIsProgress(2);
+      } else setIsProgress(1);
+    }
+    setLoading(true);
+  }, [data]);
 
   return (
     <BoxContainer sx={{ flexGrow: 1 }} className="boxContainer">
@@ -542,7 +579,7 @@ export default function Navbar() {
                 </div>
               </MiddleLongBox>
               <OngoingTripBox>
-                {userInfo === null ? (
+                {!upcoming ? (
                   <div className="with-icon">
                     <GiTicket className="icon" />
                     <div className="trip-notice">
@@ -564,8 +601,11 @@ export default function Navbar() {
                     <MdLuggage className="icon" />
                     <div className="trip-notice">
                       <div className="typo">
-                        <p>서울 (startdate - enddate)</p>
-                        <p>[여행 제목]</p>
+                        <p>
+                          {REGIONLIST[upcoming.regionId]} ({upcoming.startDate}{" "}
+                          - {upcoming.endDate})
+                        </p>
+                        <p>[{upcoming.title}]</p>
                       </div>
                       <motion.button
                         whileHover={{ scale: 1.1 }}
