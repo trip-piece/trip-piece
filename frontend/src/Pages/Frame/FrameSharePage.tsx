@@ -8,8 +8,11 @@ import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import SwipeableDrawer from "@mui/material/SwipeableDrawer";
 import RegionButton from "./RegionButton";
-import Card from "./Card";
+import { MemoCard } from "./Card";
 import { REGIONLIST } from "../../utils/constants/constant";
+import { MemoInfiniteList } from "../../components/modules/infinite/ParamsInfiniteList";
+import Skeleton from "./Skeleton";
+import { frameApis } from "../../utils/apis/frameApis";
 
 const drawerBleeding = 56;
 
@@ -128,6 +131,7 @@ interface Props {
 }
 
 function FrameSharePage(props: Props) {
+  const regionList: number[] = [1, 2, 4];
   const { window } = props;
   const [open, setOpen] = React.useState(false);
   const [isAll, setIsAll] = useState<boolean>(false);
@@ -163,43 +167,43 @@ function FrameSharePage(props: Props) {
     }
   };
 
-  const result = [
-    {
-      frameId: 0,
-      image:
-        "https://www.infura-ipfs.io/ipfs/QmcqJiEjJon38JNzbsdgKhLBsjfWF8tZiUT5Mi7GQbtGP4",
-      isScrapped: true,
-      diaryId: 123.5,
-    },
-    {
-      frameId: 1,
-      image:
-        "https://www.infura-ipfs.io/ipfs/QmRkTWeyoREXuJ9s2vCtPTwvA1iaPjGS29Ei2fKZFZisGL",
-      isScrapped: true,
-      diaryId: 123.5,
-    },
-    {
-      frameId: 2,
-      image:
-        "https://www.infura-ipfs.io/ipfs/QmXyV1fnFM4EYv42KyfAyzXNX8bu73zpqQndoJBQPbL5pF",
-      isScrapped: true,
-      diaryId: 123.5,
-    },
-    {
-      frameId: 3,
-      image:
-        "https://www.infura-ipfs.io/ipfs/QmPPEWSC7qX7rzxE76XJLkNQk2d95r6BSfiPMS3tNs4p1y",
-      isScrapped: true,
-      diaryId: 123.5,
-    },
-    {
-      frameId: 4,
-      image:
-        "https://www.infura-ipfs.io/ipfs/QmQyqcdu8HhnN3tfJtzAduS59GJt4ZNxjSXnTaim72fxCU",
-      isScrapped: false,
-      diaryId: 123.5,
-    },
-  ];
+  // const result = [
+  //   {
+  //     frameId: 0,
+  //     image:
+  //       "https://www.infura-ipfs.io/ipfs/QmcqJiEjJon38JNzbsdgKhLBsjfWF8tZiUT5Mi7GQbtGP4",
+  //     isScrapped: true,
+  //     diaryId: 123.5,
+  //   },
+  //   {
+  //     frameId: 1,
+  //     image:
+  //       "https://www.infura-ipfs.io/ipfs/QmRkTWeyoREXuJ9s2vCtPTwvA1iaPjGS29Ei2fKZFZisGL",
+  //     isScrapped: true,
+  //     diaryId: 123.5,
+  //   },
+  //   {
+  //     frameId: 2,
+  //     image:
+  //       "https://www.infura-ipfs.io/ipfs/QmXyV1fnFM4EYv42KyfAyzXNX8bu73zpqQndoJBQPbL5pF",
+  //     isScrapped: true,
+  //     diaryId: 123.5,
+  //   },
+  //   {
+  //     frameId: 3,
+  //     image:
+  //       "https://www.infura-ipfs.io/ipfs/QmPPEWSC7qX7rzxE76XJLkNQk2d95r6BSfiPMS3tNs4p1y",
+  //     isScrapped: true,
+  //     diaryId: 123.5,
+  //   },
+  //   {
+  //     frameId: 4,
+  //     image:
+  //       "https://www.infura-ipfs.io/ipfs/QmQyqcdu8HhnN3tfJtzAduS59GJt4ZNxjSXnTaim72fxCU",
+  //     isScrapped: false,
+  //     diaryId: 123.5,
+  //   },
+  // ];
 
   return (
     <>
@@ -210,16 +214,16 @@ function FrameSharePage(props: Props) {
         <button onClick={toggleDrawer(true)} type="button">
           지역별 조회
         </button>
-        {/* <MemoInfiniteList
-          url={frameApis.getSharedFrames(regionList, 2)}
+        <MemoInfiniteList
+          url={frameApis.getSharedFrames(regionList)}
           queryKey={["frameList"]}
-          CardComponent={FrameCard}
+          CardComponent={MemoCard}
           SkeletonCardComponent={Skeleton}
           zeroDataText="공유한 프레임 없슴미다.."
-          count={2}
-          listName="frameList"
-        /> */}
-        <div className="CardList">
+          count={1}
+          listName="content"
+        />
+        {/* <div className="CardList">
           <Swiper slidesPerView={4} spaceBetween={13}>
             {result.length &&
               result.map((frame) => (
@@ -228,7 +232,7 @@ function FrameSharePage(props: Props) {
                 </SwiperSlide>
               ))}
           </Swiper>
-        </div>
+        </div> */}
         <Root>
           <CssBaseline />
           <Global
@@ -290,16 +294,13 @@ function FrameSharePage(props: Props) {
                 )}
               </label>
               <div className="ButtonList">
-                {REGIONLIST.map(
-                  (region, idx) =>
-                    idx !== 0 && (
-                      <RegionButton
-                        data={region}
-                        checkedItems={checkedItems}
-                        checkedItemHandler={checkedItemHandler}
-                      />
-                    ),
-                )}
+                {REGIONLIST.map((region, idx) => (
+                  <RegionButton
+                    data={region}
+                    checkedItems={checkedItems}
+                    checkedItemHandler={checkedItemHandler}
+                  />
+                ))}
               </div>
               <div className="searchPart">
                 <button type="button" className="searchButton">

@@ -11,7 +11,7 @@ interface FrameProps {
     frameId: number;
     diaryId: number;
     image: string;
-    isScrapped: boolean;
+    scrapped: boolean;
   };
 
   // refetch: () => Promise<
@@ -67,7 +67,7 @@ const LiContainer = styled.div`
   }
 `;
 function Card({ frame }: FrameProps) {
-  const [scrap, setScrap] = useState<boolean>(frame.isScrapped);
+  // const [scrap, setScrap] = useState<boolean>(frame.scrapped);
   // const checkScrap = () => {
   //   if (frame.isScrapped) {
   //     <BsFillBookmarkHeartFill className="scrapicon" />;
@@ -89,16 +89,16 @@ function Card({ frame }: FrameProps) {
     axiosInstance.delete(frameApis.deleteScrappedFrame, { data: body });
   };
 
-  const changeScrap = () => {
-    if (scrap === false) {
-      // 스크랩 설정하는 api 요청
-      postSaveFrame(frame.frameId);
-    } else {
-      // 스크랩 해제하는 api 요청
-      deleteScrappedFrame(frame.frameId);
-    }
-    setScrap(!scrap);
-  };
+  // const changeScrap = () => {
+  //   if (scrap === false) {
+  //     // 스크랩 설정하는 api 요청
+  //     postSaveFrame(frame.frameId);
+  //   } else {
+  //     // 스크랩 해제하는 api 요청
+  //     deleteScrappedFrame(frame.frameId);
+  //   }
+  //   setScrap(!scrap);
+  // };
 
   const navigate = useNavigate();
   const moveToFrame = () => {
@@ -120,7 +120,7 @@ function Card({ frame }: FrameProps) {
 
         {/* <button type="button" onClick={() => postSaveFrame(frame.frameId)}>
           gdgd
-        </button> */}
+        </button>*/}
 
         <div onClick={moveToFrame}>
           <img src={frame.image} alt="기본이미지" />
