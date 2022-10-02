@@ -57,8 +57,8 @@ public class DiaryRequestDto {
         @ApiModelProperty(name = "일기내용", example = "날이 좋아서.. 날이 좋지 않아서..")
         String content;
 
-        @ApiModelProperty(name = "오늘의포토", example = "임상빈.png")
-        String todayPhoto;
+        @ApiModelProperty(name = "기존의 오늘의 포토 url", example = "임상빈.png")
+        String imagePath;
 
         @ApiModelProperty(name = "폰트타입", example = "1")
         int fontType;
