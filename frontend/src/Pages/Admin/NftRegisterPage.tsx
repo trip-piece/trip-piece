@@ -123,8 +123,7 @@ function NftRegisterPage() {
         ];
         const metaadded = await ipfs.add(Buffer.from(JSON.stringify(metadata)));
         const tokenUrl = `${metaadded.path}`;
-        // const content = await ipfs.get(tokenUrl);
-        // console.log(JSON.parse(content[0].content));
+
         if (!(window as any).ethereum.enable())
           (window as any).ethereum.enable();
         const result = await NFTContract.methods
@@ -145,9 +144,6 @@ function NftRegisterPage() {
       console.log("Error uploading the file: ", err);
     }
     alert("생성되었습니다.");
-    setNFTName("");
-    setItem(null);
-    setPrivKey("");
     setLoading(false);
   };
 

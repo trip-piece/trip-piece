@@ -12,7 +12,7 @@ function MySticker() {
       </Helmet>
 
       <UserInfo />
-      <Tap />
+      <Tap type={0} />
       <MyStickerList />
     </>
   );
