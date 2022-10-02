@@ -82,8 +82,8 @@ function TripDiaryListPage() {
         data?.data.endDate,
       );
       setResult(_result);
-      const today = new Date();
-      const idx = _result.findIndex((date) => isSameDay(date, today));
+      const _today = new Date();
+      const idx = _result.findIndex((date) => isSameDay(date, _today));
       if (idx !== -1) {
         setTodayIndex(idx - 2);
       }

@@ -1,8 +1,9 @@
 const userApis = {
-  login: "/user/login",
-  getUser: "/user",
-  modifyNickname: "/user/nickname",
-  getMyScraps: `/user/scraps`,
+  login: "user/login",
+  getUser: "user",
+  modifyNickname: "user/nickname",
+  getMyScraps: `user/scraps`,
+  tokenReissue: "/reissue",
 };
 
 export interface walletAddress {

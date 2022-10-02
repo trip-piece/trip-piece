@@ -7,7 +7,7 @@ import { NavigateFunction, useNavigate } from "react-router-dom";
 // import { useRecoilState } from "recoil";
 import { useRecoilState } from "recoil";
 import Web3 from "web3";
-import { getCookie, setCookie } from "../../utils/cookie";
+import { setCookie } from "../../utils/cookie";
 // import { IUserInfo, UserInfoState } from "../../store/atom";
 
 import LoginButton from "./LoginButton";
@@ -45,6 +45,10 @@ export default function LandingPage() {
 
   const [userInfoState, setUserInfoState] = useRecoilState(UserInfoState);
 
+  const loginFlag: boolean = false;
+
+  console.log(`지갑.. ${account}`);
+
   let userInfoInit: IUserInfo = {
     address: "",
     nickname: "",
@@ -71,6 +75,7 @@ export default function LandingPage() {
         .then((eth) => {
           userInfoInit = { ...userInfoInit, balance: eth };
           setUserInfoState(userInfoInit);
+
           moveToMain(navigate);
         });
     }
@@ -83,14 +88,14 @@ export default function LandingPage() {
           data: {
             userId: number;
             walletAddress: string;
-            nickName: string;
+            nickname: string;
             tripCount: number;
             diaryCount: number;
           };
         }) => {
           userInfoInit = {
             address: response.data.walletAddress,
-            nickname: response.data.nickName,
+            nickname: response.data.nickname,
             balance: "-1.0",
             isLoggedIn: true,
             id: response.data.userId,
@@ -133,11 +138,13 @@ export default function LandingPage() {
     event.preventDefault();
 
     if (active) {
+      console.log(`active ${active} / ${address}`);
       login(address);
-      console.log();
     }
 
     if (!active) {
+      console.log("trying metamask connect...");
+
       activate(injected, async () => {});
     }
   };
