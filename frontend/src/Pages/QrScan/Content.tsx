@@ -1,11 +1,11 @@
 import React from "react";
 import styled from "@emotion/styled";
 import { BsCheckLg, BsXLg } from "react-icons/bs";
+import { EmotionJSX } from "@emotion/react/types/jsx-namespace";
 import { pixelToRem } from "../../utils/functions/util";
 import { ContentProps } from "../../utils/interfaces/qrscan.inteface";
 
 import ColoredRoundButton from "../../components/atoms/ColoredRoundButton";
-import { EmotionJSX } from "@emotion/react/types/jsx-namespace";
 
 const Box = styled.div`
   box-shadow: 0 4px 4px 2px rgb(0 0 0/25%);
