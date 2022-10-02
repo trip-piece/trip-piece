@@ -328,6 +328,7 @@ function MainPage() {
       } else setIsProgress(1);
     }
     if (data2?.data) {
+      setPlaces(data2.data["content"]);
       if (data2.data.length) {
         setPlaces(data2.data);
       }

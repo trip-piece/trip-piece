@@ -134,26 +134,26 @@ function PlaceListPage() {
         {type === 0 && (
           <PlaceList>
             <MemoInfiniteList
-              url={placeApis.getPlaces(Number(regionId), type)}
+              url={placeApis.getPlaces(Number(regionId), 0)}
               queryKey={["spotList"]}
               CardComponent={MemoCard}
               SkeletonCardComponent={Skeleton}
               zeroDataText="발급 가능한 스팟이 없습니다."
               count={1}
-              listName="spotList"
+              listName="content"
             />
           </PlaceList>
         )}
         {type === 1 && (
           <PlaceList>
             <MemoInfiniteList
-              url={placeApis.getPlaces(Number(regionId), type)}
+              url={placeApis.getPlaces(Number(regionId), 1)}
               queryKey={["festivalList"]}
               CardComponent={MemoCard}
               SkeletonCardComponent={Skeleton}
               zeroDataText="발급 가능한 축제가 없습니다."
               count={1}
-              listName="festivalList"
+              listName="content"
             />
           </PlaceList>
         )}
