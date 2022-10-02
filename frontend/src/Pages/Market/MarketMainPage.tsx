@@ -9,8 +9,8 @@ import { useNavigate } from "react-router-dom";
 import { REGIONLIST } from "../../utils/constants/constant";
 import { marketApis } from "../../utils/apis/marketApis";
 import axiosInstance from "../../utils/apis/api";
-import { QueryFunctionContext, useQuery } from "react-query";
-import { getStickerList } from "../../utils/interfaces/markets.interface";
+import { useQuery } from "react-query";
+import { MarketStikcerListResponse } from "../../utils/interfaces/markets.interface";
 import { AxiosError, AxiosResponse } from "axios";
 
 const Container = styled.article`
@@ -140,45 +140,10 @@ const CateContainer = styled.article`
 `;
 
 function MarketMainPage() {
-  // const marketList = [
-  //   {
-  //     marketId: 0,
-  //     image:
-  //       "https://www.infura-ipfs.io/ipfs/QmcqJiEjJon38JNzbsdgKhLBsjfWF8tZiUT5Mi7GQbtGP4",
-  //     name: "NFT카드1",
-  //     price: 123.9,
-  //   },
-  //   {
-  //     marketId: 1,
-  //     image:
-  //       "https://www.infura-ipfs.io/ipfs/QmRkTWeyoREXuJ9s2vCtPTwvA1iaPjGS29Ei2fKZFZisGL",
-  //     name: "NFT카드2",
-  //     price: 123.5,
-  //   },
-  //   {
-  //     marketId: 2,
-  //     image:
-  //       "https://www.infura-ipfs.io/ipfs/QmXyV1fnFM4EYv42KyfAyzXNX8bu73zpqQndoJBQPbL5pF",
-  //     name: "NFT카드3",
-  //     price: 123.5,
-  //   },
-  //   {
-  //     marketId: 3,
-  //     image:
-  //       "https://www.infura-ipfs.io/ipfs/QmPPEWSC7qX7rzxE76XJLkNQk2d95r6BSfiPMS3tNs4p1y",
-  //     name: "NFT카드4",
-  //     price: 123.5,
-  //   },
-  //   {
-  //     marketId: 4,
-  //     image:
-  //       "https://www.infura-ipfs.io/ipfs/QmQyqcdu8HhnN3tfJtzAduS59GJt4ZNxjSXnTaim72fxCU",
-  //     name: "NFT카드5",
-  //     price: 123.5,
-  //   },
-  // ];
-
-  const res = useQuery<AxiosResponse<getStickerList>, AxiosError>(
+  const { data } = useQuery<
+    AxiosResponse<MarketStikcerListResponse>,
+    AxiosError
+  >(
     ["marketStickerList"],
     () => axiosInstance.get(marketApis.getMarketList("", 0, 0)),
     {
@@ -187,9 +152,6 @@ function MarketMainPage() {
       refetchOnMount: true,
     },
   );
-
-  const marketList = res.data;
-  console.log(marketList);
   const region = REGIONLIST;
 
   const [keyword, setKeyword] = useState("");
@@ -236,14 +198,14 @@ function MarketMainPage() {
             <button onClick={() => moveToListPage(0)}>전체 보기</button>
           </div>
           <div className="CardList">
-            {/* <Swiper slidesPerView={1.2} spaceBetween={13}>
-              {marketList.length &&
-                marketList.map((sticker, idx) => (
+            <Swiper slidesPerView={1.2} spaceBetween={13}>
+              {data?.data?.content?.length &&
+                data?.data?.content?.map((sticker, idx) => (
                   <SwiperSlide key={idx}>
                     <Card sticker={sticker} />
                   </SwiperSlide>
                 ))}
-            </Swiper> */}
+            </Swiper>
           </div>
         </CardContainer>
         <CateContainer>

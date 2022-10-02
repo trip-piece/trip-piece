@@ -5,4 +5,5 @@ export const marketApis = {
     regionId: number | undefined,
     sort: number | undefined,
   ): string => `/market?keyword=${keyword}&regionId=${regionId}&sort=${sort}`,
+  getMarketDetail: (marketId: string | null): string => `/market/${marketId}`,
 };
