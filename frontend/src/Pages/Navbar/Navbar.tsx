@@ -28,7 +28,8 @@ import {
 } from "../../utils/functions/util";
 import { UserInfoState } from "../../store/atom";
 import trippieceLogo from "../../assets/image/trippiece_logo.png";
-import { ReactComponent as EtherIcon } from "../../assets/svgs/etherIcon.svg";
+import { ReactJSXElement } from "@emotion/react/types/jsx-namespace";
+// import { ReactComponent as EtherIcon } from "../../assets/svgs/etherIcon.svg";
 import { useEffect, useState } from "react";
 import { useQuery } from "react-query";
 import axiosInstance from "../../utils/apis/api";
@@ -37,6 +38,7 @@ import { ITrip } from "../../utils/interfaces/trips.interface";
 import tripApis from "../../utils/apis/tripsApis";
 import React from "react";
 import { REGIONLIST } from "../../utils/constants/constant";
+import { CodeProps } from "../../utils/interfaces/qrscan.inteface";
 
 const DrawerHeader = styled.div`
   display: flex;
@@ -59,6 +61,31 @@ const TopBackgroundBox = styled.div`
   display: block;
   justify-content: center;
   position: relative;
+`;
+
+const Name = styled.div`
+  font-size: ${(props) => props.theme.fontSizes.h2};
+  padding: 0 ${pixelToRem(7)} 0 0;
+  margin-top: auto;
+
+  margin-top: auto;
+  text-align: justify;
+  display: flex;
+`;
+
+const NameSuffix = styled.div`
+  font-size: ${(props) => props.theme.fontSizes.h6};
+
+  display: inline-block;
+  white-space: nowrap;
+  margin-top: auto;
+  font-weight: bold;
+`;
+const IdCode = styled.div`
+  font-size: ${(props) => props.theme.fontSizes.paragraph};
+  margin-top: auto;
+  font-weight: bold;
+  width: auto;
 `;
 
 const UserInformation = styled.div`
@@ -312,6 +339,20 @@ const BoxContainer = styled(Box)`
   height: 100%;
 `;
 
+function IdCodeComponent({ id }: CodeProps) {
+  const num: string = id.toString();
+  let code: ReactJSXElement;
+  if (num.length === 1) {
+    code = <IdCode>#000{id}</IdCode>;
+  } else if (num.length === 2) {
+    code = <IdCode>#00{id}</IdCode>;
+  } else if (num.length === 3) {
+    code = <IdCode>#0{id}</IdCode>;
+  } else code = <IdCode>#{id}</IdCode>;
+
+  return code;
+}
+
 export default function Navbar() {
   const [open, setOpen] = useState(false);
   const [userInfo] = useRecoilState(UserInfoState);
@@ -473,8 +514,9 @@ export default function Navbar() {
             <TopBackgroundBox>
               <UserInformation>
                 <div className="username">
-                  {userInfo.nickname}#000{userInfo.id}
-                  <h5>여행자님</h5>
+                  <Name>{userInfo.nickname}</Name>
+                  <NameSuffix>여행자님</NameSuffix>&nbsp;
+                  <IdCodeComponent id={userInfo.id} />
                   <motion.button
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.9 }}
@@ -484,7 +526,7 @@ export default function Navbar() {
                   </motion.button>
                 </div>
                 <div className="wallet-info">
-                  <EtherIcon className="icon" />
+                  <FaEthereum className="icon" />
                   <p>{userInfo.balance}</p>
                 </div>
               </UserInformation>
