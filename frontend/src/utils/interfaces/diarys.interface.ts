@@ -4,6 +4,8 @@ export interface IDiary {
   fontType: number;
   backgroundColor: number;
   weather: number;
+  imagePath?: string | null;
+  diaryId?: number;
 }
 
 export interface IWritedDiary<T> {

@@ -9,13 +9,14 @@ import { BsFillGeoAltFill } from "react-icons/bs";
 import { HiTrash } from "react-icons/hi";
 import { Helmet } from "react-helmet-async";
 import { useRecoilState } from "recoil";
+import { useQuery } from "react-query";
 import {
   DIARY_COLOR_LIST,
   FONTTYPELIST,
   MESSAGE_LIST,
 } from "../../utils/constants/constant";
-import ColoredRoundButton from "../../components/atoms/ColoredRoundButton";
-import { pixelToRem } from "../../utils/functions/util";
+import { ColoredRoundButton } from "../../components/atoms/ColoredRoundButton";
+import { changeDateFormatToDot, pixelToRem } from "../../utils/functions/util";
 import { shake } from "../../style/animations";
 import useWindowResize from "../../utils/hooks/useWindowResize";
 import { writedDiaryState } from "../../store/diaryAtoms";
@@ -25,6 +26,8 @@ import DateContainer from "../../components/atoms/DateContainer";
 import { weatherList } from "../../utils/constants/weatherList";
 import MyLocation from "../../components/modules/MyLocation";
 import useGetLocation from "../../utils/hooks/useGetLocation";
+import diaryApis from "../../utils/apis/diaryApis";
+import axiosInstance from "../../utils/apis/api";
 
 const Form = styled.form`
   display: flex;
@@ -200,16 +203,27 @@ interface IFormInput {
   content: string;
 }
 
+interface IPhoto {
+  todayPhoto: File | null;
+  imageSrc: string | null;
+  imagePath: string | null;
+}
+
 function DiaryManagementPage() {
   const [weather, setWeather] = useState<number>(0);
   const [diaryColor, setDiaryColor] = useState<number>(0);
   const [dottedDate, setDottedDate] = useState<string>("");
   const [diaryWidth, setDiaryWidth] = useState<number>(320);
-  const [todayPhoto, setTodayPhoto] = useState<File | null>();
-  const [imageSrc, setImageSrc] = useState<string | null>("");
+  const [photo, setPhoto] = useState<IPhoto>({
+    todayPhoto: null,
+    imageSrc: null,
+    imagePath: null,
+  });
+  const [isEditMode, setIsEditMode] = useState<boolean>(false);
   const fileInput = useRef<HTMLInputElement>(null);
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
-  const { tripId } = useParams();
+  const location = useLocation();
+  const { tripId, diaryDate } = useParams();
   const { state } = useLocation();
   const [diary, setDiary] = useRecoilState<IWritedDiary<File | null>>(
     writedDiaryState(`${tripId}-${state?.diaryDate}`),
@@ -220,10 +234,32 @@ function DiaryManagementPage() {
     useForm<IFormInput>({});
   const navigate = useNavigate();
   const size = useWindowResize();
+  console.log("diaryDate:", diaryDate);
   useEffect(() => {
-    if (!state?.diaryDate) navigate(-1);
-    if (state?.diaryDate) setDottedDate(state?.diaryDate?.replaceAll("-", "."));
+    if (!state?.diaryDate && !diaryDate) navigate(-1);
+    if (location.pathname.includes("/edit")) setIsEditMode(true);
+    if (state?.diaryDate)
+      setDottedDate(changeDateFormatToDot(state?.diaryDate));
   }, []);
+  console.log("isEditMode: ", isEditMode);
+  const {
+    isLoading,
+    isFetching,
+    data: diaryData,
+  } = useQuery(
+    [`${tripId}-${diaryDate}-diary`, "edit"],
+    () =>
+      axiosInstance.get(
+        diaryApis.targetDiary(Number(tripId), state?.diaryDate || diaryDate),
+      ),
+    {
+      refetchOnWindowFocus: false,
+      refetchOnReconnect: false,
+      refetchOnMount: true,
+      enabled: isEditMode,
+    },
+  );
+  console.log(diaryData);
 
   useEffect(() => {
     if (!textAreaRef.current?.offsetWidth) return;
@@ -238,20 +274,40 @@ function DiaryManagementPage() {
     const reader = new FileReader();
     reader.readAsDataURL(fileBlob);
     reader.onload = () => {
-      const tmpImage = reader.result as string;
-      setImageSrc(tmpImage);
+      const _image = reader.result as string;
+      setPhoto((prev) => ({
+        ...prev,
+        todayPhoto: diary.todayPhoto,
+        ImageSrc: _image,
+      }));
     };
   }, []);
   useEffect(() => {
     if (diary) {
       setDiaryColor(diary.diary.backgroundColor);
       setWeather(diary.diary.weather);
-      setTodayPhoto(diary.todayPhoto);
-      if (diary.todayPhoto) encodeFileToBase64(diary.todayPhoto);
+      setPhoto((prev) => ({ ...prev, todayPhoto: diary.todayPhoto }));
+      if (diary.diary.imagePath)
+        setPhoto((prev) => ({ ...prev, imagePath: diary.diary.imagePath }));
       setValue("fontType", diary.diary.fontType);
       setValue("content", diary.diary.content);
+      // eslint-disable-next-line no-useless-return
+      if (diary.todayPhoto) return;
+      encodeFileToBase64(diary.todayPhoto);
+    } else if (diaryData) {
+      setDiaryColor(diaryData.data.backgroundColor);
+      setWeather(diaryData.data.weather);
+      setValue("fontType", diaryData.data.fontType);
+      setValue("content", diaryData.data.content);
+      if (diaryData.data.imagePath) {
+        setPhoto((prev) => ({
+          ...prev,
+          imagePath: diaryData.data.imagePath,
+          imageSrc: diaryData.data.imagePath,
+        }));
+      }
     }
-  }, []);
+  }, [diaryData]);
 
   const onSubmit = (formInputData: IFormInput) => {
     const body = {
@@ -262,10 +318,10 @@ function DiaryManagementPage() {
         tripId: Number(tripId),
         date: state?.diaryDate,
       },
-      todayPhoto: todayPhoto || null,
+      todayPhoto: photo.todayPhoto || null,
     };
     setDiary(body);
-    navigate(`../trips/${tripId}/diarys/diary/decoration`, {
+    navigate(`../trips/${tripId}/diarys/decoration`, {
       state: { diaryDate: state?.diaryDate },
     });
   };
@@ -284,15 +340,13 @@ function DiaryManagementPage() {
     if (file) {
       import("../../utils/functions/changeFileType").then(async (change) => {
         const resizedFile = await change.resizeImage(file);
-        setTodayPhoto(resizedFile);
         encodeFileToBase64(resizedFile);
       });
     }
   };
 
-  const onDlelete = () => {
-    setImageSrc("");
-    setTodayPhoto(null);
+  const onDelete = () => {
+    setPhoto({ todayPhoto: null, imagePath: null, imageSrc: null });
   };
 
   return (
@@ -345,13 +399,16 @@ function DiaryManagementPage() {
                 />
               ))}
             </ColorButtonListContainer>
-            <MyLocation
-              {...{ isFetchingLocation, locationData, refetchLocation }}
-            />
-            {/* <PositionContainer>
-              <BsFillGeoAltFill />
-              서울 송파구
-            </PositionContainer> */}
+            {isEditMode ? (
+              <PositionContainer>
+                <BsFillGeoAltFill />
+                {diaryData?.data.location}
+              </PositionContainer>
+            ) : (
+              <MyLocation
+                {...{ isFetchingLocation, locationData, refetchLocation }}
+              />
+            )}
           </ColorAndPositionContainer>
           <Controller
             name="content"
@@ -379,7 +436,7 @@ function DiaryManagementPage() {
               ref={fileInput}
             />
             <ImageControlContainer>
-              <p>{todayPhoto?.name}</p>
+              <p>{photo.todayPhoto?.name}</p>
               <FileSelectionButton
                 type="button"
                 onClick={() => fileInput.current?.click()}
@@ -388,9 +445,11 @@ function DiaryManagementPage() {
               </FileSelectionButton>
             </ImageControlContainer>
             <PreviewContainer>
-              {imageSrc && <PreviewImage src={imageSrc} alt="today" />}
-              {imageSrc && (
-                <DeleteButton type="button" onClick={onDlelete}>
+              {photo.imageSrc && (
+                <PreviewImage src={photo.imageSrc} alt="today" />
+              )}
+              {photo.imageSrc && (
+                <DeleteButton type="button" onClick={onDelete}>
                   <HiTrash />
                 </DeleteButton>
               )}

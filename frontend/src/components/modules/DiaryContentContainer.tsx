@@ -15,6 +15,7 @@ const DiaryContents = styled.div<DiaryContentsProps>`
   padding: ${(props) => `${pixelToRem(16 + (props.diaryWidth - 320) / 20)}`};
   resize: none;
   transition: background-color 0.5s ease-in;
+  overflow-wrap: break-word;
   font-size: ${(props) =>
     pixelToRem(props.diaryWidth / 20) !== "0rem"
       ? pixelToRem(props.diaryWidth / 20)

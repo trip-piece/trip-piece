@@ -8,7 +8,7 @@ import { Icon } from "@iconify/react/dist/offline";
 import { BsFillGeoAltFill } from "react-icons/bs";
 import diaryApis from "../../utils/apis/diaryApis";
 import {
-  changeDateForamtToDot,
+  changeDateFormatToDot,
   changeDateFormatToHyphen,
 } from "../../utils/functions/util";
 import ColoredRoundButton from "../../components/atoms/ColoredRoundButton";
@@ -105,7 +105,13 @@ function TripDiaryPage({ startDate, today, endDate }: TripListProps) {
   }, [size, diaryRef.current, diaryRef, imageRef, imageRef.current]);
 
   const moveToWriteDiary = () => {
-    navigate(`/trips/${tripId}/diarys/diary/write`, {
+    navigate(`/trips/${tripId}/diarys/write`, {
+      state: { diaryDate: selectedDiaryDate },
+    });
+  };
+
+  const moveToEditDiary = () => {
+    navigate(`/trips/${tripId}/diarys/${selectedDiaryDate}/edit`, {
       state: { diaryDate: selectedDiaryDate },
     });
   };
@@ -133,13 +139,18 @@ function TripDiaryPage({ startDate, today, endDate }: TripListProps) {
       {isSuccess && data.data && (
         <>
           <div>
-            <button>수정</button>
+            <button type="button" onClick={moveToEditDiary}>
+              수정
+            </button>
             <button type="button" onClick={onDelete}>
               삭제
             </button>
           </div>
           <DateContainer>
-            <h2>{changeDateForamtToDot(selectedDiaryDate)} </h2>
+            <h2>
+              {changeDateFormatToDot(diaryDate) ||
+                changeDateFormatToDot(selectedDiaryDate)}
+            </h2>
             <Icon icon={weatherList[data?.data?.weather]} />
           </DateContainer>
           {/* <PositionContainer> */}
