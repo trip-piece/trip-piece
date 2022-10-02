@@ -158,7 +158,12 @@ public class DiaryController {
                 if (todayPhoto != null) {
                     String currentFilePath = diaryRepository.findById(diaryEdit.getDiaryId()).orElseThrow(() -> new CustomException(ErrorCode.DATA_NOT_FOUND)).getTodayPhoto();
                     String fileName = s3Service.upload(currentFilePath, todayPhoto); //입력하면 업로드하러 넘어감
-                    diaryEdit.setTodayPhoto(fileName);
+                    diaryEdit.setImagePath(fileName);
+                } else {
+                    //파일이 없고, ImagePath도 없는 경우 => 기존 이미지를 삭제할 경우
+                    if(diaryEdit.getImagePath().equals("") || diaryEdit.getImagePath().equals(null)) {
+                        diaryEdit.setImagePath(null);
+                    }
                 }
                 int updateResult = diaryService.updateDiary(user, diaryEdit, diaryEdit.getDiaryId());
                 if (updateResult == 406)
