@@ -69,7 +69,7 @@ function Router() {
         <Route path="places/:regionId/list" element={<PlaceListPage />} />
         <Route path="places/list/mylocation" element={<MyLocationListPage />} />
         <Route path="qrscan" element={<QrScanner />} />
-        <Route path="/places/:placeId" element={<NftResponse />} />
+        <Route path="/places/:regionId/:code" element={<NftResponse />} />
         <Route path="/places" element={<Loading />} />
       </Routes>
     </BrowserRouter>

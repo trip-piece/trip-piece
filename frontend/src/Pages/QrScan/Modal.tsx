@@ -9,6 +9,7 @@ import { pixelToRem } from "../../utils/functions/util";
 import ColoredRoundButton from "../../components/atoms/ColoredRoundButton";
 import { IQrInfo, QrInfoState } from "../../store/atom";
 import { urlSource } from "ipfs-http-client/dist/src";
+import { useNavigate } from "react-router-dom";
 // import { pixelToRem } from "../../utils/functions/util";
 // import ColoredRoundButton from "../../components/atoms/ColoredRoundButton";
 
@@ -43,9 +44,10 @@ const ResultBox = styled.div`
   align-items: center;
 `;
 
-function NestedModal({ validateLink }) {
+function NestedModal() {
   const [open, setOpen] = useState(false);
   const [recoilQrState, setRecoilQrState] = useRecoilState(QrInfoState);
+  const navigate = useNavigate();
 
   const handleOpen = () => {
     setOpen(true);
@@ -57,26 +59,31 @@ function NestedModal({ validateLink }) {
   };
 
   const MoveToLink = () => {
-    const url: string = recoilQrState.url as string;
+    const url: string = recoilQrState.url.toString();
     // const baseUrl = "j7a607.q.ssafy.io";
     // const baseUrl2 = "http://localhost:3000/";
+    console.log("실행");
 
-    // 정규표현식
-    const regax =
-      /^(http(s)?:\/\/)(localhost:3000)(\/)(places)(\/)([\d]{1,2})(\/)([a-zA-Z0-9!@#$%^&]{10})/g;
-    if (regax.test(url)) {
-      validateLink(true);
-      window.location = recoilQrState.url;
-    } else {
-      validateLink(true);
-      console.log("올바르지않은 URL 형식");
-    }
+    let urlArray = url.split("/");
+    console.log(urlArray); // 3 4 5
 
+    const uri = urlArray[3];
+    const placeId = urlArray[4];
+    const rmdCode = urlArray[5];
+
+    navigate(`/${uri}/${placeId}/${rmdCode}`);
     setOpen(false);
   };
 
   useEffect(() => {
-    if (recoilQrState.modalFlag === true) handleOpen();
+    if (recoilQrState.modalFlag === true) {
+      // const url: string = recoilQrState.url as string;
+
+      // let test = new URL(url);
+      // console.log(`뭐임 : ${url.pathname}`);
+
+      handleOpen();
+    }
   }, [recoilQrState.modalFlag]);
 
   return (

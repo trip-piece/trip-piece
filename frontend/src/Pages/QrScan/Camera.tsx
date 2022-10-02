@@ -6,6 +6,7 @@ import { QrReader } from "react-qr-reader";
 import { pixelToRem } from "../../utils/functions/util";
 import NestedModal from "./Modal";
 import { QrInfoState } from "../../store/atom";
+import { ContentProps } from "../../utils/interfaces/qrscan.inteface";
 
 const Box = styled.div`
   box-shadow: 0 4px 4px 2px rgb(0 0 0/25%);
@@ -59,14 +60,10 @@ function QrReaderComponent() {
 }
 
 function Camera() {
-  const validateLink = (result: boolean) => {
-    console.log(result);
-  };
-
   return (
     <Box>
       <QrReaderComponent />
-      <NestedModal validateLink={validateLink} />
+      <NestedModal />
     </Box>
   );
 }
