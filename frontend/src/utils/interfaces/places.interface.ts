@@ -18,14 +18,14 @@ export interface IPlace {
 }
 
 export interface ISticker {
-  stickerId: number;
+  id: number;
   tokenId: number;
   tokenName: string;
   tokenURL: string;
 }
 
 export interface IDistinctSticker {
-  stickerId: number;
+  id: number;
   tokenId: number;
   tokenName: string;
   tokenURL: string;
