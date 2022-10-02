@@ -2,7 +2,6 @@ import React from "react";
 import styled from "@emotion/styled";
 import { Modal, Select } from "@mui/material";
 import { pixelToRem } from "../../utils/functions/util";
-import NestedModal from "./Modal";
 import { MemoInfiniteList } from "../../components/modules/infinite/InfiniteList";
 import userApis from "../../utils/apis/userApis";
 import { MemoCard } from "./Card";
@@ -23,27 +22,13 @@ const StickerBox = styled.div`
 const TitleBox = styled.div`
   height: 8%;
   width: 100%;
-  padding: ${pixelToRem(17)} 0 0 0;
+  padding: ${pixelToRem(17)} 0 ${pixelToRem(5)} 0;
   border-bottom: solid 1px ${(props) => props.theme.colors.gray400};
   justify-content: center;
 `;
 const Title = styled.div`
   font-weight: bold;
-  font-size: ${(props) => props.theme.fontSizes.h5};
-`;
-
-const Filter = styled.select`
-  border: none;
-  border-radius: 5px;
-  width: ${pixelToRem(10)};
-  padding: 0 0.5rem;
   font-size: ${(props) => props.theme.fontSizes.h4};
-  height: ${pixelToRem(10)};
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  appearance: none;
-  color: ${(props) => props.theme.colors.gray900};
-  margin-left: auto;
 `;
 
 const StickerContainer = styled.div`
@@ -67,10 +52,9 @@ function MyScrapList() {
           CardComponent={MemoCard}
           SkeletonCardComponent={Skeleton}
           zeroDataText="스크랩이 존재하지..않습니다"
-          count={3}
+          count={2}
           listName="scrapList"
         />
-        {userApis.getMyScraps}
       </StickerContainer>
     </StickerBox>
   );

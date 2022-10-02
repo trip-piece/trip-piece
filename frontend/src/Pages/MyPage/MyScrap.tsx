@@ -12,7 +12,7 @@ function MyScrap() {
       </Helmet>
 
       <UserInfo />
-      <Tap />
+      <Tap type={1} />
       <MyScrapList />
     </>
   );

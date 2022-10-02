@@ -1,5 +1,5 @@
 /* eslint-disable import/prefer-default-export */
-import { atom, selector } from "recoil";
+import { atom } from "recoil";
 // import { v1 } from "uuid";
 
 // export const loggedInState = atom({
@@ -20,7 +20,7 @@ export interface IUserInfo {
 
 const UserInfodata: IUserInfo = {
   address: "",
-  nickname: "없지롱",
+  nickname: "누군가",
   balance: "0.0",
   isLoggedIn: false,
   id: 0,
@@ -32,4 +32,3 @@ export const UserInfoState = atom<IUserInfo>({
   key: "userInfoState",
   default: UserInfodata,
 });
-
