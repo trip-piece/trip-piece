@@ -570,7 +570,7 @@ function MainPage() {
         </MainBox>
         <SubBox>
           <MiddleTitle>
-            📍 내 주변에서 NFT 발급받기
+            📍 내 주변 스티커 발급받기
             <motion.button
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
@@ -642,7 +642,7 @@ function MainPage() {
                 ) : (
                   <p>
                     <br />
-                    근처에 발급 가능한 지역이 없어요.
+                    근처에 발급 가능한 곳이 없어요.
                   </p>
                 )}
               </>
