@@ -30,7 +30,7 @@ export const WEEK = [
 ];
 
 export const FONTTYPELIST = [
-  "LotteMartDream",
+  "기본글씨체",
   "강원모두교육체",
   "이순신돋움",
   "교보손글씨",

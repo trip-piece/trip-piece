@@ -96,7 +96,7 @@ export default function GlobalStyle() {
             font-size: 100%;
             font: inherit;
             vertical-align: baseline;
-            font-family: "LotteMartDream";
+            font-family: "기본글씨체";
           }
           /* HTML5 display-role reset for older browsers */
           article,
@@ -112,22 +112,22 @@ export default function GlobalStyle() {
           nav,
           section {
             display: block;
-            font-family: "LotteMartDream";
+            font-family: "기본글씨체";
           }
           *[hidden] {
             display: none;
-            font-family: "LotteMartDream";
+            font-family: "기본글씨체";
           }
           menu,
           ol,
           ul {
             list-style: none;
-            font-family: "LotteMartDream";
+            font-family: "기본글씨체";
           }
           blockquote,
           q {
             quotes: none;
-            font-family: "LotteMartDream";
+            font-family: "기본글씨체";
           }
           blockquote:before,
           blockquote:after,
@@ -135,16 +135,16 @@ export default function GlobalStyle() {
           q:after {
             content: "";
             content: none;
-            font-family: "LotteMartDream";
+            font-family: "기본글씨체";
           }
           table {
             border-collapse: collapse;
             border-spacing: 0;
-            font-family: "LotteMartDream";
+            font-family: "기본글씨체";
           }
           * {
             box-sizing: border-box;
-            font-family: "LotteMartDream";
+            font-family: "기본글씨체";
           }
           #root {
             max-width: 550px;
@@ -153,13 +153,13 @@ export default function GlobalStyle() {
             margin: 0 auto;
             background-color: ${themes.colors.mainDark};
             overflow-x: hidden;
-            font-family: "LotteMartDream";
+            font-family: "기본글씨체";
           }
           html,
           body {
             scroll-behavior: smooth;
             min-height: 100%;
-            font-family: "LotteMartDream";
+            font-family: "기본글씨체";
           }
           body {
             line-height: 1.2;
@@ -167,36 +167,36 @@ export default function GlobalStyle() {
             background-color: ${themes.colors.white};
             -ms-overflow-style: none; /* IE and Edge */
             scrollbar-width: none; /* Firefox */
-            font-family: "LotteMartDream";
+            font-family: "기본글씨체";
           }
           body::-webkit-scrollbar {
             display: none; /* Chrome, Safari, Opera*/
             scrollbar-width: none; /* Firefox */
-            font-family: "LotteMartDream";
+            font-family: "기본글씨체";
           }
           a {
             text-decoration: none;
             color: inherit;
             cursor: pointer;
-            font-family: "LotteMartDream";
+            font-family: "기본글씨체";
           }
           button {
             cursor: pointer;
             border: none;
-            font-family: "LotteMartDream";
+            font-family: "기본글씨체";
           }
           *::-webkit-scrollbar {
             width: 5px;
-            font-family: "LotteMartDream";
+            font-family: "기본글씨체";
           }
           *::-webkit-scrollbar-track {
             background-color: darkgrey;
-            font-family: "LotteMartDream";
+            font-family: "기본글씨체";
           }
           *::-webkit-scrollbar-thumb {
             box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
             border-radius: 10px;
-            font-family: "LotteMartDream";
+            font-family: "기본글씨체";
           }
           * {
             scrollbar-width: thin;
@@ -205,7 +205,7 @@ export default function GlobalStyle() {
             &::-webkit-scrollbar {
               display: none;
             }
-            font-family: "LotteMartDream";
+            font-family: "기본글씨체";
           }
           //다이어리 글씨체
           @font-face {
@@ -246,7 +246,7 @@ export default function GlobalStyle() {
 
           //여행조각 글씨체
           @font-face {
-            font-family: "LotteMartDream";
+            font-family: "기본글씨체";
             font-style: normal;
             font-weight: 400;
             src: url("//cdn.jsdelivr.net/korean-webfonts/1/corps/lottemart/LotteMartDream/LotteMartDreamMedium.woff2")
@@ -255,7 +255,7 @@ export default function GlobalStyle() {
                 format("woff");
           }
           @font-face {
-            font-family: "LotteMartDream";
+            font-family: "기본글씨체";
             font-style: normal;
             font-weight: 700;
             src: url("//cdn.jsdelivr.net/korean-webfonts/1/corps/lottemart/LotteMartDream/LotteMartDreamBold.woff2")
@@ -264,7 +264,7 @@ export default function GlobalStyle() {
                 format("woff");
           }
           @font-face {
-            font-family: "LotteMartDream";
+            font-family: "기본글씨체";
             font-style: normal;
             font-weight: 300;
             src: url("//cdn.jsdelivr.net/korean-webfonts/1/corps/lottemart/LotteMartDream/LotteMartDreamLight.woff2")
@@ -273,7 +273,7 @@ export default function GlobalStyle() {
                 format("woff");
           }
           .lottemartdream * {
-            font-family: "LotteMartDream", sans-serif;
+            font-family: "기본글씨체", sans-serif;
           }
         }
       `}
