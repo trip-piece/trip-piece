@@ -12,7 +12,6 @@ import { setCookie } from "../../utils/cookie";
 
 import { pixelToRem } from "../../utils/functions/util";
 import LoginButton from "./LoginButton";
-import LandingButton from "./LandingButton";
 import Content from "./Text";
 import LandingPageImg from "./LandingPageImg";
 

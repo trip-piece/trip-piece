@@ -2,11 +2,6 @@ import { useEffect, useState } from "react";
 import styled from "@emotion/styled";
 import { pixelToRem } from "../../utils/functions/util";
 
-const ButtonText = styled.div`
-  font-size: ${(props) => props.theme.fontSizes.h5};
-  font-weight: bold;
-  font-color: ${(props) => props.theme.colors.white};
-`;
 const Button = styled.button`
   border-radius: ${pixelToRem(20)};
   background: ${(props) => props.theme.colors.yellow};
@@ -17,9 +12,7 @@ const Button = styled.button`
   width: ${pixelToRem(117)};
   height: ${pixelToRem(38)};
   font-size: ${(props) => props.theme.fontSizes.h5};
-
-  /* 색상 */
-  font-color: ${(props) => props.theme.colors.MainDark};
+  font-color: white;
 `;
 
 function ToTheTop() {
@@ -52,7 +45,7 @@ function ToTheTop() {
   return toggleBtn ? (
     <div style={{ padding: "5vh" }}>
       <Button type="button" onClick={goToTop}>
-        <ButtonText>여행가기</ButtonText>
+        여행가기
       </Button>
     </div>
   ) : null;
