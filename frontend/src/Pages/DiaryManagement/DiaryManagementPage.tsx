@@ -19,6 +19,8 @@ import { useRecoilState } from "recoil";
 import { useQuery } from "react-query";
 import { AxiosError, AxiosResponse } from "axios";
 import Draggable, { DraggableData } from "react-draggable";
+import { red } from "@mui/material/colors";
+import { motion } from "framer-motion";
 import {
   DIARY_COLOR_LIST,
   FONTTYPELIST,
@@ -52,8 +54,7 @@ import useDecorateDiary from "../../utils/hooks/useDecorateDiary";
 import { UserInfoState } from "../../store/atom";
 import { NFTContract } from "../../utils/common/NFT_ABI";
 import spinner from "../../assets/image/spinner.gif";
-import { red } from "@mui/material/colors";
-import { motion } from "framer-motion";
+import useEditDiary from "../../utils/hooks/useEditDiary";
 
 const Form = styled.form`
   display: flex;
@@ -266,7 +267,7 @@ interface IFormInput {
 }
 
 interface IPhoto {
-  todayPhoto: File | null;
+  todayPhoto: File | null | string;
   imageSrc: string | null;
   imagePath: string | null;
 }
@@ -397,6 +398,7 @@ function DiaryManagementPage() {
 
   const { mutate: mutateWriting } = useWriteDiary();
   const { mutate: mutateDecoration } = useDecorateDiary();
+  const { mutate: mutateEditting } = useEditDiary();
 
   const [loading, setLoading] = useState<boolean>(true);
   const [NFTDetailList, setNFTDetailList] = useState<TokenDetail[]>([]);
@@ -482,7 +484,7 @@ function DiaryManagementPage() {
     if (diaryData?.data) {
       setDiaryColor(diaryData.data.backgroundColor);
       setWeather(diaryData.data.weather);
-      setIsShared(diaryData.data.isShare);
+      setIsShared(diaryData.data.share);
       setValue("fontType", diaryData.data.fontType);
       setValue("content", diaryData.data.content);
       if (diaryData.data.todayPhoto) {
@@ -541,7 +543,7 @@ function DiaryManagementPage() {
   }, []);
 
   const onDelete = () => {
-    setPhoto({ todayPhoto: null, imagePath: null, imageSrc: null });
+    setPhoto({ todayPhoto: "", imagePath: "", imageSrc: "" });
   };
 
   const changeMode = (e: ChangeEvent<HTMLInputElement>) => {
@@ -565,7 +567,6 @@ function DiaryManagementPage() {
     },
     [stickerList],
   );
-
   const handleStart = useCallback(
     (data: DraggableData, index: number) => {
       setStickerList((prevState) =>
@@ -669,44 +670,40 @@ function DiaryManagementPage() {
 
   const makeDiaryData = useCallback(
     (formInputData: IFormInput) => {
+      console.log(formInputData);
       let body;
       if (isEditMode) {
         body = {
-          diary: {
-            ...formInputData,
-            weather,
-            backgroundColor: diaryColor,
-            tripId: Number(tripId),
-            diaryId: diaryData?.data?.diaryId,
-            imagePath: photo.imagePath,
-            ratio: sizes.height / sizes.width,
-          },
-          todayPhoto: photo.todayPhoto,
+          ...formInputData,
+          weather,
+          backgroundColor: diaryColor,
+          tripId: Number(tripId),
+          diaryId: diaryData?.data?.id,
+          imagePath: photo.imagePath,
+          ratio: sizes.height / sizes.width,
         };
       } else {
         body = {
-          diary: {
-            ...formInputData,
-            weather,
-            backgroundColor: diaryColor,
-            tripId: Number(tripId),
-            date: state?.diaryDate,
-            location: locationData.location,
-            ratio: sizes.height / sizes.width,
-          },
-          todayPhoto: photo.todayPhoto,
+          ...formInputData,
+          weather,
+          backgroundColor: diaryColor,
+          tripId: Number(tripId),
+          diaryDate: state?.diaryDate,
+          location: locationData.location,
+          ratio: sizes.height / sizes.width,
         };
       }
 
       const formData = new FormData();
-      if (photo.todayPhoto) {
-        formData.append("todayPhoto", photo.todayPhoto);
-      }
       const _diary = JSON.stringify(body);
+      console.log(body, photo.todayPhoto);
       formData.append(
         "diary",
         new Blob([_diary], { type: "application/json" }),
       );
+      if (photo.todayPhoto) {
+        formData.append("todayPhoto", photo.todayPhoto);
+      }
       return formData;
     },
     [sizes, locationData],
@@ -731,16 +728,23 @@ function DiaryManagementPage() {
         "decoration",
         new Blob([_decoration], { type: "application/json" }),
       );
+      console.log("frameImage", frameImage);
       if (frameImage) {
         formData.append("frameImage", frameImage);
       }
       return formData;
     },
-    [],
+    [stickerList],
   );
   const postEditData = (formData: FormData, frameImage?: File) => {
-    mutateWriting(formData);
-    mutateDecoration(makeDecorationData(diaryData.data.diaryId, frameImage), {
+    mutateEditting(formData, {
+      onSuccess: () => {
+        if (stickerList.length < 1)
+          navigate(`/trips/${tripId}/diarys/${state?.diaryDate}`);
+      },
+    });
+
+    mutateDecoration(makeDecorationData(diaryData.data.id, frameImage), {
       onSuccess: () => navigate(`/trips/${tripId}/diarys/${state?.diaryDate}`),
     });
   };
@@ -748,7 +752,9 @@ function DiaryManagementPage() {
   const postData = (formData: FormData, frameImage?: File) => {
     mutateWriting(formData, {
       onSuccess: (data) => {
-        mutateDecoration(makeDecorationData(data.data.diaryId, frameImage), {
+        if (stickerList.length < 1)
+          navigate(`/trips/${tripId}/diarys/${state?.diaryDate}`);
+        mutateDecoration(makeDecorationData(data.data, frameImage), {
           onSuccess: () =>
             navigate(`/trips/${tripId}/diarys/${state?.diaryDate}`),
         });
@@ -771,7 +777,7 @@ function DiaryManagementPage() {
     setStickerList([]);
   }
 
-  console.log(sizes);
+  console.log(NFTDetailList);
   return (
     <>
       <Helmet>
@@ -826,7 +832,8 @@ function DiaryManagementPage() {
               {weatherList.map((weatherType, idx) => (
                 <WeatherButton
                   type="button"
-                  key={v4()}
+                  // eslint-disable-next-line react/no-array-index-key
+                  key={idx}
                   active={idx === weather}
                   onClick={() => setWeather(idx)}
                 >

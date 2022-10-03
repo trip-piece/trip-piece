@@ -98,7 +98,8 @@ function TripDiaryPage({ startDate, today, endDate }: TripListProps) {
   const navigate = useNavigate();
   const diaryRef = useRef<HTMLDivElement>(null);
   const imageRef = useRef<HTMLImageElement>(null);
-  const sizes = useSize(diaryRef);
+  // const sizes = useSize(diaryRef);
+  const sizes = { width: 0, height: 0 };
   const queryClient = useQueryClient();
 
   useEffect(() => {
@@ -120,10 +121,10 @@ function TripDiaryPage({ startDate, today, endDate }: TripListProps) {
     },
   );
   const { mutate } = useDeleteDiary();
-
+  console.log(data?.data);
   const onDelete = () => {
     if (window.confirm("다이어리를 삭제하시겠습니까?"))
-      mutate(data?.data?.diaryId, {
+      mutate(data?.data?.id, {
         onSuccess: () => queryClient.invalidateQueries([`${diaryDate}-diary`]),
       });
   };
@@ -143,7 +144,7 @@ function TripDiaryPage({ startDate, today, endDate }: TripListProps) {
 
   if (startDate > selectedDiaryDate || diaryDate > today)
     return <div>아직 멀었다.</div>;
-  console.log(sizes);
+  // console.log(sizes);
   return (
     <Container>
       {isLoading && <div>Loading...</div>}
@@ -193,11 +194,13 @@ function TripDiaryPage({ startDate, today, endDate }: TripListProps) {
             >
               <DiaryContent>{data?.data?.content}</DiaryContent>
 
-              <TodayPhoto
-                src={data.data?.todayPhoto}
-                alt={`${diaryDate}-photo`}
-                ref={imageRef}
-              />
+              {data.data?.todayPhoto && (
+                <TodayPhoto
+                  src={data.data?.todayPhoto}
+                  alt={`${diaryDate}-photo`}
+                  ref={imageRef}
+                />
+              )}
 
               {data?.data?.stickerList?.map((sticker: IRequestedSticker) => (
                 <StickerImg

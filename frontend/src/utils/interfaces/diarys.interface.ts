@@ -6,6 +6,7 @@ export interface IDiary {
   weather: number;
   imagePath?: string | null;
   diaryId?: number;
+  id?: number;
   location?: string;
   ratio: number;
 }

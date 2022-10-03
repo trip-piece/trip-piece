@@ -4,6 +4,7 @@ import styled from "@emotion/styled";
 import html2canvas from "html2canvas";
 import { v4 } from "uuid";
 import { useRecoilState } from "recoil";
+import { useCallback } from "react";
 import { ISticker } from "../../utils/interfaces/diarys.interface";
 import { pixelToRem } from "../../utils/functions/util";
 import StickerImg from "../../components/atoms/StickerImg";
@@ -69,6 +70,16 @@ function DecorationModal({
   const handleClose = () => setOpen(false);
   const [diary, setDiary] = useRecoilState(formDataDiaryState);
 
+  const encodeFileToBase64 = useCallback((fileBlob: File) => {
+    if (!fileBlob) return;
+    const reader = new FileReader();
+    reader.readAsDataURL(fileBlob);
+    reader.onload = () => {
+      const _image = reader.result as string;
+      console.log(_image);
+    };
+  }, []);
+
   const onClick = (dom: HTMLElement) => {
     html2canvas(dom, {
       logging: true,
@@ -77,6 +88,8 @@ function DecorationModal({
       const imageData = canvas.toDataURL("image/png");
       import("../../utils/functions/changeFileType").then((change) => {
         const file = change.dataURLtoFile(imageData, v4());
+        // console.log(file instanceof File);
+        // encodeFileToBase64(file);
         postData(diary, file);
         setDiary(null);
         handleClose();
@@ -108,7 +121,7 @@ function DecorationModal({
             <StickerImg
               up={sticker.originY * diaryBox.height * 0.7}
               left={sticker.originX * diaryBox.width * 0.7}
-              src={sticker.tokenURI}
+              src={sticker.imagePath}
               alt="스티커"
               // eslint-disable-next-line react/no-array-index-key
               key={index}
