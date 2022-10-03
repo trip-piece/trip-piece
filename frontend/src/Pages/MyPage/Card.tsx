@@ -2,15 +2,13 @@ import React, { memo } from "react";
 import styled from "@emotion/styled";
 import { Link } from "react-router-dom";
 import { frameApis } from "../../utils/apis/frameApis";
+import img from "../../assets/image/activeTicket.png";
 
 interface IMyScrappedFrameProps {
-  // scrapId?: number;
-  //  diaryId?: number;
+  scrapId: number;
+  diaryId: number;
   frameId: number;
-  //  image?: string;
-  //  “scrapId” : int,
-  //   “diaryId” : int,
-  //   “image” : string
+  image: string;
 }
 
 const Container = styled.div`
@@ -25,11 +23,16 @@ const LinkContainer = styled(Link)`
   display: block;
 `;
 
+const ScrapImg = styled.img`
+  width: 100%;
+  height: auto;
+`;
+
 function ScrappedFrameCard({ frameId }: IMyScrappedFrameProps) {
   return (
     <Container>
       <LinkContainer to={frameApis.getDetailedFrames(frameId)}>
-        프레임프레임
+        <ScrapImg src={img} />
       </LinkContainer>
     </Container>
   );
