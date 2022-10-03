@@ -49,6 +49,22 @@ contract StickerMarket {
         }
     }
 
+    function cancelSticker(uint256 _tokenId) public {
+        address tokenOwner = trippieceNFT.ownerOf(_tokenId);
+        require(tokenOwner == msg.sender, "Sender is not sticker owner.");
+        require(stickerPrices[_tokenId] != 0, "This sticker is not on sale.");
+        require(trippieceNFT.isApprovedForAll(tokenOwner, address(this)), "Sticker owner did not approve token.");
+
+        stickerPrices[_tokenId] = 0;
+
+        for(uint256 i = 0; i < onSaleStickerArray.length; i++) {
+            if(stickerPrices[onSaleStickerArray[i]] == 0) {
+                onSaleStickerArray[i] = onSaleStickerArray[onSaleStickerArray.length - 1];
+                onSaleStickerArray.pop();
+            }
+        }
+    }
+
     function getOnSaleStickerArrayLength() view public returns (uint256) {
         return onSaleStickerArray.length;
     }
