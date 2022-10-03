@@ -15,7 +15,7 @@ interface IMyScrappedFrameProps {
 
 const Container = styled.div`
   background-color: ${(props) => props.theme.colors.gray400};
-  height: 200px;
+  height: auto;
   width: 100%;
   position: relative;
 `;

@@ -29,6 +29,8 @@ const TitleBox = styled.div`
 const Title = styled.div`
   font-weight: bold;
   font-size: ${(props) => props.theme.fontSizes.h4};
+  justify-content: center;
+  text-align: center;
 `;
 
 const StickerContainer = styled.div`
