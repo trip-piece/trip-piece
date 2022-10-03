@@ -1,5 +1,5 @@
 import styled from "@emotion/styled";
-import { memo, useState } from "react";
+import { memo, useEffect, useState } from "react";
 // import { InfiniteData, QueryObserverResult } from "react-query";
 import { Link, useNavigate } from "react-router-dom";
 import { BsFillBookmarkHeartFill, BsBookmarkHeart } from "react-icons/bs";
@@ -7,12 +7,10 @@ import { frameApis } from "../../utils/apis/frameApis";
 import axiosInstance from "../../utils/apis/api";
 
 interface FrameProps {
-  frame: {
-    frameId: number;
-    diaryId: number;
-    image: string;
-    scrapped: boolean;
-  };
+  frameId: number;
+  diaryId: number;
+  image: string;
+  scrapped: boolean;
 
   // refetch: () => Promise<
   //   QueryObserverResult<
@@ -66,8 +64,8 @@ const LiContainer = styled.div`
     object-fit: contain;
   }
 `;
-function Card({ frame }: FrameProps) {
-  // const [scrap, setScrap] = useState<boolean>(frame.scrapped);
+function Card(frame: FrameProps) {
+  const [scrap, setScrap] = useState<boolean>(frame.scrapped);
   // const checkScrap = () => {
   //   if (frame.isScrapped) {
   //     <BsFillBookmarkHeartFill className="scrapicon" />;
@@ -89,16 +87,16 @@ function Card({ frame }: FrameProps) {
     axiosInstance.delete(frameApis.deleteScrappedFrame, { data: body });
   };
 
-  // const changeScrap = () => {
-  //   if (scrap === false) {
-  //     // 스크랩 설정하는 api 요청
-  //     postSaveFrame(frame.frameId);
-  //   } else {
-  //     // 스크랩 해제하는 api 요청
-  //     deleteScrappedFrame(frame.frameId);
-  //   }
-  //   setScrap(!scrap);
-  // };
+  const changeScrap = () => {
+    if (scrap === false) {
+      // 스크랩 설정하는 api 요청
+      //postSaveFrame(frame.frameId);
+    } else {
+      // 스크랩 해제하는 api 요청
+      // deleteScrappedFrame(frame.frameId);
+    }
+    setScrap(!scrap);
+  };
 
   const navigate = useNavigate();
   const moveToFrame = () => {
@@ -108,7 +106,7 @@ function Card({ frame }: FrameProps) {
   return (
     <Container>
       <LiContainer>
-        {scrap ? (
+        {/* {scrap ? (
           <div onClick={changeScrap}>
             <BsFillBookmarkHeartFill className="scrapicon" />{" "}
           </div>
@@ -116,15 +114,15 @@ function Card({ frame }: FrameProps) {
           <div onClick={changeScrap}>
             <BsBookmarkHeart className="unscrapicon" />
           </div>
-        )}
+        )} */}
 
         {/* <button type="button" onClick={() => postSaveFrame(frame.frameId)}>
           gdgd
-        </button>*/}
+        </button> */}
 
-        <div onClick={moveToFrame}>
-          <img src={frame.image} alt="기본이미지" />
-        </div>
+        {/* <div onClick={moveToFrame}> */}
+        <img src={frame.image} alt="기본이미지" />
+        {/* </div> */}
       </LiContainer>
     </Container>
   );

@@ -136,7 +136,6 @@ function FrameSharePage(props: Props) {
   const [open, setOpen] = React.useState(false);
   const [isAll, setIsAll] = useState<boolean>(false);
   const [scrap, setScrap] = useState<boolean>(false);
-
   const toggleDrawer = (newOpen: boolean) => () => {
     setOpen(newOpen);
   };
@@ -172,35 +171,35 @@ function FrameSharePage(props: Props) {
   //     frameId: 0,
   //     image:
   //       "https://www.infura-ipfs.io/ipfs/QmcqJiEjJon38JNzbsdgKhLBsjfWF8tZiUT5Mi7GQbtGP4",
-  //     isScrapped: true,
+  //     scrapped: true,
   //     diaryId: 123.5,
   //   },
   //   {
   //     frameId: 1,
   //     image:
   //       "https://www.infura-ipfs.io/ipfs/QmRkTWeyoREXuJ9s2vCtPTwvA1iaPjGS29Ei2fKZFZisGL",
-  //     isScrapped: true,
+  //     scrapped: true,
   //     diaryId: 123.5,
   //   },
   //   {
   //     frameId: 2,
   //     image:
   //       "https://www.infura-ipfs.io/ipfs/QmXyV1fnFM4EYv42KyfAyzXNX8bu73zpqQndoJBQPbL5pF",
-  //     isScrapped: true,
+  //     scrapped: true,
   //     diaryId: 123.5,
   //   },
   //   {
   //     frameId: 3,
   //     image:
   //       "https://www.infura-ipfs.io/ipfs/QmPPEWSC7qX7rzxE76XJLkNQk2d95r6BSfiPMS3tNs4p1y",
-  //     isScrapped: true,
+  //     scrapped: true,
   //     diaryId: 123.5,
   //   },
   //   {
   //     frameId: 4,
   //     image:
   //       "https://www.infura-ipfs.io/ipfs/QmQyqcdu8HhnN3tfJtzAduS59GJt4ZNxjSXnTaim72fxCU",
-  //     isScrapped: false,
+  //     scrapped: false,
   //     diaryId: 123.5,
   //   },
   // ];
@@ -215,7 +214,7 @@ function FrameSharePage(props: Props) {
           지역별 조회
         </button>
         <MemoInfiniteList
-          url={frameApis.getSharedFrames(regionList)}
+          url={frameApis.getSharedFrames([4])}
           queryKey={["frameList"]}
           CardComponent={MemoCard}
           SkeletonCardComponent={Skeleton}
