@@ -2,9 +2,9 @@ import { useMutation } from "react-query";
 import axiosInstance from "../apis/api";
 import diaryApis from "../apis/diaryApis";
 
-function useWriteDiary() {
-  return useMutation((diary: FormData) =>
-    axiosInstance.post(diaryApis.diaryWrite, diary, {
+function useDecorateDiary() {
+  return useMutation((decoration: FormData) =>
+    axiosInstance.post(diaryApis.diaryDecoration, decoration, {
       headers: {
         "Content-Type": "multipart/form-data:",
       },
@@ -12,4 +12,4 @@ function useWriteDiary() {
   );
 }
 
-export default useWriteDiary;
+export default useDecorateDiary;

@@ -1,5 +1,5 @@
 import styled from "@emotion/styled";
-import { lazy } from "react";
+import { lazy, Suspense } from "react";
 import { Routes, Route } from "react-router-dom";
 import { MySticker, MyScrap } from "./Pages";
 import MarketListPage from "./Pages/Market/MarketListPage";
@@ -35,42 +35,51 @@ const NftResponse = lazy(() => import("./Pages/QrScan/NftResponse"));
 const Header = styled.header`
   height: 10vh;
 `;
-const AnotherRouter = () => {
+function AnotherRouter() {
   return (
     <>
       <Header>
         <Navbar />
       </Header>
-      <Routes>
-        <Route path="main" element={<Main />} />
-        <Route path="trips" element={<TripList />} />
-        <Route path="admin" element={<Admin />} />
-        <Route path="admin/nft" element={<NftRegister />} />
-        <Route path="trips/:tripId/diarys" element={<TripDiaryList />}>
-          <Route path=":diaryDate" element={<TripDiaryPage />} />
-        </Route>
-        <Route
-          path="trips/:tripId/diarys/:diaryDate/write"
-          element={<DiaryManagement />}
-        />
-        <Route
-          path="trips/:tripId/diarys/:diaryDate/decoration"
-          element={<DiaryDecoration />}
-        />
-        <Route path="market" element={<MarketMainPage />} />
-        <Route path="market/:regionId" element={<MarketListPage />} />
-        <Route path="market/:marketId/detail" element={<StickerDetailPage />} />
-        <Route path="market/register" element={<MarketRegisterPage />} />
-        <Route path="user/scraps" element={<MyScrap />} />
-        <Route path="user/stickers" element={<MySticker />} />
-        <Route path="places/map" element={<PlaceMainPage />} />
-        <Route path="places/:regionId/list" element={<PlaceListPage />} />
-        <Route path="places/list/mylocation" element={<MyLocationListPage />} />
-        <Route path="qrscan" element={<QrScanner />} />
-        <Route path="/places/:placeId" element={<NftResponse />} />
-      </Routes>
+      <Suspense fallback={<div>Loading...</div>}>
+        <Routes>
+          <Route path="main" element={<Main />} />
+          <Route path="trips" element={<TripList />} />
+          <Route path="admin" element={<Admin />} />
+          <Route path="admin/nft" element={<NftRegister />} />
+          <Route path="trips/:tripId/diarys" element={<TripDiaryList />}>
+            <Route path=":diaryDate" element={<TripDiaryPage />} />
+          </Route>
+          <Route
+            path="trips/:tripId/diarys/write"
+            element={<DiaryManagement />}
+          />
+          <Route
+            path="trips/:tripId/diarys/:diaryDate/write"
+            element={<DiaryManagement />}
+          />
+
+          <Route path="market" element={<MarketMainPage />} />
+          <Route path="market/:regionId" element={<MarketListPage />} />
+          <Route
+            path="market/:marketId/detail"
+            element={<StickerDetailPage />}
+          />
+          <Route path="market/register" element={<MarketRegisterPage />} />
+          <Route path="user/scraps" element={<MyScrap />} />
+          <Route path="user/stickers" element={<MySticker />} />
+          <Route path="places/map" element={<PlaceMainPage />} />
+          <Route path="places/:regionId/list" element={<PlaceListPage />} />
+          <Route
+            path="places/list/mylocation"
+            element={<MyLocationListPage />}
+          />
+          <Route path="qrscan" element={<QrScanner />} />
+          <Route path="/places/:placeId" element={<NftResponse />} />
+        </Routes>
+      </Suspense>
     </>
   );
-};
+}
 
 export default AnotherRouter;

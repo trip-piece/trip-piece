@@ -332,7 +332,7 @@ function MainPage() {
       } else setIsProgress(1);
     }
     if (data2?.data) {
-      setPlaces(data2.data["content"]);
+      setPlaces(data2.data.content);
       if (data2.data.length) {
         setPlaces(data2.data);
       }
@@ -350,7 +350,6 @@ function MainPage() {
   const moveToTrip = () => {
     navigate("/trips");
   };
-
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -630,6 +629,7 @@ function MainPage() {
                 />
               </div>
             )}
+
             {isSuccess2 && loading && (
               <>
                 {places?.length ? (
