@@ -11,6 +11,7 @@ import Navbar from "./Pages/Navbar/Navbar";
 import Admin from "./Pages/Admin/AdminPage";
 import NftRegister from "./Pages/Admin/NftRegisterPage";
 import FrameSharePage from "./Pages/Frame/FrameSharePage";
+import FrameDetailPage from "./Pages/Frame/FrameDetailPage";
 import QrScanner from "./Pages/QrScan/QrReader";
 import PlaceMainPage from "./Pages/Place/PlaceMainPage";
 
@@ -49,6 +50,7 @@ function Router() {
         <Route path="admin" element={<Admin />} />
         <Route path="admin/nft" element={<NftRegister />} />
         <Route path="frames" element={<FrameSharePage />} />
+        <Route path="frames/:frameId" element={<FrameDetailPage />} />
         <Route path="trips/:tripId/diarys" element={<TripDiaryList />}>
           <Route path=":diaryDate" element={<TripDiaryPage />} />
         </Route>

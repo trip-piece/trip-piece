@@ -214,7 +214,7 @@ function FrameSharePage(props: Props) {
           지역별 조회
         </button>
         <MemoInfiniteList
-          url={frameApis.getSharedFrames([4])}
+          url={frameApis.getSharedFrames(regionList)}
           queryKey={["frameList"]}
           CardComponent={MemoCard}
           SkeletonCardComponent={Skeleton}
