@@ -1,5 +1,5 @@
 import styled from "@emotion/styled";
-import React, { lazy } from "react";
+import React, { lazy, Suspense } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { MySticker, MyScrap } from "./Pages";
 import MarketListPage from "./Pages/Market/MarketListPage";
@@ -21,9 +21,6 @@ const TripList = lazy(() => import("./Pages/TripList/TripListPage"));
 const DiaryManagement = lazy(
   () => import("./Pages/DiaryManagement/DiaryManagementPage"),
 );
-const DiaryDecoration = lazy(
-  () => import("./Pages/DiaryDecoration/DiaryDecorationPage"),
-);
 const PlaceMainPage = lazy(() => import("./Pages/Place/PlaceMainPage"));
 const PlaceListPage = lazy(() => import("./Pages/Place/PlaceListPage"));
 const MyLocationListPage = lazy(
@@ -41,44 +38,44 @@ function Router() {
       <Header>
         <Navbar />
       </Header>
-      <Routes>
-        <Route path="" element={<Landing />} />
-        <Route path="main" element={<Main />} />
-        <Route path="trips" element={<TripList />} />
-        <Route path="admin" element={<Admin />} />
-        <Route path="admin/nft" element={<NftRegister />} />
-        <Route path="trips/:tripId/diarys/*" element={<TripDiaryList />}>
-          <Route path=":diaryDate" element={<TripDiaryPage />} />
-        </Route>
-        <Route
-          path="trips/:tripId/diarys/write"
-          element={<DiaryManagement />}
-        />
-        <Route
-          path="trips/:tripId/diarys/:diaryDate/edit"
-          element={<DiaryManagement />}
-        />
-        <Route
-          path="trips/:tripId/diarys/decoration"
-          element={<DiaryDecoration />}
-        />
-        <Route
-          path="trips/:tripId/diarys/:diaryDate/decoration-edit"
-          element={<DiaryDecoration />}
-        />
-
-        <Route path="market" element={<MarketMainPage />} />
-        <Route path="market/:regionId" element={<MarketListPage />} />
-        <Route path="market/:marketId/detail" element={<StickerDetailPage />} />
-        <Route path="market/register" element={<MarketRegisterPage />} />
-        <Route path="user/scraps" element={<MyScrap />} />
-        <Route path="user/stickers" element={<MySticker />} />
-        <Route path="places/map" element={<PlaceMainPage />} />
-        <Route path="places/:regionId/list" element={<PlaceListPage />} />
-        <Route path="places/list/mylocation" element={<MyLocationListPage />} />
-        <Route path="qrscan" element={<QrScanner />} />
-        <Route path="/places/:placeId" element={<NftResponse />} />
-      </Routes>
+      <Suspense fallback={<div>App Loading...</div>}>
+        <Routes>
+          <Route path="" element={<Landing />} />
+          <Route path="main" element={<Main />} />
+          <Route path="trips" element={<TripList />} />
+          <Route path="admin" element={<Admin />} />
+          <Route path="admin/nft" element={<NftRegister />} />
+          <Route path="trips/:tripId/diarys/*" element={<TripDiaryList />}>
+            <Route path=":diaryDate" element={<TripDiaryPage />} />
+          </Route>
+          <Route
+            path="trips/:tripId/diarys/write"
+            element={<DiaryManagement />}
+          />
+          <Route path="diarys/write" element={<DiaryManagement />} />
+          <Route
+            path="/trips/:tripId/diarys/:diaryDate/edit"
+            element={<DiaryManagement />}
+          />
+          <Route path="market" element={<MarketMainPage />} />
+          <Route path="market/:regionId" element={<MarketListPage />} />
+          <Route
+            path="market/:marketId/detail"
+            element={<StickerDetailPage />}
+          />
+          <Route path="market/register" element={<MarketRegisterPage />} />
+          <Route path="user/scraps" element={<MyScrap />} />
+          <Route path="user/stickers" element={<MySticker />} />
+          <Route path="places/map" element={<PlaceMainPage />} />
+          <Route path="places/:regionId/list" element={<PlaceListPage />} />
+          <Route
+            path="places/list/mylocation"
+            element={<MyLocationListPage />}
+          />
+          <Route path="qrscan" element={<QrScanner />} />
+          <Route path="/places/:placeId" element={<NftResponse />} />
+        </Routes>
+      </Suspense>
     </BrowserRouter>
   );
 }

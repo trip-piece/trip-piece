@@ -1,7 +1,7 @@
 import styled from "@emotion/styled";
 import { useEffect, useRef, useState } from "react";
 import { useQuery, useQueryClient } from "react-query";
-import { useNavigate, useParams } from "react-router-dom";
+import { Navigate, useNavigate, useParams } from "react-router-dom";
 import { HiPencilAlt } from "react-icons/hi";
 import { AxiosResponse } from "axios";
 import { Icon } from "@iconify/react/dist/offline";
@@ -10,6 +10,7 @@ import diaryApis from "../../utils/apis/diaryApis";
 import {
   changeDateFormatToDot,
   changeDateFormatToHyphen,
+  pixelToRem,
 } from "../../utils/functions/util";
 import ColoredRoundButton from "../../components/atoms/ColoredRoundButton";
 import axiosInstance from "../../utils/apis/api";
@@ -24,6 +25,8 @@ import TodayPhoto from "../../components/atoms/TodayPhoto";
 import useDeleteDiary from "../../utils/hooks/useDeleteDiary";
 import DateContainer from "../../components/atoms/DateContainer";
 import { weatherList } from "../../utils/constants/weatherList";
+import useSize from "../../utils/hooks/useSize";
+import { DIARY_COLOR_LIST, FONTTYPELIST } from "../../utils/constants/constant";
 
 const Container = styled.article`
   min-height: 75vh;
@@ -32,6 +35,7 @@ const Container = styled.article`
   background-color: ${(props) => props.theme.colors.gray0};
   border-radius: 10px;
   overflow: hidden;
+  position: relative;
 `;
 
 const NoDiaryContainer = styled.div`
@@ -50,22 +54,51 @@ const NoDiaryContainer = styled.div`
   }
 `;
 
+const DiaryContent = styled.div`
+  width: 100%;
+  height: fit-content;
+`;
+
 interface TripListProps {
   startDate?: string;
   today?: string;
   endDate?: string;
 }
+
+const DiaryContents = styled.div<DiaryContentsProps>`
+  position: relative;
+  white-space: pre-line;
+  min-height: ${(props) => props.active && "60vh"};
+  height: fit-content;
+  width: 100%;
+  background-color: ${(props) => DIARY_COLOR_LIST[props.backgroundColor]};
+  font-family: ${(props) => FONTTYPELIST[props.fontType]};
+  padding: ${(props) => `${pixelToRem(16 + (props.diaryWidth - 320) / 20)}`};
+  resize: none;
+  transition: background-color 0.5s ease-in;
+  overflow-wrap: break-word;
+  font-size: ${(props) =>
+    pixelToRem(props.diaryWidth / 20) !== "0rem"
+      ? pixelToRem(props.diaryWidth / 20)
+      : pixelToRem(16)};
+`;
+
+interface DiaryContentsProps {
+  fontType: number;
+  diaryWidth: number;
+  backgroundColor: number;
+  active?: boolean;
+}
 function TripDiaryPage({ startDate, today, endDate }: TripListProps) {
   const [selectedDiaryDate, setSelectedDiaryDate] = useState<string>(() =>
     changeDateFormatToHyphen(new Date()),
   );
-  const [diaryBox, setDiaryBox] = useState({ width: 0 });
 
   const { tripId, diaryDate } = useParams();
   const navigate = useNavigate();
-  const size = useWindowResize();
   const diaryRef = useRef<HTMLDivElement>(null);
   const imageRef = useRef<HTMLImageElement>(null);
+  const sizes = useSize(diaryRef);
   const queryClient = useQueryClient();
 
   useEffect(() => {
@@ -95,30 +128,22 @@ function TripDiaryPage({ startDate, today, endDate }: TripListProps) {
       });
   };
 
-  useEffect(() => {
-    if (diaryRef.current) {
-      const wrapperBox = diaryRef.current.getBoundingClientRect();
-      setDiaryBox({
-        width: wrapperBox.width,
-      });
-    }
-  }, [size, diaryRef.current, diaryRef, imageRef, imageRef.current]);
-
   const moveToWriteDiary = () => {
-    navigate(`/trips/${tripId}/diarys/write`, {
+    navigate(`../../trips/${tripId}/diarys/write`, {
       state: { diaryDate: selectedDiaryDate },
     });
+    // return <Navigate to={`../trips/${tripId}/diarys/write`} />;
   };
 
   const moveToEditDiary = () => {
-    navigate(`/trips/${tripId}/diarys/${selectedDiaryDate}/edit`, {
+    navigate(`../../trips/${tripId}/diarys/${selectedDiaryDate}/edit`, {
       state: { diaryDate: selectedDiaryDate },
     });
   };
 
   if (startDate > selectedDiaryDate || diaryDate > today)
     return <div>아직 멀었다.</div>;
-
+  console.log(sizes);
   return (
     <Container>
       {isLoading && <div>Loading...</div>}
@@ -157,37 +182,34 @@ function TripDiaryPage({ startDate, today, endDate }: TripListProps) {
           <BsFillGeoAltFill />
           {data?.data?.location}
           {/* </PositionContainer> */}
-          <DiaryContentContainer
-            diaryWidth={diaryBox.width}
+          <DiaryContents
+            diaryWidth={sizes.width}
             backgroundColor={data?.data?.backgroundColor}
             fontType={data?.data?.fontType}
-            ref={diaryRef}
           >
-            {data?.data?.content}
+            <div
+              style={{ width: "100%", height: "fit-content" }}
+              ref={diaryRef}
+            >
+              <DiaryContent>{data?.data?.content}</DiaryContent>
 
-            {data?.data?.todayPhoto && (
               <TodayPhoto
-                src={data.data.todayPhoto}
+                src={data.data?.todayPhoto}
                 alt={`${diaryDate}-photo`}
                 ref={imageRef}
               />
-            )}
-            {data?.data?.stickerList?.map((sticker: IRequestedSticker) => (
-              <StickerImg
-                up={
-                  16 +
-                  sticker.y * (diaryBox.width * data.data.ratio) +
-                  (diaryBox.width - 320) / 20
-                }
-                left={
-                  16 + sticker.x * diaryBox.width + (diaryBox.width - 320) / 20
-                }
-                alt={sticker.tokenName}
-                src={sticker.tokenURL}
-                key={sticker.y}
-              />
-            ))}
-          </DiaryContentContainer>
+
+              {data?.data?.stickerList?.map((sticker: IRequestedSticker) => (
+                <StickerImg
+                  up={sticker.y * sizes.height}
+                  left={sticker.x * sizes.width}
+                  alt={sticker.tokenName}
+                  src={sticker.tokenURL}
+                  key={sticker.y}
+                />
+              ))}
+            </div>
+          </DiaryContents>
         </>
       )}
     </Container>

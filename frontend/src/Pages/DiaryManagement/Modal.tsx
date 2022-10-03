@@ -3,9 +3,11 @@ import Box from "@mui/material/Box";
 import styled from "@emotion/styled";
 import html2canvas from "html2canvas";
 import { v4 } from "uuid";
+import { useRecoilState } from "recoil";
 import { ISticker } from "../../utils/interfaces/diarys.interface";
 import { pixelToRem } from "../../utils/functions/util";
 import StickerImg from "../../components/atoms/StickerImg";
+import { formDataDiaryState } from "../../store/diaryAtoms";
 
 const Wrapper = styled(Box)<{ diarywidth: number }>`
   position: absolute;
@@ -27,7 +29,7 @@ const DiaryFrame = styled.div<DiaryProps>`
   border: 2px solid black;
   position: relative;
   width: ${(props) => pixelToRem(props.diaryWidth * 0.7)};
-  height: ${(props) => pixelToRem(props.diaryWidth * 0.7 * props.diaryRatio)};
+  height: ${(props) => pixelToRem(props.diaryHeight * 0.7)};
   border-radius: 15px;
 `;
 
@@ -46,7 +48,7 @@ const LoadingContainer = styled.div`
 
 interface DiaryProps {
   diaryWidth: number;
-  diaryRatio: number;
+  diaryHeight: number;
 }
 
 interface ModalProps {
@@ -54,7 +56,7 @@ interface ModalProps {
   open: boolean;
   stickerList: ISticker[];
   diaryBox: any;
-  postData: (frameImage?: File) => void;
+  postData: (diary: FormData, frameImage?: File) => void;
 }
 
 function DecorationModal({
@@ -65,6 +67,7 @@ function DecorationModal({
   postData,
 }: ModalProps) {
   const handleClose = () => setOpen(false);
+  const [diary, setDiary] = useRecoilState(formDataDiaryState);
 
   const onClick = (dom: HTMLElement) => {
     html2canvas(dom, {
@@ -74,7 +77,8 @@ function DecorationModal({
       const imageData = canvas.toDataURL("image/png");
       import("../../utils/functions/changeFileType").then((change) => {
         const file = change.dataURLtoFile(imageData, v4());
-        postData(file);
+        postData(diary, file);
+        setDiary(null);
         handleClose();
       });
     });
@@ -97,7 +101,7 @@ function DecorationModal({
         <LoadingContainer>프레임 공유중</LoadingContainer>
         <DiaryFrame
           diaryWidth={diaryBox.width}
-          diaryRatio={diaryBox.ratio}
+          diaryHeight={diaryBox.height}
           ref={elRef}
         >
           {stickerList.map((sticker, index) => (

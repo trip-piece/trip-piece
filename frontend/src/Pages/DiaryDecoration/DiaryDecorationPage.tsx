@@ -26,7 +26,7 @@ import {
 } from "../../utils/interfaces/diarys.interface";
 import { dummyStickerList } from "../../utils/constants/dummyData";
 import LazyImage from "../../components/atoms/LazyImage";
-import Modal from "./Modal";
+import Modal from "../DiaryManagement/Modal";
 import useGetLocation from "../../utils/hooks/useGetLocation";
 import MyLocation from "../../components/modules/MyLocation";
 import useWriteDiary from "../../utils/hooks/useWriteDiary";
@@ -132,9 +132,10 @@ function DiaryDecorationPage() {
   const [diaryBox, setDiaryBox] = useState({ width: 0, height: 0, ratio: 0 });
   const [NFTDetailList, setNFTDetailList] = useState<TokenDetail[]>([]);
   const [NFTList, setNFTList] = useState<NFT[]>([]);
+  const [isEditMode, setIsEditMode] = useState<boolean>(false);
 
   const { tripId } = useParams();
-  const { state } = useLocation();
+  const { state, pathname } = useLocation();
   const navigate = useNavigate();
   const nodeRef = useRef<HTMLImageElement>(null);
   const diary = useRecoilValue<IWritedDiary<File | null>>(
@@ -183,7 +184,49 @@ function DiaryDecorationPage() {
   };
 
   useEffect(() => {
+    if (diaryRef.current) {
+      const wrapperBox = diaryRef.current.getBoundingClientRect();
+      setDiaryBox({
+        width: wrapperBox.width,
+        height: wrapperBox.height,
+        ratio: wrapperBox.height / wrapperBox.width,
+      });
+    }
+  }, [size, diaryRef.current, imageRef.current]);
+
+  useEffect(() => {
+    setStickerList((prev) =>
+      prev.map((sticker) => {
+        return {
+          ...sticker,
+          x: sticker.originX * diaryBox.width,
+          y: sticker.originY * diaryBox.height,
+        };
+      }),
+    );
+  }, [diaryBox]);
+
+  useEffect(() => {
     if (!state?.diaryDate) navigate(-1);
+    if (pathname.includes("/decoration-edit")) {
+      setIsEditMode(true);
+      if (diary.diaryData.stickerList?.length) {
+        const _stickerList = diary.diaryData.stickerList.map((sticker) => {
+          const height = sticker.y * (diaryBox.width * diary.diaryData.ratio);
+          return {
+            stickerId: sticker.stickerId,
+            tokenId: sticker.tokenId,
+            tokenURI: sticker.tokenURL,
+            x: sticker.x * diaryBox.width,
+            y: height,
+            isDragging: false,
+            originX: sticker.x,
+            originY: sticker.y,
+          };
+        });
+        setStickerList(_stickerList);
+      }
+    }
     if (state?.diaryDate) {
       setDottedDate(state.diaryDate?.replaceAll("-", "."));
     }
@@ -192,8 +235,11 @@ function DiaryDecorationPage() {
         const base64Image = await change.encodeFileToBase64(diary.todayPhoto);
         setImageSrc(base64Image);
       });
+    } else if (diary.diary.imagePath) {
+      setImageSrc(diary.diary.imagePath);
     }
-    getNFTList();
+
+    // getNFTList();
   }, []);
 
   const makeDiaryData = () => {
@@ -231,29 +277,6 @@ function DiaryDecorationPage() {
     return formData;
   };
 
-  useEffect(() => {
-    if (diaryRef.current) {
-      const wrapperBox = diaryRef.current.getBoundingClientRect();
-      setDiaryBox({
-        width: wrapperBox.width,
-        height: wrapperBox.height,
-        ratio: wrapperBox.height / wrapperBox.width,
-      });
-    }
-  }, [size, diaryRef.current, imageSrc, imageRef.current]);
-
-  useEffect(() => {
-    setStickerList((prev) =>
-      prev.map((sticker) => {
-        return {
-          ...sticker,
-          x: sticker.originX * diaryBox.width,
-          y: sticker.originY * diaryBox.height,
-        };
-      }),
-    );
-  }, [diaryBox]);
-
   const onClick = () => {
     if (stickerRef.current.style.maxHeight === "50vh") {
       stickerRef.current.style.maxHeight = "120px";
@@ -286,16 +309,16 @@ function DiaryDecorationPage() {
   const handleStart = useCallback(
     (data: DraggableData, index: number) => {
       setStickerList((prevState) =>
-        prevState.map((state, idx) => {
+        prevState.map((prev, idx) => {
           if (idx === index) {
             return {
-              ...state,
+              ...prev,
               isDragging: false,
               originX: data.x,
               originY: data.y,
             };
           }
-          return state;
+          return prev;
         }),
       );
     },
@@ -356,16 +379,16 @@ function DiaryDecorationPage() {
   const handleStop = useCallback(
     (data: DraggableData, index: number) => {
       setStickerList((prevState) =>
-        prevState.map((state, idx) => {
+        prevState.map((prev, idx) => {
           if (idx === index) {
             return {
-              ...state,
+              ...prev,
               isDragging: false,
               originX: data.x / diaryBox.width,
               originY: data.y / diaryBox.height,
             };
           }
-          return state;
+          return prev;
         }),
       );
     },
@@ -405,13 +428,17 @@ function DiaryDecorationPage() {
             <Icon icon={weatherList[diary.diary.weather]} />
           </DateContainer>
           <div>
-            <MyLocation
-              {...{ isFetchingLocation, locationData, refetchLocation }}
-            />
-            {/* <PositionContainer>
-              <BsFillGeoAltFill />
-              서울 송파구
-            </PositionContainer> */}
+            {isEditMode ? (
+              <PositionContainer>
+                <BsFillGeoAltFill />
+                {diary.diaryData.location}
+              </PositionContainer>
+            ) : (
+              <MyLocation
+                {...{ isFetchingLocation, locationData, refetchLocation }}
+              />
+            )}
+
             <button type="button" onClick={deleteSticker}>
               스티커 삭제하기
             </button>
@@ -426,7 +453,7 @@ function DiaryDecorationPage() {
                 <Draggable
                   nodeRef={nodeRef}
                   position={{ x: sticker.x, y: sticker.y }}
-                  positionOffset={{ x: "-50%", y: "-50%" }}
+                  // positionOffset={{ x: "-50%", y: "-50%" }}
                   onStart={(_, data) => handleStart(data, index)}
                   onDrag={(_, data) => handleDrag(data, index)}
                   onStop={(event, data) => handleStop(data, index)}

@@ -20,8 +20,8 @@ const diaryList = [
       {
         stickerId: 2,
         tokenId: 2,
-        x: 0.008753255208333333,
-        y: 0.7148475294520454,
+        x: 0.05420780066287879,
+        y: 0.7563805879342564,
         tokenName: "smile",
         tokenURL:
           "https://cdn.pixabay.com/photo/2016/08/21/18/48/emoticon-1610518_960_720.png",
@@ -29,13 +29,14 @@ const diaryList = [
       {
         stickerId: 3,
         tokenId: 3,
-        x: 0.5622232259114583,
-        y: 0.6833699638535335,
+        x: 0.6040414077296402,
+        y: 0.7249030223357447,
         tokenName: "smile",
         tokenURL:
           "https://cdn.pixabay.com/photo/2016/09/10/14/54/emoticon-1659235_960_720.png",
       },
     ],
+    isShare: true,
   },
 ];
 

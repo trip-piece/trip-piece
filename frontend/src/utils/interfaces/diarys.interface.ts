@@ -6,6 +6,8 @@ export interface IDiary {
   weather: number;
   imagePath?: string | null;
   diaryId?: number;
+  location?: string;
+  ratio: number;
 }
 
 export interface IWritedDiary<T> {
@@ -48,10 +50,7 @@ export interface IRequestedSticker {
 }
 
 export interface IRequestedDiary extends IDiary {
-  date: string;
-  diaryId: number;
-  location: string;
-  ratio: number;
   todayPhoto: string;
+  isShare: boolean;
   stickerList: IRequestedSticker[];
 }
