@@ -10,6 +10,7 @@ import { placeApis } from "../../utils/apis/placeApis";
 import { MemoInfiniteList } from "../../components/modules/infinite/ParamsInfiniteList";
 import { MemoCard } from "./Card";
 import Skeleton from "./Skeleton";
+import spinner from "../../assets/image/spinner.gif";
 
 const Container = styled.div`
   min-height: 90vh;
@@ -100,7 +101,23 @@ function MyLocationListPage() {
           </div>
         </TitleGroup>
         <PlaceList>
-          {loading && <div>loading . . .</div>}{" "}
+          {loading && (
+            <div
+              style={{
+                width: "100%",
+                height: "100%",
+                display: "flex",
+                flexDirection: "row",
+                textAlign: "center",
+                justifyContent: "center",
+              }}
+            >
+              <img
+                src={spinner}
+                style={{ width: "50%", height: "auto", textAlign: "center" }}
+              />
+            </div>
+          )}{" "}
           {!loading && (
             <MemoInfiniteList
               url={placeApis.getLocationPlaces(lat, lng)}

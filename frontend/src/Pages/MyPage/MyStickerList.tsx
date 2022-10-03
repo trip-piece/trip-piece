@@ -4,6 +4,7 @@ import { useRecoilState } from "recoil";
 import { pixelToRem } from "../../utils/functions/util";
 import { UserInfoState } from "../../store/atom";
 import { NFTContract } from "../../utils/common/NFT_ABI";
+import spinner from "../../assets/image/spinner.gif";
 
 const StickerBox = styled.div`
   box-shadow: 0 4px 4px 2px rgb(0 0 0/25%);
@@ -103,17 +104,23 @@ function MyStickerList() {
         <Title>보유NFT스티커</Title>
       </TitleBox>
       <StickerContainer>
-        {/* <MemoInfiniteList
-          url={`scraps`}
-          queryKey={["scrapList"]}
-          CardComponent={MemoCard}
-          SkeletonCardComponent={Skeleton}
-          zeroDataText="스크랩이 존재하지..않습니다"
-          count={3}
-          listName="scrapList"
-        />
-        {userApis.getMyScraps} */}
-        {loading && <p>loading . . .</p>}
+        {loading && (
+          <div
+            style={{
+              width: "100%",
+              height: "100%",
+              display: "flex",
+              flexDirection: "row",
+              textAlign: "center",
+              justifyContent: "center",
+            }}
+          >
+            <img
+              src={spinner}
+              style={{ width: "50%", height: "auto", textAlign: "center" }}
+            />
+          </div>
+        )}
         {!loading && (
           <div className="gridComponent">
             {NFTDetailList.map((NFTdetail, idx) => (
