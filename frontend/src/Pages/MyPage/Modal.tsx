@@ -10,11 +10,11 @@ import ColoredRoundButton, {
 } from "../../components/atoms/ColoredRoundButton";
 import { ReactComponent as PencilIcon } from "../../assets/svgs/pencilIcon.svg";
 import { useState } from "react";
+import { MdModeEditOutline } from "react-icons/md";
 import { IUserInfo, UserInfoState } from "../../store/atom";
 import { FieldErrors, SubmitHandler, useForm } from "react-hook-form";
 import userApis, { Inickname } from "../../utils/apis/userApis";
 import axiosInstance from "../../utils/apis/api";
-import NickNameValidation from "./validation";
 
 const ModifiedNicknameModal = styled(Box)`
   position: absolute;
@@ -112,7 +112,7 @@ export default function NestedModal() {
   return (
     <>
       <Button onClick={handleOpen}>
-        <PencilIcon width="25" height="26" />
+        <MdModeEditOutline size={27} style={{ color: "#d4d4d4" }} />
       </Button>
       <Modal
         open={open}

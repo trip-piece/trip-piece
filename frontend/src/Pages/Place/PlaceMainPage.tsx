@@ -1,6 +1,7 @@
 import styled from "@emotion/styled";
 import { MdLocationOn } from "react-icons/md";
 import { Helmet } from "react-helmet-async";
+import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { pixelToRem } from "../../utils/functions/util";
 import { REGIONLIST } from "../../utils/constants/constant";
@@ -27,34 +28,34 @@ const TitleGroup = styled.div`
     letter-spacing: ${pixelToRem(-1)};
     margin: ${pixelToRem(8)} 0;
   }
-`;
 
-const NearbyMyLocationBtn = styled.button`
-  position: relative;
-  width: ${pixelToRem(100)};
-  height: ${pixelToRem(30)};
-  border-radius: ${pixelToRem(10)};
-  background: ${(props) => props.theme.colors.mainDark};
-  margin: ${pixelToRem(20)} 0 0 0;
-  padding: ${pixelToRem(3)};
-  color: ${(props) => props.theme.colors.gray0};
-  font-size: ${(props) => props.theme.fontSizes.s1};
-  font-weight: bold;
-  > svg {
-    position: absolute;
-    margin-right: 2px;
-    color: ${(props) => props.theme.colors.red};
-    font-size: ${(props) => props.theme.fontSizes.h4};
-    top: ${pixelToRem(4)};
-    left: ${pixelToRem(10)};
-  }
-  > p {
-    position: absolute;
+  .myLocationBtn {
+    position: relative;
+    width: ${pixelToRem(100)};
+    height: ${pixelToRem(30)};
+    border-radius: ${pixelToRem(10)};
+    background: ${(props) => props.theme.colors.mainDark};
+    margin: ${pixelToRem(20)} 0 0 0;
+    padding: ${pixelToRem(3)};
     color: ${(props) => props.theme.colors.gray0};
     font-size: ${(props) => props.theme.fontSizes.s1};
     font-weight: bold;
-    top: ${pixelToRem(5)};
-    right: ${pixelToRem(15)};
+    > svg {
+      position: absolute;
+      margin-right: 2px;
+      color: ${(props) => props.theme.colors.red};
+      font-size: ${(props) => props.theme.fontSizes.h4};
+      top: ${pixelToRem(4)};
+      left: ${pixelToRem(10)};
+    }
+    > p {
+      position: absolute;
+      color: ${(props) => props.theme.colors.gray0};
+      font-size: ${(props) => props.theme.fontSizes.s1};
+      font-weight: bold;
+      top: ${pixelToRem(5)};
+      right: ${pixelToRem(15)};
+    }
   }
 `;
 
@@ -106,10 +107,15 @@ function PlaceMainPage() {
         <TitleGroup>
           <h1 className="main">발급 가능 지역</h1>
           <h1>관심 지역의 스티커를 확인하세요</h1>
-          <NearbyMyLocationBtn onClick={moveToMyLocation}>
+          <motion.button
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+            onClick={moveToMyLocation}
+            className="myLocationBtn"
+          >
             <MdLocationOn />
             <p>내 주변</p>
-          </NearbyMyLocationBtn>
+          </motion.button>
         </TitleGroup>
         <KoreaMap>
           <img src={puzzle} alt="기본이미지" />
@@ -118,7 +124,9 @@ function PlaceMainPage() {
               (region, idx) =>
                 idx > 0 &&
                 idx <= 4 && (
-                  <button
+                  <motion.button
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.9 }}
                     key={idx}
                     type="button"
                     onClick={() => moveToList(idx)}
@@ -131,7 +139,9 @@ function PlaceMainPage() {
               (region, idx) =>
                 idx > 4 &&
                 idx <= 8 && (
-                  <button
+                  <motion.button
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.9 }}
                     key={idx}
                     type="button"
                     onClick={() => moveToList(idx)}
@@ -144,7 +154,9 @@ function PlaceMainPage() {
               (region, idx) =>
                 idx > 8 &&
                 idx <= 12 && (
-                  <button
+                  <motion.button
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.9 }}
                     key={idx}
                     type="button"
                     onClick={() => moveToList(idx)}
@@ -157,7 +169,9 @@ function PlaceMainPage() {
               (region, idx) =>
                 idx > 12 &&
                 idx <= 16 && (
-                  <button
+                  <motion.button
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.9 }}
                     key={idx}
                     type="button"
                     onClick={() => moveToList(idx)}
@@ -166,7 +180,12 @@ function PlaceMainPage() {
             )}
           </div>
           <div className="fifth">
-            <button type="button" onClick={() => moveToList(17)} />
+            <motion.button
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+              type="button"
+              onClick={() => moveToList(17)}
+            />
           </div>
         </KoreaMap>
       </Container>
