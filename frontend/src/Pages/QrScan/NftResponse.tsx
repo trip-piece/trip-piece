@@ -133,7 +133,7 @@ function NftResponse() {
     return d;
   };
 
-  const validationCode = (placeId: number) => {
+  const validationCode = (placeId: string) => {
     try {
       axiosInstance
         .get(placeApis.getDetailedPlace(placeId))
@@ -166,7 +166,7 @@ function NftResponse() {
               sendNFT(selectedSticker.tokenId);
             } else {
               // 스티커 발급을 실패하노라
-              contentPropsInit.result = "fali";
+              contentPropsInit.result = "fail";
               contentPropsInit.stickerName = response.data.regionName;
               contentPropsInit.stickerUrl = response.data.posterImage;
               setState(contentPropsInit);
@@ -176,7 +176,7 @@ function NftResponse() {
             /// 합격 @!@
           } else {
             //  불합격 ~ !
-            contentPropsInit.result = "fali";
+            contentPropsInit.result = "fail";
             contentPropsInit.stickerName = response.data.regionName;
             contentPropsInit.stickerUrl = response.data.posterImage;
             setState(contentPropsInit);
@@ -202,10 +202,9 @@ function NftResponse() {
       /^(http(s)?:\/\/)(localhost:3000)(\/)(places)(\/)([\d]{1,2})(\/)([a-zA-Z0-9!@#$%^&]{10})/g;
 
     if (regax.test(url)) {
-      console.log("정규식");
+      console.log("정규식 성공");
       contentPropsInit.result = "success";
-
-      setLoading(false);
+      validationCode(regionId);
     } else {
       // 이상한 큐알이라구함
       contentPropsInit.result = "incorrect";
@@ -216,11 +215,7 @@ function NftResponse() {
 
   //  const mounted = useRef(false);
   useEffect(() => {
-    // if (!mounted.current) {
-    //   mounted.current = true;
-    // } else {
-    //   validationLink(link);
-    // }
+    //맨 처음 렌더링 될 때 실행
     validationLink(link);
   }, []);
 
@@ -234,13 +229,12 @@ function NftResponse() {
           <Helmet>
             <title>QR 스캔 | 여행조각</title>
           </Helmet>
-          <Title title="서울 SEOUL" />
+          <Title title="어딘가" />
           <Content
             result={state.result}
             stickerName={state.stickerName}
             stickerUrl={state.stickerUrl}
           />
-          {state.result}
         </>
       )}
     </>

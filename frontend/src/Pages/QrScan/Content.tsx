@@ -48,9 +48,9 @@ const StickerName = styled.div`
   justify-content  :center;
   font-size: ${(props) => props.theme.fontSizes.h5};
 `;
-const ResultImg = styled.div`
+const ResultImg = styled.img`
   margin: 5% 25% 0 25%;
-  background: ${(props) => props.theme.colors.red};
+  background: transparent;
   display: flex;
   justify-content: center;
 
@@ -68,7 +68,8 @@ function NFTInfo({ stickerName, stickerUrl }: ContentProps) {
   return (
     <>
       <StickerName>{stickerName}</StickerName>
-      <ResultImg>{stickerUrl}</ResultImg>
+      <ResultImg src={stickerUrl} alt="nft" />
+      nft:{stickerUrl}
     </>
   );
 }
@@ -77,13 +78,17 @@ function QrInfo({ stickerName, stickerUrl }: ContentProps) {
   return (
     <>
       <StickerName>{stickerName}</StickerName>
-      <ResultImg>{stickerUrl}</ResultImg>
+      <ResultImg>
+        <img src={stickerUrl} alt="poster" />
+        qr:{stickerUrl}
+      </ResultImg>
     </>
   );
 }
 
 function Result({ result }: ContentProps): EmotionJSX.Element {
   const flag: string = result;
+  console.log(flag);
 
   let insultText: string = "Loading";
   if (flag === "success") {

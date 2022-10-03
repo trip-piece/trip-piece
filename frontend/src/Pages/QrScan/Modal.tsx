@@ -59,11 +59,14 @@ function NestedModal() {
   };
 
   const MoveToLink = () => {
-    const url: string = recoilQrState.url.toString();
+    const link = recoilQrState.url;
+
+    console.log(link);
+
     // const baseUrl = "j7a607.q.ssafy.io";
     // const baseUrl2 = "http://localhost:3000/";
 
-    const urlArray = url.split("/");
+    const urlArray = link.toString().split("/");
 
     const uri = urlArray[3];
     const placeId = urlArray[4];
