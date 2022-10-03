@@ -49,6 +49,9 @@ import LazyImage from "../../components/atoms/LazyImage";
 import DecorationModal from "./Modal";
 import useWriteDiary from "../../utils/hooks/useWriteDiary";
 import useDecorateDiary from "../../utils/hooks/useDecorateDiary";
+import { userInfo } from "os";
+import { UserInfoState } from "../../store/atom";
+import { NFTContract } from "../../utils/common/NFT_ABI";
 
 const Form = styled.form`
   display: flex;
@@ -333,10 +336,16 @@ const TabContainer = styled.div`
   }
 `;
 
+interface TokenDetail {
+  tokenId: number;
+  tokenName: string;
+  imagePath: string;
+}
+
 function ImageButton({ onClick, sticker }: ImageButtonProps) {
   return (
     <TransparentRoundButton onClick={() => onClick(sticker)}>
-      <LazyImage src={sticker.tokenURI} />
+      <LazyImage src={sticker.imagePath} />
     </TransparentRoundButton>
   );
 }
@@ -377,16 +386,51 @@ function DiaryManagementPage() {
   const stickerBoxRef = useRef<HTMLDivElement>(null);
   const nodeRef = useRef<HTMLImageElement>(null);
   const sizes = useSize(diaryRef);
+  const [userInfo] = useRecoilState(UserInfoState);
 
   const { mutate: mutateWriting } = useWriteDiary();
   const { mutate: mutateDecoration } = useDecorateDiary();
 
+  const [loading, setLoading] = useState<boolean>(true);
+  const [NFTDetailList, setNFTDetailList] = useState<TokenDetail[]>([]);
+
+  const getNFTList = async () => {
+    try {
+      const result = await NFTContract.methods
+        .getStickerList(userInfo.address)
+        .call();
+      if (result) {
+        const tokenList: React.SetStateAction<TokenDetail[]> = [];
+        for (var i = 0; i < result.length; i++) {
+          await fetch(`https://www.infura-ipfs.io/ipfs/${result[i].tokenURI}`)
+            .then((res) => {
+              return res.json();
+            })
+            .then((data) => {
+              const token: TokenDetail = {
+                tokenId: Number(result[i].tokenId),
+                tokenName: String(data[0].name),
+                imagePath: String(data[0].image),
+              };
+              tokenList.push(token);
+            });
+          setNFTDetailList(tokenList);
+        }
+      }
+    } catch (err) {
+      console.log("Error getSticker : ", err);
+    }
+  };
   useEffect(() => {
     if (!state?.diaryDate && !diaryDate) navigate(-1);
     if (pathname.includes("/edit")) setIsEditMode(true);
     if (state?.diaryDate)
       setDottedDate(changeDateFormatToDot(state?.diaryDate));
   }, []);
+
+  useEffect(() => {
+    getNFTList();
+  }, [userInfo]);
 
   const { data: diaryData } = useQuery<
     AxiosResponse<IRequestedDiary>,
@@ -443,7 +487,7 @@ function DiaryManagementPage() {
         const _stickerList = diaryData.data.stickerList.map((sticker) => {
           return {
             tokenId: sticker.tokenId,
-            tokenURI: sticker.tokenURL,
+            imagePath: sticker.imagePath,
             x: sticker.x * sizes.width,
             y: sticker.y * sizes.width,
             isDragging: false,
@@ -501,7 +545,7 @@ function DiaryManagementPage() {
         ...prev,
         {
           tokenId: sticker.tokenId,
-          tokenURI: sticker.tokenURI,
+          imagePath: sticker.imagePath,
           originX: 0,
           originY: 0,
           x: 50,
@@ -832,7 +876,7 @@ function DiaryManagementPage() {
                   key={index}
                 >
                   <StickerImg
-                    src={sticker.tokenURI}
+                    src={sticker.imagePath}
                     ref={nodeRef}
                     alt="#"
                     width="100"
@@ -932,7 +976,7 @@ function DiaryManagementPage() {
             보유한 스티커
           </button>
           <div ref={stickerBoxRef}>
-            {dummyStickerList.map((sticker, index) => (
+            {NFTDetailList.map((sticker, index) => (
               <MemoizedImageButton
                 onClick={addSticker}
                 sticker={sticker}
