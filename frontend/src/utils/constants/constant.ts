@@ -29,7 +29,14 @@ export const WEEK = [
   "토요일",
 ];
 
-export const FONTTYPELIST = ["잘하고있어", "아빠의연애편지"];
+export const FONTTYPELIST = [
+  "LotteMartDream",
+  "강원모두교육체",
+  "이순신돋움",
+  "교보손글씨",
+  "IM혜민체",
+  "교보손글씨박도연",
+];
 
 export const DIARY_COLOR_LIST = ["#FFFFFF", "#FCCEE2", "#F7E7C1"];
 
