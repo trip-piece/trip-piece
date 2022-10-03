@@ -17,7 +17,7 @@ import java.util.List;
 @NoArgsConstructor
 @Api("DiaryResponse")
 public class DiaryResponseDto {
-    private long id;
+    private long diaryId;
     private long tripId;
     private String content;
     private int fontType;
@@ -35,7 +35,7 @@ public class DiaryResponseDto {
     S3Service s3Service;
 
     public DiaryResponseDto(Diary diary, boolean isShare, List<StickerDecorationDto> stickerList) {
-        this.id = diary.getId();
+        this.diaryId = diary.getId();
         this.content = diary.getContent();
         this.fontType = diary.getFontType();
         this.backgroundColor = diary.getBackgroundColor();
