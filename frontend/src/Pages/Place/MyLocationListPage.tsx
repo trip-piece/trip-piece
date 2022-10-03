@@ -2,15 +2,24 @@ import styled from "@emotion/styled";
 import { MdArrowBack } from "react-icons/md";
 import { Helmet } from "react-helmet-async";
 import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
+import { BiCurrentLocation } from "react-icons/bi";
+import { useNavigate } from "react-router-dom";
 import { getLocation, pixelToRem } from "../../utils/functions/util";
-import Container from "../../components/atoms/Container";
 import { placeApis } from "../../utils/apis/placeApis";
 import { MemoInfiniteList } from "../../components/modules/infinite/ParamsInfiniteList";
 import { MemoCard } from "./Card";
 import Skeleton from "./Skeleton";
-import { motion } from "framer-motion";
-import { BiCurrentLocation } from "react-icons/bi";
-import { useNavigate } from "react-router-dom";
+import spinner from "../../assets/image/spinner.gif";
+
+const Container = styled.div`
+  min-height: 90vh;
+  background-color: ${(props) => props.theme.colors.white};
+  border-radius: 30px 30px 0 0;
+  padding: 1rem;
+  position: relative;
+  width: inherit;
+`;
 
 const TitleGroup = styled.div`
   width: 100%;
@@ -62,7 +71,7 @@ function MyLocationListPage() {
       <Helmet>
         <title>이벤트 리스트 | 여행조각</title>
       </Helmet>
-      <Container hasPadding>
+      <Container>
         <TitleGroup>
           <div style={{ width: "100%", textAlign: "left" }}>
             <MdArrowBack size="30" onClick={moveToMap} />
@@ -92,7 +101,23 @@ function MyLocationListPage() {
           </div>
         </TitleGroup>
         <PlaceList>
-          {loading && <div>loading . . .</div>}{" "}
+          {loading && (
+            <div
+              style={{
+                width: "100%",
+                height: "100%",
+                display: "flex",
+                flexDirection: "row",
+                textAlign: "center",
+                justifyContent: "center",
+              }}
+            >
+              <img
+                src={spinner}
+                style={{ width: "50%", height: "auto", textAlign: "center" }}
+              />
+            </div>
+          )}{" "}
           {!loading && (
             <MemoInfiniteList
               url={placeApis.getLocationPlaces(lat, lng)}

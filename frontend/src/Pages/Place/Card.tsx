@@ -32,9 +32,10 @@ interface Token {
 
 const Container = styled.div`
   width: 100%;
-  margin-top: 20px;
   padding: 0.5rem;
   display: flex;
+  margin-top: 12px;
+  margin-bottom: -8px;
   flex-direction: column;
   justify-content: center;
 

@@ -95,6 +95,15 @@ export const getLocation = (): Promise<ICoordinate> => {
   });
 };
 
+export const changeHyphenToDateFormat = (date: string) => {
+  var yyyyMMdd = String(date);
+  var sYear = yyyyMMdd.substring(0, 4);
+  var sMonth = yyyyMMdd.substring(5, 7);
+  var sDate = yyyyMMdd.substring(8, 10);
+
+  return new Date(Number(sYear), Number(sMonth) - 1, Number(sDate));
+};
+
 export const getLocationAddress = async (lat: number, lng: number) => {
   try {
     const response = await axios.get(
