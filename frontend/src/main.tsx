@@ -13,9 +13,9 @@ import GlobalStyle from "./style/GlobalStyle";
 import theme, { themes } from "./style/theme";
 import { worker } from "./mocks/browser";
 
-if (process.env.NODE_ENV === "development") {
-  worker.start();
-}
+// if (process.env.NODE_ENV === "development") {
+//   worker.start();
+// }
 
 const getLibrary = (provider: any): ethers.providers.Web3Provider => {
   const library = new ethers.providers.Web3Provider(provider);

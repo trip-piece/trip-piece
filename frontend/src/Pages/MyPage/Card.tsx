@@ -5,8 +5,8 @@ import { frameApis } from "../../utils/apis/frameApis";
 import img from "../../assets/image/activeTicket.png";
 
 interface IMyScrappedFrameProps {
-  scrapId?: number;
-  diaryId?: number;
+  // scrapId?: number;
+  // diaryId?: number;
   frameId: number;
   image?: string;
 }
@@ -33,8 +33,8 @@ function ScrappedFrameCard({ frameId, image }: IMyScrappedFrameProps) {
   return (
     <Container>
       <LinkContainer to={frameApis.getDetailedFrames(frameId)}>
-        {/* <ScrapImg src={imgUrl} /> */}
-        <ScrapImg src={img} />
+        <ScrapImg src={imgUrl} />
+        {/* <ScrapImg src={img} /> */}
       </LinkContainer>
     </Container>
   );

@@ -12,7 +12,7 @@ const StickerBox = styled.div`
   border-radius: 1.25rem 1.25rem 1.25rem 1.25rem;
   padding: 0 ${pixelToRem(18)} 0 ${pixelToRem(18)};
   margin: ${pixelToRem(15)};
-
+  min-height: 65vh;
   height: 100%;
   background: ${(props) => props.theme.colors.white};
   display: flex;
@@ -49,7 +49,7 @@ function MyScrapList() {
       </TitleBox>
       <StickerContainer>
         <MemoInfiniteList
-          url="scraps"
+          url={userApis.getMyScraps}
           queryKey={["scrapList"]}
           CardComponent={MemoCard}
           SkeletonCardComponent={Skeleton}
