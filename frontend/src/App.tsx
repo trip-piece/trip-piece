@@ -1,5 +1,5 @@
 import styled from "@emotion/styled";
-import { Suspense, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { ReactQueryDevtools } from "react-query/devtools";
 import { useRecoilState } from "recoil";
@@ -96,9 +96,7 @@ function App() {
   return (
     <AppContainer>
       <QueryClientProvider client={queryClient}>
-        <Suspense fallback={<div>Loading...</div>}>
-          <Router />
-        </Suspense>
+        <Router />
         <ReactQueryDevtools initialIsOpen={false} />
       </QueryClientProvider>
     </AppContainer>

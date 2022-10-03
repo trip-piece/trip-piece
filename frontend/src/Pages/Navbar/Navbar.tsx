@@ -1,4 +1,3 @@
-import * as React from "react";
 import styled from "@emotion/styled";
 import Box from "@mui/material/Box";
 import Drawer from "@mui/material/Drawer";
@@ -8,7 +7,6 @@ import { TbMenu2 } from "react-icons/tb";
 import {
   MdOutlineLogout,
   MdOutlineClose,
-  MdModeEditOutline,
   MdEditCalendar,
   MdOutlineAddReaction,
   MdShoppingCart,
@@ -23,10 +21,24 @@ import { useNavigate } from "react-router-dom";
 import AppBar from "@mui/material/AppBar";
 import { useRecoilState } from "recoil";
 import { motion } from "framer-motion";
-import { pixelToRem } from "../../utils/functions/util";
+import {
+  changeDateFormatToHyphen,
+  pixelToRem,
+} from "../../utils/functions/util";
 import { UserInfoState } from "../../store/atom";
 import trippieceLogo from "../../assets/image/trippiece_logo.png";
-import { ReactComponent as EtherIcon } from "../../assets/svgs/etherIcon.svg";
+import { ReactJSXElement } from "@emotion/react/types/jsx-namespace";
+// import { ReactComponent as EtherIcon } from "../../assets/svgs/etherIcon.svg";
+import { useEffect, useState } from "react";
+import { useQuery } from "react-query";
+import axiosInstance from "../../utils/apis/api";
+import { AxiosError, AxiosResponse } from "axios";
+import { ITrip } from "../../utils/interfaces/trips.interface";
+import tripApis from "../../utils/apis/tripsApis";
+import React from "react";
+import { REGIONLIST } from "../../utils/constants/constant";
+import { CodeProps } from "../../utils/interfaces/qrscan.inteface";
+import NestedModal from "../MyPage/Modal";
 
 const DrawerHeader = styled.div`
   display: flex;
@@ -49,6 +61,31 @@ const TopBackgroundBox = styled.div`
   display: block;
   justify-content: center;
   position: relative;
+`;
+
+const Name = styled.div`
+  font-size: ${(props) => props.theme.fontSizes.h2};
+  padding: 0 ${pixelToRem(7)} 0 0;
+  margin-top: auto;
+
+  margin-top: auto;
+  text-align: justify;
+  display: flex;
+`;
+
+const NameSuffix = styled.div`
+  font-size: ${(props) => props.theme.fontSizes.h6};
+
+  display: inline-block;
+  white-space: nowrap;
+  margin-top: auto;
+  font-weight: bold;
+`;
+const IdCode = styled.div`
+  font-size: ${(props) => props.theme.fontSizes.paragraph};
+  margin-top: auto;
+  font-weight: bold;
+  width: auto;
 `;
 
 const UserInformation = styled.div`
@@ -302,8 +339,33 @@ const BoxContainer = styled(Box)`
   height: 100%;
 `;
 
+const ModifyNickNameButton = styled.div`
+  background-color: transparent;
+  height: ${pixelToRem(15)};
+  width: auto;
+`;
+
+function IdCodeComponent({ id }: CodeProps) {
+  const num: string = id.toString();
+  let code: ReactJSXElement;
+  if (num.length === 1) {
+    code = <IdCode>#000{id}</IdCode>;
+  } else if (num.length === 2) {
+    code = <IdCode>#00{id}</IdCode>;
+  } else if (num.length === 3) {
+    code = <IdCode>#0{id}</IdCode>;
+  } else code = <IdCode>#{id}</IdCode>;
+
+  return code;
+}
+
 export default function Navbar() {
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = useState(false);
+  const [userInfo] = useRecoilState(UserInfoState);
+  const [upcoming, setUpcoming] = useState<ITrip>();
+  const [loading, setLoading] = useState<boolean>(false);
+  const today = changeDateFormatToHyphen(new Date());
+  const [isProgress, setIsProgress] = useState(0);
 
   const toggleDrawer =
     // eslint-disable-next-line @typescript-eslint/no-shadow
@@ -336,7 +398,7 @@ export default function Navbar() {
   };
 
   const moveToPlace = () => {
-    navigate("/place/map");
+    navigate("/places/map");
     setOpen(false);
   };
 
@@ -359,7 +421,29 @@ export default function Navbar() {
     navigate("/main");
   };
 
-  const [userInfo] = useRecoilState(UserInfoState);
+  const {
+    isLoading: isLoading,
+    isSuccess: isSuccess,
+    data: data,
+  } = useQuery<AxiosResponse<ITrip>, AxiosError>(
+    [`${userInfo.id}-upcomingTrip`],
+    () => axiosInstance.get(tripApis.upcomingTrip(today)),
+    {
+      refetchOnWindowFocus: false,
+      refetchOnReconnect: false,
+      refetchOnMount: true,
+    },
+  );
+
+  useEffect(() => {
+    if (data?.data) {
+      setUpcoming(data.data);
+      if (data.data.startDate) {
+        setIsProgress(2);
+      } else setIsProgress(1);
+    }
+    setLoading(true);
+  }, [data]);
 
   return (
     <BoxContainer sx={{ flexGrow: 1 }} className="boxContainer">
@@ -436,18 +520,15 @@ export default function Navbar() {
             <TopBackgroundBox>
               <UserInformation>
                 <div className="username">
-                  {userInfo.nickname}#000{userInfo.id}
-                  <h5>여행자님</h5>
-                  <motion.button
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.9 }}
-                    type="button"
-                  >
-                    <MdModeEditOutline />
-                  </motion.button>
+                  <Name>{userInfo.nickname}</Name>
+                  <NameSuffix>여행자님</NameSuffix>&nbsp;
+                  <IdCodeComponent id={userInfo.id} />
+                  <ModifyNickNameButton>
+                    <NestedModal />
+                  </ModifyNickNameButton>
                 </div>
                 <div className="wallet-info">
-                  <EtherIcon className="icon" />
+                  <FaEthereum className="icon" />
                   <p>{userInfo.balance}</p>
                 </div>
               </UserInformation>
@@ -542,7 +623,7 @@ export default function Navbar() {
                 </div>
               </MiddleLongBox>
               <OngoingTripBox>
-                {userInfo === null ? (
+                {!upcoming ? (
                   <div className="with-icon">
                     <GiTicket className="icon" />
                     <div className="trip-notice">
@@ -564,8 +645,11 @@ export default function Navbar() {
                     <MdLuggage className="icon" />
                     <div className="trip-notice">
                       <div className="typo">
-                        <p>서울 (startdate - enddate)</p>
-                        <p>[여행 제목]</p>
+                        <p>
+                          {REGIONLIST[upcoming.regionId]} ({upcoming.startDate}{" "}
+                          - {upcoming.endDate})
+                        </p>
+                        <p>[{upcoming.title}]</p>
                       </div>
                       <motion.button
                         whileHover={{ scale: 1.1 }}

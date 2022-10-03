@@ -3,7 +3,7 @@ import { memo, MouseEvent, useState } from "react";
 import { InfiniteData, QueryObserverResult } from "react-query";
 import { Link } from "react-router-dom";
 import { REGIONLIST } from "../../utils/constants/constant";
-import { changeDateForamtToDot } from "../../utils/functions/util";
+import { changeDateFormatToDot } from "../../utils/functions/util";
 import { TripManagementModal } from "./Modal";
 
 interface ITripCardProps {
@@ -67,7 +67,7 @@ function Card({
         </h3>
         <h4>{REGIONLIST[regionId]}</h4>
         <div>
-          {changeDateForamtToDot(startDate)} - {changeDateForamtToDot(endDate)}
+          {changeDateFormatToDot(startDate)} - {changeDateFormatToDot(endDate)}
         </div>
       </LinkContainer>
       {isEditMode && (

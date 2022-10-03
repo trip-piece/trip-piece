@@ -19,6 +19,7 @@ import { AiFillCaretDown } from "react-icons/ai";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { InfiniteData, QueryObserverResult } from "react-query";
 import {
+  changeDateFormatToHyphen,
   createDate,
   getDayName,
   PadZero,
@@ -282,18 +283,22 @@ function BasicModal({
 
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
     if (!startDate || !endDate) return;
-    const body = { startDate, endDate, ...data };
+    const body = {
+      startDate: changeDateFormatToHyphen(startDate),
+      endDate: changeDateFormatToHyphen(endDate),
+      ...data,
+    };
     let response;
     if (tripInformation?.tripId) {
-      response = await axiosInstance.patch(
-        tripApis.aTrip(tripInformation.tripId),
-        body,
-      );
+      response = await axiosInstance.patch(tripApis.trip, {
+        ...body,
+        tripId: tripInformation?.tripId,
+      });
     } else {
       response = await axiosInstance.post(tripApis.trip, body);
     }
     try {
-      if (response.status === 200) {
+      if (response.status === 200 || response.status === 201) {
         if (refetch) refetch();
         handleClose();
         setValue("regionId", 1);
@@ -311,10 +316,11 @@ function BasicModal({
     // eslint-disable-next-line no-alert
     if (!window.confirm(MESSAGE_LIST.TRIP_DELETE)) return;
     try {
-      const response = await axiosInstance.delete(
-        tripApis.aTrip(tripInformation?.tripId),
-      );
-      if (response.status === 200) {
+      const response = await axiosInstance.delete(tripApis.trip, {
+        data: { tripId: tripInformation?.tripId },
+      });
+
+      if (response.status === 200 || response.status === 204) {
         if (refetch) refetch();
         handleClose();
       }

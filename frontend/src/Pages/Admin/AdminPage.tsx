@@ -220,7 +220,7 @@ function AdminPage() {
   const fileInput = useRef<HTMLInputElement>(null);
 
   const handleCheck = (e: { target: { checked: any; value: any } }) => {
-    var updatedList = [...checked];
+    let updatedList = [...checked];
     if (e.target.checked) {
       updatedList = [...checked, e.target.value];
     } else {
@@ -285,7 +285,7 @@ function AdminPage() {
       if (result) {
         setNFTList(result);
         const tokenList: React.SetStateAction<TokenDetail[]> = [];
-        for (var i = 0; i < result.length; i++) {
+        for (let i = 0; i < result.length; i++) {
           await fetch(`https://www.infura-ipfs.io/ipfs/${result[i].tokenURI}`)
             .then((res) => {
               return res.json();
@@ -305,6 +305,7 @@ function AdminPage() {
       console.log("Error getSticker : ", err);
     }
   };
+  console.log(NFTList);
 
   useEffect(() => {
     getNFTList();
