@@ -15,21 +15,37 @@ import axiosInstance from "../../utils/apis/api";
 import { placeApis } from "../../utils/apis/placeApis";
 import { getLocation } from "../../utils/functions/util";
 
-function ResultView({ result, stickerName }) {
-  return (
-    <>
-      <Helmet>
-        <title>QR 스캔 | 여행조각</title>
-      </Helmet>
-      <Title title="서울 SEOUL" />
-      <Content
-        result="success"
-        //result={state.result}
-        stickerName="2022 역삼 멀티캠퍼스"
-        stickerUrl="이미지경로"
-      />
-    </>
-  );
+interface placeResponse {
+  data: {
+    lat: number;
+    lng: number;
+    regionName: string;
+    enableStickerList: [
+      {
+        stickerId: number;
+        tokenId: number;
+        tokenName: string;
+        tokenURL: string;
+      },
+    ];
+    distinctStickerList: [
+      {
+        stickerId: Number;
+        tokenId: Number;
+        tokenName: string;
+        tokenURL: string;
+        amount: Number;
+      },
+    ];
+    posterImage: string;
+    code: string;
+  };
+}
+
+interface ISticker {
+  tokenName: string;
+  tokenId: number;
+  tokenUrl: string;
 }
 
 function NftResponse() {
@@ -39,6 +55,10 @@ function NftResponse() {
   const [locationInfo, setLocationInfo] = useState("");
   const [lat, setLat] = useState(0);
   const [lng, setLng] = useState(0);
+  const [imagePath, setImagePath] = useState("");
+
+  const [sticker, setSticker] = useState<ISticker>();
+
   const [state, setState] = useState<ContentProps>({
     result: "null",
     stickerName: null,
@@ -49,45 +69,46 @@ function NftResponse() {
 
   const link = window.location.href;
 
-  const sendNFT = async () => {
+  const getToken = (tokenURI: string) => {
+    fetch(`https://www.infura-ipfs.io/ipfs/${tokenURI}`)
+      .then((res) => {
+        return res.json();
+      })
+      .then((data) => {
+        setImagePath(String(data[0].image));
+      });
+  };
+
+  const sendNFT = async (tokenId: number) => {
     const adminAccount: string = import.meta.env.VITE_ADMIN_ADDRESS;
     const userAddress: string = userInfo.address;
 
     try {
       await NFTContract.methods
-        .transferFrom(adminAccount, userAddress, 1)
+        .transferFrom(adminAccount, userAddress, tokenId)
         .send({ from: adminAccount });
+
+      contentPropsInit.result = "success";
+      contentPropsInit.stickerName = sticker.tokenName;
+
+      getToken(sticker.tokenUrl);
+      contentPropsInit.stickerUrl = imagePath;
+
+      setState(contentPropsInit);
+
+      setLoading(false);
     } catch (error) {
       console.log("주다가 에러났다 ", error);
+
+      contentPropsInit.result = "fail";
+      contentPropsInit.stickerName = sticker.tokenName;
+      contentPropsInit.stickerUrl = sticker.tokenUrl;
+
+      setState(contentPropsInit);
+       setLoading(false);
     }
   };
 
-  interface placeResponse {
-    data: {
-      lat: number;
-      lng: number;
-      regionName: string;
-      enableStickerList: [
-        {
-          stickerId: number;
-          tokenId: number;
-          tokenName: string;
-          tokenURL: string;
-        },
-      ];
-      distinctStickerList: [
-        {
-          stickerId: Number;
-          tokenId: Number;
-          tokenName: string;
-          tokenURL: string;
-          amount: Number;
-        },
-      ];
-      posterImage: string;
-      code: string;
-    };
-  }
   const deg2rad = (deg: number): number => {
     return deg * (Math.PI / 180);
   };
@@ -131,8 +152,25 @@ function NftResponse() {
 
             if (distance < 5) {
               // 스티커를 발급하거라
+              const listLength = response.data.enableStickerList.length;
+              const rand = Math.floor(Math.random() * listLength);
+
+              const selectedSticker = response.data.enableStickerList[rand];
+
+              setSticker({
+                tokenName: selectedSticker.tokenName,
+                tokenId: selectedSticker.tokenId,
+                tokenUrl: selectedSticker.tokenURL,
+              });
+
+              sendNFT(selectedSticker.tokenId);
             } else {
               // 스티커 발급을 실패하노라
+              contentPropsInit.result = "fali";
+              contentPropsInit.stickerName = response.data.regionName;
+              contentPropsInit.stickerUrl = response.data.posterImage;
+              setState(contentPropsInit);
+              setLoading(false);
             }
 
             /// 합격 @!@
