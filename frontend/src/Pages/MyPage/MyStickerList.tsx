@@ -1,10 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "@emotion/styled";
 import { useRecoilState } from "recoil";
-
 import { pixelToRem } from "../../utils/functions/util";
 import { UserInfoState } from "../../store/atom";
-import { REGIONLIST } from "../../utils/constants/constant";
+import { NFTContract } from "../../utils/common/NFT_ABI";
 
 const StickerBox = styled.div`
   box-shadow: 0 4px 4px 2px rgb(0 0 0/25%);
@@ -12,7 +11,7 @@ const StickerBox = styled.div`
   padding: 0 ${pixelToRem(18)} 0 ${pixelToRem(18)};
   margin: ${pixelToRem(15)};
 
-  height: ${pixelToRem(600)};
+  min-height: ${pixelToRem(600)};
   background: ${(props) => props.theme.colors.white};
   display: flex;
   flex-direction: column;
@@ -37,68 +36,71 @@ const StickerContainer = styled.div`
   height: 100%;
   color: ${(props) => props.theme.colors.gray900};
   padding: ${pixelToRem(18)} 0 0 0;
-  display: inline-block;
-`;
 
-const Select = styled.select`
-  width: ${pixelToRem(60)};
-  border-radius: ${pixelToRem(10)};
-  height: ${pixelToRem(30)};
-  background: ${(props) => props.theme.colors.gray300};
-  font-size: ${(props) => props.theme.fontSizes.h6};
-  color: ${(props) => props.theme.colors.gray500};
-  padding-left: 5px;
-  border: none;
+  .gridComponent {
+    width: fit-content;
+    height: fit-content;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(25%, auto));
 
-  margin-left: auto;
-  display: flex;
+    img {
+      width: 100%;
+      height: auto;
+    }
 
-  option {
-    border: none;
-    color: ${(props) => props.theme.colors.gray800};
-    background: ${(props) => props.theme.colors.gray200};
-    border-radius: ${pixelToRem(10)};
-    display: flex;
-    white-space: pre;
-    min-height: 20px;
-    padding: 0px 2px 1px;
+    p {
+      font-size: ${(props) => props.theme.fontSizes.s1};
+    }
   }
 `;
 
-// const TestSelect = styled;
-
-function AreaSelectBox() {
-  const [selectedOption, setSelectedOption] = useState<String>();
-
-  // This function is triggered when the select changes
-  const selectChange = (event) => {
-    const { value } = event.target;
-
-    setSelectedOption(value);
-  };
-
-  return (
-    <Select onChange={selectChange} label="area">
-      {REGIONLIST.map((item, index) => (
-        <option key={item} value={index}>
-          {item}
-        </option>
-      ))}
-    </Select>
-  );
+interface TokenDetail {
+  tokenName: string;
+  imagePath: string;
 }
 
 function MyStickerList() {
-  const { userInfo } = useRecoilState(UserInfoState);
+  const [userInfo] = useRecoilState(UserInfoState);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [NFTDetailList, setNFTDetailList] = useState<TokenDetail[]>([]);
 
-  // const options: selectprps = [{ value: "area", name: "지역" }];
-  // 솔리디티 연결
+  const getNFTList = async () => {
+    try {
+      setLoading(true);
+      const result = await NFTContract.methods
+        .getStickerList(userInfo.address)
+        .call();
+      if (result) {
+        const tokenList: React.SetStateAction<TokenDetail[]> = [];
+        for (var i = 0; i < result.length; i++) {
+          await fetch(`https://www.infura-ipfs.io/ipfs/${result[i].tokenURI}`)
+            .then((res) => {
+              return res.json();
+            })
+            .then((data) => {
+              const token: TokenDetail = {
+                tokenName: String(data[0].name),
+                imagePath: String(data[0].image),
+              };
+              tokenList.push(token);
+            });
+          setNFTDetailList(tokenList);
+        }
+        setLoading(false);
+      }
+    } catch (err) {
+      console.log("Error getSticker : ", err);
+    }
+  };
+
+  useEffect(() => {
+    getNFTList();
+  }, [userInfo]);
 
   return (
     <StickerBox>
       <TitleBox>
         <Title>보유NFT스티커</Title>
-        <AreaSelectBox />
       </TitleBox>
       <StickerContainer>
         {/* <MemoInfiniteList
@@ -111,6 +113,17 @@ function MyStickerList() {
           listName="scrapList"
         />
         {userApis.getMyScraps} */}
+        {loading && <p>loading . . .</p>}
+        {!loading && (
+          <div className="gridComponent">
+            {NFTDetailList.map((NFTdetail, idx) => (
+              <div key={idx} style={{ padding: "0.5rem" }}>
+                <img src={NFTdetail.imagePath} alt="" />
+                <p>{NFTdetail.tokenName}</p>
+              </div>
+            ))}
+          </div>
+        )}
       </StickerContainer>
     </StickerBox>
   );

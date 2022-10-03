@@ -98,7 +98,7 @@ function UserInfo() {
       <InfoContent>
         <ContentTop>
           <Name>{userInfoState.nickname}</Name>
-          <NameSuffix>여행자님</NameSuffix>
+          <NameSuffix>여행자님</NameSuffix>&nbsp;
           <IdCodeComponent id={userInfoState.id} />
         </ContentTop>
 

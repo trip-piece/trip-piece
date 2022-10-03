@@ -12,6 +12,7 @@ import Admin from "./Pages/Admin/AdminPage";
 import NftRegister from "./Pages/Admin/NftRegisterPage";
 import FrameSharePage from "./Pages/Frame/FrameSharePage";
 import QrScanner from "./Pages/QrScan/QrReader";
+import PlaceMainPage from "./Pages/Place/PlaceMainPage";
 
 const Landing = lazy(() => import("./Pages/Landing/LandingPage"));
 const Main = lazy(() => import("./Pages/Main/MainPage"));
@@ -25,7 +26,6 @@ const DiaryManagement = lazy(
 const DiaryDecoration = lazy(
   () => import("./Pages/DiaryDecoration/DiaryDecorationPage"),
 );
-const PlaceMainPage = lazy(() => import("./Pages/Place/PlaceMainPage"));
 const PlaceListPage = lazy(() => import("./Pages/Place/PlaceListPage"));
 const MyLocationListPage = lazy(
   () => import("./Pages/Place/MyLocationListPage"),
