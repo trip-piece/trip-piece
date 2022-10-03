@@ -50,7 +50,19 @@ function TripListPage() {
       <Container hasPadding>
         <Title>보유여행티켓</Title>
 
-        <button type="button" onClick={handleEditMode}>
+        <button
+          type="button"
+          onClick={handleEditMode}
+          style={{
+            width: "80px",
+            height: "30px",
+            marginBottom: "0.5rem",
+            backgroundColor: "#FDD835",
+            borderRadius: "5px",
+            color: "black",
+            fontWeight: "bold",
+          }}
+        >
           {!isEditMode ? "여행 편집" : "편집 완료"}
         </button>
 
