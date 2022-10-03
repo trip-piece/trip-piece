@@ -39,7 +39,7 @@ const StickerContainer = styled.div`
   padding: ${pixelToRem(18)} 0 0 0;
 
   .gridComponent {
-    width: fit-content;
+    width: 100%;
     height: fit-content;
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(25%, auto));
