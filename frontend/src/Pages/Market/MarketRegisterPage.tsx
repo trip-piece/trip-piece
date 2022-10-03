@@ -6,6 +6,10 @@ import { useRecoilState } from "recoil";
 import { Navigation } from "swiper";
 import { UserInfoState } from "../../store/atom";
 import { NFTContract } from "../../utils/common/NFT_ABI";
+import { MarketContract } from "../../utils/common/Market_ABI";
+import { marketApis } from "../../utils/apis/marketApis";
+import axiosInstance from "../../utils/apis/api";
+import { response } from "msw";
 
 const Container = styled.article`
   min-height: 90vh;
@@ -112,6 +116,12 @@ interface NFT {
   tokenURI: string;
 }
 
+interface StickerDetail{
+  tokenId: number;
+  imagePath: string;
+  tokenName: string;
+}
+
 function MarketRegisterPage() {
   const [userInfo] = useRecoilState(UserInfoState);
   const [loading, setLoading] = useState<boolean>(true);
@@ -151,14 +161,25 @@ function MarketRegisterPage() {
   useEffect(() => {
     getNFTList();
   }, []);
+  
+  const stickerDefault : StickerDetail = {
+    tokenId : NFTList[0]?.tokenId,
+    tokenName : NFTDetailList[0]?.tokenName,
+    imagePath : NFTDetailList[0]?.imagePath,
+  }
 
-  const [sticker, setSticker] = useState<TokenDetail>(NFTDetailList[0]);
+  const [sticker, setSticker] = useState<StickerDetail>(stickerDefault);
   const [price, setPrice] = useState(Number);
 
   const handleChangeSticker = (e: {
     target: { value: SetStateAction<string> };
   }) => {
-    setSticker(NFTDetailList[Number(e.target.value)]);
+    const sticker = {
+      tokenId : NFTList[Number(e.target.value)].tokenId,
+      imagePath : NFTDetailList[Number(e.target.value)].imagePath,
+      tokenName : NFTDetailList[Number(e.target.value)].tokenName
+    }
+    setSticker(sticker);
   };
 
   const handleChangePrice = (e: {
@@ -172,6 +193,54 @@ function MarketRegisterPage() {
     navigate(-1);
   };
 
+  const insertIntoSolMarket = async (e: { preventDefault: () => void }) =>{
+    setLoading(true);
+    e.preventDefault();
+    try{
+      if (price <= 0) alert("price에 올바른 값을 넣어주세요.");
+      else{
+        const approveResult = await NFTContract
+        .methods
+        .setApprovalForAll(import.meta.env.VITE_MARKET_CA, true)
+        .send({from : userInfo.address})
+
+        console.log("권한 부여 성공" + approveResult.status)
+
+          const result = await MarketContract
+        .methods
+        .insertIntoMarket(sticker.tokenId, price)
+        .send({from : userInfo.address})
+
+        if (result.status){
+          const response = await axiosInstance.post(marketApis.insertIntoMarket(), { tokenId : sticker.tokenId, price : price});
+        }
+        console.log("nft 마켓 등록")
+        console.log(result)
+        console.log("DB 등록")
+        console.log(response)
+        alert("등록이 완료되었습니다.")
+      }
+    }
+    catch (err){
+        console.log(err)
+    }
+  }
+
+  const getMarketList = async (e: { preventDefault: () => void }) =>{
+    setLoading(true);
+    e.preventDefault();
+    try{
+      const approveResult = await MarketContract
+      .methods
+      .getOnSaleStickerArrayLength()
+      .call()
+
+      console.log(approveResult)
+    }
+    catch (err){
+      console.log(err)
+    }
+  }
   return (
     <>
       <Helmet>
@@ -205,8 +274,9 @@ function MarketRegisterPage() {
         </RegisterForm>
         <Button>
           {/* 수정이면 수정 버튼으로.. */}
-          <button className="register">등록</button>
+          <button className="register" onClick={insertIntoSolMarket}>등록</button>
           <button onClick={moveToBeforePage}>취소</button>
+          <button onClick={getMarketList}>마켓리스트 확인하기</button>
         </Button>
       </Container>
     </>
