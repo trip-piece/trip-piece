@@ -5,10 +5,10 @@ import { frameApis } from "../../utils/apis/frameApis";
 import img from "../../assets/image/activeTicket.png";
 
 interface IMyScrappedFrameProps {
-  scrapId: number;
-  diaryId: number;
+  scrapId?: number;
+  diaryId?: number;
   frameId: number;
-  image: string;
+  image?: string;
 }
 
 const Container = styled.div`
@@ -28,10 +28,12 @@ const ScrapImg = styled.img`
   height: auto;
 `;
 
-function ScrappedFrameCard({ frameId }: IMyScrappedFrameProps) {
+function ScrappedFrameCard({ frameId, image }: IMyScrappedFrameProps) {
+  const imgUrl: string = `https://www.infura-ipfs.io/ipfs/${image}`;
   return (
     <Container>
       <LinkContainer to={frameApis.getDetailedFrames(frameId)}>
+        {/* <ScrapImg src={imgUrl} /> */}
         <ScrapImg src={img} />
       </LinkContainer>
     </Container>
