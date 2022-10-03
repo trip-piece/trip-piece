@@ -105,7 +105,7 @@ function NftResponse() {
       contentPropsInit.stickerUrl = sticker.tokenUrl;
 
       setState(contentPropsInit);
-       setLoading(false);
+      setLoading(false);
     }
   };
 
@@ -205,8 +205,6 @@ function NftResponse() {
       console.log("정규식");
       contentPropsInit.result = "success";
 
-      sendNFT();
-
       setLoading(false);
     } else {
       // 이상한 큐알이라구함
@@ -239,8 +237,8 @@ function NftResponse() {
           <Title title="서울 SEOUL" />
           <Content
             result={state.result}
-            stickerName="2022 역삼 멀티캠퍼스"
-            stickerUrl="이미지경로"
+            stickerName={state.stickerName}
+            stickerUrl={state.stickerUrl}
           />
           {state.result}
         </>

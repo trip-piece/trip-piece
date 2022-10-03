@@ -84,43 +84,26 @@ function QrInfo({ stickerName, stickerUrl }: ContentProps) {
 
 function Result({ result }: ContentProps): EmotionJSX.Element {
   const flag: string = result;
-  let jsx: EmotionJSX.Element = <div>ss</div>;
-  if (flag === "success") {
-    jsx = (
-      <>
-        <ResultIconBox>
-          <BsCheckLg size="70" color="#2C5166" />
-        </ResultIconBox>
-        <ResultBox>
-          <ResultText>스티커 발급 완료</ResultText>
-        </ResultBox>
-      </>
-    );
-  } else if (flag === "fail") {
-    jsx = (
-      <>
-        <ResultIconBox>
-          <BsXLg size="70" color="#D35B5B" />
-        </ResultIconBox>
-        <ResultBox>
-          <ResultText>스티커 발급 실패</ResultText>
-        </ResultBox>
-      </>
-    );
-  } else if (flag === "incorrect") {
-    jsx = (
-      <>
-        <ResultIconBox>
-          <BsXLg size="70" color="#D35B5B" />
-        </ResultIconBox>
-        <ResultBox>
-          <ResultText>올바르지 않은 QR 요청</ResultText>
-        </ResultBox>
-      </>
-    );
-  } else jsx = <div>ss</div>;
 
-  return jsx;
+  let insultText: string = "Loading";
+  if (flag === "success") {
+    insultText = "스티커 발급 완료";
+  } else if (flag === "fail") {
+    insultText = "스티커 발급 실패";
+  } else if (flag === "incorrect") {
+    insultText = "올바르지 않은 QR 요청";
+  }
+
+  return (
+    <>
+      <ResultIconBox>
+        <BsXLg size="70" color="#D35B5B" />
+      </ResultIconBox>
+      <ResultBox>
+        <ResultText>{insultText}</ResultText>
+      </ResultBox>
+    </>
+  );
 }
 
 function Content({ result, stickerName, stickerUrl }: ContentProps) {
