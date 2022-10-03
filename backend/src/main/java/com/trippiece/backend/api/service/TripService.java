@@ -106,10 +106,13 @@ public class TripService {
                 return new TripResponseDto(t); //진행중일때
             }
         }
-        if (tripRepository.findFirstByStartDateAndUserOrderByStartDate(todayDate,user).size() == 0) { //뒤 내용 아예없을때
+        if (tripRepository.findFirstByStartDateAfterAndUserOrderByStartDate(todayDate,user).size() == 0) { //뒤 내용 아예없을때
+            System.out.println("왜 0임?");
             return null;
         } else {
-            return new TripResponseDto(tripRepository.findFirstByStartDateAndUserOrderByStartDate(todayDate,user).get(0));
+            System.out.println("들어왔다!");
+            System.out.println(tripRepository.findFirstByStartDateAfterAndUserOrderByStartDate(todayDate,user).get(0));
+            return new TripResponseDto(tripRepository.findFirstByStartDateAfterAndUserOrderByStartDate(todayDate,user).get(0));
         }
     }
 }
