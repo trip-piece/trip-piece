@@ -65,7 +65,8 @@ const LiContainer = styled.div`
   }
 `;
 function Card(frame: FrameProps) {
-  const [scrap, setScrap] = useState<boolean>(false);
+  const [scrap, setScrap] = useState<boolean>(frame.scrapped);
+  const [frameImage, setFrameImage] = useState<string>();
   // const checkScrap = () => {
   //   if (frame.isScrapped) {
   //     <BsFillBookmarkHeartFill className="scrapicon" />;
@@ -106,6 +107,7 @@ function Card(frame: FrameProps) {
   const navigate = useNavigate();
   const moveToFrame = () => {
     navigate(`/frames/${frame.frameId}`);
+    setFrameImage(frame.frameImage);
   };
 
   return (

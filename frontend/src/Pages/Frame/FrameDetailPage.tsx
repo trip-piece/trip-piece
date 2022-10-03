@@ -1,22 +1,23 @@
 import styled from "@emotion/styled";
 import { Helmet } from "react-helmet-async";
 import { useParams } from "react-router-dom";
-import { FaEthereum } from "react-icons/fa";
-import { BsFillCreditCardFill } from "react-icons/bs";
+import { BsFillBookmarkHeartFill, BsBookmarkHeart } from "react-icons/bs";
+import { useEffect, useState } from "react";
+import axiosInstance from "../../utils/apis/api";
+import { frameApis } from "../../utils/apis/frameApis";
 
 const Container = styled.article`
   min-height: 90vh;
-  padding: 0 5vw 0 5vw;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-evenly;
+  background-color: ${(props) => props.theme.colors.white};
+  border-radius: 30px 30px 0 0;
+  padding: 1rem;
+  position: relative;
+  width: inherit;
 `;
 
 const StickerCard = styled.article`
-  width: 100%;
-  height: 55vh;
-  padding: 1rem;
-  background-color: ${(props) => props.theme.colors.white};
+  height: 100%;
+  background: transparent;
   border-radius: 20px;
   display: flex;
   flex-direction: column;
@@ -25,8 +26,7 @@ const StickerCard = styled.article`
   img {
     display: block;
     width: 100%;
-    height: 80%;
-    padding: 10px;
+    height: 100%;
     border-radius: 20px;
     object-fit: contain;
   }
@@ -40,32 +40,24 @@ const StickerCard = styled.article`
   }
 `;
 
-const Price = styled.article`
-  width: 100%;
-  height: 12vh;
-  padding-left: 5vw;
-  padding-top: 3vh;
-  p {
-    width: 100%;
-    font-size: ${(props) => props.theme.fontSizes.h3};
-    color: ${(props) => props.theme.colors.white};
-    padding-bottom: 1.5vh;
-  }
-
-  .price {
-    width: 100%;
-    font-size: ${(props) => props.theme.fontSizes.h3};
-    color: ${(props) => props.theme.colors.yellow};
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    padding-left: 1rem;
-
-    p {
-      width: 100%;
-      font-size: ${(props) => props.theme.fontSizes.h3};
-      color: ${(props) => props.theme.colors.white};
-      padding-left: 1rem;
+const Div = styled.div`
+  display: flex;
+  flex-direction: row;
+  div {
+    .scrapicon {
+      height: 20px;
+      width: auto;
+      color: ${(props) => props.theme.colors.red};
+      top: 1rem;
+      left: 1rem;
+      margin-top: 90%;
+    }
+    .unscrapicon {
+      height: 20px;
+      width: auto;
+      color: ${(props) => props.theme.colors.red};
+      top: 1rem;
+      left: 1rem;
     }
   }
 `;
@@ -74,31 +66,92 @@ const Button = styled.article`
   width: 100%;
   height: 10vh;
   padding: 1rem;
+  display: flex;
+  flex-direction: row;
 
   button {
-    width: 100%;
-    height: 7vh;
-    border-radius: 10px;
-    font-size: ${(props) => props.theme.fontSizes.h5};
+    height: 5vh;
+    border-radius: 15px;
+    padding: 0 0.25rem 0 0.25rem;
+    font-size: ${(props) => props.theme.fontSizes.h6};
     font-weight: bold;
-    display: flex;
-    flex-direction: row;
+    background: ${(props) => props.theme.colors.yellow};
+    margin: 0 2% 0 2%;
+
     justify-content: center;
     align-items: center;
     vertical-align: center;
-
-    p {
-      margin-left: 0.5rem;
-    }
   }
 `;
 
 function FrameDetailPage() {
   const { frameId } = useParams();
+
+  const [frameImage, setFrameImage] = useState<string>();
   const result = {
     frameImage:
-      "https://trippiece607.s3.ap-northeast-2.amazonaws.com/20221130181117-%EC%A0%9C%EC%A3%BC%EB%8F%84_QR",
+      "https://trippiece607.s3.ap-northeast-2.amazonaws.com/20220802150807-%E1%84%92%E1%85%A1%E1%86%AB%E1%84%80%E1%85%A1%E1%86%BC%E1%84%87%E1%85%AE%E1%86%AF%E1%84%87%E1%85%B5%E1%86%BE%E1%84%8B%E1%85%A3%E1%84%89%E1%85%B5%E1%84%8C%E1%85%A1%E1%86%BC.jpeg",
+    scrapped: true,
+    stickerList: [
+      {
+        stickerId: 1,
+        tokenId: 1,
+        tokenName: "이이",
+        tokenURL:
+          "https://www.infura-ipfs.io/ipfs/QmcqJiEjJon38JNzbsdgKhLBsjfWF8tZiUT5Mi7GQbtGP4",
+        x: 3.1234,
+        y: 5.123,
+      },
+      {
+        stickerId: 1,
+        tokenId: 1,
+        tokenName: "이이2",
+        tokenURL:
+          "https://www.infura-ipfs.io/ipfs/QmcqJiEjJon38JNzbsdgKhLBsjfWF8tZiUT5Mi7GQbtGP4",
+        x: 3.1234,
+        y: 5.123,
+      },
+      {
+        stickerId: 1,
+        tokenId: 1,
+        tokenName: "이이3",
+        tokenURL:
+          "https://www.infura-ipfs.io/ipfs/QmcqJiEjJon38JNzbsdgKhLBsjfWF8tZiUT5Mi7GQbtGP4",
+        x: 3.1234,
+        y: 5.123,
+      },
+    ],
   };
+  const [scrap, setScrap] = useState<boolean>(result.scrapped);
+  const postSaveFrame = (frameId: number) => {
+    const body = {
+      frameId,
+    };
+    axiosInstance.post(frameApis.saveFrame, body);
+  };
+
+  const deleteScrappedFrame = (frameId: number) => {
+    const body = {
+      frameId,
+    };
+    axiosInstance.delete(frameApis.deleteScrappedFrame, { data: body });
+  };
+
+  const changeScrap = () => {
+    if (scrap === false) {
+      // 스크랩 설정하는 api 요청
+      // postSaveFrame(Number(frameId));
+    } else {
+      // 스크랩 해제하는 api 요청
+      // deleteScrappedFrame(Number(frameId));
+    }
+    setScrap(!scrap);
+  };
+
+  // useEffect(() => {
+  //   console.log(result);
+  //   setScrap(result.scrapped);
+  // }, [result]);
   return (
     <>
       <Helmet>
@@ -106,23 +159,28 @@ function FrameDetailPage() {
       </Helmet>
       <Container>
         <StickerCard>
-          <img src={result.image} />
-          <p>{result.name}</p>
+          <img src={result.frameImage} alt="기본이미지" />
         </StickerCard>
-        <Price>
-          <p>판매 가격</p>
-          <div className="price">
-            <FaEthereum />
-            <p>{result.price}</p>
+        <Div>
+          <Button>
+            {result.stickerList.map((sticker, idx) => (
+              <button type="button">
+                <p>#{sticker.tokenName}</p>
+              </button>
+            ))}
+          </Button>
+          <div>
+            {scrap ? (
+              <div onClick={changeScrap}>
+                <BsFillBookmarkHeartFill className="scrapicon" />
+              </div>
+            ) : (
+              <div onClick={changeScrap}>
+                <BsBookmarkHeart className="unscrapicon" />
+              </div>
+            )}
           </div>
-        </Price>
-        <Button>
-          {/* 판매글을 올린 userId가 로그인한 userId와 같으면 판매 취소 버튼으로.. */}
-          <button>
-            <BsFillCreditCardFill />
-            <p>구매</p>
-          </button>
-        </Button>
+        </Div>
       </Container>
     </>
   );
