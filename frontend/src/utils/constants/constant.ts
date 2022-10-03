@@ -29,9 +29,16 @@ export const WEEK = [
   "토요일",
 ];
 
-export const FONTTYPELIST = ["잘하고있어", "아빠의연애편지"];
+export const FONTTYPELIST = [
+  "기본글씨체",
+  "강원모두교육체",
+  "이순신돋움",
+  "교보손글씨",
+  "IM혜민체",
+  "교보손글씨박도연",
+];
 
-export const DIARY_COLOR_LIST = ["#FFFFFF", "#FCCEE2", "#F7E7C1"];
+export const DIARY_COLOR_LIST = ["#f8f8f8", "#e4e4f2", "#f7efdf"];
 
 export const MESSAGE_LIST = {
   DIARY_INTRO: "오늘의 여행은 어땠나요?",

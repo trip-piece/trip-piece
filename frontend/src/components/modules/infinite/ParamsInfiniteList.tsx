@@ -7,6 +7,7 @@ import axiosInstance from "../../../utils/apis/api";
 import { isQueryError } from "../../../utils/functions/util";
 import useFetchTripsInformation from "../../../utils/hooks/useFecthTripsInformation";
 import useObserver from "../../../utils/hooks/useObserver";
+import spinner from "../../../assets/image/spinner.gif";
 
 interface InifinteListProps {
   url: string;
@@ -107,8 +108,21 @@ function InfiniteList({
         </div>
       )}
       {isLoading && (
-        <div style={{ textAlign: "center", marginTop: "20px" }}>
-          Loading ...
+        <div
+          style={{
+            textAlign: "center",
+            marginTop: "20px",
+            width: "100%",
+            height: "100%",
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "center",
+          }}
+        >
+          <img
+            src={spinner}
+            style={{ width: "auto", height: "20%", textAlign: "center" }}
+          />
         </div>
       )}
       {isError && isQueryError(error) && <p>{error?.message}</p>}

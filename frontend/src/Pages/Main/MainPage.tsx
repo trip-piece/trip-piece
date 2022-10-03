@@ -25,6 +25,7 @@ import { IPlace } from "../../utils/interfaces/places.interface";
 import { placeApis } from "../../utils/apis/placeApis";
 import activeTicket from "../../assets/image/activeTicket.png";
 import unactiveTicket from "../../assets/image/unactiveTicket.png";
+import spinner from "../../assets/image/spinner.gif";
 
 const MainBox = styled.div`
   height: 55%;
@@ -331,7 +332,7 @@ function MainPage() {
       } else setIsProgress(1);
     }
     if (data2?.data) {
-      setPlaces(data2.data["content"]);
+      setPlaces(data2.data.content);
       if (data2.data.length) {
         setPlaces(data2.data);
       }
@@ -349,7 +350,6 @@ function MainPage() {
   const moveToTrip = () => {
     navigate("/trips");
   };
-
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -362,17 +362,18 @@ function MainPage() {
           {isLoading1 && (
             <div
               style={{
-                width: "90%",
-                border: "0.188rem solid #F8F8F8",
-                borderRadius: "1.25rem",
-                textAlign: "center",
-                color: "#F8F8F8",
+                width: "100%",
+                height: "100%",
                 display: "flex",
-                justifyContent: "center",
                 flexDirection: "column",
+                textAlign: "center",
+                justifyContent: "center",
               }}
             >
-              <p>Loading...</p>
+              <img
+                src={spinner}
+                style={{ width: "auto", height: "50%", textAlign: "center" }}
+              />
             </div>
           )}
           {isSuccess1 && loading && (
@@ -570,7 +571,7 @@ function MainPage() {
         </MainBox>
         <SubBox>
           <MiddleTitle>
-            📍 내 주변에서 NFT 발급받기
+            📍 내 주변 스티커 발급받기
             <motion.button
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
@@ -615,20 +616,20 @@ function MainPage() {
               <div
                 style={{
                   width: "100%",
-                  height: "80%",
+                  height: "100%",
                   display: "flex",
-                  flexDirection: "column",
+                  flexDirection: "row",
                   textAlign: "center",
-                  alignItems: "center",
                   justifyContent: "center",
-                  borderRadius: "20px",
-                  border: "1px solid lightgray",
-                  marginTop: "7px",
                 }}
               >
-                <p>Loading...</p>
+                <img
+                  src={spinner}
+                  style={{ width: "auto", height: "70%", textAlign: "center" }}
+                />
               </div>
             )}
+
             {isSuccess2 && loading && (
               <>
                 {places?.length ? (
@@ -642,7 +643,7 @@ function MainPage() {
                 ) : (
                   <p>
                     <br />
-                    근처에 발급 가능한 지역이 없어요.
+                    근처에 발급 가능한 곳이 없어요.
                   </p>
                 )}
               </>

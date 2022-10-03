@@ -19,7 +19,7 @@ export const frameApis = {
     return api;
   },
   getSharedFramesCount: "/frames/counts",
-  getDetailedFrames: (frameId: number): string => `frames/${frameId}`,
+  getDetailedFrames: (frameId: number): string => `/frames/${frameId}`,
   saveFrame: "/frames",
   deleteSharedFrame: "/frames",
   deleteScrappedFrame: "/frames/scrap",

@@ -12,9 +12,9 @@ export const PadZero = (num: number | undefined) => {
   return String(num).padStart(2, "0");
 };
 
-export const changeDateForamtToDot = (date: string): string => {
+export const changeDateFormatToDot = (date: string): string => {
   const _date = new Date(date);
-  const year = String(_date.getFullYear()).substring(2);
+  const year = String(_date.getFullYear());
 
   const month = PadZero(_date.getMonth() + 1);
   const day = PadZero(_date.getDate());

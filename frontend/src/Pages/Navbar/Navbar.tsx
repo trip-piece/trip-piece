@@ -7,7 +7,6 @@ import { TbMenu2 } from "react-icons/tb";
 import {
   MdOutlineLogout,
   MdOutlineClose,
-  MdModeEditOutline,
   MdEditCalendar,
   MdOutlineAddReaction,
   MdShoppingCart,
@@ -39,6 +38,7 @@ import tripApis from "../../utils/apis/tripsApis";
 import React from "react";
 import { REGIONLIST } from "../../utils/constants/constant";
 import { CodeProps } from "../../utils/interfaces/qrscan.inteface";
+import NestedModal from "../MyPage/Modal";
 
 const DrawerHeader = styled.div`
   display: flex;
@@ -339,6 +339,12 @@ const BoxContainer = styled(Box)`
   height: 100%;
 `;
 
+const ModifyNickNameButton = styled.div`
+  background-color: transparent;
+  height: ${pixelToRem(15)};
+  width: auto;
+`;
+
 function IdCodeComponent({ id }: CodeProps) {
   const num: string = id.toString();
   let code: ReactJSXElement;
@@ -517,13 +523,9 @@ export default function Navbar() {
                   <Name>{userInfo.nickname}</Name>
                   <NameSuffix>여행자님</NameSuffix>&nbsp;
                   <IdCodeComponent id={userInfo.id} />
-                  <motion.button
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.9 }}
-                    type="button"
-                  >
-                    <MdModeEditOutline />
-                  </motion.button>
+                  <ModifyNickNameButton>
+                    <NestedModal />
+                  </ModifyNickNameButton>
                 </div>
                 <div className="wallet-info">
                   <FaEthereum className="icon" />
