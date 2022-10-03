@@ -34,14 +34,14 @@ function QrReaderComponent() {
 
   useEffect(() => {
     console.log(result);
-    if (!!result) {
+    if (!result) {
       console.log("react hook checks");
       setRecoilQrInfo({ url: result, modalFlag: true });
     }
   }, [result]);
 
   const handleScan = (result) => {
-    if (!!result) {
+    if (!result) {
       console.log("function handleScan checks");
       setResult(result);
     }
