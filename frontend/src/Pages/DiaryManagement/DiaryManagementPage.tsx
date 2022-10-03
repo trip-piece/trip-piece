@@ -49,9 +49,11 @@ import LazyImage from "../../components/atoms/LazyImage";
 import DecorationModal from "./Modal";
 import useWriteDiary from "../../utils/hooks/useWriteDiary";
 import useDecorateDiary from "../../utils/hooks/useDecorateDiary";
-import { userInfo } from "os";
 import { UserInfoState } from "../../store/atom";
 import { NFTContract } from "../../utils/common/NFT_ABI";
+import spinner from "../../assets/image/spinner.gif";
+import { red } from "@mui/material/colors";
+import { motion } from "framer-motion";
 
 const Form = styled.form`
   display: flex;
@@ -74,6 +76,7 @@ const DiaryStyleContainer = styled.div`
   justify-content: space-evenly;
   align-items: center;
   width: 100%;
+  border-radius: 10px;
 `;
 
 const WeatherButton = styled.button<{ active: boolean }>`
@@ -291,11 +294,11 @@ const StickerImg = styled.img<{ isDragging: boolean }>`
 const TabContainer = styled.div`
   width: 100%;
   display: flex;
-  height: 2rem;
+  height: 2.5rem;
   position: relative;
   align-items: center;
-  background-color: ${(props) => props.theme.colors.gray200};
-  #writing:checked ~ labal.writing {
+  background-color: ${(props) => props.theme.colors.white};
+  #writing:checked ~ label.writing {
     color: #fff;
   }
   #decoration:checked ~ label.decoration {
@@ -303,9 +306,13 @@ const TabContainer = styled.div`
   }
   #writing:checked ~ .tab {
     left: 0%;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
   }
   #decoration:checked ~ .tab {
     left: 50%;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
   }
   > input {
     display: none;
@@ -330,8 +337,8 @@ const TabContainer = styled.div`
     left: 0;
     bottom: 0;
     z-index: 0;
-    border-radius: 10px;
-    background: linear-gradient(45deg, #888888 0%, #ffffff 100%);
+    background: ${(props) => props.theme.colors.mainGradient};
+    opacity: 0.9;
     transition: 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
   }
 `;
@@ -396,6 +403,7 @@ function DiaryManagementPage() {
 
   const getNFTList = async () => {
     try {
+      setLoading(true);
       const result = await NFTContract.methods
         .getStickerList(userInfo.address)
         .call();
@@ -416,6 +424,7 @@ function DiaryManagementPage() {
             });
           setNFTDetailList(tokenList);
         }
+        setLoading(false);
       }
     } catch (err) {
       console.log("Error getSticker : ", err);
@@ -773,6 +782,31 @@ function DiaryManagementPage() {
           <h2>{dottedDate}</h2>
         </DateContainer>
         <Form onSubmit={handleSubmit(onSubmit)}>
+          <TabContainer>
+            <input
+              type="radio"
+              name="tab"
+              id="writing"
+              checked={mode === "writing"}
+              onChange={changeMode}
+              value="writing"
+            />
+            <input
+              type="radio"
+              name="tab"
+              id="decoration"
+              checked={mode === "decoration"}
+              onChange={changeMode}
+              value="decoration"
+            />
+            <label htmlFor="writing" className="writing">
+              다이어리 쓰기
+            </label>
+            <label htmlFor="decoration" className="decoration">
+              다이어리 꾸미기
+            </label>
+            <div className="tab" />
+          </TabContainer>
           <DiaryStyleContainer>
             <Select
               id="font"
@@ -825,44 +859,30 @@ function DiaryManagementPage() {
             )}
           </ColorAndPositionContainer>
           <MainContainer>
-            <TabContainer>
-              <input
-                type="radio"
-                name="tab"
-                id="writing"
-                checked={mode === "writing"}
-                onChange={changeMode}
-                value="writing"
-              />
-              <input
-                type="radio"
-                name="tab"
-                id="decoration"
-                checked={mode === "decoration"}
-                onChange={changeMode}
-                value="decoration"
-              />
-              <label htmlFor="writing" className="writing">
-                다이어리 쓰기
-              </label>
-              <label htmlFor="decoration" className="decoration">
-                다이어리 꾸미기
-              </label>
-              <div className="tab" />
-            </TabContainer>
-
             <DiaryController
               backgroundcolor={DIARY_COLOR_LIST[diaryColor]}
               ref={diaryRef}
             >
               {mode === "decoration" && (
-                <button
+                <motion.button
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
                   type="button"
                   onClick={deleteSticker}
-                  style={{ position: "absolute" }}
+                  style={{
+                    position: "absolute",
+                    right: 0,
+                    color: "red",
+                    background: "transparent",
+                    borderRadius: "5px",
+                    height: "5%",
+                    border: "1px solid lightgray",
+                    marginTop: "5px",
+                    marginRight: "5px",
+                  }}
                 >
-                  스티커 삭제하기
-                </button>
+                  스티커 모두삭제
+                </motion.button>
               )}
               {stickerList.map((sticker, index) => (
                 <Draggable
@@ -976,14 +996,23 @@ function DiaryManagementPage() {
             보유한 스티커
           </button>
           <div ref={stickerBoxRef}>
-            {NFTDetailList.map((sticker, index) => (
-              <MemoizedImageButton
-                onClick={addSticker}
-                sticker={sticker}
-                // eslint-disable-next-line react/no-array-index-key
-                key={index}
-              />
-            ))}
+            {loading && (
+              <div>
+                <img
+                  src={spinner}
+                  style={{ width: "50%", height: "auto", marginLeft: "9rem" }}
+                  alt="기본이미지"
+                />
+              </div>
+            )}
+            {!loading &&
+              NFTDetailList.map((sticker, index) => (
+                <MemoizedImageButton
+                  onClick={addSticker}
+                  sticker={sticker}
+                  key={index}
+                />
+              ))}
           </div>
         </StickerZone>
 
