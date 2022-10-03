@@ -14,6 +14,7 @@ import { NFTContract } from "../../utils/common/NFT_ABI";
 import axiosInstance from "../../utils/apis/api";
 import { placeApis } from "../../utils/apis/placeApis";
 import { getLocation } from "../../utils/functions/util";
+import useGetLocation from "../../utils/hooks/useGetLocation";
 
 interface placeResponse {
   data: {
@@ -134,21 +135,34 @@ function NftResponse() {
   };
 
   const validationCode = (placeId: string) => {
+    console.log("코드 검증 시작 ");
+
     try {
       axiosInstance
         .get(placeApis.getDetailedPlace(placeId))
         .then((response: placeResponse) => {
+          console.log(response);
+
           if (response.data.code === code) {
-            const userLocation: any = getLocation();
-            const userLat = userLocation.latitude;
-            const userLng = userLocation.longitude;
+            const userLocation = getLocation();
+
+            console.log(userLocation.meta);
+            console.log(userLocation.latitude);
+            console.log(userLocation.longitude);
+
+            console.log("distance 계산하삼");
+            console.log(userLocation);
+            //console.log(`lat ${userLat}`);
+            //console.log(`lng${userLng}`);
 
             const distance = getDistanceFromLatLonInKm(
               response.data.lat,
               response.data.lng,
-              userLat,
-              userLng,
+              userLocation.latitude,
+              userLocation.longitude,
             );
+
+            console.log(distance);
 
             if (distance < 5) {
               // 스티커를 발급하거라
@@ -176,6 +190,8 @@ function NftResponse() {
             /// 합격 @!@
           } else {
             //  불합격 ~ !
+            console.log("발급실패 ㅋ");
+
             contentPropsInit.result = "fail";
             contentPropsInit.stickerName = response.data.regionName;
             contentPropsInit.stickerUrl = response.data.posterImage;
@@ -207,6 +223,7 @@ function NftResponse() {
       validationCode(regionId);
     } else {
       // 이상한 큐알이라구함
+      console.log("정규식 실패");
       contentPropsInit.result = "incorrect";
       setState(contentPropsInit);
       setLoading(false);
