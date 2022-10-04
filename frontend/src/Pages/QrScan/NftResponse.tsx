@@ -14,16 +14,18 @@ import { NFTContract } from "../../utils/common/NFT_ABI";
 import axiosInstance from "../../utils/apis/api";
 import { placeApis } from "../../utils/apis/placeApis";
 import { getLocation } from "../../utils/functions/util";
-import useGetLocation from "../../utils/hooks/useGetLocation";
+import Web3 from "web3";
+import { qrApis } from "../../utils/apis/QrApis";
 
 interface placeResponse {
   data: {
     lat: number;
     lng: number;
     regionName: string;
+    name: string;
     enableStickerList: [
       {
-        stickerId: number;
+        id: number;
         tokenId: number;
         tokenName: string;
         tokenURL: string;
@@ -31,7 +33,7 @@ interface placeResponse {
     ];
     distinctStickerList: [
       {
-        stickerId: Number;
+        id: Number;
         tokenId: Number;
         tokenName: string;
         tokenURL: string;
@@ -44,76 +46,55 @@ interface placeResponse {
 }
 
 interface ISticker {
+  id: number;
   tokenName: string;
   tokenId: number;
-  tokenUrl: string;
+  tokenURL: string;
 }
 
 function NftResponse() {
-  const { regionId, code } = useParams();
+  const { placeId, code } = useParams();
   const [loading, setLoading] = useState(true);
   const [userInfo, setUserInfo] = useRecoilState(UserInfoState);
   const [locationInfo, setLocationInfo] = useState("");
-  const [lat, setLat] = useState(0);
-  const [lng, setLng] = useState(0);
-  const [imagePath, setImagePath] = useState("");
-
-  const [sticker, setSticker] = useState<ISticker>();
-
   const [state, setState] = useState<ContentProps>({
     result: "null",
     stickerName: null,
     stickerUrl: null,
   });
 
-  const [recoilQrState, setRecoilQrState] = useRecoilState(QrInfoState);
-
   const link = window.location.href;
 
-  const myLocation = async () => {
-    console.log("위치 받아와.. 소워임");
-
-    const userLocation: any = await getLocation();
-    setLocationInfo(userLocation.location);
-    setLat(userLocation.latitude);
-    setLng(userLocation.longitude);
-  };
-
-  const getToken = (tokenURI: string) => {
-    fetch(`https://www.infura-ipfs.io/ipfs/${tokenURI}`)
-      .then((res) => {
-        return res.json();
-      })
-      .then((data) => {
-        setImagePath(String(data[0].image));
-      });
-  };
+  const web3 = new Web3(
+    new Web3.providers.HttpProvider(import.meta.env.VITE_WEB3_URL),
+  );
 
   const sendNFT = async (tokenId: number) => {
-    const adminAccount: string = import.meta.env.VITE_ADMIN_ADDRESS;
-    const userAddress: string = userInfo.address;
-
+    const userAddress = userInfo.address;
+    const privateKey = import.meta.env.VITE_ADMIN_PRIVATE_KEY;
+    const adminAccount = import.meta.env.VITE_ADMIN_ADDRESS;
+    const transferFrom = NFTContract.methods.transferFrom(
+      adminAccount,
+      userAddress,
+      tokenId,
+    );
+    const encodeABI = transferFrom.encodeABI();
+    console.log(encodeABI);
+    const tx = {
+      from: adminAccount,
+      to: import.meta.env.VITE_NFT_CA,
+      gas: 2000000,
+      data: encodeABI,
+    };
     try {
-      await NFTContract.methods
-        .transferFrom(adminAccount, userAddress, tokenId)
-        .send({ from: adminAccount });
-
-      contentPropsInit.result = "success";
-      contentPropsInit.stickerName = sticker.tokenName;
-
-      getToken(sticker.tokenUrl);
-      contentPropsInit.stickerUrl = imagePath;
-
-      setState(contentPropsInit);
-
-      setLoading(false);
+      web3.eth.accounts.signTransaction(tx, privateKey).then((signed) => {
+        web3.eth.sendSignedTransaction(signed.rawTransaction);
+      });
     } catch (error) {
       console.log("주다가 에러났다 ", error);
-
       contentPropsInit.result = "fail";
-      contentPropsInit.stickerName = sticker.tokenName;
-      contentPropsInit.stickerUrl = sticker.tokenUrl;
-
+      contentPropsInit.stickerName = "ERROR !";
+      contentPropsInit.stickerUrl = "https://ifh.cc/g/V44V4O.png";
       setState(contentPropsInit);
       setLoading(false);
     }
@@ -143,112 +124,122 @@ function NftResponse() {
     return d;
   };
 
-  const validationCode = (placeId: string) => {
+  const validationCode = async (placeId: number) => {
     console.log("코드 검증 시작 ");
-
+    const userLocation: any = await getLocation();
     try {
-      axiosInstance
-        .get(placeApis.getDetailedPlace(placeId))
-        .then((response: placeResponse) => {
-          console.log(response);
+      axiosInstance.get(qrApis.qrCheck(placeId)).then((result: any) => {
+        if (result.data) {
+          console.log("이 사람 이미 발급 했음!!!!!");
+          contentPropsInit.result = "check";
+          contentPropsInit.stickerUrl = "https://ifh.cc/g/V44V4O.png";
+          setState(contentPropsInit);
+          setLoading(false);
+        } else {
+          axiosInstance
+            .get(placeApis.getDetailedPlace(placeId))
+            .then((response: placeResponse) => {
+              setLocationInfo(response.data.name);
+              if (response.data.code === code) {
+                console.log("distance 계산하삼");
+                const distance = getDistanceFromLatLonInKm(
+                  response.data.lat,
+                  response.data.lng,
+                  userLocation.latitude,
+                  userLocation.longitude,
+                );
 
-          if (response.data.code === code) {
-            console.log(lat);
-            console.log(lng);
+                if (distance < 5) {
+                  const listLength = response.data.enableStickerList.length;
+                  const rand = Math.floor(Math.random() * listLength);
+                  const selectedSticker = response.data.enableStickerList[rand];
+                  console.log(
+                    `tokenID : ${response.data.enableStickerList[rand].tokenId}`,
+                  );
+                  sendNFT(selectedSticker.tokenId);
 
-            console.log("distance 계산하삼");
-
-            //console.log(`lat ${userLat}`);
-            //console.log(`lng${userLng}`);
-
-            const distance = getDistanceFromLatLonInKm(
-              response.data.lat,
-              response.data.lng,
-              lat,
-              lng,
-            );
-
-            console.log(distance);
-
-            if (distance < 5) {
-              // 스티커를 발급하거라
-              const listLength = response.data.enableStickerList.length;
-              const rand = Math.floor(Math.random() * listLength);
-
-              console.log(rand);
-
-              const selectedSticker = response.data.enableStickerList[rand];
-
-              setSticker({
-                tokenName: selectedSticker.tokenName,
-                tokenId: selectedSticker.tokenId,
-                tokenUrl: selectedSticker.tokenURL,
-              });
-
-              console.log(`tokenID : ${sticker.tokenId}`);
-
-              sendNFT(selectedSticker.tokenId);
-            } else {
-              // 스티커 발급을 실패하노라
-              contentPropsInit.result = "fail";
-              contentPropsInit.stickerName = response.data.regionName;
-              contentPropsInit.stickerUrl = response.data.posterImage;
-              setState(contentPropsInit);
-              setLoading(false);
-            }
-
-            /// 합격 @!@
-          } else {
-            //  불합격 ~ !
-            console.log("발급실패 ㅋ");
-
-            contentPropsInit.result = "fail";
-            contentPropsInit.stickerName = response.data.regionName;
-            contentPropsInit.stickerUrl = response.data.posterImage;
-            setState(contentPropsInit);
-            setLoading(false);
-          }
-        });
+                  /// 합격 @!@
+                  try {
+                    const data = {
+                      placeId: placeId,
+                      stickerId: selectedSticker.id,
+                    };
+                    axiosInstance
+                      .post(qrApis.qrLog, data)
+                      .then(async (result1: any) => {
+                        console.log(result1);
+                        contentPropsInit.result = "success";
+                        contentPropsInit.stickerName =
+                          selectedSticker.tokenName;
+                        await fetch(
+                          "https://www.infura-ipfs.io/ipfs/" +
+                            selectedSticker.tokenURL,
+                        )
+                          .then((res) => {
+                            return res.json();
+                          })
+                          .then((data) => {
+                            contentPropsInit.stickerUrl = String(data[0].image);
+                            console.log(contentPropsInit.stickerUrl);
+                          });
+                        setState(contentPropsInit);
+                        console.log(contentPropsInit);
+                        setLoading(false);
+                      });
+                  } catch (err) {
+                    console.log(err);
+                    contentPropsInit.result = "fail";
+                    contentPropsInit.stickerName = response.data.name;
+                    contentPropsInit.stickerUrl = "https://ifh.cc/g/V44V4O.png";
+                    setState(contentPropsInit);
+                    setLoading(false);
+                  }
+                } else {
+                  // 스티커 발급을 실패하노라
+                  contentPropsInit.result = "distance";
+                  contentPropsInit.stickerName = "ERROR !";
+                  contentPropsInit.stickerUrl = "https://ifh.cc/g/V44V4O.png";
+                  setState(contentPropsInit);
+                  setLoading(false);
+                }
+              } else {
+                //  불합격 ~ !
+                console.log("발급실패");
+                contentPropsInit.result = "incorrect";
+                contentPropsInit.stickerName = "ERROR !";
+                contentPropsInit.stickerUrl = "https://ifh.cc/g/V44V4O.png";
+                setState(contentPropsInit);
+                setLoading(false);
+              }
+            });
+        }
+      });
     } catch (error) {
       contentPropsInit.result = "incorrect";
-
       setState(contentPropsInit);
       setLoading(false);
-      console.log("이상한 큐알이다 ! ");
     }
   };
 
   const validationLink = (url: string) => {
-    // const baseUrl = "j7a607.q.ssafy.io";
-    // const baseUrl2 = "http://localhost:3000/";
-
-    console.log("실행");
-
     const regax =
       /^(http(s)?:\/\/)(localhost:3000)(\/)(places)(\/)([\d]{1,2})(\/)([a-zA-Z0-9!@#$%^&]{10})/g;
 
     if (regax.test(url)) {
-      console.log("정규식 성공");
       contentPropsInit.result = "success";
-      validationCode(regionId);
+      validationCode(Number(placeId));
     } else {
-      // 이상한 큐알이라구함
-      console.log("정규식 실패");
       contentPropsInit.result = "incorrect";
       setState(contentPropsInit);
       setLoading(false);
     }
   };
 
-  //  const mounted = useRef(false);
   useEffect(() => {
-    // 맨 처음 렌더링 될 때 실행
-    myLocation();
     validationLink(link);
   }, []);
 
   return (
-    // eslint-disable-next-line react/jsx-no-useless-fragment
     <>
       {loading ? (
         <Loading />
@@ -257,7 +248,7 @@ function NftResponse() {
           <Helmet>
             <title>QR 스캔 | 여행조각</title>
           </Helmet>
-          <Title title="어딘가" />
+          <Title title={locationInfo} />
           <Content
             result={state.result}
             stickerName={state.stickerName}
