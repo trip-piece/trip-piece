@@ -12,8 +12,8 @@ const StickerBox = styled.div`
   border-radius: 1.25rem 1.25rem 1.25rem 1.25rem;
   padding: 0 ${pixelToRem(18)} 0 ${pixelToRem(18)};
   margin: ${pixelToRem(15)};
-
-  height: ${pixelToRem(600)};
+  min-height: 65vh;
+  height: 100%;
   background: ${(props) => props.theme.colors.white};
   display: flex;
   flex-direction: column;
@@ -29,6 +29,8 @@ const TitleBox = styled.div`
 const Title = styled.div`
   font-weight: bold;
   font-size: ${(props) => props.theme.fontSizes.h4};
+  justify-content: center;
+  text-align: center;
 `;
 
 const StickerContainer = styled.div`

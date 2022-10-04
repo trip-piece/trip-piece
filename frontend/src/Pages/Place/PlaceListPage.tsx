@@ -106,7 +106,12 @@ function PlaceListPage() {
   };
 
   return (
-    <>
+    <motion.div
+      initial={{ opacity: 0.2 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.5 }}
+    >
       <Helmet>
         <title>이벤트 리스트 | 여행조각</title>
       </Helmet>
@@ -171,7 +176,7 @@ function PlaceListPage() {
           </PlaceList>
         )}
       </Container>
-    </>
+    </motion.div>
   );
 }
 
