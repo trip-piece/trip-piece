@@ -23,47 +23,49 @@ import "./masonry.css";
 const drawerBleeding = 56;
 
 const Root = styled.div`
-  height: "90%";
+  height: 90%;
   background: ${(props) => props.theme.colors.gray100};
+  margin: auto;
+  max-width: 550px;
+`;
+
+const DrawerBox = styled(Box)`
+  background: ${(props) => props.theme.colors.white};
+  position: absolute;
+  top: -${drawerBleeding}px;
+  border-radius: 20px 20px 0 0;
+  visibility: visible;
+  right: 0;
+  left: 0;
+`;
+
+const Label = styled.label<{ active: boolean }>`
+  width: 30%;
+  height: 10%;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  font-size: ${(props) => props.theme.fontSizes.h4};
+  border-radius: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid ${(props) => props.theme.colors.mainDark};
+  color: ${(props) =>
+    props.active ? props.theme.colors.white : props.theme.colors.mainDark};
+  background-color: ${(props) =>
+    props.active ? props.theme.colors.mainDark : props.theme.colors.white};
 `;
 
 const StyledBox = styled(Box)`
   background: ${(props) => props.theme.colors.white};
-
-  .CheckAll {
-    width: 30%;
-    height: 10%;
-    margin-top: 10px;
-    margin-bottom: 10px;
-    font-size: ${(props) => props.theme.fontSizes.h4};
-    border-radius: 25px;
-    background-color: ${(props) => props.theme.colors.mainDark};
-    color: ${(props) => props.theme.colors.white};
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border: 1px solid ${(props) => props.theme.colors.mainDark};
-  }
-
-  .noCheckAll {
-    width: 30%;
-    height: 10%;
-    margin-top: 10px;
-    margin-bottom: 10px;
-    font-size: ${(props) => props.theme.fontSizes.h4};
-    border-radius: 25px;
-    background-color: ${(props) => props.theme.colors.white};
-    color: ${(props) => props.theme.colors.mainDark};
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border: 1px solid ${(props) => props.theme.colors.mainDark};
-  }
+  padding: 0 1rem 1rem;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
 
   .ButtonList {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
-    row-gap: 10px;
     column-gap: 10px;
     height: 60%;
   }
@@ -78,10 +80,9 @@ const StyledBox = styled(Box)`
 
     .searchButton {
       width: 100%;
-      height: 60%;
       text-align: center;
-      background: yellow;
-      border-radius: 15px;
+      padding: 0.5rem;
+      border-radius: 50px;
       color: ${(props) => props.theme.colors.white};
       font-size: ${(props) => props.theme.fontSizes.h4};
       background: ${(props) => props.theme.colors.mainDark};
@@ -133,10 +134,6 @@ const Container = styled.section`
   }
 `;
 interface Props {
-  /**
-   * Injected by the documentation to work in an iframe.
-   * You won't need it on your project.
-   */
   window?: () => Window;
 }
 
@@ -230,15 +227,6 @@ function FrameSharePage(props: Props) {
         <button onClick={toggleDrawer(true)} type="button">
           지역별 조회
         </button>
-        {/* <MemoInfiniteList
-          url={frameApis.getSharedFrames(regionList)}
-          queryKey={["frameList"]}
-          CardComponent={MemoCard}
-          SkeletonCardComponent={Skeleton}
-          zeroDataText="공유한 프레임 없슴미다.."
-          count={2}
-          listName="content"
-        /> */}
         <Masonry
           breakpointCols={2}
           className="my-masonry-grid"
@@ -254,8 +242,11 @@ function FrameSharePage(props: Props) {
           <Global
             styles={{
               ".MuiDrawer-root > .MuiPaper-root": {
-                height: `calc(50% - ${drawerBleeding}px)`,
+                // height: `calc(50% - ${drawerBleeding}px)`,
+                height: "fit-content",
                 overflow: "visible",
+                maxWidth: "550px",
+                margin: "auto",
               },
             }}
           />
@@ -272,43 +263,22 @@ function FrameSharePage(props: Props) {
               keepMounted: true,
             }}
           >
-            <StyledBox
-              sx={{
-                position: "absolute",
-                top: -drawerBleeding,
-                borderTopLeftRadius: 8,
-                borderTopRightRadius: 8,
-                visibility: "visible",
-                right: 0,
-                left: 0,
-              }}
-            >
+            <DrawerBox>
               <Puller />
               <Typography sx={{ p: 2, color: "text.secondary" }}>
                 지역별 프레임 조회
               </Typography>
-            </StyledBox>
-            <StyledBox
-              sx={{
-                px: 2,
-                pb: 2,
-                height: "100%",
-                overflow: "auto",
-              }}
-            >
-              <label onClick={onCheckAll}>
+            </DrawerBox>
+            <StyledBox>
+              <Label active={isAll}>
                 <input
                   type="checkbox"
                   name="meal"
                   onChange={(e) => onCheckAll(e.target.checked)}
                   hidden
                 />
-                {isAll ? (
-                  <p className="CheckAll">전제해제</p>
-                ) : (
-                  <p className="noCheckAll">전체선택</p>
-                )}
-              </label>
+                {isAll ? "전제해제" : "전체선택"}
+              </Label>
               <div className="ButtonList">
                 {REGIONLIST.map((region, idx) => (
                   <RegionButton

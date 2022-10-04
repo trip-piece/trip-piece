@@ -16,30 +16,24 @@ const Container = styled.div`
     display: flex;
     justify-content: center;
     align-items: center;
-
-    .checked {
-      background-color: ${(props) => props.theme.colors.mainDark};
-      color: ${(props) => props.theme.colors.white};
+    p {
       font-size: ${(props) => props.theme.fontSizes.h4};
-      border-radius: 25px;
+      border-radius: 50px;
       width: 100%;
+      padding: 0.5rem 0;
       height: 80%;
       display: flex;
       justify-content: center;
       align-items: center;
       border: 1px solid ${(props) => props.theme.colors.mainDark};
     }
+    .checked {
+      background-color: ${(props) => props.theme.colors.mainDark};
+      color: ${(props) => props.theme.colors.white};
+    }
     .nochecked {
-      width: 100%;
-      height: 80%;
       font-size: ${(props) => props.theme.fontSizes.h4};
-      border-radius: 25px;
-      background-color: ${(props) => props.theme.colors.white};
       color: ${(props) => props.theme.colors.mainDark};
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      border: 1px solid ${(props) => props.theme.colors.mainDark};
     }
   }
 `;
