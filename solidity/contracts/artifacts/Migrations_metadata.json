@@ -73,11 +73,11 @@
 	},
 	"sources": {
 		"contracts/Migrations.sol": {
-			"keccak256": "0x8ce96a7a9a2e865d56db1035d6b6fe46a4956b5d5d3527938e7894dcd0206008",
+			"keccak256": "0xb7f48d9472f44036779e5073a2a757cfca07012d3502e34dbe3b57e09ef05429",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://42602fa1dfff2ec5156788d9939f1908b6d3ccf29e26969667347ab7f99dd58b",
-				"dweb:/ipfs/QmWoEf6GDRavqBMi455ktB5ft1A8PaNUovo3yKHxosyAiJ"
+				"bzz-raw://c73e3ad91fa951bc4b3709b4d6548d5a065644971d3dee0353cdc10284ad5e77",
+				"dweb:/ipfs/QmQ1ediEDJ3SdFFWtB1SEez8BYazQ5Y9q8MXC1y9GL3rff"
 			]
 		}
 	},

@@ -108,7 +108,7 @@ function DecorationModal({
             <StickerImg
               up={sticker.originY * diaryBox.height * 0.7}
               left={sticker.originX * diaryBox.width * 0.7}
-              src={sticker.tokenURI}
+              src={sticker.imagePath}
               alt="스티커"
               // eslint-disable-next-line react/no-array-index-key
               key={index}

@@ -15,7 +15,6 @@ import PlaceMainPage from "./Pages/Place/PlaceMainPage";
 import FrameSharePage from "./Pages/Frame/FrameSharePage";
 import FrameDetailPage from "./Pages/Frame/FrameDetailPage";
 
-const Landing = lazy(() => import("./Pages/Landing/LandingPage"));
 const Main = lazy(() => import("./Pages/Main/MainPage"));
 const TripDiaryList = lazy(
   () => import("./Pages/TripDiaryList/TripDiaryListPage"),
@@ -23,9 +22,6 @@ const TripDiaryList = lazy(
 const TripList = lazy(() => import("./Pages/TripList/TripListPage"));
 const DiaryManagement = lazy(
   () => import("./Pages/DiaryManagement/DiaryManagementPage"),
-);
-const DiaryDecoration = lazy(
-  () => import("./Pages/DiaryDecoration/DiaryDecorationPage"),
 );
 const PlaceListPage = lazy(() => import("./Pages/Place/PlaceListPage"));
 const MyLocationListPage = lazy(
@@ -57,7 +53,7 @@ function AnotherRouter() {
             element={<DiaryManagement />}
           />
           <Route
-            path="trips/:tripId/diarys/:diaryDate/write"
+            path="trips/:tripId/diarys/:diaryDate/edit"
             element={<DiaryManagement />}
           />
 
@@ -77,9 +73,9 @@ function AnotherRouter() {
             element={<MyLocationListPage />}
           />
           <Route path="qrscan" element={<QrScanner />} />
-          <Route path="/places/:placeId" element={<NftResponse />} />
           <Route path="/frames" element={<FrameSharePage />} />
           <Route path="/frames/:frameId" element={<FrameDetailPage />} />
+          <Route path="/places/:placeId/:code" element={<NftResponse />} />
         </Routes>
       </Suspense>
     </>

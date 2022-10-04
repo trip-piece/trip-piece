@@ -6,33 +6,34 @@ import {
   useState,
   useCallback,
   memo,
+  SetStateAction,
 } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { Icon } from "@iconify/react/dist/offline";
-import { v4 } from "uuid";
 import { Controller, useForm } from "react-hook-form";
 import { Checkbox, TextareaAutosize } from "@mui/material";
-import { BsFillGeoAltFill } from "react-icons/bs";
 import { HiTrash } from "react-icons/hi";
 import { Helmet } from "react-helmet-async";
-import { useRecoilState } from "recoil";
+import { useRecoilState, useSetRecoilState } from "recoil";
 import { useQuery } from "react-query";
 import { AxiosError, AxiosResponse } from "axios";
 import Draggable, { DraggableData } from "react-draggable";
+import { motion } from "framer-motion";
 import {
   DIARY_COLOR_LIST,
   FONTTYPELIST,
   MESSAGE_LIST,
 } from "../../utils/constants/constant";
-import { ColoredRoundButton } from "../../components/atoms/ColoredRoundButton";
+import ColoredRoundButton from "../../components/atoms/ColoredRoundButton";
 import { changeDateFormatToDot, pixelToRem } from "../../utils/functions/util";
 import { shake } from "../../style/animations";
 import useWindowResize from "../../utils/hooks/useWindowResize";
-import { formDataDiaryState, writedDiaryState } from "../../store/diaryAtoms";
+import { formDataDiaryState } from "../../store/diaryAtoms";
 import {
+  IIPFSResult,
   IRequestedDiary,
+  IRequestedSticker,
   ISticker,
-  IWritedDiary,
   StickerProps,
 } from "../../utils/interfaces/diarys.interface";
 import Container from "../../components/atoms/Container";
@@ -44,11 +45,17 @@ import diaryApis from "../../utils/apis/diaryApis";
 import axiosInstance from "../../utils/apis/api";
 import TodayPhoto from "../../components/atoms/TodayPhoto";
 import useSize from "../../utils/hooks/useSize";
-import { dummyStickerList } from "../../utils/constants/dummyData";
 import LazyImage from "../../components/atoms/LazyImage";
 import DecorationModal from "./Modal";
 import useWriteDiary from "../../utils/hooks/useWriteDiary";
 import useDecorateDiary from "../../utils/hooks/useDecorateDiary";
+import { UserInfoState } from "../../store/atom";
+import { NFTContract } from "../../utils/common/NFT_ABI";
+import spinner from "../../assets/image/spinner.gif";
+import useEditDiary from "../../utils/hooks/useEditDiary";
+import { getNFTImagePath } from "../../utils/functions/getNFTImagePath";
+import RecordedLocationContainer from "../../components/modules/RecordedLocationContainer";
+import useEditDecoration from "../../utils/hooks/useEditDecoration";
 
 const Form = styled.form`
   display: flex;
@@ -63,14 +70,16 @@ const Select = styled.select`
   border-radius: 5px;
   padding: 0.25rem 0.5rem;
   color: ${(props) => props.theme.colors.gray900};
+  width: 40%;
 `;
 
 const DiaryStyleContainer = styled.div`
-  background-color: ${(props) => props.theme.colors.mainLight};
+  background-color: ${(props) => props.theme.colors.white};
   display: flex;
-  justify-content: space-evenly;
+  justify-content: space-between;
   align-items: center;
   width: 100%;
+  border: 0px;
 `;
 
 const WeatherButton = styled.button<{ active: boolean }>`
@@ -93,6 +102,9 @@ const FileUploadContainer = styled.div`
   height: 10%;
   padding-top: 1rem;
   width: 100%;
+  background-color: ${(props) => props.theme.colors.mainDark};
+  border: 0px;
+  color: ${(props) => props.theme.colors.white};
 `;
 
 const HandleButtonListContainer = styled.div<{ mode: string }>`
@@ -100,6 +112,7 @@ const HandleButtonListContainer = styled.div<{ mode: string }>`
   gap: 1rem;
   align-items: center;
   height: 10%;
+  margin-top: ${(props) => (props.mode === "decoration" ? "0" : "1rem")};
   margin-bottom: ${(props) => (props.mode === "decoration" ? "125px" : "1rem")};
 `;
 const ColorButton = styled.button<{ active: boolean; backgroundColor: string }>`
@@ -109,19 +122,20 @@ const ColorButton = styled.button<{ active: boolean; backgroundColor: string }>`
   border-radius: 50%;
   display: block;
   opacity: ${(props) => (props.active ? 1.0 : 0.2)};
+  border: 1px solid gray;
 `;
 
 const AutosizedTextarea = styled(TextareaAutosize)<IDiaryStyle>`
   display: block;
   font-family: ${(props) => FONTTYPELIST[props.fonttype]};
   width: 100%;
-  font-size: 24px;
   outline: none;
   border: none;
   background-color: transparent;
   padding: ${(props) => `${pixelToRem(16 + (props.diarywidth - 320) / 20)}`};
   resize: none;
   font-size: ${(props) => pixelToRem(props.diarywidth / 20)};
+  line-height: 1.1;
   &::placeholder {
     color: ${(props) => props.theme.colors.gray400};
   }
@@ -133,20 +147,14 @@ const ColorButtonListContainer = styled.div`
   padding: 0.25rem;
 `;
 
-const PositionContainer = styled.div`
-  > svg {
-    color: ${(props) => props.theme.colors.red};
-  }
-  color: ${(props) => props.theme.colors.gray400};
-`;
-
 const ColorAndPositionContainer = styled.div`
   width: 100%;
   display: flex;
   align-items: center;
-  justify-content: space-evenly;
-  background-color: ${(props) => props.theme.colors.lightBlue};
+  justify-content: space-between;
+  background-color: ${(props) => props.theme.colors.white};
   padding: 0 1rem;
+  border: 0px;
 `;
 
 const Label = styled.label`
@@ -162,9 +170,9 @@ const ImageControlContainer = styled.div`
   align-items: center;
   justify-content: space-between;
   height: 3.25rem;
-  background-color: white;
+  background-color: ${(props) => props.theme.colors.mainDark};
   > p {
-    background-color: ${(props) => props.theme.colors.gray200};
+    background-color: ${(props) => props.theme.colors.white};
     width: 70%;
     height: ${pixelToRem(28)};
     display: flex;
@@ -173,6 +181,7 @@ const ImageControlContainer = styled.div`
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
+    color: ${(props) => props.theme.colors.gray900};
   }
 `;
 
@@ -208,7 +217,7 @@ const DiaryController = styled.div<{ backgroundcolor: string }>`
 const MainContainer = styled.div`
   width: 100%;
   min-height: 50vh;
-  background-color: ${(props) => props.theme.colors.white};
+  background-color: ${(props) => props.theme.colors.mainDark};
 `;
 
 const StickerZone = styled.div`
@@ -288,11 +297,11 @@ const StickerImg = styled.img<{ isDragging: boolean }>`
 const TabContainer = styled.div`
   width: 100%;
   display: flex;
-  height: 2rem;
+  height: 2.5rem;
   position: relative;
   align-items: center;
-  background-color: ${(props) => props.theme.colors.gray200};
-  #writing:checked ~ labal.writing {
+  background-color: ${(props) => props.theme.colors.white};
+  #writing:checked ~ label.writing {
     color: #fff;
   }
   #decoration:checked ~ label.decoration {
@@ -300,9 +309,13 @@ const TabContainer = styled.div`
   }
   #writing:checked ~ .tab {
     left: 0%;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
   }
   #decoration:checked ~ .tab {
     left: 50%;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
   }
   > input {
     display: none;
@@ -327,16 +340,21 @@ const TabContainer = styled.div`
     left: 0;
     bottom: 0;
     z-index: 0;
-    border-radius: 10px;
-    background: linear-gradient(45deg, #888888 0%, #ffffff 100%);
+    background: ${(props) => props.theme.colors.mainDark};
     transition: 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
   }
 `;
 
+interface TokenDetail {
+  tokenId: number;
+  tokenName: string;
+  imagePath: string;
+}
+
 function ImageButton({ onClick, sticker }: ImageButtonProps) {
   return (
     <TransparentRoundButton onClick={() => onClick(sticker)}>
-      <LazyImage src={sticker.tokenURI} />
+      <LazyImage src={sticker.imagePath} />
     </TransparentRoundButton>
   );
 }
@@ -360,7 +378,7 @@ function DiaryManagementPage() {
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
   const { tripId, diaryDate } = useParams();
   const { state, pathname } = useLocation();
-  const [diary, setDiary] = useRecoilState(formDataDiaryState);
+  const setDiary = useSetRecoilState(formDataDiaryState);
 
   const [stickerList, setStickerList] = useState<ISticker[]>([]);
   const [isShared, setIsShared] = useState(false);
@@ -377,16 +395,46 @@ function DiaryManagementPage() {
   const stickerBoxRef = useRef<HTMLDivElement>(null);
   const nodeRef = useRef<HTMLImageElement>(null);
   const sizes = useSize(diaryRef);
+  const [userInfo] = useRecoilState(UserInfoState);
 
   const { mutate: mutateWriting } = useWriteDiary();
   const { mutate: mutateDecoration } = useDecorateDiary();
+  const { mutate: mutateEditting } = useEditDiary();
+  const { mutate: mutateEdittingDecoration } = useEditDecoration();
 
+  const [loading, setLoading] = useState<boolean>(true);
+  const [NFTDetailList, setNFTDetailList] = useState<TokenDetail[]>([]);
+  const getNFTList = useCallback(async () => {
+    try {
+      setLoading(true);
+      const result = await NFTContract.methods
+        .getStickerList(userInfo.address)
+        .call();
+      if (result) {
+        const NFTList: SetStateAction<TokenDetail[]> = await Promise.all(
+          result.map((res: IIPFSResult) =>
+            getNFTImagePath(Number(res.tokenId), res.tokenURI),
+          ),
+        );
+        setNFTDetailList(NFTList);
+        setLoading(false);
+      }
+    } catch (err) {
+      console.log("Error getSticker : ", err);
+    }
+  }, [userInfo]);
   useEffect(() => {
     if (!state?.diaryDate && !diaryDate) navigate(-1);
     if (pathname.includes("/edit")) setIsEditMode(true);
-    if (state?.diaryDate)
+    if (state?.diaryDate) {
+      console.log(state?.diaryDate);
       setDottedDate(changeDateFormatToDot(state?.diaryDate));
+    }
   }, []);
+
+  useEffect(() => {
+    getNFTList();
+  }, [userInfo]);
 
   const { data: diaryData } = useQuery<
     AxiosResponse<IRequestedDiary>,
@@ -425,11 +473,32 @@ function DiaryManagementPage() {
     };
   }, []);
 
+  const getNFTStickerList = async (NFTList: IRequestedSticker[]) => {
+    if (NFTList?.length) {
+      const _stickerList: ISticker[] = await Promise.all(
+        NFTList.map((sticker: IRequestedSticker) => {
+          const rest = {
+            tokenId: sticker.tokenId,
+            x: sticker.x * sizes.width,
+            y: sticker.y * sizes.height,
+            isDragging: false,
+            originX: sticker.x,
+            originY: sticker.y,
+          };
+          return getNFTImagePath<ISticker>(sticker.tokenId, sticker.tokenURL, {
+            ...rest,
+          });
+        }),
+      );
+      setStickerList(_stickerList);
+    }
+  };
+
   useEffect(() => {
     if (diaryData?.data) {
       setDiaryColor(diaryData.data.backgroundColor);
       setWeather(diaryData.data.weather);
-      setIsShared(diaryData.data.isShare);
+      setIsShared(diaryData.data.share);
       setValue("fontType", diaryData.data.fontType);
       setValue("content", diaryData.data.content);
       if (diaryData.data.todayPhoto) {
@@ -440,27 +509,16 @@ function DiaryManagementPage() {
         }));
       }
       if (diaryData.data.stickerList?.length) {
-        const _stickerList = diaryData.data.stickerList.map((sticker) => {
-          return {
-            tokenId: sticker.tokenId,
-            tokenURI: sticker.tokenURL,
-            x: sticker.x * sizes.width,
-            y: sticker.y * sizes.width,
-            isDragging: false,
-            originX: sticker.x,
-            originY: sticker.y,
-          };
-        });
-        setStickerList(_stickerList);
+        getNFTStickerList(diaryData.data.stickerList);
       }
     }
   }, [diaryData]);
 
-  const onCancel = () => {
+  const onCancel = useCallback(() => {
     if (window.confirm(MESSAGE_LIST.DIARY_CANCEL)) {
       navigate(-1);
     }
-  };
+  }, []);
 
   const onLoadFile = async (event: ChangeEvent<HTMLInputElement>) => {
     const {
@@ -487,13 +545,13 @@ function DiaryManagementPage() {
     }
   }, []);
 
-  const onDelete = () => {
-    setPhoto({ todayPhoto: null, imagePath: null, imageSrc: null });
-  };
+  const onDelete = useCallback(() => {
+    setPhoto({ todayPhoto: null, imagePath: "", imageSrc: "" });
+  }, []);
 
-  const changeMode = (e: ChangeEvent<HTMLInputElement>) => {
+  const changeMode = useCallback((e: ChangeEvent<HTMLInputElement>) => {
     setMode(e.target.value);
-  };
+  }, []);
 
   const addSticker = useCallback(
     (sticker: StickerProps) => {
@@ -501,7 +559,7 @@ function DiaryManagementPage() {
         ...prev,
         {
           tokenId: sticker.tokenId,
-          tokenURI: sticker.tokenURI,
+          imagePath: sticker.imagePath,
           originX: 0,
           originY: 0,
           x: 50,
@@ -512,7 +570,6 @@ function DiaryManagementPage() {
     },
     [stickerList],
   );
-
   const handleStart = useCallback(
     (data: DraggableData, index: number) => {
       setStickerList((prevState) =>
@@ -614,91 +671,94 @@ function DiaryManagementPage() {
     );
   }, [sizes]);
 
-  const makeDiaryData = useCallback(
-    (formInputData: IFormInput) => {
-      let body;
-      if (isEditMode) {
-        body = {
-          diary: {
-            ...formInputData,
-            weather,
-            backgroundColor: diaryColor,
-            tripId: Number(tripId),
-            diaryId: diaryData?.data?.diaryId,
-            imagePath: photo.imagePath,
-            ratio: sizes.height / sizes.width,
-          },
-          todayPhoto: photo.todayPhoto,
-        };
-      } else {
-        body = {
-          diary: {
-            ...formInputData,
-            weather,
-            backgroundColor: diaryColor,
-            tripId: Number(tripId),
-            date: state?.diaryDate,
-            location: locationData.location,
-            ratio: sizes.height / sizes.width,
-          },
-          todayPhoto: photo.todayPhoto,
-        };
-      }
+  const makeDiaryData = (formInputData: IFormInput) => {
+    let body;
+    if (isEditMode) {
+      body = {
+        ...formInputData,
+        weather,
+        backgroundColor: diaryColor,
+        tripId: Number(tripId),
+        diaryId: diaryData?.data?.diaryId,
+        imagePath: photo.imagePath,
+        ratio: sizes.height / sizes.width,
+      };
+    } else {
+      body = {
+        ...formInputData,
+        weather,
+        backgroundColor: diaryColor,
+        tripId: Number(tripId),
+        diaryDate: state?.diaryDate,
+        location: locationData.location,
+        ratio: sizes.height / sizes.width,
+      };
+    }
 
-      const formData = new FormData();
-      if (photo.todayPhoto) {
-        formData.append("todayPhoto", photo.todayPhoto);
-      }
-      const _diary = JSON.stringify(body);
-      formData.append(
-        "diary",
-        new Blob([_diary], { type: "application/json" }),
-      );
-      return formData;
-    },
-    [sizes, locationData],
-  );
+    const formData = new FormData();
+    const _diary = JSON.stringify(body);
+    formData.append("diary", new Blob([_diary], { type: "application/json" }));
+    if (photo.todayPhoto) {
+      formData.append("todayPhoto", photo.todayPhoto);
+    }
+    return formData;
+  };
 
-  const makeDecorationData = useCallback(
-    (diaryId: number, frameImage?: File) => {
-      const _stickerList = stickerList.map((sticker) => {
-        return {
-          tokenId: sticker.tokenId,
-          x: sticker.originX,
-          y: sticker.originY,
-        };
-      });
+  const makeDecorationData = (diaryId: number, frameImage?: File) => {
+    const _stickerList = stickerList.map((sticker) => {
+      return {
+        tokenId: sticker.tokenId,
+        x: sticker.originX,
+        y: sticker.originY,
+      };
+    });
 
-      const formData = new FormData();
-      const _decoration = JSON.stringify({
-        diaryId,
-        stickerList: _stickerList,
-      });
-      formData.append(
-        "decoration",
-        new Blob([_decoration], { type: "application/json" }),
-      );
-      if (frameImage) {
-        formData.append("frameImage", frameImage);
-      }
-      return formData;
-    },
-    [],
-  );
+    const formData = new FormData();
+    const _decoration = JSON.stringify({
+      diaryId,
+      stickerList: _stickerList,
+    });
+    formData.append(
+      "decoration",
+      new Blob([_decoration], { type: "application/json" }),
+    );
+    if (frameImage) {
+      formData.append("frameImage", frameImage);
+    }
+    return formData;
+  };
+
   const postEditData = (formData: FormData, frameImage?: File) => {
-    mutateWriting(formData);
-    mutateDecoration(makeDecorationData(diaryData.data.diaryId, frameImage), {
-      onSuccess: () => navigate(`/trips/${tripId}/diarys/${state?.diaryDate}`),
+    mutateEditting(formData, {
+      onSuccess: () => {
+        if (stickerList.length < 1)
+          navigate(`/trips/${tripId}/diarys/${state?.diaryDate}`);
+        else {
+          mutateEdittingDecoration(
+            makeDecorationData(diaryData.data.diaryId, frameImage),
+            {
+              onSuccess: () =>
+                navigate(`/trips/${tripId}/diarys/${state?.diaryDate}`),
+            },
+          );
+        }
+      },
+      onError: (err) => console.log(err),
     });
   };
 
   const postData = (formData: FormData, frameImage?: File) => {
     mutateWriting(formData, {
       onSuccess: (data) => {
-        mutateDecoration(makeDecorationData(data.data.diaryId, frameImage), {
-          onSuccess: () =>
-            navigate(`/trips/${tripId}/diarys/${state?.diaryDate}`),
-        });
+        if (stickerList.length < 1)
+          navigate(`/trips/${tripId}/diarys/${state?.diaryDate}`);
+        else {
+          mutateDecoration(makeDecorationData(data?.data, frameImage), {
+            onSuccess: () =>
+              navigate(`/trips/${tripId}/diarys/${state?.diaryDate}`),
+            onError: (err) => console.log(err),
+          });
+        }
       },
     });
   };
@@ -714,13 +774,17 @@ function DiaryManagementPage() {
     }
   };
 
-  function deleteSticker() {
+  const deleteSticker = () => {
     setStickerList([]);
-  }
+  };
 
-  console.log(sizes);
   return (
-    <>
+    <motion.div
+      initial={{ opacity: 0.2 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.5 }}
+    >
       <Helmet>
         <title>다이어리 | 여행조각</title>
       </Helmet>
@@ -729,26 +793,47 @@ function DiaryManagementPage() {
           <h2>{dottedDate}</h2>
         </DateContainer>
         <Form onSubmit={handleSubmit(onSubmit)}>
+          <TabContainer>
+            <input
+              type="radio"
+              name="tab"
+              id="writing"
+              checked={mode === "writing"}
+              onChange={changeMode}
+              value="writing"
+            />
+            <input
+              type="radio"
+              name="tab"
+              id="decoration"
+              checked={mode === "decoration"}
+              onChange={changeMode}
+              value="decoration"
+            />
+            <label htmlFor="writing" className="writing">
+              다이어리 쓰기
+            </label>
+            <label htmlFor="decoration" className="decoration">
+              다이어리 꾸미기
+            </label>
+            <div className="tab" />
+          </TabContainer>
           <DiaryStyleContainer>
-            <Select
-              id="font"
-              defaultValue="0"
-              {...register("fontType", { valueAsNumber: true })}
-            >
-              <option value="0" disabled hidden>
-                글씨체
-              </option>
-              {FONTTYPELIST.map((font, idx) => (
-                <option key={font} value={idx}>
-                  {font}
-                </option>
-              ))}
-            </Select>
+            {isEditMode ? (
+              <RecordedLocationContainer>
+                {diaryData?.data?.location}
+              </RecordedLocationContainer>
+            ) : (
+              <MyLocation
+                {...{ isFetchingLocation, locationData, refetchLocation }}
+              />
+            )}
             <WeatherButtonListContainer>
               {weatherList.map((weatherType, idx) => (
                 <WeatherButton
                   type="button"
-                  key={v4()}
+                  // eslint-disable-next-line react/no-array-index-key
+                  key={idx}
                   active={idx === weather}
                   onClick={() => setWeather(idx)}
                 >
@@ -769,56 +854,46 @@ function DiaryManagementPage() {
                 />
               ))}
             </ColorButtonListContainer>
-            {isEditMode ? (
-              <PositionContainer>
-                <BsFillGeoAltFill />
-                {diaryData?.data?.location}
-              </PositionContainer>
-            ) : (
-              <MyLocation
-                {...{ isFetchingLocation, locationData, refetchLocation }}
-              />
-            )}
+            <Select
+              id="font"
+              defaultValue="0"
+              {...register("fontType", { valueAsNumber: true })}
+            >
+              <option value="0" disabled hidden>
+                글씨체
+              </option>
+              {FONTTYPELIST.map((font, idx) => (
+                <option key={font} value={idx}>
+                  {font}
+                </option>
+              ))}
+            </Select>
           </ColorAndPositionContainer>
           <MainContainer>
-            <TabContainer>
-              <input
-                type="radio"
-                name="tab"
-                id="writing"
-                checked={mode === "writing"}
-                onChange={changeMode}
-                value="writing"
-              />
-              <input
-                type="radio"
-                name="tab"
-                id="decoration"
-                checked={mode === "decoration"}
-                onChange={changeMode}
-                value="decoration"
-              />
-              <label htmlFor="writing" className="writing">
-                다이어리 쓰기
-              </label>
-              <label htmlFor="decoration" className="decoration">
-                다이어리 꾸미기
-              </label>
-              <div className="tab" />
-            </TabContainer>
-
             <DiaryController
               backgroundcolor={DIARY_COLOR_LIST[diaryColor]}
               ref={diaryRef}
             >
               {mode === "decoration" && (
-                <button
+                <motion.button
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
                   type="button"
                   onClick={deleteSticker}
-                  style={{ position: "absolute" }}
+                  style={{
+                    position: "absolute",
+                    right: 0,
+                    color: "red",
+                    background: "transparent",
+                    borderRadius: "5px",
+                    height: "5%",
+                    border: "1px solid lightgray",
+                    marginTop: "5px",
+                    marginRight: "5px",
+                  }}
                 >
-                  스티커 삭제하기
-                </button>
+                  스티커 모두삭제
+                </motion.button>
               )}
               {stickerList.map((sticker, index) => (
                 <Draggable
@@ -832,7 +907,7 @@ function DiaryManagementPage() {
                   key={index}
                 >
                   <StickerImg
-                    src={sticker.tokenURI}
+                    src={sticker.imagePath}
                     ref={nodeRef}
                     alt="#"
                     width="100"
@@ -932,14 +1007,23 @@ function DiaryManagementPage() {
             보유한 스티커
           </button>
           <div ref={stickerBoxRef}>
-            {dummyStickerList.map((sticker, index) => (
-              <MemoizedImageButton
-                onClick={addSticker}
-                sticker={sticker}
-                // eslint-disable-next-line react/no-array-index-key
-                key={index}
-              />
-            ))}
+            {loading && (
+              <div>
+                <img
+                  src={spinner}
+                  style={{ width: "50%", height: "auto", marginLeft: "9rem" }}
+                  alt="기본이미지"
+                />
+              </div>
+            )}
+            {!loading &&
+              NFTDetailList.map((sticker, index) => (
+                <MemoizedImageButton
+                  onClick={addSticker}
+                  sticker={sticker}
+                  key={index}
+                />
+              ))}
           </div>
         </StickerZone>
 
@@ -953,7 +1037,7 @@ function DiaryManagementPage() {
           />
         )}
       </Container>
-    </>
+    </motion.div>
   );
 }
 

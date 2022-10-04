@@ -1,6 +1,5 @@
 import React from "react";
 import styled from "@emotion/styled";
-import { Slide } from "react-reveal";
 import TripLogo from "../../assets/image/trippiece_logo.png";
 import SubCopy from "../../assets/image/tripsubcopy.gif";
 import PageOne from "../../assets/image/Page1.png";
@@ -20,36 +19,59 @@ const Container = styled.div`
 const PageImg = styled.img`
   width: auto;
   height: 100vh;
+  text-align: center;
 `;
 
 function LandingPageImg() {
   return (
     <Container>
-      <Slide bottom>
-        <div style={{ height: "100vh", textAlign: "center" }}>
+      <div>
+        <div style={{ width: "100%", height: "100vh", textAlign: "center" }}>
           <img
             src={TripLogo}
             alt="로고"
-            style={{ width: "auto", height: "6%" }}
+            style={{ width: "50%", height: "auto", marginTop: "50px" }}
           />
+          <br />
           <img
             src={SubCopy}
             alt="서브카피"
             style={{
-              width: "auto",
-              height: "10%",
+              width: "60%",
+              height: "auto",
               margin: "-3vh 2vh 3vh 2vh",
             }}
           />
-          <PageImg src={PageOne} style={{ width: "auto", height: "83%" }} />
+          <PageImg
+            src={PageOne}
+            style={{ width: "90%", height: "auto", padding: "0 5%" }}
+          />
         </div>
         <PageImg
           src={PageTwo}
-          style={{ width: "100%", height: "auto", padding: "0 5%" }}
+          style={{
+            width: "100%",
+            height: "auto",
+            padding: "0 5%",
+          }}
         />
-        <PageImg src={PageThree} />
-        <PageImg src={PageFour} />
-      </Slide>
+        <PageImg
+          src={PageThree}
+          style={{
+            width: "100%",
+            height: "auto",
+            padding: "0 5%",
+          }}
+        />
+        <PageImg
+          src={PageFour}
+          style={{
+            width: "100%",
+            height: "auto",
+            padding: "0 5%",
+          }}
+        />
+      </div>
       <ToTheTop />
     </Container>
   );

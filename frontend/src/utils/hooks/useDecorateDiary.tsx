@@ -6,7 +6,7 @@ function useDecorateDiary() {
   return useMutation((decoration: FormData) =>
     axiosInstance.post(diaryApis.diaryDecoration, decoration, {
       headers: {
-        "Content-Type": "multipart/form-data:",
+        "Content-Type": `multipart/form-data`,
       },
     }),
   );

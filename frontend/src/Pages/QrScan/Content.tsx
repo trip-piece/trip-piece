@@ -5,6 +5,7 @@ import { EmotionJSX } from "@emotion/react/types/jsx-namespace";
 import { pixelToRem } from "../../utils/functions/util";
 import { ContentProps } from "../../utils/interfaces/qrscan.inteface";
 
+// eslint-disable-next-line import/no-named-as-default
 import ColoredRoundButton from "../../components/atoms/ColoredRoundButton";
 
 const Box = styled.div`
@@ -41,15 +42,15 @@ const ResulButtontBox = styled.div`
 `;
 
 const StickerName = styled.div`
-  margin : 10% 0 0 0;
-  background: : ${(props) => props.theme.colors.white};
-  display:flex;
-  justify-content  :center;
+  margin: 10% 0 0 0;
+  background: ${(props) => props.theme.colors.white};
+  display: flex;
+  justify-content: center;
   font-size: ${(props) => props.theme.fontSizes.h5};
 `;
-const ResultImg = styled.div`
+const ResultImg = styled.img`
   margin: 5% 25% 0 25%;
-  background: ${(props) => props.theme.colors.red};
+  background: transparent;
   display: flex;
   justify-content: center;
 
@@ -67,7 +68,8 @@ function NFTInfo({ stickerName, stickerUrl }: ContentProps) {
   return (
     <>
       <StickerName>{stickerName}</StickerName>
-      <ResultImg>{stickerUrl}</ResultImg>
+      <ResultImg src={stickerUrl} alt="nft" />
+      {/* nft:{stickerUrl} */}
     </>
   );
 }
@@ -76,7 +78,10 @@ function QrInfo({ stickerName, stickerUrl }: ContentProps) {
   return (
     <>
       <StickerName>{stickerName}</StickerName>
-      <ResultImg>{stickerUrl}</ResultImg>
+      <ResultImg>
+        <img src={stickerUrl} alt="poster" />
+        {/* qr:{stickerUrl} */}
+      </ResultImg>
     </>
   );
 }
@@ -84,44 +89,29 @@ function QrInfo({ stickerName, stickerUrl }: ContentProps) {
 function Result({ result }: ContentProps): EmotionJSX.Element {
   const flag: string = result;
 
+  let insultText: string = "Loading";
   if (flag === "success") {
-    return (
-      <>
-        <ResultIconBox>
-          <BsCheckLg size="70" color="#2C5166" />
-        </ResultIconBox>
-        <ResultBox>
-          <ResultText>스티커 발급 완료</ResultText>
-        </ResultBox>
-      </>
-    );
+    insultText = "스티커 발급 완료";
+  } else if (flag === "fail") {
+    insultText = "스티커 발급 실패";
+  } else if (flag === "incorrect") {
+    insultText = "올바르지 않은 QR 요청";
+  } else if (flag === "check") {
+    insultText = "하루에 한 번만 발급이 가능해요";
+  } else if (flag === "distance") {
+    insultText = "위치가 올바르지 않아요 :(";
   }
-  if (flag === "fail") {
-    return (
-      <>
-        <ResultIconBox>
-          <BsXLg size="70" color="#D35B5B" />
-        </ResultIconBox>
-        <ResultBox>
-          <ResultText>스티커 발급 실패</ResultText>
-        </ResultBox>
-      </>
-    );
-  }
-  if (flag === "incorrect") {
-    return (
-      <>
-        <ResultIconBox>
-          <BsXLg size="70" color="#D35B5B" />
-        </ResultIconBox>
-        <ResultBox>
-          <ResultText>올바르지 않은 QR 요청</ResultText>
-        </ResultBox>
-      </>
-    );
-  }
-
-  return <div>ss</div>;
+  return (
+    <>
+      <ResultIconBox>
+        {flag !== "success" && <BsXLg size="70" color="#D35B5B" />}
+        {flag === "success" && <BsCheckLg size="70" color="#5b67d3" />}
+      </ResultIconBox>
+      <ResultBox>
+        <ResultText>{insultText}</ResultText>
+      </ResultBox>
+    </>
+  );
 }
 
 function Content({ result, stickerName, stickerUrl }: ContentProps) {

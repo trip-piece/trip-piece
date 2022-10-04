@@ -32,10 +32,10 @@ interface Token {
 
 const Container = styled.div`
   width: 100%;
+  max-width: 550px;
+  min-width: 320px;
   padding: 0.5rem;
   display: flex;
-  margin-top: 12px;
-  margin-bottom: -8px;
   flex-direction: column;
   justify-content: center;
 
@@ -46,25 +46,32 @@ const Container = styled.div`
     justify-content: space-between;
   }
 
-  p {
-    padding: 0.3rem 1rem 0.3rem 1rem;
+  .date {
+    width: 65%;
+    text-align: right;
+    padding-top: 0.7rem;
+    padding-right: 0.5rem;
   }
 
   .placeName {
+    text-align: left;
     font-size: ${(props) => props.theme.fontSizes.h4};
     font-weight: bold;
+    width: 55%;
+    padding: 0.3rem 0.5rem 0.3rem 0.5rem;
   }
 `;
 
 const StickerContainer = styled.div`
   background-color: ${(props) => props.theme.colors.lightBlue};
-  height: 120px;
-  width: 100%;
+  height: 15vh;
   border-radius: 20px;
+  width: 100%;
   padding: 0.2rem 0.7rem 0.2rem 0.7rem;
   display: flex;
   flex-direction: column;
   justify-content: space-evenly;
+  align-items: center;
 
   .stickerGroup {
     width: 100%;
@@ -74,22 +81,25 @@ const StickerContainer = styled.div`
     justify-content: space-evenly;
 
     .sticker {
-      width: auto;
+      width: 100%;
       height: 80%;
-      object-fit: contain;
-    }
-
-    p {
       text-align: center;
-      padding: 0;
-      font-size: ${(props) => props.theme.fontSizes.s4};
+      .stickerImage {
+        width: auto;
+        height: 100%;
+        object-fit: contain;
+      }
+      p {
+        text-align: center;
+        font-size: ${(props) => props.theme.fontSizes.s4};
+      }
     }
   }
 
   .location {
     width: 100%;
     height: 10%;
-    font-size: ${(props) => props.theme.fontSizes.s2};
+    font-size: ${(props) => props.theme.fontSizes.s4};
     padding-left: 1rem;
   }
 `;
@@ -125,7 +135,7 @@ function Card(place: IPlaceCardProps) {
     <Container>
       <div className="title">
         <p className="placeName">{place.name}</p>
-        <p>
+        <p className="date">
           {changeDateFormatToDot(place.startDate)} -{" "}
           {changeDateFormatToDot(place.endDate)}
         </p>
@@ -134,10 +144,10 @@ function Card(place: IPlaceCardProps) {
         <div className="location">{place.locationAddress}</div>
         <div className="stickerGroup">
           {NFTDetailList.map((sticker, idx) => (
-            <div key={idx}>
+            <div className="sticker" key={idx}>
               <img
                 src={sticker.imagePath}
-                className="sticker"
+                className="stickerImage"
                 alt="기본이미지"
               />
               <p>남은 수량 : {place.disinctStickerList[idx].amount}</p>

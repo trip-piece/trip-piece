@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import styled from "@emotion/styled";
+import { motion } from "framer-motion";
 import { useRecoilState } from "recoil";
 import { pixelToRem } from "../../utils/functions/util";
 import { UserInfoState } from "../../store/atom";
@@ -12,7 +13,7 @@ const StickerBox = styled.div`
   padding: 0 ${pixelToRem(18)} 0 ${pixelToRem(18)};
   margin: ${pixelToRem(15)};
 
-  min-height: ${pixelToRem(600)};
+  min-height: 65vh;
   background: ${(props) => props.theme.colors.white};
   display: flex;
   flex-direction: column;
@@ -99,40 +100,47 @@ function MyStickerList() {
   }, [userInfo]);
 
   return (
-    <StickerBox>
-      <TitleBox>
-        <Title>보유NFT스티커</Title>
-      </TitleBox>
-      <StickerContainer>
-        {loading && (
-          <div
-            style={{
-              width: "100%",
-              height: "100%",
-              display: "flex",
-              flexDirection: "row",
-              textAlign: "center",
-              justifyContent: "center",
-            }}
-          >
-            <img
-              src={spinner}
-              style={{ width: "50%", height: "auto", textAlign: "center" }}
-            />
-          </div>
-        )}
-        {!loading && (
-          <div className="gridComponent">
-            {NFTDetailList.map((NFTdetail, idx) => (
-              <div key={idx} style={{ padding: "0.5rem" }}>
-                <img src={NFTdetail.imagePath} alt="" />
-                <p>{NFTdetail.tokenName}</p>
-              </div>
-            ))}
-          </div>
-        )}
-      </StickerContainer>
-    </StickerBox>
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.7 }}
+    >
+      <StickerBox>
+        <TitleBox>
+          <Title>보유NFT스티커</Title>
+        </TitleBox>
+        <StickerContainer>
+          {loading && (
+            <div
+              style={{
+                width: "100%",
+                height: "100%",
+                display: "flex",
+                flexDirection: "row",
+                textAlign: "center",
+                justifyContent: "center",
+              }}
+            >
+              <img
+                src={spinner}
+                style={{ width: "50%", height: "auto", textAlign: "center" }}
+              />
+            </div>
+          )}
+          {!loading && (
+            <div className="gridComponent">
+              {NFTDetailList.map((NFTdetail, idx) => (
+                <div key={idx} style={{ padding: "0.5rem" }}>
+                  <img src={NFTdetail.imagePath} alt="" />
+                  <p>{NFTdetail.tokenName}</p>
+                </div>
+              ))}
+            </div>
+          )}
+        </StickerContainer>
+      </StickerBox>
+    </motion.div>
   );
 }
 

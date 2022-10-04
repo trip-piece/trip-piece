@@ -17,17 +17,19 @@ const Container = styled.div`
   border-radius: 30px 30px 0 0;
   padding: 1rem;
   position: relative;
-  width: inherit;
+  width: 100%;
 `;
 
 const TitleGroup = styled.div`
+  height: 25%;
   width: 100%;
-  display: block;
-  justify-content: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
   text-align: center;
   margin-top: 3vh;
   > .main {
-    font-size: ${(props) => props.theme.fontSizes.h1};
+    font-size: ${(props) => props.theme.fontSizes.h2};
     font-weight: bold;
     letter-spacing: ${pixelToRem(-1)};
     margin: ${pixelToRem(8)} 0;
@@ -62,7 +64,7 @@ const TitleGroup = styled.div`
 `;
 
 const ToggleGroup = styled.div`
-  width: 35%;
+  width: fit-content;
   height: 30px;
   background-color: ${(props) => props.theme.colors.gray200};
   text-align: center;
@@ -88,7 +90,12 @@ const ToggleGroup = styled.div`
   }
 `;
 
-const PlaceList = styled.div``;
+const PlaceList = styled.div`
+  width: 100%;
+  height: 75%;
+  max-width: 550px;
+  min-width: 320px;
+`;
 
 function PlaceListPage() {
   const [type, setType] = useState(0);
@@ -106,7 +113,12 @@ function PlaceListPage() {
   };
 
   return (
-    <>
+    <motion.div
+      initial={{ opacity: 0.2 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.5 }}
+    >
       <Helmet>
         <title>이벤트 리스트 | 여행조각</title>
       </Helmet>
@@ -171,7 +183,7 @@ function PlaceListPage() {
           </PlaceList>
         )}
       </Container>
-    </>
+    </motion.div>
   );
 }
 

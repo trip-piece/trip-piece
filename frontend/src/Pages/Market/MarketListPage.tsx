@@ -1,5 +1,6 @@
 import styled from "@emotion/styled";
 import { Helmet } from "react-helmet-async";
+import { motion } from "framer-motion";
 import { useNavigate, useParams } from "react-router-dom";
 import { SetStateAction, useState } from "react";
 import { AiOutlineSearch, AiFillPlusCircle } from "react-icons/ai";
@@ -101,7 +102,12 @@ function MarketListPage() {
   };
 
   return (
-    <>
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.7 }}
+    >
       <Helmet>
         <title>마켓 | 리스트</title>
       </Helmet>
@@ -130,7 +136,7 @@ function MarketListPage() {
         </Search>
         <ListContainer>무한스크롤 리스트 못하겠음 해주삼</ListContainer>
       </Container>
-    </>
+    </motion.div>
   );
 }
 

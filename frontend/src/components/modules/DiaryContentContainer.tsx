@@ -16,10 +16,6 @@ const DiaryContents = styled.div<DiaryContentsProps>`
   resize: none;
   transition: background-color 0.5s ease-in;
   overflow-wrap: break-word;
-  font-size: ${(props) =>
-    pixelToRem(props.diaryWidth / 20) !== "0rem"
-      ? pixelToRem(props.diaryWidth / 20)
-      : pixelToRem(16)};
 `;
 
 interface DiaryContentsProps {

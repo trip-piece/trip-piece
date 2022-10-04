@@ -1,5 +1,6 @@
 import React from "react";
 import { Helmet } from "react-helmet-async";
+import { motion } from "framer-motion";
 import UserInfo from "./UserInfo";
 import Tap from "./Tap";
 import MyStickerList from "./MyStickerList";

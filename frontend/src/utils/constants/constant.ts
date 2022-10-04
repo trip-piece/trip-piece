@@ -38,7 +38,13 @@ export const FONTTYPELIST = [
   "교보손글씨박도연",
 ];
 
-export const DIARY_COLOR_LIST = ["#f8f8f8", "#e4e4f2", "#f7efdf"];
+export const DIARY_COLOR_LIST = [
+  "#f8f8f8",
+  "#e4e4f2",
+  "#f7efdf",
+  "#dfede7",
+  "#f5e4e4",
+];
 
 export const MESSAGE_LIST = {
   DIARY_INTRO: "오늘의 여행은 어땠나요?",
