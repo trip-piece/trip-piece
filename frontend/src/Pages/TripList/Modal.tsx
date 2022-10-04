@@ -152,6 +152,7 @@ const ButtonContainer = styled.div`
   justify-content: center;
   align-items: center;
   gap: 1rem;
+  margin-top: 0.8rem;
 `;
 
 interface BasicModalProps {
@@ -210,6 +211,10 @@ function BasicModal({
       day: "",
     },
   );
+
+  const cancel = () => {
+    setOpen(false);
+  };
 
   useEffect(() => {
     if (setIsCreated) setIsCreated(false);
@@ -409,6 +414,9 @@ function BasicModal({
                 삭제
               </SubmitButton>
             )}
+            <SubmitButton color="gray700" type="button" onClick={cancel}>
+              취소
+            </SubmitButton>
           </ButtonContainer>
         </Form>
       </Wrapper>
