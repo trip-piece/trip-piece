@@ -2,7 +2,7 @@ import styled from "@emotion/styled";
 import { Helmet } from "react-helmet-async";
 import { useParams, useNavigate } from "react-router-dom";
 import { BsFillBookmarkHeartFill, BsBookmarkHeart } from "react-icons/bs";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FaArrowLeft } from "react-icons/fa";
 import axiosInstance from "../../utils/apis/api";
 import { frameApis } from "../../utils/apis/frameApis";
@@ -102,16 +102,37 @@ const Button = styled.article`
   }
 `;
 
+interface Idata {
+  frameId: number;
+  stickerList: [
+    {
+      stickerId: number;
+      tokenId: number;
+      tokenName: string;
+      tokenURL: string;
+      x: number;
+      y: number;
+    },
+  ];
+  scrapped: boolean;
+}
+
 function FrameDetailPage() {
   const navigate = useNavigate();
+  const { frameId } = useParams();
+  const [frame, setFrame] = useState<Idata>();
 
   const moveToFrameMain = () => {
     navigate(`/frames`);
   };
 
-  const { frameId } = useParams();
   const getFrameDetail = () => {
-    axiosInstance.get(frameApis.getDetailedFrames(Number(frameId)));
+    axiosInstance
+      .get(frameApis.getDetailedFrames(Number(frameId)))
+      .then((response) => {
+        const body: Idata = response.data;
+        setFrame(body);
+      });
   };
   const result = {
     frameImage:
@@ -173,6 +194,10 @@ function FrameDetailPage() {
     setScrap(!scrap);
   };
 
+  useEffect(() => {
+    console.log("맨 처음 렌더링될 때 한 번만 실행");
+    getFrameDetail();
+  }, []);
   return (
     <>
       <Helmet>
@@ -195,10 +220,11 @@ function FrameDetailPage() {
             ))}
           </Button>
           <ScrapBtn onClick={changeScrap}>
+            {scrap}
             {scrap ? (
-              <BsFillBookmarkHeartFill size={40} />
-            ) : (
               <BsBookmarkHeart size={40} />
+            ) : (
+              <BsFillBookmarkHeartFill size={40} />
             )}
           </ScrapBtn>
         </Div>
