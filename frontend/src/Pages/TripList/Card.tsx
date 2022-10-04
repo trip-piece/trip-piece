@@ -156,7 +156,7 @@ function Card({
     event.preventDefault();
     setOpen(true);
   };
-  const regionImage = "/image/region/" + REGIONLIST[regionId] + ".png";
+  const regionImage = `/image/region/${REGIONLIST[regionId]}.png`;
 
   return (
     <Container>

@@ -160,7 +160,7 @@ function TripDiaryPage({ startDate, today, endDate }: TripListProps) {
 
   const moveToWriteDiary = () => {
     navigate(`../../trips/${tripId}/diarys/write`, {
-      state: { diaryDate: selectedDiaryDate },
+      state: { diaryDate: diaryDate || selectedDiaryDate },
     });
   };
 
@@ -169,6 +169,7 @@ function TripDiaryPage({ startDate, today, endDate }: TripListProps) {
       state: { diaryDate: selectedDiaryDate },
     });
   };
+  console.log(diaryDate, selectedDiaryDate);
 
   if (startDate > selectedDiaryDate || diaryDate > today)
     return (
