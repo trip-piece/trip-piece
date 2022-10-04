@@ -10,14 +10,6 @@ import TripCreateButton from "./TripCreationButton";
 import BasicModal from "./Modal";
 import Container from "../../components/atoms/Container";
 
-// const Container = styled.section`
-//   min-height: 100vh;
-//   background-color: ${(props) => props.theme.colors.white};
-//   border-radius: 30px 30px 0 0;
-//   padding: 1rem;
-//   position: relative;
-// `;
-
 const Title = styled.h2`
   text-align: center;
   font-size: ${(props) => props.theme.fontSizes.h4};
@@ -33,6 +25,16 @@ const FixedContainer = styled.div`
   bottom: 30px;
   right: 0;
   width: fit-content;
+`;
+
+const Button = styled.button`
+  width: 80px;
+  height: 30px;
+  margin-bottom: 0.5rem;
+  background-color: #fdd835;
+  border-radius: 5px;
+  color: black;
+  font-weight: bold;
 `;
 
 function TripListPage() {
@@ -56,21 +58,9 @@ function TripListPage() {
       <Container hasPadding>
         <Title>보유여행티켓</Title>
 
-        <button
-          type="button"
-          onClick={handleEditMode}
-          style={{
-            width: "80px",
-            height: "30px",
-            marginBottom: "0.5rem",
-            backgroundColor: "#FDD835",
-            borderRadius: "5px",
-            color: "black",
-            fontWeight: "bold",
-          }}
-        >
+        <Button type="button" onClick={handleEditMode}>
           {!isEditMode ? "여행 편집" : "편집 완료"}
-        </button>
+        </Button>
 
         <MemoInfiniteList
           url={tripApis.trip}
@@ -81,6 +71,7 @@ function TripListPage() {
           count={2}
           isEditMode={isEditMode}
           isCreated={isCreated}
+          change={setIsCreated}
         />
         {!isEditMode && (
           <FixedContainer>

@@ -33,6 +33,8 @@
     "@typescript-eslint/naming-convention": ["off"],
     "no-underscore-dangle": ["off"],
     "@typescript-eslint/no-unused-expressions": ["off"],
+    "react/no-array-index-key": ["off"],
+    "no-console": ["off"],
     "jsx-a11y/label-has-associated-control": [
       "error",
       {

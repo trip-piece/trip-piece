@@ -52,7 +52,7 @@ function AnotherRouter() {
             element={<DiaryManagement />}
           />
           <Route
-            path="trips/:tripId/diarys/:diaryDate/write"
+            path="trips/:tripId/diarys/:diaryDate/edit"
             element={<DiaryManagement />}
           />
 

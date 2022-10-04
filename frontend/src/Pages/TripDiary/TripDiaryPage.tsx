@@ -1,20 +1,18 @@
 import styled from "@emotion/styled";
 import { useEffect, useRef, useState } from "react";
 import { useQuery, useQueryClient } from "react-query";
-import { Navigate, useNavigate, useParams } from "react-router-dom";
-import { HiPencilAlt } from "react-icons/hi";
+import { useNavigate, useParams } from "react-router-dom";
+import { HiPencilAlt, HiTrash } from "react-icons/hi";
 import { AxiosResponse } from "axios";
 import { Icon } from "@iconify/react/dist/offline";
-import { BsFillGeoAltFill } from "react-icons/bs";
+import { AiTwotoneEdit } from "react-icons/ai";
 import diaryApis from "../../utils/apis/diaryApis";
 import {
   changeDateFormatToDot,
   changeDateFormatToHyphen,
   pixelToRem,
 } from "../../utils/functions/util";
-import ColoredRoundButton from "../../components/atoms/ColoredRoundButton";
 import axiosInstance from "../../utils/apis/api";
-import DiaryContentContainer from "../../components/modules/DiaryContentContainer";
 import useWindowResize from "../../utils/hooks/useWindowResize";
 import StickerImg from "../../components/atoms/StickerImg";
 import {
@@ -25,8 +23,10 @@ import TodayPhoto from "../../components/atoms/TodayPhoto";
 import useDeleteDiary from "../../utils/hooks/useDeleteDiary";
 import DateContainer from "../../components/atoms/DateContainer";
 import { weatherList } from "../../utils/constants/weatherList";
-import useSize from "../../utils/hooks/useSize";
 import { DIARY_COLOR_LIST, FONTTYPELIST } from "../../utils/constants/constant";
+import { getNFTImagePath } from "../../utils/functions/getNFTImagePath";
+import ColoredRoundButton from "../../components/atoms/ColoredRoundButton";
+import RecordedLocationContainer from "../../components/modules/RecordedLocationContainer";
 
 const Container = styled.article`
   min-height: 75vh;
@@ -55,9 +55,15 @@ const NoDiaryContainer = styled.div`
   }
 `;
 
-const DiaryContent = styled.div`
+const DiaryContent = styled.div<{ diaryWidth: number }>`
   width: 100%;
   height: fit-content;
+  padding: ${(props) => `${pixelToRem(16 + (props.diaryWidth - 320) / 20)}`};
+  line-height: 1.1;
+  font-size: ${(props) =>
+    pixelToRem(props.diaryWidth / 20) !== "0rem"
+      ? pixelToRem(props.diaryWidth / 20)
+      : pixelToRem(16)};
 `;
 
 interface TripListProps {
@@ -66,7 +72,7 @@ interface TripListProps {
   endDate?: string;
 }
 
-const DiaryContents = styled.div<DiaryContentsProps>`
+const DiaryContentsContainer = styled.div<DiaryContentsContainerProps>`
   position: relative;
   white-space: pre-line;
   min-height: ${(props) => props.active && "60vh"};
@@ -74,7 +80,6 @@ const DiaryContents = styled.div<DiaryContentsProps>`
   width: 100%;
   background-color: ${(props) => DIARY_COLOR_LIST[props.backgroundColor]};
   font-family: ${(props) => FONTTYPELIST[props.fontType]};
-  padding: ${(props) => `${pixelToRem(16 + (props.diaryWidth - 320) / 20)}`};
   resize: none;
   transition: background-color 0.5s ease-in;
   overflow-wrap: break-word;
@@ -84,34 +89,59 @@ const DiaryContents = styled.div<DiaryContentsProps>`
       : pixelToRem(16)};
 `;
 
-interface DiaryContentsProps {
+const ButtonListContainer = styled.div`
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  button {
+    display: block;
+    height: ${pixelToRem(30)};
+    padding: 0 0.5rem;
+    /* background-color: transparent; */
+    border-radius: 5px;
+    background-color: ${(props) => props.theme.colors.yellow};
+  }
+`;
+
+const ControlContainer = styled.div`
+  display: flex;
+  justify-content: space-between;
+  padding: 0 1rem;
+  align-items: center;
+`;
+
+interface DiaryContentsContainerProps {
   fontType: number;
   diaryWidth: number;
   backgroundColor: number;
   active?: boolean;
 }
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function TripDiaryPage({ startDate, today, endDate }: TripListProps) {
   const [selectedDiaryDate, setSelectedDiaryDate] = useState<string>(() =>
     changeDateFormatToHyphen(new Date()),
   );
+  const [diaryWidth, setDiaryWidth] = useState(0);
+  const [NFTStickerList, setNFTStickerList] = useState([]);
 
   const { tripId, diaryDate } = useParams();
   const navigate = useNavigate();
   const diaryRef = useRef<HTMLDivElement>(null);
   const imageRef = useRef<HTMLImageElement>(null);
-  const sizes = useSize(diaryRef);
+  const size = useWindowResize();
   const queryClient = useQueryClient();
-
   useEffect(() => {
     if (diaryDate) setSelectedDiaryDate(diaryDate);
   }, []);
 
   const getDiary = (date: string) =>
     axiosInstance.get(diaryApis.targetDiary(Number(tripId), date));
-  console.log(diaryDate);
-  const { isLoading, data, isSuccess } = useQuery<
-    AxiosResponse<IRequestedDiary, null>
-  >(
+
+  const {
+    isLoading,
+    data: diaryData,
+    isSuccess,
+  } = useQuery<AxiosResponse<IRequestedDiary, null>>(
     [`${diaryDate || selectedDiaryDate}-diary`],
     () => getDiary(diaryDate || selectedDiaryDate),
     {
@@ -122,24 +152,50 @@ function TripDiaryPage({ startDate, today, endDate }: TripListProps) {
   );
   const { mutate } = useDeleteDiary();
 
+  const getNFTList = async () => {
+    if (!diaryData) return;
+    const { data } = diaryData;
+    setNFTStickerList([]);
+    if (!data || data?.stickerList?.length < 1) return;
+    const _list = await Promise.all(
+      data?.stickerList?.map((sticker) =>
+        getNFTImagePath(sticker.tokenId, sticker.tokenURL, { ...sticker }),
+      ),
+    );
+    setNFTStickerList(_list);
+  };
+
+  useEffect(() => {
+    const wrapper = diaryRef.current?.getBoundingClientRect();
+    setDiaryWidth(wrapper?.width);
+  }, [diaryData, size]);
+
+  useEffect(() => {
+    (async () => getNFTList())();
+  }, [diaryData]);
   const onDelete = () => {
     if (window.confirm("다이어리를 삭제하시겠습니까?"))
-      mutate(data?.data?.diaryId, {
-        onSuccess: () => queryClient.invalidateQueries([`${diaryDate}-diary`]),
+      mutate(diaryData?.data?.diaryId, {
+        onSuccess: () =>
+          queryClient.invalidateQueries([
+            `${diaryDate || selectedDiaryDate}-diary`,
+          ]),
       });
   };
 
   const moveToWriteDiary = () => {
     navigate(`../../trips/${tripId}/diarys/write`, {
-      state: { diaryDate: selectedDiaryDate },
+      state: { diaryDate: diaryDate || selectedDiaryDate },
     });
-    // return <Navigate to={`../trips/${tripId}/diarys/write`} />;
   };
 
   const moveToEditDiary = () => {
-    navigate(`../../trips/${tripId}/diarys/${selectedDiaryDate}/edit`, {
-      state: { diaryDate: selectedDiaryDate },
-    });
+    navigate(
+      `../../trips/${tripId}/diarys/${diaryDate || selectedDiaryDate}/edit`,
+      {
+        state: { diaryDate: diaryDate || selectedDiaryDate },
+      },
+    );
   };
 
   if (startDate > selectedDiaryDate || diaryDate > today)
@@ -154,11 +210,11 @@ function TripDiaryPage({ startDate, today, endDate }: TripListProps) {
         </NoDiaryContainer>
       </Container>
     );
-  console.log(sizes);
+
   return (
     <Container>
       {isLoading && <div>Loading...</div>}
-      {isSuccess && !data.data && (
+      {isSuccess && !diaryData?.data && (
         <NoDiaryContainer>
           <HiPencilAlt />
           <p>
@@ -172,56 +228,68 @@ function TripDiaryPage({ startDate, today, endDate }: TripListProps) {
           />
         </NoDiaryContainer>
       )}
-      {isSuccess && data.data && (
+      {isSuccess && diaryData?.data && (
         <>
-          <div>
-            <button type="button" onClick={moveToEditDiary}>
-              수정
-            </button>
-            <button type="button" onClick={onDelete}>
-              삭제
-            </button>
-          </div>
           <DateContainer>
             <h2>
-              {changeDateFormatToDot(diaryDate) ||
-                changeDateFormatToDot(selectedDiaryDate)}
+              {diaryDate
+                ? changeDateFormatToDot(diaryDate)
+                : changeDateFormatToDot(selectedDiaryDate)}
             </h2>
-            <Icon icon={weatherList[data?.data?.weather]} />
+            <Icon icon={weatherList[diaryData?.data?.weather]} />
           </DateContainer>
-          {/* <PositionContainer> */}
-          <BsFillGeoAltFill />
-          {data?.data?.location}
-          {/* </PositionContainer> */}
-          <DiaryContents
-            diaryWidth={sizes.width}
-            backgroundColor={data?.data?.backgroundColor}
-            fontType={data?.data?.fontType}
+          <ControlContainer>
+            <RecordedLocationContainer>
+              {diaryData?.data?.location}
+            </RecordedLocationContainer>
+            <ButtonListContainer>
+              <button
+                type="button"
+                onClick={moveToEditDiary}
+                aria-label="diary-edit-button"
+              >
+                <AiTwotoneEdit />
+              </button>
+              <button
+                type="button"
+                onClick={onDelete}
+                aria-label="diary-delete-button"
+              >
+                <HiTrash />
+              </button>
+            </ButtonListContainer>
+          </ControlContainer>
+          <DiaryContentsContainer
+            diaryWidth={diaryWidth}
+            backgroundColor={diaryData?.data?.backgroundColor}
+            fontType={diaryData?.data?.fontType}
           >
             <div
               style={{ width: "100%", height: "fit-content" }}
               ref={diaryRef}
             >
-              <DiaryContent>{data?.data?.content}</DiaryContent>
-
-              <TodayPhoto
-                src={data.data?.todayPhoto}
-                alt={`${diaryDate}-photo`}
-                ref={imageRef}
-                diaryWidth={100}
-              />
-
-              {data?.data?.stickerList?.map((sticker: IRequestedSticker) => (
+              <DiaryContent diaryWidth={diaryWidth}>
+                {diaryData?.data?.content}
+              </DiaryContent>
+              {diaryData.data?.todayPhoto && (
+                <TodayPhoto
+                  src={diaryData.data?.todayPhoto}
+                  alt={`${diaryDate}-photo`}
+                  ref={imageRef}
+                  diaryWidth={diaryWidth}
+                />
+              )}
+              {NFTStickerList?.map((sticker: IRequestedSticker, idx) => (
                 <StickerImg
-                  up={sticker.y * sizes.height}
-                  left={sticker.x * sizes.width}
+                  up={sticker.y * diaryWidth * diaryData.data.ratio}
+                  left={sticker.x * diaryWidth}
                   alt={sticker.tokenName}
-                  src={sticker.tokenURL}
-                  key={sticker.y}
+                  src={sticker.imagePath}
+                  key={sticker.y + sticker.x + idx}
                 />
               ))}
             </div>
-          </DiaryContents>
+          </DiaryContentsContainer>
         </>
       )}
     </Container>

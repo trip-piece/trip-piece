@@ -57,7 +57,10 @@ axiosInstance.interceptors.response.use(
         const { accessToken, refreshToken } = response.data;
         setCookie("accessToken", accessToken);
         setCookie("refreshToken", refreshToken);
+        return;
       }
+      return Promise.reject(err);
     }
+    return Promise.reject(err);
   },
 );
