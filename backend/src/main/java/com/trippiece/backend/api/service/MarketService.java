@@ -16,6 +16,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,6 +28,7 @@ public class MarketService {
     private final StickerRepository stickerRepository;
 
 
+    @Transactional(readOnly = true)
     public Page<MarketStickerResponseDto> findMarketSticker(final long regionId, final int sort, String keyword, @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable
     ) {
         List<Market> marketList = new ArrayList<>();
@@ -69,11 +71,13 @@ public class MarketService {
         return result;
     }
 
+    @Transactional(readOnly = true)
     public StickerMarketResponseDto findMarketStickerDetail(long marketId){
 Market market = marketRepository.findById(marketId).orElseThrow(() -> new CustomException(ErrorCode.DATA_NOT_FOUND));
    return new StickerMarketResponseDto(market);
     }
 
+    @Transactional
     public void addMarketSticker(User user, long tokenId, float price) {
         Sticker sticker = stickerRepository.findByTokenId(tokenId);
         Market marketBuilder = Market.builder()
@@ -85,14 +89,11 @@ Market market = marketRepository.findById(marketId).orElseThrow(() -> new Custom
 
     }
 
+    @Transactional
     public int deleteMarketSticker(final User user, final long marketId) {
         int resultCode = 200;
         Market market = marketRepository.findById(marketId).orElseThrow(() -> new CustomException(ErrorCode.DATA_NOT_FOUND));
-        if (!market.getUser().equals(user)) resultCode = 406;
-        else {
-            marketRepository.delete(market);
-
-        }
+        marketRepository.delete(market);
         return resultCode;
     }
 }
