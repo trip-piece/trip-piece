@@ -1,6 +1,6 @@
 import axios from "axios";
 
-export const getImage = async (tokenUrl: string): any => {
+export const getImage = async (tokenUrl: string): Promise<any> => {
   try {
     const response = await axios.get(
       `https://www.infura-ipfs.io/ipfs/${tokenUrl}`,

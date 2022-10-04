@@ -208,6 +208,7 @@ function TripDiaryPage({ startDate, today, endDate }: TripListProps) {
                 src={data.data?.todayPhoto}
                 alt={`${diaryDate}-photo`}
                 ref={imageRef}
+                diaryWidth={100}
               />
 
               {data?.data?.stickerList?.map((sticker: IRequestedSticker) => (

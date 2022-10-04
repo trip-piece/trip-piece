@@ -22,9 +22,6 @@ const TripList = lazy(() => import("./Pages/TripList/TripListPage"));
 const DiaryManagement = lazy(
   () => import("./Pages/DiaryManagement/DiaryManagementPage"),
 );
-const DiaryDecoration = lazy(
-  () => import("./Pages/DiaryDecoration/DiaryDecorationPage"),
-);
 const PlaceListPage = lazy(() => import("./Pages/Place/PlaceListPage"));
 const MyLocationListPage = lazy(
   () => import("./Pages/Place/MyLocationListPage"),
