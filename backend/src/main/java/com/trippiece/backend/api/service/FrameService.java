@@ -108,9 +108,11 @@ public class FrameService {
         int resultCode = 200;
         Diary diary = diaryRepository.findById(diaryId).orElseThrow(() -> new CustomException(ErrorCode.DATA_NOT_FOUND));
         Frame frame = frameRepository.findByDiary(diary);
-        if (!frame.getDiary().getUser().equals(user)) resultCode = 406;
-        else {
-            frameRepository.delete(frame);
+        if(frame!=null){
+            if (!frame.getDiary().getUser().equals(user)) resultCode = 406;
+            else {
+                frameRepository.delete(frame);
+            }
         }
         return resultCode;
     }
