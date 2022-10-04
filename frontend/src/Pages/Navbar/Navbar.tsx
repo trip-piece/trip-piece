@@ -370,11 +370,7 @@ export default function Navbar() {
   const toggleDrawer =
     // eslint-disable-next-line @typescript-eslint/no-shadow
     (open: boolean) => (event: React.KeyboardEvent | React.MouseEvent) => {
-      if (
-        event.type === "keydown" &&
-        ((event as React.KeyboardEvent).key === "Tab" ||
-          (event as React.KeyboardEvent).key === "Shift")
-      ) {
+      if (event.type === "keydown") {
         return;
       }
 
@@ -419,6 +415,11 @@ export default function Navbar() {
 
   const moveToMain = () => {
     navigate("/main");
+  };
+
+  const moveToMyTrip = (tripId: number) => {
+    navigate(`/trips/${tripId}/diarys`);
+    setOpen(false);
   };
 
   const {
@@ -635,6 +636,7 @@ export default function Navbar() {
                         whileHover={{ scale: 1.1 }}
                         whileTap={{ scale: 0.9 }}
                         type="button"
+                        onClick={moveToTrip}
                       >
                         등록하기
                       </motion.button>
@@ -655,6 +657,7 @@ export default function Navbar() {
                         whileHover={{ scale: 1.1 }}
                         whileTap={{ scale: 0.9 }}
                         type="button"
+                        onClick={() => moveToMyTrip(upcoming.tripId)}
                       >
                         기록하기
                       </motion.button>

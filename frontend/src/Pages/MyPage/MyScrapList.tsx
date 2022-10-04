@@ -1,4 +1,5 @@
 import React from "react";
+import { motion } from "framer-motion";
 import styled from "@emotion/styled";
 import { Modal, Select } from "@mui/material";
 import { pixelToRem } from "../../utils/functions/util";
@@ -43,22 +44,28 @@ const StickerContainer = styled.div`
 
 function MyScrapList() {
   return (
-    <StickerBox>
-      <TitleBox>
-        <Title>내가 스크랩한 프레임</Title>
-      </TitleBox>
-      <StickerContainer>
-        <MemoInfiniteList
-          url={userApis.getMyScraps}
-          queryKey={["scrapList"]}
-          CardComponent={MemoCard}
-          SkeletonCardComponent={Skeleton}
-          zeroDataText="스크랩이 존재하지..않습니다"
-          count={2}
-          listName="scrapList"
-        />
-      </StickerContainer>
-    </StickerBox>
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.7 }}
+    >
+      <StickerBox>
+        <TitleBox>
+          <Title>내가 스크랩한 프레임</Title>
+        </TitleBox>
+        <StickerContainer>
+          <MemoInfiniteList
+            url={userApis.getMyScraps}
+            queryKey={["scrapList"]}
+            CardComponent={MemoCard}
+            SkeletonCardComponent={Skeleton}
+            zeroDataText="스크랩이 존재하지..않습니다"
+            count={2}
+          />
+        </StickerContainer>
+      </StickerBox>
+    </motion.div>
   );
 }
 
