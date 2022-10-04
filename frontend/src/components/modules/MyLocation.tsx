@@ -13,9 +13,10 @@ import { ICoordinate } from "../../utils/interfaces/places.interface";
 const Container = styled.div`
   width: 100%;
   height: fit-content;
+  width: fit-content;
   display: flex;
   flex-direction: row;
-  justify-content: flex-end;
+  justify-content: space-between;
   align-items: center;
 `;
 
@@ -43,7 +44,6 @@ function Location({
 
   return (
     <Container>
-      <p>{isFetchingLocation ? "위치 찾는 중" : locationData?.location}</p>
       <MotionButton
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.9 }}
@@ -52,6 +52,7 @@ function Location({
       >
         <BiCurrentLocation size="18" />
       </MotionButton>
+      <p>{isFetchingLocation ? "위치 찾는 중" : locationData?.location}</p>
     </Container>
   );
 }

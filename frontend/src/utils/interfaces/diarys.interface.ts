@@ -25,7 +25,7 @@ export interface AccessIDiaryListState<T> {
 
 export interface StickerProps {
   tokenId: number;
-  tokenURI: string;
+  imagePath: string;
 }
 export interface ISticker extends StickerProps {
   x: number;
@@ -41,6 +41,7 @@ export interface IFrameImageObj {
 }
 
 export interface IRequestedSticker {
+  imagePath: string;
   stickerId: number;
   tokenId: number;
   tokenName: string;
