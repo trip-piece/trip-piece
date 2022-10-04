@@ -69,9 +69,6 @@ public class DiaryRequestDto {
         @ApiModelProperty(name = "날씨", example = "1")
         int weather;
 
-        @ApiModelProperty(name = "유저아이디", example = "1")
-        long userId;
-
         @ApiModelProperty(name = "티켓아이디", example = "1")
         long tripId;
 

@@ -72,7 +72,7 @@ public class Diary extends BaseEntity {
     public void updateDiary(DiaryRequestDto.DiaryEdit diaryEdit,Trip trip){
         if(!this.content.equals(diaryEdit.getContent())) this.content = diaryEdit.getContent();
         if(!this.todayPhoto.equals(diaryEdit.getImagePath())) this.todayPhoto = diaryEdit.getImagePath();
-        if(!this.content.equals(diaryEdit.getWeather())) this.weather = diaryEdit.getWeather();
+        if(this.weather!=diaryEdit.getWeather()) this.weather = diaryEdit.getWeather();
         if(this.fontType!= diaryEdit.getFontType()) this.fontType = diaryEdit.getFontType();
         if(this.backgroundColor!= diaryEdit.getBackgroundColor()) this.backgroundColor = diaryEdit.getBackgroundColor();
         if(this.ratio!= diaryEdit.getRatio()) this.ratio = diaryEdit.getRatio();
