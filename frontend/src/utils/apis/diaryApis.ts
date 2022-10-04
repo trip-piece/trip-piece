@@ -4,6 +4,7 @@ const diaryApis = {
   diaryWrite: "/diary/write",
   diaryDecoration: "/diary/decoration",
   diary: "/diary",
+  diaryEdit: "/diary/edit",
 };
 
 export default diaryApis;

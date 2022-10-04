@@ -16,6 +16,7 @@ import {
   changeDateFormatToHyphen,
   changeHyphenToDateFormat,
   getLocation,
+  pixelToRem,
 } from "../../utils/functions/util";
 import { ITrip } from "../../utils/interfaces/trips.interface";
 import upcomingIcon from "../../assets/image/homeicon.png";
@@ -109,7 +110,7 @@ const RightInsideContent = styled.div`
   position: relative;
   img {
     width: auto;
-    height: 80%;
+    height: 85%;
   }
 
   .ticket {
@@ -123,7 +124,7 @@ const RightInsideContent = styled.div`
     text-align: center;
 
     .ticketMain {
-      width: 95%;
+      width: ${pixelToRem(100)};
       height: 65%;
       position: relative;
       display: flex;
@@ -169,7 +170,7 @@ const RightInsideContent = styled.div`
 
         .regionName {
           height: 17%;
-          font-size: ${(props) => props.theme.fontSizes.h3};
+          font-size: ${(props) => props.theme.fontSizes.h5};
           font-weight: bold;
         }
 
@@ -177,16 +178,20 @@ const RightInsideContent = styled.div`
           display: flex;
           align-items: center;
           height: 40%;
-          font-size: ${(props) => props.theme.fontSizes.s1};
+          text-align: center;
+          width: 100%;
+          justify-content: center;
+          font-size: ${(props) => props.theme.fontSizes.s2};
         }
 
         .date {
           height: fit-content;
           text-align: left;
-          font-size: ${(props) => props.theme.fontSizes.s2};
+          font-size: ${(props) => props.theme.fontSizes.s3};
           display: flex;
           flex-direction: column;
           justify-content: center;
+          padding: 0.5rem;
         }
       }
     }
@@ -212,7 +217,6 @@ const InnerTextBody = styled.div`
 `;
 
 const MiddleTitlePosition = styled.div`
-  margin: 1.25rem;
   background-color: ${(props) => props.theme.colors.white};
   text-align: center;
 `;
@@ -605,7 +609,8 @@ function MainPage() {
                 style={{
                   color: "#D35B5B",
                   background: "transparent",
-                  width: "7%",
+                  textAlign: "left",
+                  width: "fit-content",
                 }}
                 onClick={updateLocation}
               >

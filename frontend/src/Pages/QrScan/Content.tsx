@@ -7,6 +7,7 @@ import { ContentProps } from "../../utils/interfaces/qrscan.inteface";
 
 // eslint-disable-next-line import/no-named-as-default
 import ColoredRoundButton from "../../components/atoms/ColoredRoundButton";
+import { useNavigate } from "react-router-dom";
 
 const Box = styled.div`
   box-shadow: 0 4px 4px 2px rgb(0 0 0/25%);
@@ -42,10 +43,10 @@ const ResulButtontBox = styled.div`
 `;
 
 const StickerName = styled.div`
-  margin : 10% 0 0 0;
-  background: : ${(props) => props.theme.colors.white};
-  display:flex;
-  justify-content  :center;
+  margin: 10% 0 0 0;
+  background: ${(props) => props.theme.colors.white};
+  display: flex;
+  justify-content: center;
   font-size: ${(props) => props.theme.fontSizes.h5};
 `;
 const ResultImg = styled.img`
@@ -88,7 +89,6 @@ function QrInfo({ stickerName, stickerUrl }: ContentProps) {
 
 function Result({ result }: ContentProps): EmotionJSX.Element {
   const flag: string = result;
-  console.log(flag);
 
   let insultText: string = "Loading";
   if (flag === "success") {
@@ -97,12 +97,16 @@ function Result({ result }: ContentProps): EmotionJSX.Element {
     insultText = "스티커 발급 실패";
   } else if (flag === "incorrect") {
     insultText = "올바르지 않은 QR 요청";
+  } else if (flag === "check") {
+    insultText = "하루에 한 번만 발급이 가능해요";
+  } else if (flag === "distance") {
+    insultText = "위치가 올바르지 않아요 :(";
   }
-
   return (
     <>
       <ResultIconBox>
-        <BsXLg size="70" color="#D35B5B" />
+        {flag !== "success" && <BsXLg size="70" color="#D35B5B" />}
+        {flag === "success" && <BsCheckLg size="70" color="#5b67d3" />}
       </ResultIconBox>
       <ResultBox>
         <ResultText>{insultText}</ResultText>
@@ -120,6 +124,12 @@ function Content({ result, stickerName, stickerUrl }: ContentProps) {
   } else {
     condition = false;
   }
+
+  const navigate = useNavigate();
+  const moveToMain = () => {
+    navigate("/main");
+  };
+
   return (
     <Box>
       <MainBox>
@@ -136,7 +146,12 @@ function Content({ result, stickerName, stickerUrl }: ContentProps) {
 
       <Result result={result} />
       <ResulButtontBox>
-        <ColoredRoundButton text="  확인  " color="mainLight" type="submit" />
+        <ColoredRoundButton
+          text="  확인  "
+          color="mainLight"
+          type="button"
+          func={moveToMain}
+        />
       </ResulButtontBox>
     </Box>
   );

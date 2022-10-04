@@ -52,7 +52,7 @@ function AnotherRouter() {
             element={<DiaryManagement />}
           />
           <Route
-            path="trips/:tripId/diarys/:diaryDate/write"
+            path="trips/:tripId/diarys/:diaryDate/edit"
             element={<DiaryManagement />}
           />
 
@@ -72,7 +72,7 @@ function AnotherRouter() {
             element={<MyLocationListPage />}
           />
           <Route path="qrscan" element={<QrScanner />} />
-          <Route path="/places/:regionId/:code" element={<NftResponse />} />
+          <Route path="/places/:placeId/:code" element={<NftResponse />} />
         </Routes>
       </Suspense>
     </>
