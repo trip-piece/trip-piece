@@ -36,6 +36,7 @@ public class DiaryService {
     private final DateConverter dateConverter;
 
 
+
     /*일기 내용 추가*/
     @Transactional
     public long addDiary(User user, DiaryRequestDto.DiaryRegister diaryRegister) {
@@ -75,39 +76,21 @@ public class DiaryService {
     }
 
     @Transactional
-    public void updateDeco(DecoRequestDto.DecoEdit request) {
+    public void updateDeco(DecoRequestDto.DecoRegister request) {
         Diary diary = diaryRepository.findById(request.getDiaryId()).orElseThrow(() -> new CustomException(ErrorCode.DATA_NOT_FOUND));
-        List<Decoration> list = decorationRepository.findAllByDiary(diary); //다이어리에 있는 데코레이션 목록 다 가져와
-        List<StickerDecorationDto> originStickerList = new ArrayList<>();
-        List<StickerDecorationDto> deleteStickerList = new ArrayList<>();
-        for (Decoration decoration : list) {
-            originStickerList.add(new StickerDecorationDto(decoration));
-            deleteStickerList.add(new StickerDecorationDto(decoration));
+        List<Decoration> deleteList = decorationRepository.findAllByDiary(diary); //다이어리에 있는 데코레이션 목록 다 가져와
+        for (Decoration deco : deleteList) {
+            decorationRepository.delete(deco);
         }
-
-        List<StickerDecorationDto> newStickerList = (ArrayList<StickerDecorationDto>) request.getStickerList();
-        List<StickerDecorationDto> updateStickerList = new ArrayList<>();
-        for (StickerDecorationDto decoration : newStickerList) {
-            updateStickerList.add(decoration);
-        }
-        Collections.sort(newStickerList);
-        if (!newStickerList.equals(originStickerList)) {
-            updateStickerList.removeAll(originStickerList);
-            deleteStickerList.removeAll(newStickerList);
-
-            if (deleteStickerList.size() != 0) {
-                for (StickerDecorationDto stickerDto : deleteStickerList) {
-                    Decoration decoration = decorationRepository.findById(stickerDto.getStickerId()).orElseThrow(() -> new CustomException(ErrorCode.DATA_NOT_FOUND));
-                    decorationRepository.delete(decoration);
-                }
-            }
-
-            if (updateStickerList.size() != 0) {
-                for (StickerDecorationDto stickerDto : updateStickerList) {
-                    Decoration decoration = decorationRepository.findById(stickerDto.getId()).orElseThrow(() -> new CustomException(ErrorCode.DATA_NOT_FOUND));
-                    decorationRepository.save(new Decoration(decoration.getSticker(), decoration.getDiary(), decoration.getX(), decoration.getY()));
-                }
-            }
+        List<StickerRequestDto.StickerDecoRegister> newList = request.getStickerList();
+        for (StickerRequestDto.StickerDecoRegister st : newList) {
+            Decoration decoration = Decoration.builder()
+                    .diary(diary)
+                    .sticker(stickerRepository.findByTokenId(st.getTokenId()))
+                    .x(st.getX())
+                    .y(st.getY())
+                    .build();
+            decorationRepository.save(decoration);
         }
 
     }
