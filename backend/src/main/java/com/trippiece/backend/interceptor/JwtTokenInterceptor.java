@@ -69,7 +69,7 @@ public class JwtTokenInterceptor implements HandlerInterceptor {
                     }
                 }
             }
-
+        }
             if (refreshToken != null) {
                 if (jwtTokenUtil.isValidToken(refreshToken)) {
                     Optional<User> user = userRepository.findById(jwtTokenUtil.getUserIdFromToken(accessToken));
