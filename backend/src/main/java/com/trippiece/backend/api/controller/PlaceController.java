@@ -133,7 +133,7 @@ public class PlaceController {
     }
 
     @ApiOperation(value = "사용자가 QR인식", notes = "사용자가 QR인식을 하고 스티커를 발급받으면 QRLog를 저장하고 Place의 amount값을 수정한다.")
-    @PatchMapping("/QR")
+    @PostMapping("/QR")
     public ResponseEntity<?> doQRLog(@RequestHeader("ACCESS_TOKEN") final String accessToken, @RequestBody final Map<String, Long> request){
         long placeId = request.get("placeId");
         long stickerId = request.get("stickerId");
