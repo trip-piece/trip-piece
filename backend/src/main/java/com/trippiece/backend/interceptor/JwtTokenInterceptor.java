@@ -35,29 +35,6 @@ public class JwtTokenInterceptor implements HandlerInterceptor {
             return true;
         }
 
-//        if (accessToken != null) {
-//            Optional<User> user = userRepository.findById(jwtTokenUtil.getUserIdFromToken(accessToken));
-//            if (user.isPresent()) {
-//                Optional<Auth> auth = authRepository.findByUser(user.get());
-//                if (auth.isPresent()) {
-//                    if (jwtTokenUtil.isValidToken(accessToken)) {
-//                        return true;
-//                    }
-//                }
-//            }
-//        }
-//
-//        if (refreshToken != null) {
-//            Optional<User> user = userRepository.findById(jwtTokenUtil.getUserIdFromToken(accessToken));
-//            if (user.isPresent()) {
-//                Optional<Auth> auth = authRepository.findByUser(user.get());
-//                if (auth.isPresent()) {
-//                    if (jwtTokenUtil.isValidToken(refreshToken) && auth.get().getRefreshToken().equals(refreshToken)) {
-//                        return true;
-//                    }
-//                }
-//            }
-//        }
 
         if (accessToken != null) {
             if (jwtTokenUtil.isValidToken(accessToken)) {
@@ -69,42 +46,43 @@ public class JwtTokenInterceptor implements HandlerInterceptor {
                     }
                 }
             }
-
-            if (refreshToken != null) {
-                if (jwtTokenUtil.isValidToken(refreshToken)) {
-                    Optional<User> user = userRepository.findById(jwtTokenUtil.getUserIdFromToken(accessToken));
-                    if (user.isPresent()) {
-                        Optional<Auth> auth = authRepository.findByUser(user.get());
-                        if (auth.isPresent()) {
-                            return true;
-                        }
+        }
+        if (refreshToken != null) {
+            if (jwtTokenUtil.isValidToken(refreshToken)) {
+                Optional<User> user = userRepository.findById(jwtTokenUtil.getUserIdFromToken(accessToken));
+                if (user.isPresent()) {
+                    Optional<Auth> auth = authRepository.findByUser(user.get());
+                    if (auth.isPresent()) {
+                        return true;
                     }
                 }
-
-            response.setStatus(401);
-            response.setHeader("ACCESS_TOKEN", accessToken);
-            response.setHeader("REFRESH_TOKEN", refreshToken);
-            response.setHeader("msg", "Invalid Token Error");
-            return false;
+            }
         }
 
-        private boolean isPreflightRequest (HttpServletRequest request){
-            return isOptions(request) && hasHeaders(request) && hasMethod(request) && hasOrigin(request);
-        }
-
-        private boolean isOptions (HttpServletRequest request){
-            return request.getMethod().equalsIgnoreCase(HttpMethod.OPTIONS.toString());
-        }
-
-        private boolean hasHeaders (HttpServletRequest request){
-            return Objects.nonNull(request.getHeader("Access-Control-Request-Headers"));
-        }
-
-        private boolean hasMethod (HttpServletRequest request){
-            return Objects.nonNull(request.getHeader("Access-Control-Request-Method"));
-        }
-
-        private boolean hasOrigin (HttpServletRequest request){
-            return Objects.nonNull(request.getHeader("Origin"));
-        }
+        response.setStatus(401);
+        response.setHeader("ACCESS_TOKEN", accessToken);
+        response.setHeader("REFRESH_TOKEN", refreshToken);
+        response.setHeader("msg", "Invalid Token Error");
+        return false;
     }
+
+    private boolean isPreflightRequest(HttpServletRequest request) {
+        return isOptions(request) && hasHeaders(request) && hasMethod(request) && hasOrigin(request);
+    }
+
+    private boolean isOptions(HttpServletRequest request) {
+        return request.getMethod().equalsIgnoreCase(HttpMethod.OPTIONS.toString());
+    }
+
+    private boolean hasHeaders(HttpServletRequest request) {
+        return Objects.nonNull(request.getHeader("Access-Control-Request-Headers"));
+    }
+
+    private boolean hasMethod(HttpServletRequest request) {
+        return Objects.nonNull(request.getHeader("Access-Control-Request-Method"));
+    }
+
+    private boolean hasOrigin(HttpServletRequest request) {
+        return Objects.nonNull(request.getHeader("Origin"));
+    }
+}
