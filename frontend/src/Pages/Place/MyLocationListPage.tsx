@@ -18,24 +18,29 @@ const Container = styled.div`
   border-radius: 30px 30px 0 0;
   padding: 1rem;
   position: relative;
-  width: inherit;
+  width: 100%;
 `;
 
 const TitleGroup = styled.div`
   width: 100%;
-  display: block;
+  display: flex;
+  height: 25%;
+  flex-direction: column;
   justify-content: center;
   text-align: center;
   margin-top: 3vh;
   > .main {
-    font-size: ${(props) => props.theme.fontSizes.h1};
+    font-size: ${(props) => props.theme.fontSizes.h2};
     font-weight: bold;
     letter-spacing: ${pixelToRem(-1)};
     margin: ${pixelToRem(8)} 0;
   }
 `;
 
-const PlaceList = styled.div``;
+const PlaceList = styled.div`
+  width: 100%;
+  height: 75%;
+`;
 
 function MyLocationListPage() {
   const [locationInfo, setLocationInfo] = useState("");
@@ -96,7 +101,9 @@ function MyLocationListPage() {
               style={{
                 color: "#D35B5B",
                 background: "transparent",
-                width: "7%",
+                width: "fit-content",
+                margin: 0,
+                textAlign: "right",
               }}
               onClick={updateLocation}
             >

@@ -6,33 +6,34 @@ import {
   useState,
   useCallback,
   memo,
+  SetStateAction,
 } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { Icon } from "@iconify/react/dist/offline";
-import { v4 } from "uuid";
 import { Controller, useForm } from "react-hook-form";
 import { Checkbox, TextareaAutosize } from "@mui/material";
-import { BsFillGeoAltFill } from "react-icons/bs";
 import { HiTrash } from "react-icons/hi";
 import { Helmet } from "react-helmet-async";
-import { useRecoilState } from "recoil";
+import { useRecoilState, useSetRecoilState } from "recoil";
 import { useQuery } from "react-query";
 import { AxiosError, AxiosResponse } from "axios";
 import Draggable, { DraggableData } from "react-draggable";
+import { motion } from "framer-motion";
 import {
   DIARY_COLOR_LIST,
   FONTTYPELIST,
   MESSAGE_LIST,
 } from "../../utils/constants/constant";
-import { ColoredRoundButton } from "../../components/atoms/ColoredRoundButton";
+import ColoredRoundButton from "../../components/atoms/ColoredRoundButton";
 import { changeDateFormatToDot, pixelToRem } from "../../utils/functions/util";
 import { shake } from "../../style/animations";
 import useWindowResize from "../../utils/hooks/useWindowResize";
-import { formDataDiaryState, writedDiaryState } from "../../store/diaryAtoms";
+import { formDataDiaryState } from "../../store/diaryAtoms";
 import {
+  IIPFSResult,
   IRequestedDiary,
+  IRequestedSticker,
   ISticker,
-  IWritedDiary,
   StickerProps,
 } from "../../utils/interfaces/diarys.interface";
 import Container from "../../components/atoms/Container";
@@ -44,7 +45,6 @@ import diaryApis from "../../utils/apis/diaryApis";
 import axiosInstance from "../../utils/apis/api";
 import TodayPhoto from "../../components/atoms/TodayPhoto";
 import useSize from "../../utils/hooks/useSize";
-import { dummyStickerList } from "../../utils/constants/dummyData";
 import LazyImage from "../../components/atoms/LazyImage";
 import DecorationModal from "./Modal";
 import useWriteDiary from "../../utils/hooks/useWriteDiary";
@@ -52,8 +52,10 @@ import useDecorateDiary from "../../utils/hooks/useDecorateDiary";
 import { UserInfoState } from "../../store/atom";
 import { NFTContract } from "../../utils/common/NFT_ABI";
 import spinner from "../../assets/image/spinner.gif";
-import { red } from "@mui/material/colors";
-import { motion } from "framer-motion";
+import useEditDiary from "../../utils/hooks/useEditDiary";
+import { getNFTImagePath } from "../../utils/functions/getNFTImagePath";
+import RecordedLocationContainer from "../../components/modules/RecordedLocationContainer";
+import useEditDecoration from "../../utils/hooks/useEditDecoration";
 
 const Form = styled.form`
   display: flex;
@@ -127,13 +129,13 @@ const AutosizedTextarea = styled(TextareaAutosize)<IDiaryStyle>`
   display: block;
   font-family: ${(props) => FONTTYPELIST[props.fonttype]};
   width: 100%;
-  font-size: 24px;
   outline: none;
   border: none;
   background-color: transparent;
   padding: ${(props) => `${pixelToRem(16 + (props.diarywidth - 320) / 20)}`};
   resize: none;
   font-size: ${(props) => pixelToRem(props.diarywidth / 20)};
+  line-height: 1.1;
   &::placeholder {
     color: ${(props) => props.theme.colors.gray400};
   }
@@ -143,13 +145,6 @@ const ColorButtonListContainer = styled.div`
   display: flex;
   gap: 0.5rem;
   padding: 0.25rem;
-`;
-
-const PositionContainer = styled.div`
-  > svg {
-    color: ${(props) => props.theme.colors.red};
-  }
-  color: ${(props) => props.theme.colors.gray400};
 `;
 
 const ColorAndPositionContainer = styled.div`
@@ -186,6 +181,7 @@ const ImageControlContainer = styled.div`
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
+    color: ${(props) => props.theme.colors.gray900};
   }
 `;
 
@@ -382,7 +378,7 @@ function DiaryManagementPage() {
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
   const { tripId, diaryDate } = useParams();
   const { state, pathname } = useLocation();
-  const [diary, setDiary] = useRecoilState(formDataDiaryState);
+  const setDiary = useSetRecoilState(formDataDiaryState);
 
   const [stickerList, setStickerList] = useState<ISticker[]>([]);
   const [isShared, setIsShared] = useState(false);
@@ -403,44 +399,37 @@ function DiaryManagementPage() {
 
   const { mutate: mutateWriting } = useWriteDiary();
   const { mutate: mutateDecoration } = useDecorateDiary();
+  const { mutate: mutateEditting } = useEditDiary();
+  const { mutate: mutateEdittingDecoration } = useEditDecoration();
 
   const [loading, setLoading] = useState<boolean>(true);
   const [NFTDetailList, setNFTDetailList] = useState<TokenDetail[]>([]);
-
-  const getNFTList = async () => {
+  const getNFTList = useCallback(async () => {
     try {
       setLoading(true);
       const result = await NFTContract.methods
         .getStickerList(userInfo.address)
         .call();
       if (result) {
-        const tokenList: React.SetStateAction<TokenDetail[]> = [];
-        for (var i = 0; i < result.length; i++) {
-          await fetch(`https://www.infura-ipfs.io/ipfs/${result[i].tokenURI}`)
-            .then((res) => {
-              return res.json();
-            })
-            .then((data) => {
-              const token: TokenDetail = {
-                tokenId: Number(result[i].tokenId),
-                tokenName: String(data[0].name),
-                imagePath: String(data[0].image),
-              };
-              tokenList.push(token);
-            });
-          setNFTDetailList(tokenList);
-        }
+        const NFTList: SetStateAction<TokenDetail[]> = await Promise.all(
+          result.map((res: IIPFSResult) =>
+            getNFTImagePath(Number(res.tokenId), res.tokenURI),
+          ),
+        );
+        setNFTDetailList(NFTList);
         setLoading(false);
       }
     } catch (err) {
       console.log("Error getSticker : ", err);
     }
-  };
+  }, [userInfo]);
   useEffect(() => {
     if (!state?.diaryDate && !diaryDate) navigate(-1);
     if (pathname.includes("/edit")) setIsEditMode(true);
-    if (state?.diaryDate)
+    if (state?.diaryDate) {
+      console.log(state?.diaryDate);
       setDottedDate(changeDateFormatToDot(state?.diaryDate));
+    }
   }, []);
 
   useEffect(() => {
@@ -484,11 +473,32 @@ function DiaryManagementPage() {
     };
   }, []);
 
+  const getNFTStickerList = async (NFTList: IRequestedSticker[]) => {
+    if (NFTList?.length) {
+      const _stickerList: ISticker[] = await Promise.all(
+        NFTList.map((sticker: IRequestedSticker) => {
+          const rest = {
+            tokenId: sticker.tokenId,
+            x: sticker.x * sizes.width,
+            y: sticker.y * sizes.height,
+            isDragging: false,
+            originX: sticker.x,
+            originY: sticker.y,
+          };
+          return getNFTImagePath<ISticker>(sticker.tokenId, sticker.tokenURL, {
+            ...rest,
+          });
+        }),
+      );
+      setStickerList(_stickerList);
+    }
+  };
+
   useEffect(() => {
     if (diaryData?.data) {
       setDiaryColor(diaryData.data.backgroundColor);
       setWeather(diaryData.data.weather);
-      setIsShared(diaryData.data.isShare);
+      setIsShared(diaryData.data.share);
       setValue("fontType", diaryData.data.fontType);
       setValue("content", diaryData.data.content);
       if (diaryData.data.todayPhoto) {
@@ -499,27 +509,16 @@ function DiaryManagementPage() {
         }));
       }
       if (diaryData.data.stickerList?.length) {
-        const _stickerList = diaryData.data.stickerList.map((sticker) => {
-          return {
-            tokenId: sticker.tokenId,
-            imagePath: sticker.imagePath,
-            x: sticker.x * sizes.width,
-            y: sticker.y * sizes.width,
-            isDragging: false,
-            originX: sticker.x,
-            originY: sticker.y,
-          };
-        });
-        setStickerList(_stickerList);
+        getNFTStickerList(diaryData.data.stickerList);
       }
     }
   }, [diaryData]);
 
-  const onCancel = () => {
+  const onCancel = useCallback(() => {
     if (window.confirm(MESSAGE_LIST.DIARY_CANCEL)) {
       navigate(-1);
     }
-  };
+  }, []);
 
   const onLoadFile = async (event: ChangeEvent<HTMLInputElement>) => {
     const {
@@ -546,13 +545,13 @@ function DiaryManagementPage() {
     }
   }, []);
 
-  const onDelete = () => {
-    setPhoto({ todayPhoto: null, imagePath: null, imageSrc: null });
-  };
+  const onDelete = useCallback(() => {
+    setPhoto({ todayPhoto: null, imagePath: "", imageSrc: "" });
+  }, []);
 
-  const changeMode = (e: ChangeEvent<HTMLInputElement>) => {
+  const changeMode = useCallback((e: ChangeEvent<HTMLInputElement>) => {
     setMode(e.target.value);
-  };
+  }, []);
 
   const addSticker = useCallback(
     (sticker: StickerProps) => {
@@ -571,7 +570,6 @@ function DiaryManagementPage() {
     },
     [stickerList],
   );
-
   const handleStart = useCallback(
     (data: DraggableData, index: number) => {
       setStickerList((prevState) =>
@@ -673,91 +671,94 @@ function DiaryManagementPage() {
     );
   }, [sizes]);
 
-  const makeDiaryData = useCallback(
-    (formInputData: IFormInput) => {
-      let body;
-      if (isEditMode) {
-        body = {
-          diary: {
-            ...formInputData,
-            weather,
-            backgroundColor: diaryColor,
-            tripId: Number(tripId),
-            diaryId: diaryData?.data?.diaryId,
-            imagePath: photo.imagePath,
-            ratio: sizes.height / sizes.width,
-          },
-          todayPhoto: photo.todayPhoto,
-        };
-      } else {
-        body = {
-          diary: {
-            ...formInputData,
-            weather,
-            backgroundColor: diaryColor,
-            tripId: Number(tripId),
-            date: state?.diaryDate,
-            location: locationData.location,
-            ratio: sizes.height / sizes.width,
-          },
-          todayPhoto: photo.todayPhoto,
-        };
-      }
+  const makeDiaryData = (formInputData: IFormInput) => {
+    let body;
+    if (isEditMode) {
+      body = {
+        ...formInputData,
+        weather,
+        backgroundColor: diaryColor,
+        tripId: Number(tripId),
+        diaryId: diaryData?.data?.diaryId,
+        imagePath: photo.imagePath,
+        ratio: sizes.height / sizes.width,
+      };
+    } else {
+      body = {
+        ...formInputData,
+        weather,
+        backgroundColor: diaryColor,
+        tripId: Number(tripId),
+        diaryDate: state?.diaryDate,
+        location: locationData.location,
+        ratio: sizes.height / sizes.width,
+      };
+    }
 
-      const formData = new FormData();
-      if (photo.todayPhoto) {
-        formData.append("todayPhoto", photo.todayPhoto);
-      }
-      const _diary = JSON.stringify(body);
-      formData.append(
-        "diary",
-        new Blob([_diary], { type: "application/json" }),
-      );
-      return formData;
-    },
-    [sizes, locationData],
-  );
+    const formData = new FormData();
+    const _diary = JSON.stringify(body);
+    formData.append("diary", new Blob([_diary], { type: "application/json" }));
+    if (photo.todayPhoto) {
+      formData.append("todayPhoto", photo.todayPhoto);
+    }
+    return formData;
+  };
 
-  const makeDecorationData = useCallback(
-    (diaryId: number, frameImage?: File) => {
-      const _stickerList = stickerList.map((sticker) => {
-        return {
-          tokenId: sticker.tokenId,
-          x: sticker.originX,
-          y: sticker.originY,
-        };
-      });
+  const makeDecorationData = (diaryId: number, frameImage?: File) => {
+    const _stickerList = stickerList.map((sticker) => {
+      return {
+        tokenId: sticker.tokenId,
+        x: sticker.originX,
+        y: sticker.originY,
+      };
+    });
 
-      const formData = new FormData();
-      const _decoration = JSON.stringify({
-        diaryId,
-        stickerList: _stickerList,
-      });
-      formData.append(
-        "decoration",
-        new Blob([_decoration], { type: "application/json" }),
-      );
-      if (frameImage) {
-        formData.append("frameImage", frameImage);
-      }
-      return formData;
-    },
-    [],
-  );
+    const formData = new FormData();
+    const _decoration = JSON.stringify({
+      diaryId,
+      stickerList: _stickerList,
+    });
+    formData.append(
+      "decoration",
+      new Blob([_decoration], { type: "application/json" }),
+    );
+    if (frameImage) {
+      formData.append("frameImage", frameImage);
+    }
+    return formData;
+  };
+
   const postEditData = (formData: FormData, frameImage?: File) => {
-    mutateWriting(formData);
-    mutateDecoration(makeDecorationData(diaryData.data.diaryId, frameImage), {
-      onSuccess: () => navigate(`/trips/${tripId}/diarys/${state?.diaryDate}`),
+    mutateEditting(formData, {
+      onSuccess: () => {
+        if (stickerList.length < 1)
+          navigate(`/trips/${tripId}/diarys/${state?.diaryDate}`);
+        else {
+          mutateEdittingDecoration(
+            makeDecorationData(diaryData.data.diaryId, frameImage),
+            {
+              onSuccess: () =>
+                navigate(`/trips/${tripId}/diarys/${state?.diaryDate}`),
+            },
+          );
+        }
+      },
+      onError: (err) => console.log(err),
     });
   };
 
   const postData = (formData: FormData, frameImage?: File) => {
     mutateWriting(formData, {
       onSuccess: (data) => {
-        mutateDecoration(makeDecorationData(data.data.diaryId, frameImage), {
-          onSuccess: () =>
-            navigate(`/trips/${tripId}/diarys/${state?.diaryDate}`),
-        });
+        if (stickerList.length < 1)
+          navigate(`/trips/${tripId}/diarys/${state?.diaryDate}`);
+        else {
+          mutateDecoration(makeDecorationData(data?.data, frameImage), {
+            onSuccess: () =>
+              navigate(`/trips/${tripId}/diarys/${state?.diaryDate}`),
+            onError: (err) => console.log(err),
+          });
+        }
       },
     });
   };
@@ -773,11 +774,10 @@ function DiaryManagementPage() {
     }
   };
 
-  function deleteSticker() {
+  const deleteSticker = () => {
     setStickerList([]);
-  }
+  };
 
-  console.log(sizes);
   return (
     <motion.div
       initial={{ opacity: 0.2 }}
@@ -820,10 +820,9 @@ function DiaryManagementPage() {
           </TabContainer>
           <DiaryStyleContainer>
             {isEditMode ? (
-              <PositionContainer>
-                <BsFillGeoAltFill />
+              <RecordedLocationContainer>
                 {diaryData?.data?.location}
-              </PositionContainer>
+              </RecordedLocationContainer>
             ) : (
               <MyLocation
                 {...{ isFetchingLocation, locationData, refetchLocation }}
@@ -833,7 +832,8 @@ function DiaryManagementPage() {
               {weatherList.map((weatherType, idx) => (
                 <WeatherButton
                   type="button"
-                  key={v4()}
+                  // eslint-disable-next-line react/no-array-index-key
+                  key={idx}
                   active={idx === weather}
                   onClick={() => setWeather(idx)}
                 >

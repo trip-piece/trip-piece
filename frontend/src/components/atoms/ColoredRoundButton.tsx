@@ -31,7 +31,7 @@ const Button2 = styled.button<{
   font-weight: 700;
 `;
 
-export function ColoredRoundButton({
+export default function ColoredRoundButton({
   text,
   type,
   color,
@@ -58,5 +58,3 @@ export function CustomRoundButton({
     </Button2>
   );
 }
-
-export default ColoredRoundButton;

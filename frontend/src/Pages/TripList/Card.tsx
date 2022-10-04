@@ -1,10 +1,8 @@
 import styled from "@emotion/styled";
 import { memo, MouseEvent, useState } from "react";
-import { BsMoonStarsFill } from "react-icons/bs";
 import { InfiniteData, QueryObserverResult } from "react-query";
 import { Link } from "react-router-dom";
 import { REGIONLIST } from "../../utils/constants/constant";
-import { changeDateFormatToDot } from "../../utils/functions/util";
 import { TripManagementModal } from "./Modal";
 import activeTicket from "../../assets/image/activeTicket.png";
 
@@ -111,15 +109,16 @@ const LinkContainer = styled(Link)<{ editmode: number }>`
 
         .regionName {
           height: 17%;
-          font-size: ${(props) => props.theme.fontSizes.h3};
+          font-size: ${(props) => props.theme.fontSizes.h5};
           font-weight: bold;
         }
 
         .tripTitle {
           display: flex;
           align-items: center;
+          justify-content: center;
           height: 40%;
-          font-size: ${(props) => props.theme.fontSizes.s1};
+          font-size: ${(props) => props.theme.fontSizes.s2};
           text-align: center;
           width: 100%;
         }
@@ -127,10 +126,11 @@ const LinkContainer = styled(Link)<{ editmode: number }>`
         .date {
           height: fit-content;
           text-align: left;
-          font-size: ${(props) => props.theme.fontSizes.s2};
+          font-size: ${(props) => props.theme.fontSizes.s3};
           display: flex;
           flex-direction: column;
           justify-content: center;
+          padding: 0.5rem;
         }
       }
     }
@@ -156,7 +156,7 @@ function Card({
     event.preventDefault();
     setOpen(true);
   };
-  const regionImage = "/image/region/" + REGIONLIST[regionId] + ".png";
+  const regionImage = `/image/region/${REGIONLIST[regionId]}.png`;
 
   return (
     <Container>

@@ -1,6 +1,7 @@
 import styled from "@emotion/styled";
 import React, { ReactNode } from "react";
 import { pixelToRem } from "../../utils/functions/util";
+import { IChildren } from "../../utils/interfaces/common.interface";
 
 const Container = styled.div`
   padding: 1rem;
@@ -22,11 +23,7 @@ const Container = styled.div`
   }
 `;
 
-type ComponentProps = {
-  children: ReactNode;
-};
-
-function DateContainer({ children }: ComponentProps) {
+function DateContainer({ children }: IChildren) {
   return <Container>{children}</Container>;
 }
 

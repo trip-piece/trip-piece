@@ -2,11 +2,11 @@ import styled from "@emotion/styled";
 import { NavLink } from "react-router-dom";
 import { TiStarFullOutline } from "react-icons/ti";
 import { isSameDay } from "date-fns";
+import { motion } from "framer-motion";
 import {
   changeDateFormatToHyphen,
   pixelToRem,
 } from "../../utils/functions/util";
-import { motion } from "framer-motion";
 
 interface TripDateProps {
   date: Date;

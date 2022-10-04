@@ -3,8 +3,8 @@ import { getCookie, setCookie } from "../cookie";
 import userApis from "./userApis";
 
 const axiosInstance: AxiosInstance = axios.create({
-  // baseURL: "http://j7a607.q.ssafy.io:8080/",
-  baseURL: "https://j7a607.q.ssafy.io/api",
+  baseURL: "http://j7a607.q.ssafy.io:8080/",
+  // baseURL: "https://j7a607.q.ssafy.io/api",
   headers: {
     "Content-Type": "application/json",
     "Access-Control-Allow-Origin": "*",
@@ -57,7 +57,10 @@ axiosInstance.interceptors.response.use(
         const { accessToken, refreshToken } = response.data;
         setCookie("accessToken", accessToken);
         setCookie("refreshToken", refreshToken);
+        return;
       }
+      return Promise.reject(err);
     }
+    return Promise.reject(err);
   },
 );
