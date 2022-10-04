@@ -5,7 +5,7 @@ import { BsFillBookmarkHeartFill, BsBookmarkHeart } from "react-icons/bs";
 import { useEffect, useState } from "react";
 import { FaArrowLeft } from "react-icons/fa";
 import axiosInstance from "../../utils/apis/api";
-import { frameApis } from "../../utils/apis/frameApis";
+import { frameApis, Idata } from "../../utils/apis/frameApis";
 
 const Container = styled.article`
   min-height: 90vh;
@@ -81,48 +81,12 @@ const HashtagButton = styled.button`
   margin: 0 1% 0 1%;
 `;
 
-const Button = styled.article`
-  width: 100%;
-  height: 10vh;
-  padding: 1rem;
-  display: flex;
-  flex-direction: row;
-
-  button {
-    height: 5vh;
-    border-radius: 15px;
-    padding: 0 0.25rem 0 0.25rem;
-    font-size: ${(props) => props.theme.fontSizes.h6};
-    font-weight: bold;
-    background: ${(props) => props.theme.colors.yellow};
-    margin: 0 2% 0 2%;
-
-    justify-content: center;
-    align-items: center;
-    vertical-align: center;
-  }
-`;
-
-interface Idata {
-  frameId: number;
-  stickerList: [
-    {
-      stickerId: number;
-      tokenId: number;
-      tokenName: string;
-      tokenURL: string;
-      x: number;
-      y: number;
-    },
-  ];
-  scrapped: boolean;
-}
-
 function FrameDetailPage() {
   const navigate = useNavigate();
   const { frameId } = useParams();
   const [frame, setFrame] = useState<Idata>();
   const [scrap, setScrap] = useState<boolean>();
+  const [sticker, setSticker] = useState<string[]>();
 
   const moveToFrameMain = () => {
     navigate(`/frames`);
@@ -133,8 +97,26 @@ function FrameDetailPage() {
       .get(frameApis.getDetailedFrames(Number(frameId)))
       .then((response) => {
         const body: Idata = response.data;
-        setFrame(body);
+        console.log("zz");
+
+        console.log(response.data);
+
+        console.log(`body${body}`);
+
+        //console.log(frame);
+
         setScrap(body.scrapped);
+        return body;
+      })
+      .then((body) => {
+        console.log("씨발");
+
+        console.log(body);
+
+        setFrame(body);
+        console.log("zz");
+
+        console.log(frame);
       });
   };
 
@@ -166,9 +148,12 @@ function FrameDetailPage() {
     setScrap(!scrap);
   };
 
+  const distinctStickerName = (data: Idata) => {};
+
   useEffect(() => {
     console.log("맨 처음 렌더링될 때 한 번만 실행");
     getFrameDetail();
+    //  console.log(frame);
   }, []);
   return (
     <>
@@ -193,9 +178,9 @@ function FrameDetailPage() {
           </ScrapBtn>
         </ScarpContainer>
         <TagContainer>
-          {frame.stickerList.map((sticker, idx) => {
+          {/* {frame.stickerList.map((sticker, idx) => {
             sticker.tokenName;
-          })}
+          })} */}
           <HashtagButton>버튼</HashtagButton>
           <HashtagButton>버튼</HashtagButton>
           <HashtagButton>버튼</HashtagButton>
