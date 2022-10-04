@@ -99,12 +99,13 @@ const Container = styled.section`
   padding: 1rem;
 
   button {
-    padding: 0 1rem 0 1rem;
+    padding: 0.5rem 1rem 0.5rem 1rem;
     margin: 0 0 3% 0;
-    height: 2rem;
+    font-size: ${(props) => props.theme.fontSizes.h6};
     border-radius: 20px;
     background: ${(props) => props.theme.colors.yellow};
     color: ${(props) => props.theme.colors.mainDark};
+    font-weight: bold;
   }
 
   .CardList {

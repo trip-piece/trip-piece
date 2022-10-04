@@ -99,13 +99,12 @@ function Card(frame: FrameProps) {
     <Container>
       <LiContainer>
         {scrap ? (
-          <div onClick={changeScrap}>
-            <BsFillBookmarkHeartFill className="scrapicon" />{" "}
-          </div>
+          <BsFillBookmarkHeartFill
+            className="scrapicon"
+            onClick={changeScrap}
+          />
         ) : (
-          <div onClick={changeScrap}>
-            <BsBookmarkHeart className="unscrapicon" />
-          </div>
+          <BsBookmarkHeart className="unscrapicon" onClick={changeScrap} />
         )}
 
         {/* <button type="button" onClick={() => postSaveFrame(frame.frameId)}>

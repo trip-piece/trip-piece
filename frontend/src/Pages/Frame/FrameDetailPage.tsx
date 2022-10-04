@@ -1,8 +1,9 @@
 import styled from "@emotion/styled";
 import { Helmet } from "react-helmet-async";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { BsFillBookmarkHeartFill, BsBookmarkHeart } from "react-icons/bs";
 import { useState } from "react";
+import { FaArrowLeft } from "react-icons/fa";
 import axiosInstance from "../../utils/apis/api";
 import { frameApis } from "../../utils/apis/frameApis";
 
@@ -63,6 +64,22 @@ const Div = styled.div`
   }
 `;
 
+const BackSpaceBtn = styled.button`
+  width: auto;
+  height: auto;
+  background-color: transparent;
+  margin: 0 0 2% 3%;
+  color: ${(props) => props.theme.colors.gray800};
+`;
+
+const ScrapBtn = styled.button`
+  width: auto;
+  height: auto;
+  background-color: transparent;
+  margin: 0 0 2% 3%;
+  color: ${(props) => props.theme.colors.red};
+`;
+
 const Button = styled.article`
   width: 100%;
   height: 10vh;
@@ -86,6 +103,12 @@ const Button = styled.article`
 `;
 
 function FrameDetailPage() {
+  const navigate = useNavigate();
+
+  const moveToFrameMain = () => {
+    navigate(`/frames`);
+  };
+
   const { frameId } = useParams();
   const getFrameDetail = () => {
     axiosInstance.get(frameApis.getDetailedFrames(Number(frameId)));
@@ -156,6 +179,10 @@ function FrameDetailPage() {
         <title>마켓 | 프레임 상세 조회</title>
       </Helmet>
       <Container>
+        <BackSpaceBtn onClick={moveToFrameMain}>
+          <FaArrowLeft size={30} />
+        </BackSpaceBtn>
+
         <StickerCard>
           <img src={result.frameImage} alt="기본이미지" />
         </StickerCard>
@@ -167,17 +194,13 @@ function FrameDetailPage() {
               </button>
             ))}
           </Button>
-          <div>
+          <ScrapBtn onClick={changeScrap}>
             {scrap ? (
-              <div onClick={changeScrap}>
-                <BsFillBookmarkHeartFill className="scrapicon" />
-              </div>
+              <BsFillBookmarkHeartFill size={40} />
             ) : (
-              <div onClick={changeScrap}>
-                <BsBookmarkHeart className="unscrapicon" />
-              </div>
+              <BsBookmarkHeart size={40} />
             )}
-          </div>
+          </ScrapBtn>
         </Div>
       </Container>
     </>
