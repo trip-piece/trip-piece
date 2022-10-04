@@ -1,7 +1,7 @@
 import styled from "@emotion/styled";
 import { useEffect, useRef, useState } from "react";
 import { useQuery, useQueryClient } from "react-query";
-import { Navigate, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { HiPencilAlt } from "react-icons/hi";
 import { AxiosResponse } from "axios";
 import { Icon } from "@iconify/react/dist/offline";
@@ -13,9 +13,7 @@ import {
   changeDateFormatToHyphen,
   pixelToRem,
 } from "../../utils/functions/util";
-import ColoredRoundButton from "../../components/atoms/ColoredRoundButton";
 import axiosInstance from "../../utils/apis/api";
-import DiaryContentContainer from "../../components/modules/DiaryContentContainer";
 import useWindowResize from "../../utils/hooks/useWindowResize";
 import StickerImg from "../../components/atoms/StickerImg";
 import {
@@ -26,9 +24,9 @@ import TodayPhoto from "../../components/atoms/TodayPhoto";
 import useDeleteDiary from "../../utils/hooks/useDeleteDiary";
 import DateContainer from "../../components/atoms/DateContainer";
 import { weatherList } from "../../utils/constants/weatherList";
-import useSize from "../../utils/hooks/useSize";
 import { DIARY_COLOR_LIST, FONTTYPELIST } from "../../utils/constants/constant";
 import { getNFTImagePath } from "../../utils/functions/getNFTImagePath";
+import ColoredRoundButton from "../../components/atoms/ColoredRoundButton";
 
 const Container = styled.article`
   min-height: 75vh;
@@ -107,7 +105,6 @@ function TripDiaryPage({ startDate, today, endDate }: TripListProps) {
   const navigate = useNavigate();
   const diaryRef = useRef<HTMLDivElement>(null);
   const imageRef = useRef<HTMLImageElement>(null);
-  // const sizes = useSize(diaryRef);
   const size = useWindowResize();
   const queryClient = useQueryClient();
 
@@ -117,7 +114,7 @@ function TripDiaryPage({ startDate, today, endDate }: TripListProps) {
 
   const getDiary = (date: string) =>
     axiosInstance.get(diaryApis.targetDiary(Number(tripId), date));
-  console.log(diaryDate);
+
   const {
     isLoading,
     data: diaryData,
@@ -146,7 +143,6 @@ function TripDiaryPage({ startDate, today, endDate }: TripListProps) {
   };
 
   useEffect(() => {
-    console.log(diaryRef.current?.getBoundingClientRect());
     const wrapper = diaryRef.current?.getBoundingClientRect();
     setDiaryWidth(wrapper?.width);
   }, [diaryData, size]);
@@ -154,7 +150,6 @@ function TripDiaryPage({ startDate, today, endDate }: TripListProps) {
   useEffect(() => {
     (async () => getNFTList())();
   }, [diaryData]);
-  console.log(diaryData?.data);
   const onDelete = () => {
     if (window.confirm("다이어리를 삭제하시겠습니까?"))
       mutate(diaryData?.data?.diaryId, {
@@ -176,7 +171,6 @@ function TripDiaryPage({ startDate, today, endDate }: TripListProps) {
 
   if (startDate > selectedDiaryDate || diaryDate > today)
     return <div>아직 멀었다.</div>;
-  // console.log(sizes);
   return (
     <Container>
       {isLoading && <div>Loading...</div>}
@@ -243,7 +237,7 @@ function TripDiaryPage({ startDate, today, endDate }: TripListProps) {
                   left={sticker.x * diaryWidth}
                   alt={sticker.tokenName}
                   src={sticker.imagePath}
-                  key={sticker.y}
+                  key={sticker.y + sticker.x}
                 />
               ))}
             </div>

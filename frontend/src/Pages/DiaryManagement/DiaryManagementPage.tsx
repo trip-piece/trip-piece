@@ -20,23 +20,21 @@ import { useRecoilState } from "recoil";
 import { useQuery } from "react-query";
 import { AxiosError, AxiosResponse } from "axios";
 import Draggable, { DraggableData } from "react-draggable";
-import { red } from "@mui/material/colors";
 import { motion } from "framer-motion";
 import {
   DIARY_COLOR_LIST,
   FONTTYPELIST,
   MESSAGE_LIST,
 } from "../../utils/constants/constant";
-import { ColoredRoundButton } from "../../components/atoms/ColoredRoundButton";
+import ColoredRoundButton from "../../components/atoms/ColoredRoundButton";
 import { changeDateFormatToDot, pixelToRem } from "../../utils/functions/util";
 import { shake } from "../../style/animations";
 import useWindowResize from "../../utils/hooks/useWindowResize";
-import { formDataDiaryState, writedDiaryState } from "../../store/diaryAtoms";
+import { formDataDiaryState } from "../../store/diaryAtoms";
 import {
   IIPFSResult,
   IRequestedDiary,
   ISticker,
-  IWritedDiary,
   StickerProps,
 } from "../../utils/interfaces/diarys.interface";
 import Container from "../../components/atoms/Container";
@@ -472,6 +470,27 @@ function DiaryManagementPage() {
     };
   }, []);
 
+  const getNFTStickerList = async (NFTList) => {
+    if (NFTList?.length) {
+      const _stickerList = await Promise.all(
+        NFTList.map((sticker) => {
+          const rest = {
+            tokenId: sticker.tokenId,
+            x: sticker.x * sizes.width,
+            y: sticker.y * sizes.height,
+            isDragging: false,
+            originX: sticker.x,
+            originY: sticker.y,
+          };
+          return getNFTImagePath(sticker.tokenId, sticker.tokenURL, {
+            ...rest,
+          });
+        }),
+      );
+      setStickerList(_stickerList);
+    }
+  };
+
   useEffect(() => {
     if (diaryData?.data) {
       setDiaryColor(diaryData.data.backgroundColor);
@@ -486,19 +505,9 @@ function DiaryManagementPage() {
           imageSrc: diaryData.data.todayPhoto,
         }));
       }
+      console.log("stickerList", diaryData.data.stickerList);
       if (diaryData.data.stickerList?.length) {
-        const _stickerList = diaryData.data.stickerList.map((sticker) => {
-          return {
-            tokenId: sticker.tokenId,
-            imagePath: sticker.imagePath,
-            x: sticker.x * sizes.width,
-            y: sticker.y * sizes.width,
-            isDragging: false,
-            originX: sticker.x,
-            originY: sticker.y,
-          };
-        });
-        setStickerList(_stickerList);
+        getNFTStickerList(diaryData.data.stickerList);
       }
     }
   }, [diaryData]);
