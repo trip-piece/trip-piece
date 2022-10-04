@@ -10,4 +10,7 @@ import java.util.List;
 public interface FrameRepository extends JpaRepository<Frame, Long> {
     List<Frame> findAllByRegionOrderByIdDesc(Region region);
     Frame findByDiary(Diary diary);
+
+    @Override
+    boolean existsById(Long aLong);
 }
