@@ -18,7 +18,7 @@ interface InifinteListProps {
   count: number;
   isEditMode?: boolean;
   isCreated?: boolean;
-  change: (bool: boolean) => void;
+  change?: (bool: boolean) => void;
 }
 
 type GridProps = {
