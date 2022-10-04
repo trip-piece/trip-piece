@@ -216,6 +216,7 @@ function NftResponse() {
       });
     } catch (error) {
       contentPropsInit.result = "incorrect";
+      contentPropsInit.stickerUrl = "https://ifh.cc/g/V44V4O.png";
       setState(contentPropsInit);
       setLoading(false);
     }
@@ -223,8 +224,11 @@ function NftResponse() {
 
   const validationLink = (url: string) => {
     console.log("validationLink 시작");
+
     const regax =
       /^(http(s)?:\/\/)(j7a607.q.ssafy.io)(\/)(places)(\/)([\d]{1,2})(\/)([a-zA-Z0-9!@#$%^&]{10})/g;
+    // const regax =
+    //   /^(http(s)?:\/\/)(localhost:3000)(\/)(places)(\/)([\d]{1,2})(\/)([a-zA-Z0-9!@#$%^&]{10})/g;
 
     if (regax.test(url)) {
       console.log("validationLink Test 성공");

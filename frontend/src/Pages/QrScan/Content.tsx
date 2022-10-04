@@ -7,6 +7,7 @@ import { ContentProps } from "../../utils/interfaces/qrscan.inteface";
 
 // eslint-disable-next-line import/no-named-as-default
 import ColoredRoundButton from "../../components/atoms/ColoredRoundButton";
+import { useNavigate } from "react-router-dom";
 
 const Box = styled.div`
   box-shadow: 0 4px 4px 2px rgb(0 0 0/25%);
@@ -123,6 +124,12 @@ function Content({ result, stickerName, stickerUrl }: ContentProps) {
   } else {
     condition = false;
   }
+
+  const navigate = useNavigate();
+  const moveToMain = () => {
+    navigate("/main");
+  };
+
   return (
     <Box>
       <MainBox>
@@ -139,7 +146,12 @@ function Content({ result, stickerName, stickerUrl }: ContentProps) {
 
       <Result result={result} />
       <ResulButtontBox>
-        <ColoredRoundButton text="  확인  " color="mainLight" type="submit" />
+        <ColoredRoundButton
+          text="  확인  "
+          color="mainLight"
+          type="button"
+          func={moveToMain}
+        />
       </ResulButtontBox>
     </Box>
   );
