@@ -72,7 +72,7 @@ function AnotherRouter() {
             element={<MyLocationListPage />}
           />
           <Route path="qrscan" element={<QrScanner />} />
-          <Route path="/places/:placeId" element={<NftResponse />} />
+          <Route path="/places/:regionId/:code" element={<NftResponse />} />
         </Routes>
       </Suspense>
     </>

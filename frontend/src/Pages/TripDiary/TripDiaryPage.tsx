@@ -39,7 +39,8 @@ const Container = styled.article`
 `;
 
 const NoDiaryContainer = styled.div`
-  height: 100%;
+  width: 100%;
+  min-height: 70vh;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -170,11 +171,21 @@ function TripDiaryPage({ startDate, today, endDate }: TripListProps) {
   };
 
   if (startDate > selectedDiaryDate || diaryDate > today)
-    return <div>아직 멀었다.</div>;
+    return (
+      <Container>
+        <NoDiaryContainer>
+          <HiPencilAlt />
+          <p>
+            미래는 아무도 모르는 법! <br /> 다이어리 작성은 몇밤만 더 자고
+            오세용~
+          </p>
+        </NoDiaryContainer>
+      </Container>
+    );
   return (
     <Container>
       {isLoading && <div>Loading...</div>}
-      {isSuccess && !diaryData.data && (
+      {isSuccess && !diaryData?.data && (
         <NoDiaryContainer>
           <HiPencilAlt />
           <p>
@@ -188,7 +199,7 @@ function TripDiaryPage({ startDate, today, endDate }: TripListProps) {
           />
         </NoDiaryContainer>
       )}
-      {isSuccess && diaryData.data && (
+      {isSuccess && diaryData?.data && (
         <>
           <div>
             <button type="button" onClick={moveToEditDiary}>
@@ -221,7 +232,6 @@ function TripDiaryPage({ startDate, today, endDate }: TripListProps) {
               <DiaryContent diaryWidth={diaryWidth}>
                 {diaryData?.data?.content}
               </DiaryContent>
-
               {diaryData.data?.todayPhoto && (
                 <TodayPhoto
                   src={diaryData.data?.todayPhoto}
@@ -230,7 +240,6 @@ function TripDiaryPage({ startDate, today, endDate }: TripListProps) {
                   diaryWidth={diaryWidth}
                 />
               )}
-
               {NFTStickerList?.map((sticker: IRequestedSticker) => (
                 <StickerImg
                   up={sticker.y * diaryWidth * diaryData.data.ratio}

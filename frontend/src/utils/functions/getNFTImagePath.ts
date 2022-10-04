@@ -5,6 +5,17 @@ interface TokenDetail {
   imagePath: string;
 }
 
+export const getImage = async (tokenUrl: string): Promise<any> => {
+  try {
+    const response = await axios.get(
+      `https://www.infura-ipfs.io/ipfs/${tokenUrl}`,
+    );
+    return response;
+  } catch (err) {
+    console.log(err);
+  }
+};
+
 export const getNFTImagePath = async (
   tokenId: number,
   tokenURI: string,

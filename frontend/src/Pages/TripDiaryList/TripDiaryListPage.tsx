@@ -14,6 +14,7 @@ import { Navigation, Pagination, Scrollbar, A11y } from "swiper";
 import styled from "@emotion/styled";
 import { isSameDay } from "date-fns";
 import { AxiosError, AxiosResponse } from "axios";
+import { motion } from "framer-motion";
 import tripApis from "../../utils/apis/tripsApis";
 import {
   changeDateFormatToHyphen,
@@ -34,6 +35,7 @@ const Container = styled.section`
 
 const Header = styled.nav`
   height: ${pixelToRem(75)};
+  margin-bottom: 1rem;
 `;
 
 const NestedRoute = styled.div`
@@ -92,7 +94,12 @@ function TripDiaryListPage() {
   }, [data]);
 
   return (
-    <>
+    <motion.div
+      initial={{ opacity: 0.2 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.5 }}
+    >
       <Helmet>
         <title>여행기록 | 여행조각</title>
       </Helmet>
@@ -105,7 +112,7 @@ function TripDiaryListPage() {
               : data && REGIONLIST[data?.data.regionId]}
           </H2>
           {isLoading && <div>Loading...</div>}
-          {isSuccess && loading && (
+          {isSuccess && loading && result.length > 5 && (
             <Swiper
               modules={[Navigation, Pagination, Scrollbar, A11y]}
               slidesPerView={5}
@@ -115,6 +122,20 @@ function TripDiaryListPage() {
               {result.length &&
                 result.map((date) => (
                   <SwiperSlide key={v4()}>
+                    <TripDate date={date} />
+                  </SwiperSlide>
+                ))}
+            </Swiper>
+          )}
+          {isSuccess && loading && result.length <= 5 && (
+            <Swiper
+              modules={[Navigation, Pagination, Scrollbar, A11y]}
+              slidesPerView={result.length}
+              initialSlide={todayIndex}
+            >
+              {result.length &&
+                result.map((date, idx) => (
+                  <SwiperSlide key={idx}>
                     <TripDate date={date} />
                   </SwiperSlide>
                 ))}
@@ -148,7 +169,7 @@ function TripDiaryListPage() {
           </NestedRoute>
         </Suspense>
       </Container>
-    </>
+    </motion.div>
   );
 }
 

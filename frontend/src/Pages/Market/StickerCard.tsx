@@ -1,15 +1,11 @@
 import styled from "@emotion/styled";
 import { FaEthereum } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
-import { memo } from "react";
+import { memo, useState } from "react";
+import { IMarket } from "../../utils/interfaces/markets.interface";
 
 interface CardProps {
-  sticker: {
-    marketId: number;
-    image: string;
-    name: string;
-    price: number;
-  };
+  sticker: IMarket;
 }
 
 const Container = styled.article`
@@ -55,17 +51,30 @@ const Container = styled.article`
 `;
 
 function Card({ sticker }: CardProps) {
-  const image = "/image/region/" + sticker.name + ".png";
+  const image = "/image/region/" + sticker.tokenName + ".png";
   const navigate = useNavigate();
+  const [imagePath, setImagePath] = useState<string>();
   const moveToDetailPage = (marketId: Number) => {
     navigate("/market/" + marketId + "/detail");
   };
+  const getImage = (tokenUrl: string): string => {
+    fetch(`https://www.infura-ipfs.io/ipfs/${sticker.tokenURL}`)
+      .then((res) => {
+        return res.json();
+      })
+      .then((data) => {
+        setImagePath(data[0].image);
+      });
+    return imagePath;
+  };
+  getImage(sticker.tokenURL);
+
   return (
     <Container onClick={() => moveToDetailPage(sticker.marketId)}>
       <div className="ImageBox">
-        <img src={sticker.image} />
+        <img src={imagePath} />
       </div>
-      <p className="NFTName">{sticker.name}</p>
+      <p className="NFTName">{sticker.tokenName}</p>
       <p className="NFTPrice">
         <FaEthereum />
         {sticker.price}

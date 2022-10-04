@@ -2,6 +2,7 @@ import styled from "@emotion/styled";
 import { NavLink } from "react-router-dom";
 import { TiStarFullOutline } from "react-icons/ti";
 import { isSameDay } from "date-fns";
+import { motion } from "framer-motion";
 import {
   changeDateFormatToHyphen,
   pixelToRem,
@@ -54,12 +55,14 @@ function TripDate({ date }: TripDateProps) {
   }
 
   return (
-    <DateContainer to={diaryDate} color={color}>
-      <TiStarFullOutline />
-      <p>
-        {tripMonth}/{tripDate}
-      </p>
-    </DateContainer>
+    <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
+      <DateContainer to={diaryDate} color={color}>
+        <TiStarFullOutline />
+        <p>
+          {tripMonth}/{tripDate}
+        </p>
+      </DateContainer>
+    </motion.div>
   );
 }
 

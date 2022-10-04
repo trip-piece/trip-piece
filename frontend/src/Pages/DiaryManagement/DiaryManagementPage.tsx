@@ -69,15 +69,16 @@ const Select = styled.select`
   border-radius: 5px;
   padding: 0.25rem 0.5rem;
   color: ${(props) => props.theme.colors.gray900};
+  width: 40%;
 `;
 
 const DiaryStyleContainer = styled.div`
-  background-color: ${(props) => props.theme.colors.mainLight};
+  background-color: ${(props) => props.theme.colors.white};
   display: flex;
-  justify-content: space-evenly;
+  justify-content: space-between;
   align-items: center;
   width: 100%;
-  border-radius: 10px;
+  border: 0px;
 `;
 
 const WeatherButton = styled.button<{ active: boolean }>`
@@ -100,6 +101,9 @@ const FileUploadContainer = styled.div`
   height: 10%;
   padding-top: 1rem;
   width: 100%;
+  background-color: ${(props) => props.theme.colors.mainDark};
+  border: 0px;
+  color: ${(props) => props.theme.colors.white};
 `;
 
 const HandleButtonListContainer = styled.div<{ mode: string }>`
@@ -107,6 +111,7 @@ const HandleButtonListContainer = styled.div<{ mode: string }>`
   gap: 1rem;
   align-items: center;
   height: 10%;
+  margin-top: ${(props) => (props.mode === "decoration" ? "0" : "1rem")};
   margin-bottom: ${(props) => (props.mode === "decoration" ? "125px" : "1rem")};
 `;
 const ColorButton = styled.button<{ active: boolean; backgroundColor: string }>`
@@ -116,6 +121,7 @@ const ColorButton = styled.button<{ active: boolean; backgroundColor: string }>`
   border-radius: 50%;
   display: block;
   opacity: ${(props) => (props.active ? 1.0 : 0.2)};
+  border: 1px solid gray;
 `;
 
 const AutosizedTextarea = styled(TextareaAutosize)<IDiaryStyle>`
@@ -151,9 +157,10 @@ const ColorAndPositionContainer = styled.div`
   width: 100%;
   display: flex;
   align-items: center;
-  justify-content: space-evenly;
-  background-color: ${(props) => props.theme.colors.lightBlue};
+  justify-content: space-between;
+  background-color: ${(props) => props.theme.colors.white};
   padding: 0 1rem;
+  border: 0px;
 `;
 
 const Label = styled.label`
@@ -169,9 +176,9 @@ const ImageControlContainer = styled.div`
   align-items: center;
   justify-content: space-between;
   height: 3.25rem;
-  background-color: white;
+  background-color: ${(props) => props.theme.colors.mainDark};
   > p {
-    background-color: ${(props) => props.theme.colors.gray200};
+    background-color: ${(props) => props.theme.colors.white};
     width: 70%;
     height: ${pixelToRem(28)};
     display: flex;
@@ -215,7 +222,7 @@ const DiaryController = styled.div<{ backgroundcolor: string }>`
 const MainContainer = styled.div`
   width: 100%;
   min-height: 50vh;
-  background-color: ${(props) => props.theme.colors.white};
+  background-color: ${(props) => props.theme.colors.mainDark};
 `;
 
 const StickerZone = styled.div`
@@ -338,8 +345,7 @@ const TabContainer = styled.div`
     left: 0;
     bottom: 0;
     z-index: 0;
-    background: ${(props) => props.theme.colors.mainGradient};
-    opacity: 0.9;
+    background: ${(props) => props.theme.colors.mainDark};
     transition: 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
   }
 `;
@@ -782,7 +788,12 @@ function DiaryManagementPage() {
   }
 
   return (
-    <>
+    <motion.div
+      initial={{ opacity: 0.2 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.5 }}
+    >
       <Helmet>
         <title>다이어리 | 여행조각</title>
       </Helmet>
@@ -817,20 +828,16 @@ function DiaryManagementPage() {
             <div className="tab" />
           </TabContainer>
           <DiaryStyleContainer>
-            <Select
-              id="font"
-              defaultValue="0"
-              {...register("fontType", { valueAsNumber: true })}
-            >
-              <option value="0" disabled hidden>
-                글씨체
-              </option>
-              {FONTTYPELIST.map((font, idx) => (
-                <option key={font} value={idx}>
-                  {font}
-                </option>
-              ))}
-            </Select>
+            {isEditMode ? (
+              <PositionContainer>
+                <BsFillGeoAltFill />
+                {diaryData?.data?.location}
+              </PositionContainer>
+            ) : (
+              <MyLocation
+                {...{ isFetchingLocation, locationData, refetchLocation }}
+              />
+            )}
             <WeatherButtonListContainer>
               {weatherList.map((weatherType, idx) => (
                 <WeatherButton
@@ -857,16 +864,20 @@ function DiaryManagementPage() {
                 />
               ))}
             </ColorButtonListContainer>
-            {isEditMode ? (
-              <PositionContainer>
-                <BsFillGeoAltFill />
-                {diaryData?.data?.location}
-              </PositionContainer>
-            ) : (
-              <MyLocation
-                {...{ isFetchingLocation, locationData, refetchLocation }}
-              />
-            )}
+            <Select
+              id="font"
+              defaultValue="0"
+              {...register("fontType", { valueAsNumber: true })}
+            >
+              <option value="0" disabled hidden>
+                글씨체
+              </option>
+              {FONTTYPELIST.map((font, idx) => (
+                <option key={font} value={idx}>
+                  {font}
+                </option>
+              ))}
+            </Select>
           </ColorAndPositionContainer>
           <MainContainer>
             <DiaryController
@@ -1036,7 +1047,7 @@ function DiaryManagementPage() {
           />
         )}
       </Container>
-    </>
+    </motion.div>
   );
 }
 

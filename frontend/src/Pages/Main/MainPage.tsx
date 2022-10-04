@@ -305,7 +305,7 @@ function MainPage() {
     isSuccess: isSuccess2,
     data: data2,
     refetch,
-  } = useQuery<AxiosResponse<IPlace[]>, AxiosError>(
+  } = useQuery<AxiosResponse<any>, AxiosError>(
     [`${userInfo.id}-MyLocationPlaces`],
     async () => {
       const userLocation: any = await getLocation();
@@ -325,7 +325,6 @@ function MainPage() {
 
   useEffect(() => {
     if (data1?.data) {
-      console.log(data1?.data);
       setUpcoming(data1.data);
       setRegionImage(`/image/region/${REGIONLIST[data1?.data.regionId]}.png`);
       if (changeHyphenToDateFormat(data1.data.startDate) > new Date()) {
@@ -333,7 +332,7 @@ function MainPage() {
       } else setIsProgress(1);
     }
     if (data2?.data) {
-      setPlaces(data2.data.content);
+      setPlaces(data2?.data.content);
       if (data2.data.length) {
         setPlaces(data2.data);
       }

@@ -7,12 +7,7 @@ import MyStickerList from "./MyStickerList";
 
 function MySticker() {
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.7 }}
-    >
+    <>
       <Helmet>
         <title>보유 NFT 스티커 | 여행조각</title>
       </Helmet>
@@ -20,7 +15,7 @@ function MySticker() {
       <UserInfo />
       <Tap type={0} />
       <MyStickerList />
-    </motion.div>
+    </>
   );
 }
 

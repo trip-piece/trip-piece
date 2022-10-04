@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef } from "react";
 import styled from "@emotion/styled";
 import { pixelToRem } from "../../utils/functions/util";
 
@@ -22,7 +22,7 @@ const Button = styled.button`
   /* 크기 */
   width: ${pixelToRem(171)};
   height: ${pixelToRem(38)};
-  font-size: ${(props) => props.theme.fontSizes.s2};
+  font-size: ${(props) => props.theme.fontSizes.h5};
 
   margin-top: 20%;
   /* 색상 */
@@ -30,12 +30,14 @@ const Button = styled.button`
   z-index: 1;
 `;
 
-function LadingButton() {
+function LandingButton() {
+  const testRef = useRef(null);
+  const scrollToElement = () => testRef.current.scrollIntoView();
   return (
     <Container>
-      <Button>방법은 다음과 같습니다 &gt;&gt;Click Me&lt;&lt; </Button>
+      <Button onClick={scrollToElement}>둘러보기</Button>
     </Container>
   );
 }
 
-export default LadingButton;
+export default LandingButton;
