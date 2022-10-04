@@ -45,7 +45,6 @@ function InfiniteList({
 }: InifinteListProps) {
   const [hasError, setHasError] = useState(false);
   const bottom = useRef(null);
-
   const getTargetComponentList = async ({
     pageParam = 0,
   }: QueryFunctionContext) => {

@@ -3,6 +3,12 @@ import { Helmet } from "react-helmet-async";
 import { useParams } from "react-router-dom";
 import { FaEthereum } from "react-icons/fa";
 import { BsFillCreditCardFill } from "react-icons/bs";
+import { IMarket } from "../../utils/interfaces/markets.interface";
+import { useState } from "react";
+import { AxiosError, AxiosResponse } from "axios";
+import axiosInstance from "../../utils/apis/api";
+import { useQuery } from "react-query";
+import { marketApis } from "../../utils/apis/marketApis";
 
 const Container = styled.article`
   min-height: 90vh;
@@ -95,12 +101,27 @@ const Button = styled.article`
 
 function StickerDetailPage() {
   const { marketId } = useParams();
-  const result = {
-    image:
-      "https://www.infura-ipfs.io/ipfs/QmcqJiEjJon38JNzbsdgKhLBsjfWF8tZiUT5Mi7GQbtGP4",
-    name: "NFT카드1",
-    price: 123.5,
+  const [imagePath, setImagePath] = useState<string>();
+  const { data } = useQuery<AxiosResponse<IMarket>, AxiosError>(
+    ["marketDetail"],
+    () => axiosInstance.get(marketApis.getMarketDetail(marketId)),
+    {
+      refetchOnWindowFocus: false,
+      refetchOnReconnect: false,
+      refetchOnMount: true,
+    },
+  );
+  const getImage = (tokenUrl: string): string => {
+    fetch(`https://www.infura-ipfs.io/ipfs/${data?.data?.tokenURL}`)
+      .then((res) => {
+        return res.json();
+      })
+      .then((data) => {
+        setImagePath(data[0].image);
+      });
+    return imagePath;
   };
+  getImage(data?.data?.tokenURL);
   return (
     <>
       <Helmet>
@@ -108,14 +129,14 @@ function StickerDetailPage() {
       </Helmet>
       <Container>
         <StickerCard>
-          <img src={result.image} />
-          <p>{result.name}</p>
+          <img src={imagePath} />
+          <p>{data?.data?.tokenName}</p>
         </StickerCard>
         <Price>
           <p>판매 가격</p>
           <div className="price">
             <FaEthereum />
-            <p>{result.price}</p>
+            <p>{data?.data?.price}</p>
           </div>
         </Price>
         <Button>

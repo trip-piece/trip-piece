@@ -13,6 +13,13 @@ contract StickerMarket {
     mapping(uint256 => uint256) stickerPrices;
     uint256[] public onSaleStickerArray;
 
+    function checkerOwner(uint256 _tokenId) view public returns (address){
+        return trippieceNFT.ownerOf(_tokenId);
+    }
+
+    function getThisAddress() view public returns (address){
+        return address(this);
+    }
 
 
     function insertIntoMarket(uint256 _tokenId, uint256 _price) public {

@@ -1,8 +1,16 @@
 import styled from "@emotion/styled";
-import { SetStateAction, useState } from "react";
+import { SetStateAction, useEffect, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { useNavigate } from "react-router-dom";
+import { useRecoilState } from "recoil";
 import { Navigation } from "swiper";
+import { UserInfoState } from "../../store/atom";
+import { NFTContract } from "../../utils/common/NFT_ABI";
+import { MarketContract } from "../../utils/common/Market_ABI";
+import { marketApis } from "../../utils/apis/marketApis";
+import axiosInstance from "../../utils/apis/api";
+import { response } from "msw";
+import { saveRequest } from "../../utils/interfaces/markets.interface";
 
 const Container = styled.article`
   min-height: 90vh;
@@ -99,47 +107,80 @@ const Button = styled.article`
   }
 `;
 
-interface StickerProps {
-  image: string;
-  name: string;
+interface TokenDetail {
+  tokenName: string;
+  imagePath: string;
 }
 
-function StickerDetailPage() {
-  const result = [
-    {
-      image:
-        "https://www.infura-ipfs.io/ipfs/QmcqJiEjJon38JNzbsdgKhLBsjfWF8tZiUT5Mi7GQbtGP4",
-      name: "NFT카드1",
-    },
-    {
-      image:
-        "https://www.infura-ipfs.io/ipfs/QmRkTWeyoREXuJ9s2vCtPTwvA1iaPjGS29Ei2fKZFZisGL",
-      name: "NFT카드2",
-    },
-    {
-      image:
-        "https://www.infura-ipfs.io/ipfs/QmXyV1fnFM4EYv42KyfAyzXNX8bu73zpqQndoJBQPbL5pF",
-      name: "NFT카드3",
-    },
-    {
-      image:
-        "https://www.infura-ipfs.io/ipfs/QmPPEWSC7qX7rzxE76XJLkNQk2d95r6BSfiPMS3tNs4p1y",
-      name: "NFT카드4",
-    },
-    {
-      image:
-        "https://www.infura-ipfs.io/ipfs/QmQyqcdu8HhnN3tfJtzAduS59GJt4ZNxjSXnTaim72fxCU",
-      name: "NFT카드5",
-    },
-  ];
+interface NFT {
+  tokenId: number;
+  tokenURI: string;
+}
 
-  const [sticker, setSticker] = useState<StickerProps>(result[0]);
+interface StickerDetail {
+  tokenId: number;
+  imagePath: string;
+  tokenName: string;
+}
+
+function MarketRegisterPage() {
+  const [userInfo] = useRecoilState(UserInfoState);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [NFTList, setNFTList] = useState<NFT[]>([]);
+  const [NFTDetailList, setNFTDetailList] = useState<TokenDetail[]>([]);
+  console.log(userInfo.address);
+
+  const getNFTList = async () => {
+    try {
+      setLoading(true);
+      const result = await NFTContract.methods
+        .getStickerList(userInfo.address)
+        .call();
+      if (result) {
+        setNFTList(result);
+        const tokenList: React.SetStateAction<TokenDetail[]> = [];
+        for (var i = 0; i < result.length; i++) {
+          await fetch(`https://www.infura-ipfs.io/ipfs/${result[i].tokenURI}`)
+            .then((res) => {
+              return res.json();
+            })
+            .then((data) => {
+              const token: TokenDetail = {
+                tokenName: String(data[0].name),
+                imagePath: String(data[0].image),
+              };
+              tokenList.push(token);
+            });
+        }
+        setNFTDetailList(tokenList);
+        setLoading(false);
+      }
+    } catch (err) {
+      console.log("Error getSticker : ", err);
+    }
+  };
+  useEffect(() => {
+    getNFTList();
+  }, []);
+
+  const stickerDefault: StickerDetail = {
+    tokenId: NFTList[0]?.tokenId,
+    tokenName: NFTDetailList[0]?.tokenName,
+    imagePath: NFTDetailList[0]?.imagePath,
+  };
+
+  const [sticker, setSticker] = useState<StickerDetail>(stickerDefault);
   const [price, setPrice] = useState(Number);
 
   const handleChangeSticker = (e: {
     target: { value: SetStateAction<string> };
   }) => {
-    setSticker(result[Number(e.target.value)]);
+    const sticker = {
+      tokenId: NFTList[Number(e.target.value)].tokenId,
+      imagePath: NFTDetailList[Number(e.target.value)].imagePath,
+      tokenName: NFTDetailList[Number(e.target.value)].tokenName,
+    };
+    setSticker(sticker);
   };
 
   const handleChangePrice = (e: {
@@ -153,6 +194,45 @@ function StickerDetailPage() {
     navigate(-1);
   };
 
+  const insertIntoSolMarket = async (e: { preventDefault: () => void }) => {
+    setLoading(true);
+    e.preventDefault();
+    try {
+      if (price <= 0) alert("price에 올바른 값을 넣어주세요.");
+      else {
+        const approveResult = await NFTContract.methods
+          .setApprovalForAll(import.meta.env.VITE_MARKET_CA, true)
+          .send({ from: userInfo.address });
+
+        console.log("권한 부여 성공" + approveResult.status);
+
+        const result = await MarketContract.methods
+          .insertIntoMarket(sticker.tokenId, price)
+          .send({ from: userInfo.address });
+
+        if (result.status) {
+          saveMarket({ tokenId: sticker.tokenId, price: price });
+          console.log("DB등록완료");
+        }
+        console.log("nft 마켓 등록");
+        console.log(result);
+        console.log("DB 등록");
+        console.log(response);
+        alert("등록이 완료되었습니다.");
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const saveMarket = async (data: saveRequest) => {
+    await axiosInstance
+      .post(marketApis.insertIntoMarket, data)
+      .then((response: { data: string }) => {
+        console.log(response.data);
+      });
+  };
+
   return (
     <>
       <Helmet>
@@ -162,8 +242,8 @@ function StickerDetailPage() {
         <StickerCard>
           {sticker !== undefined && (
             <>
-              <img src={sticker.image} />
-              <p>{sticker.name}</p>
+              <img src={sticker.imagePath} />
+              <p>{sticker.tokenName}</p>
             </>
           )}
         </StickerCard>
@@ -172,9 +252,9 @@ function StickerDetailPage() {
             placeholder="스티커를 선택해주세요."
             onChange={(e) => handleChangeSticker(e)}
           >
-            {result.length &&
-              result.map((sticker, idx) => (
-                <option value={idx}>{sticker.name}</option>
+            {NFTDetailList?.length &&
+              NFTDetailList?.map((sticker, idx) => (
+                <option value={idx}>{sticker.tokenName}</option>
               ))}
           </select>
           <input
@@ -186,7 +266,9 @@ function StickerDetailPage() {
         </RegisterForm>
         <Button>
           {/* 수정이면 수정 버튼으로.. */}
-          <button className="register">등록</button>
+          <button className="register" onClick={insertIntoSolMarket}>
+            등록
+          </button>
           <button onClick={moveToBeforePage}>취소</button>
         </Button>
       </Container>
@@ -194,4 +276,4 @@ function StickerDetailPage() {
   );
 }
 
-export default StickerDetailPage;
+export default MarketRegisterPage;
