@@ -97,8 +97,7 @@ const KoreaMap = styled.div`
     height: 19%;
 
     button {
-      background-color: black;
-      opacity: 0.3;
+      background-color: transparent;
       width: 25%;
       height: 100%;
     }
