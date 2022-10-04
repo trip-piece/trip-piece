@@ -25,11 +25,11 @@ import {
   changeDateFormatToHyphen,
   pixelToRem,
 } from "../../utils/functions/util";
-import { UserInfoState } from "../../store/atom";
+import { IUserInfo, UserInfoState } from "../../store/atom";
 import trippieceLogo from "../../assets/image/trippiece_logo.png";
 import { ReactJSXElement } from "@emotion/react/types/jsx-namespace";
 // import { ReactComponent as EtherIcon } from "../../assets/svgs/etherIcon.svg";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useQuery } from "react-query";
 import axiosInstance from "../../utils/apis/api";
 import { AxiosError, AxiosResponse } from "axios";
@@ -39,6 +39,7 @@ import React from "react";
 import { REGIONLIST } from "../../utils/constants/constant";
 import { CodeProps } from "../../utils/interfaces/qrscan.inteface";
 import NestedModal from "../MyPage/Modal";
+import { useWeb3React } from "@web3-react/core";
 
 const DrawerHeader = styled.div`
   display: flex;
@@ -366,6 +367,10 @@ export default function Navbar() {
   const [loading, setLoading] = useState<boolean>(false);
   const today = changeDateFormatToHyphen(new Date());
   const [isProgress, setIsProgress] = useState(0);
+  const { active, deactivate } = useWeb3React();
+
+  const [userInfoState] = useRecoilState(UserInfoState);
+  const mounted = useRef(false);
 
   const toggleDrawer =
     // eslint-disable-next-line @typescript-eslint/no-shadow
@@ -421,10 +426,14 @@ export default function Navbar() {
     navigate("/main");
   };
 
+  useEffect(() => {
+    if (!mounted.current) {
+      mounted.current = true;
+    } else if (!userInfoState.isLoggedIn) navigate("/");
+  }, [userInfoState.isLoggedIn]);
+
   const logout = () => {
-    const { active, account, deactivate } = useWeb3React();
     if (active) {
-      console.log(`active ${active} / ${address}`);
       console.log("로그아웃하기  ~ ");
 
       const userLogout: IUserInfo = {

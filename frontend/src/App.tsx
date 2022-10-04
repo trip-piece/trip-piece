@@ -1,7 +1,8 @@
 import styled from "@emotion/styled";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { ReactQueryDevtools } from "react-query/devtools";
+import { useNavigate } from "react-router-dom";
 import { useRecoilState } from "recoil";
 import Web3 from "web3";
 
@@ -29,6 +30,7 @@ function App() {
   );
 
   const [userInfoState, setUserInfoState] = useRecoilState(UserInfoState);
+  
   // 새로고침 막기 변수
 
   let userInfoInit: IUserInfo;
