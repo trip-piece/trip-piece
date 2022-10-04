@@ -12,9 +12,9 @@ export const PadZero = (num: number | undefined) => {
   return String(num).padStart(2, "0");
 };
 
-export const changeDateForamtToDot = (date: string): string => {
+export const changeDateFormatToDot = (date: string): string => {
   const _date = new Date(date);
-  const year = String(_date.getFullYear()).substring(2);
+  const year = String(_date.getFullYear());
 
   const month = PadZero(_date.getMonth() + 1);
   const day = PadZero(_date.getDate());
@@ -93,6 +93,15 @@ export const getLocation = (): Promise<ICoordinate> => {
       });
     }
   });
+};
+
+export const changeHyphenToDateFormat = (date: string) => {
+  var yyyyMMdd = String(date);
+  var sYear = yyyyMMdd.substring(0, 4);
+  var sMonth = yyyyMMdd.substring(5, 7);
+  var sDate = yyyyMMdd.substring(8, 10);
+
+  return new Date(Number(sYear), Number(sMonth) - 1, Number(sDate));
 };
 
 export const getLocationAddress = async (lat: number, lng: number) => {

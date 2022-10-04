@@ -6,6 +6,7 @@ import {
   changeDateFormatToHyphen,
   pixelToRem,
 } from "../../utils/functions/util";
+import { motion } from "framer-motion";
 
 interface TripDateProps {
   date: Date;
@@ -54,12 +55,14 @@ function TripDate({ date }: TripDateProps) {
   }
 
   return (
-    <DateContainer to={diaryDate} color={color}>
-      <TiStarFullOutline />
-      <p>
-        {tripMonth}/{tripDate}
-      </p>
-    </DateContainer>
+    <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
+      <DateContainer to={diaryDate} color={color}>
+        <TiStarFullOutline />
+        <p>
+          {tripMonth}/{tripDate}
+        </p>
+      </DateContainer>
+    </motion.div>
   );
 }
 

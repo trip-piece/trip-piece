@@ -24,3 +24,8 @@ export const writedDiaryState = selectorFamily({
       }));
     },
 });
+
+export const formDataDiaryState = atom<FormData>({
+  key: "formDataDiaryState",
+  default: null,
+});

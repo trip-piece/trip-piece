@@ -1,10 +1,10 @@
 import styled from "@emotion/styled";
-import { Suspense, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { ReactQueryDevtools } from "react-query/devtools";
 import { useRecoilState } from "recoil";
 import Web3 from "web3";
-import LoginButton from "./Pages/Landing/LoginButton";
+
 import Router from "./Router";
 import { IUserInfo, UserInfoState } from "./store/atom";
 import axiosInstance from "./utils/apis/api";
@@ -60,14 +60,14 @@ function App() {
         data: {
           userId: number;
           walletAddress: string;
-          nickName: string;
+          nickname: string;
           tripCount: number;
           diaryCount: number;
         };
       }) => {
         userInfoInit = {
           address: response.data.walletAddress,
-          nickname: response.data.nickName,
+          nickname: response.data.nickname,
           balance: "-1.0",
           isLoggedIn: true,
           id: response.data.userId,
@@ -77,6 +77,7 @@ function App() {
         console.log("실행");
 
         setUserInfoState(userInfoInit);
+        console.log(`유저정보 가져오기 ${userInfoInit.nickname}`);
 
         getUserBalance(response.data.walletAddress);
       },
@@ -86,16 +87,16 @@ function App() {
   // 브라우저에 렌더링 시 한 번만 실행하는 코드
   useEffect(() => {
     (() => {
-      getUserInfo();
+      if (userInfoState.isLoggedIn) {
+        getUserInfo();
+      }
     })();
   }, []);
 
   return (
     <AppContainer>
       <QueryClientProvider client={queryClient}>
-        <Suspense fallback={<div>Loading...</div>}>
-          <Router />
-        </Suspense>
+        <Router />
         <ReactQueryDevtools initialIsOpen={false} />
       </QueryClientProvider>
     </AppContainer>

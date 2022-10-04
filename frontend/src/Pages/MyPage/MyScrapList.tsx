@@ -1,8 +1,8 @@
 import React from "react";
+import { motion } from "framer-motion";
 import styled from "@emotion/styled";
 import { Modal, Select } from "@mui/material";
 import { pixelToRem } from "../../utils/functions/util";
-import NestedModal from "./Modal";
 import { MemoInfiniteList } from "../../components/modules/infinite/InfiniteList";
 import userApis from "../../utils/apis/userApis";
 import { MemoCard } from "./Card";
@@ -13,8 +13,8 @@ const StickerBox = styled.div`
   border-radius: 1.25rem 1.25rem 1.25rem 1.25rem;
   padding: 0 ${pixelToRem(18)} 0 ${pixelToRem(18)};
   margin: ${pixelToRem(15)};
-
-  height: ${pixelToRem(600)};
+  min-height: 65vh;
+  height: 100%;
   background: ${(props) => props.theme.colors.white};
   display: flex;
   flex-direction: column;
@@ -23,27 +23,15 @@ const StickerBox = styled.div`
 const TitleBox = styled.div`
   height: 8%;
   width: 100%;
-  padding: ${pixelToRem(17)} 0 0 0;
+  padding: ${pixelToRem(17)} 0 ${pixelToRem(5)} 0;
   border-bottom: solid 1px ${(props) => props.theme.colors.gray400};
   justify-content: center;
 `;
 const Title = styled.div`
   font-weight: bold;
-  font-size: ${(props) => props.theme.fontSizes.h5};
-`;
-
-const Filter = styled.select`
-  border: none;
-  border-radius: 5px;
-  width: ${pixelToRem(10)};
-  padding: 0 0.5rem;
   font-size: ${(props) => props.theme.fontSizes.h4};
-  height: ${pixelToRem(10)};
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  appearance: none;
-  color: ${(props) => props.theme.colors.gray900};
-  margin-left: auto;
+  justify-content: center;
+  text-align: center;
 `;
 
 const StickerContainer = styled.div`
@@ -56,23 +44,28 @@ const StickerContainer = styled.div`
 
 function MyScrapList() {
   return (
-    <StickerBox>
-      <TitleBox>
-        <Title>내가 스크랩한 프레임</Title>
-      </TitleBox>
-      <StickerContainer>
-        <MemoInfiniteList
-          url={userApis.getMyScraps}
-          queryKey={["scrapList"]}
-          CardComponent={MemoCard}
-          SkeletonCardComponent={Skeleton}
-          zeroDataText="스크랩이 존재하지..않습니다"
-          count={3}
-          listName="scrapList"
-        />
-        {userApis.getMyScraps}
-      </StickerContainer>
-    </StickerBox>
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.7 }}
+    >
+      <StickerBox>
+        <TitleBox>
+          <Title>내가 스크랩한 프레임</Title>
+        </TitleBox>
+        <StickerContainer>
+          <MemoInfiniteList
+            url={userApis.getMyScraps}
+            queryKey={["scrapList"]}
+            CardComponent={MemoCard}
+            SkeletonCardComponent={Skeleton}
+            zeroDataText="스크랩이 존재하지..않습니다"
+            count={2}
+          />
+        </StickerContainer>
+      </StickerBox>
+    </motion.div>
   );
 }
 

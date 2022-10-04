@@ -1,5 +1,6 @@
 import styled from "@emotion/styled";
 import { useState } from "react";
+import { motion } from "framer-motion";
 import { Helmet } from "react-helmet-async";
 import { MemoInfiniteList } from "../../components/modules/infinite/InfiniteList";
 import tripApis from "../../utils/apis/tripsApis";
@@ -43,14 +44,31 @@ function TripListPage() {
   const handleEditMode = () => setIsEditMode(!isEditMode);
 
   return (
-    <>
+    <motion.div
+      initial={{ opacity: 0.2 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.5 }}
+    >
       <Helmet>
         <title>여행 폴더 | 여행조각</title>
       </Helmet>
       <Container hasPadding>
         <Title>보유여행티켓</Title>
 
-        <button type="button" onClick={handleEditMode}>
+        <button
+          type="button"
+          onClick={handleEditMode}
+          style={{
+            width: "80px",
+            height: "30px",
+            marginBottom: "0.5rem",
+            backgroundColor: "#FDD835",
+            borderRadius: "5px",
+            color: "black",
+            fontWeight: "bold",
+          }}
+        >
           {!isEditMode ? "여행 편집" : "편집 완료"}
         </button>
 
@@ -61,7 +79,6 @@ function TripListPage() {
           SkeletonCardComponent={Skeleton}
           zeroDataText="여행 리스트가 존재하지 않습니다."
           count={2}
-          listName="tripList"
           isEditMode={isEditMode}
           isCreated={isCreated}
         />
@@ -72,7 +89,7 @@ function TripListPage() {
         )}
         <BasicModal setOpen={setOpen} open={open} setIsCreated={setIsCreated} />
       </Container>
-    </>
+    </motion.div>
   );
 }
 

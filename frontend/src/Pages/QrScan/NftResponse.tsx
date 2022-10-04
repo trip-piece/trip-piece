@@ -1,22 +1,270 @@
-import React from "react";
-import styled from "@emotion/styled";
-import { pixelToRem } from "../../utils/functions/util";
+import React, { useEffect, useRef, useState } from "react";
 import { Helmet } from "react-helmet-async";
+import { useParams } from "react-router-dom";
+import { useRecoilState } from "recoil";
 import Title from "./Title";
 import Content from "./Content";
+import { QrInfoState, UserInfoState } from "../../store/atom";
+import {
+  ContentProps,
+  contentPropsInit,
+} from "../../utils/interfaces/qrscan.inteface";
+import Loading from "./Loading";
+import { NFTContract } from "../../utils/common/NFT_ABI";
+import axiosInstance from "../../utils/apis/api";
+import { placeApis } from "../../utils/apis/placeApis";
+import { getLocation } from "../../utils/functions/util";
+import useGetLocation from "../../utils/hooks/useGetLocation";
+
+interface placeResponse {
+  data: {
+    lat: number;
+    lng: number;
+    regionName: string;
+    enableStickerList: [
+      {
+        stickerId: number;
+        tokenId: number;
+        tokenName: string;
+        tokenURL: string;
+      },
+    ];
+    distinctStickerList: [
+      {
+        stickerId: Number;
+        tokenId: Number;
+        tokenName: string;
+        tokenURL: string;
+        amount: Number;
+      },
+    ];
+    posterImage: string;
+    code: string;
+  };
+}
+
+interface ISticker {
+  tokenName: string;
+  tokenId: number;
+  tokenUrl: string;
+}
 
 function NftResponse() {
+  const { regionId, code } = useParams();
+  const [loading, setLoading] = useState(true);
+  const [userInfo, setUserInfo] = useRecoilState(UserInfoState);
+  const [locationInfo, setLocationInfo] = useState("");
+  const [lat, setLat] = useState(0);
+  const [lng, setLng] = useState(0);
+  const [imagePath, setImagePath] = useState("");
+
+  const [sticker, setSticker] = useState<ISticker>();
+
+  const [state, setState] = useState<ContentProps>({
+    result: "null",
+    stickerName: null,
+    stickerUrl: null,
+  });
+
+  const [recoilQrState, setRecoilQrState] = useRecoilState(QrInfoState);
+
+  const link = window.location.href;
+
+  const myLocation = async () => {
+    console.log("위치 받아와.. 소워임");
+
+    const userLocation: any = await getLocation();
+    setLocationInfo(userLocation.location);
+    setLat(userLocation.latitude);
+    setLng(userLocation.longitude);
+  };
+
+  const getToken = (tokenURI: string) => {
+    fetch(`https://www.infura-ipfs.io/ipfs/${tokenURI}`)
+      .then((res) => {
+        return res.json();
+      })
+      .then((data) => {
+        setImagePath(String(data[0].image));
+      });
+  };
+
+  const sendNFT = async (tokenId: number) => {
+    const adminAccount: string = import.meta.env.VITE_ADMIN_ADDRESS;
+    const userAddress: string = userInfo.address;
+
+    try {
+      await NFTContract.methods
+        .transferFrom(adminAccount, userAddress, tokenId)
+        .send({ from: adminAccount });
+
+      contentPropsInit.result = "success";
+      contentPropsInit.stickerName = sticker.tokenName;
+
+      getToken(sticker.tokenUrl);
+      contentPropsInit.stickerUrl = imagePath;
+
+      setState(contentPropsInit);
+
+      setLoading(false);
+    } catch (error) {
+      console.log("주다가 에러났다 ", error);
+
+      contentPropsInit.result = "fail";
+      contentPropsInit.stickerName = sticker.tokenName;
+      contentPropsInit.stickerUrl = sticker.tokenUrl;
+
+      setState(contentPropsInit);
+      setLoading(false);
+    }
+  };
+
+  const deg2rad = (deg: number): number => {
+    return deg * (Math.PI / 180);
+  };
+
+  const getDistanceFromLatLonInKm = (
+    lat1: number,
+    lng1: number,
+    lat2: number,
+    lng2: number,
+  ): number => {
+    const R: number = 6371; // Radius of the earth in km
+    const dLat: number = deg2rad(lat2 - lat1); // deg2rad below
+    const dLon: number = deg2rad(lng2 - lng1);
+    const a: number =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(deg2rad(lat1)) *
+        Math.cos(deg2rad(lat2)) *
+        Math.sin(dLon / 2) *
+        Math.sin(dLon / 2);
+    const c: number = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    const d: number = R * c; // Distance in km
+    return d;
+  };
+
+  const validationCode = (placeId: string) => {
+    console.log("코드 검증 시작 ");
+
+    try {
+      axiosInstance
+        .get(placeApis.getDetailedPlace(placeId))
+        .then((response: placeResponse) => {
+          console.log(response);
+
+          if (response.data.code === code) {
+            console.log(lat);
+            console.log(lng);
+
+            console.log("distance 계산하삼");
+
+            //console.log(`lat ${userLat}`);
+            //console.log(`lng${userLng}`);
+
+            const distance = getDistanceFromLatLonInKm(
+              response.data.lat,
+              response.data.lng,
+              lat,
+              lng,
+            );
+
+            console.log(distance);
+
+            if (distance < 5) {
+              // 스티커를 발급하거라
+              const listLength = response.data.enableStickerList.length;
+              const rand = Math.floor(Math.random() * listLength);
+
+              console.log(rand);
+
+              const selectedSticker = response.data.enableStickerList[rand];
+
+              setSticker({
+                tokenName: selectedSticker.tokenName,
+                tokenId: selectedSticker.tokenId,
+                tokenUrl: selectedSticker.tokenURL,
+              });
+
+              console.log(`tokenID : ${sticker.tokenId}`);
+
+              sendNFT(selectedSticker.tokenId);
+            } else {
+              // 스티커 발급을 실패하노라
+              contentPropsInit.result = "fail";
+              contentPropsInit.stickerName = response.data.regionName;
+              contentPropsInit.stickerUrl = response.data.posterImage;
+              setState(contentPropsInit);
+              setLoading(false);
+            }
+
+            /// 합격 @!@
+          } else {
+            //  불합격 ~ !
+            console.log("발급실패 ㅋ");
+
+            contentPropsInit.result = "fail";
+            contentPropsInit.stickerName = response.data.regionName;
+            contentPropsInit.stickerUrl = response.data.posterImage;
+            setState(contentPropsInit);
+            setLoading(false);
+          }
+        });
+    } catch (error) {
+      contentPropsInit.result = "incorrect";
+
+      setState(contentPropsInit);
+      setLoading(false);
+      console.log("이상한 큐알이다 ! ");
+    }
+  };
+
+  const validationLink = (url: string) => {
+    // const baseUrl = "j7a607.q.ssafy.io";
+    // const baseUrl2 = "http://localhost:3000/";
+
+    console.log("실행");
+
+    const regax =
+      /^(http(s)?:\/\/)(localhost:3000)(\/)(places)(\/)([\d]{1,2})(\/)([a-zA-Z0-9!@#$%^&]{10})/g;
+
+    if (regax.test(url)) {
+      console.log("정규식 성공");
+      contentPropsInit.result = "success";
+      validationCode(regionId);
+    } else {
+      // 이상한 큐알이라구함
+      console.log("정규식 실패");
+      contentPropsInit.result = "incorrect";
+      setState(contentPropsInit);
+      setLoading(false);
+    }
+  };
+
+  //  const mounted = useRef(false);
+  useEffect(() => {
+    // 맨 처음 렌더링 될 때 실행
+    myLocation();
+    validationLink(link);
+  }, []);
+
   return (
+    // eslint-disable-next-line react/jsx-no-useless-fragment
     <>
-      <Helmet>
-        <title>QR 스캔 | 여행조각</title>
-      </Helmet>
-      <Title title="서울 SEOUL" location="멀티캠퍼스" />
-      <Content
-        result="success"
-        stickerName="2022 역삼 멀티캠퍼스"
-        stickerUrl="이미지경로"
-      />
+      {loading ? (
+        <Loading />
+      ) : (
+        <>
+          <Helmet>
+            <title>QR 스캔 | 여행조각</title>
+          </Helmet>
+          <Title title="어딘가" />
+          <Content
+            result={state.result}
+            stickerName={state.stickerName}
+            stickerUrl={state.stickerUrl}
+          />
+        </>
+      )}
     </>
   );
 }

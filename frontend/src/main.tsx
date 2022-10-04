@@ -11,7 +11,7 @@ import { ethers } from "ethers";
 import App from "./App";
 import GlobalStyle from "./style/GlobalStyle";
 import theme, { themes } from "./style/theme";
-// import { worker } from "./mocks/browser";
+//import { worker } from "./mocks/browser";
 
 // if (process.env.NODE_ENV === "development") {
 //   worker.start();

@@ -3,14 +3,18 @@ import Box from "@mui/material/Box";
 import Modal from "@mui/material/Modal";
 import Button from "@mui/material/Button";
 import styled from "@emotion/styled";
+import { useRecoilState } from "recoil";
 import { pixelToRem } from "../../utils/functions/util";
-import ColoredRoundButton from "../../components/atoms/ColoredRoundButton";
+import ColoredRoundButton, {
+  CustomRoundButton,
+} from "../../components/atoms/ColoredRoundButton";
 import { ReactComponent as PencilIcon } from "../../assets/svgs/pencilIcon.svg";
-// import axiosInstance from "../../utils/apis/api";
-// import userApis, { Inickname } from "../../utils/apis/userApis";
-// import { useRecoilState } from "recoil";
-// import { UserInfoState } from "../../store/atom";
-// import { SubmitHandler, useForm } from "react-hook-form";
+import { useState } from "react";
+import { MdModeEditOutline } from "react-icons/md";
+import { IUserInfo, UserInfoState } from "../../store/atom";
+import { FieldErrors, SubmitHandler, useForm } from "react-hook-form";
+import userApis, { Inickname } from "../../utils/apis/userApis";
+import axiosInstance from "../../utils/apis/api";
 
 const ModifiedNicknameModal = styled(Box)`
   position: absolute;
@@ -33,13 +37,8 @@ const Container = styled.div`
   margin: 5% 0 13% 0;
 `;
 
-const LeftContainer = styled.div`
-  float: left;
-  margin-left: 1.3rem;
-`;
-const RightContainer = styled.div`
-  float: right;
-  margin-right: 1.3rem;
+const ButtonContainer = styled.div`
+  margin: auto;
 `;
 
 const Title = styled.div`
@@ -68,27 +67,52 @@ const InputBox = styled.input`
 `;
 
 export default function NestedModal() {
-  const [open, setOpen] = React.useState(false);
-  // const [userInfo, setUserInfo] = useRecoilState(UserInfoState);
+  const [open, setOpen] = useState(false);
+  const [userInfoState, setUserInfoState] = useRecoilState(UserInfoState);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    resetField,
+  } = useForm<Inickname>({
+    mode: "onSubmit",
+  });
+
   const handleOpen = () => {
     setOpen(true);
   };
   const handleClose = () => {
+    resetField("nickname");
     setOpen(false);
   };
-  // const { handleSubmit } = useForm<Inickname>();
+  // let validationChk: boolean = true;
 
-  // const onSubmit: SubmitHandler<Inickname> = async (data: Inickname) => {
-  //  let response = await axiosInstance.patch(userApis.modifyNickname, data);
+  //useEffect();
 
-  // if (response.status === 200) {
-  // setUserInfo({ nickname: data.nickname });
-  //  }
-  // }
+  const onSubmit: SubmitHandler<Inickname> = async (data: Inickname) => {
+    // if (data.nickname.length === 0) {
+    //   validationChk = false;
+    // }
+    // validationChk = true;
+    console.log(errors);
+    if (data.nickname.length >= 1 && data.nickname.length <= 8) {
+      const response = await axiosInstance.patch(userApis.modifyNickname, data);
+
+      if (response.status === 200) {
+        const info: IUserInfo = { ...userInfoState, nickname: data.nickname };
+        // /console.log(userInfoSta);
+
+        setUserInfoState(info);
+      }
+
+      handleClose();
+    }
+  };
+
   return (
     <>
       <Button onClick={handleOpen}>
-        <PencilIcon width="25" height="26" />
+        <MdModeEditOutline size={27} style={{ color: "#d4d4d4" }} />
       </Button>
       <Modal
         open={open}
@@ -99,25 +123,31 @@ export default function NestedModal() {
         <ModifiedNicknameModal>
           <Container>
             <Title>닉네임 수정</Title>
-            <Form>
-              <InputBox placeholder="1 ~ 8자 이내로 입력" />
-            </Form>
+            <Form onSubmit={handleSubmit(onSubmit)}>
+              <InputBox
+                placeholder="1~8자 사이로 입력해주세요"
+                minLength={1}
+                maxLength={8}
+                {...register("nickname", {
+                  minLength: { value: 1, message: "1글자" },
+                  maxLength: { value: 8, message: "8글자" },
+                })}
+              />
 
-            <LeftContainer>
-              <ColoredRoundButton
-                text=" 수정 "
-                color="mainLight"
-                type="submit"
-              />
-            </LeftContainer>
-            <RightContainer>
-              <ColoredRoundButton
-                text="취소"
-                color="gray400"
-                type="button"
-                func={handleClose}
-              />
-            </RightContainer>
+              <ButtonContainer>
+                <CustomRoundButton
+                  text=" 수정 "
+                  color="mainLight"
+                  type="submit"
+                />{" "}
+                <CustomRoundButton
+                  text="취소"
+                  color="gray400"
+                  type="button"
+                  func={handleClose}
+                />
+              </ButtonContainer>
+            </Form>
           </Container>
         </ModifiedNicknameModal>
       </Modal>
