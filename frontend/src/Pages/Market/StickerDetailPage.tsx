@@ -2,6 +2,7 @@ import styled from "@emotion/styled";
 import { Helmet } from "react-helmet-async";
 import { useParams } from "react-router-dom";
 import { FaEthereum } from "react-icons/fa";
+import { motion } from "framer-motion";
 import { BsFillCreditCardFill } from "react-icons/bs";
 import { IMarket } from "../../utils/interfaces/markets.interface";
 import { useState } from "react";
@@ -123,7 +124,12 @@ function StickerDetailPage() {
   };
   getImage(data?.data?.tokenURL);
   return (
-    <>
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.7 }}
+    >
       <Helmet>
         <title>마켓 | 판매 스티커 상세 조회</title>
       </Helmet>
@@ -147,7 +153,7 @@ function StickerDetailPage() {
           </button>
         </Button>
       </Container>
-    </>
+    </motion.div>
   );
 }
 

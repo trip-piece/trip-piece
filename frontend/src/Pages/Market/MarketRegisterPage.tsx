@@ -3,6 +3,7 @@ import { SetStateAction, useEffect, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { useNavigate } from "react-router-dom";
 import { useRecoilState } from "recoil";
+import { motion } from "framer-motion";
 import { Navigation } from "swiper";
 import { UserInfoState } from "../../store/atom";
 import { NFTContract } from "../../utils/common/NFT_ABI";
@@ -234,7 +235,12 @@ function MarketRegisterPage() {
   };
 
   return (
-    <>
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.7 }}
+    >
       <Helmet>
         <title>마켓 | 판매 등록</title>
       </Helmet>
@@ -272,7 +278,7 @@ function MarketRegisterPage() {
           <button onClick={moveToBeforePage}>취소</button>
         </Button>
       </Container>
-    </>
+    </motion.div>
   );
 }
 
