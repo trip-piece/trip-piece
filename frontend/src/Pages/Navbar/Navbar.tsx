@@ -369,12 +369,8 @@ export default function Navbar() {
 
   const toggleDrawer =
     // eslint-disable-next-line @typescript-eslint/no-shadow
-    (open: boolean) => (event: React.KeyboardEvent | React.MouseEvent) => {
-      if (
-        event.type === "keydown" &&
-        ((event as React.KeyboardEvent).key === "Tab" ||
-          (event as React.KeyboardEvent).key === "Shift")
-      ) {
+    (open: boolean) => (event: React.MouseEvent) => {
+      if (event.type === "keydown") {
         return;
       }
 
