@@ -12,7 +12,7 @@ const StickerBox = styled.div`
   padding: 0 ${pixelToRem(18)} 0 ${pixelToRem(18)};
   margin: ${pixelToRem(15)};
 
-  min-height: ${pixelToRem(600)};
+  min-height: 65vh;
   background: ${(props) => props.theme.colors.white};
   display: flex;
   flex-direction: column;
