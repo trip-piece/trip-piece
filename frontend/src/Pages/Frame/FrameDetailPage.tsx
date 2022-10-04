@@ -41,29 +41,6 @@ const StickerCard = styled.article`
   }
 `;
 
-const Div = styled.div`
-  display: flex;
-  flex-direction: row;
-  div {
-    .scrapicon {
-      height: 20px;
-      width: auto;
-      color: ${(props) => props.theme.colors.red};
-      top: 1rem;
-      left: 1rem;
-      margin-top: 90%;
-    }
-    .unscrapicon {
-      height: 20px;
-      width: auto;
-      color: ${(props) => props.theme.colors.red};
-      top: 1rem;
-      left: 1rem;
-      margin-top: 90%;
-    }
-  }
-`;
-
 const BackSpaceBtn = styled.button`
   width: auto;
   height: auto;
@@ -76,8 +53,32 @@ const ScrapBtn = styled.button`
   width: auto;
   height: auto;
   background-color: transparent;
-  margin: 0 0 2% 3%;
+  margin: 2% 0 2% 3%;
+  margin-left: auto;
   color: ${(props) => props.theme.colors.red};
+`;
+
+const ScarpContainer = styled.div`
+  width: auto;
+  height: auto;
+  background-color: red;
+  display: flex;
+`;
+
+const TagContainer = styled.div`
+  width: auto;
+  height: auto;
+  background-color: blue;
+  padding: 5%;
+`;
+
+const HashtagButton = styled.button`
+  border-radius: 15px;
+  padding: 0.5rem 0.5rem 0.5rem 0.5rem;
+  font-size: ${(props) => props.theme.fontSizes.h5};
+  font-weight: bold;
+  background: ${(props) => props.theme.colors.yellow};
+  margin: 0 1% 0 1%;
 `;
 
 const Button = styled.article`
@@ -182,16 +183,25 @@ function FrameDetailPage() {
         <StickerCard>
           <img src={dummyImage} alt="기본이미지" />
         </StickerCard>
-        <Div>
+        <ScarpContainer>
           <ScrapBtn onClick={changeScrap}>
-            {scrap}
             {scrap ? (
               <BsFillBookmarkHeartFill size={40} />
             ) : (
               <BsBookmarkHeart size={40} />
             )}
           </ScrapBtn>
-        </Div>
+        </ScarpContainer>
+        <TagContainer>
+          {frame.stickerList.map((sticker, idx) => {
+            sticker.tokenName;
+          })}
+          <HashtagButton>버튼</HashtagButton>
+          <HashtagButton>버튼</HashtagButton>
+          <HashtagButton>버튼</HashtagButton>
+          <HashtagButton>버튼</HashtagButton>
+          <HashtagButton>버튼</HashtagButton>
+        </TagContainer>
       </Container>
     </>
   );
