@@ -1,5 +1,5 @@
 import axios, { AxiosInstance } from "axios";
-import { getCookie, setCookie } from "../cookie";
+import { getCookie, setCookie, removeCookie } from "../cookie";
 import userApis from "./userApis";
 
 const axiosInstance: AxiosInstance = axios.create({
@@ -42,7 +42,7 @@ axiosInstance.interceptors.response.use(
     console.log(err.response.status);
     console.log(err.response);
 
-    // const originalConfig = err.config;
+    const originalConfig = err.config;
 
     if (err.response) {
       if (err.response.status === 401) {
@@ -54,8 +54,17 @@ axiosInstance.interceptors.response.use(
         const { accessToken, refreshToken } = response.data;
         setCookie("accessToken", accessToken);
         setCookie("refreshToken", refreshToken);
+        return axiosInstance(originalConfig);
+      }
+
+      if (err.response.status === 500) {
+        removeCookie("accessToken");
+        removeCookie("refreshToken");
+
+        window.location.href = "/";
         return;
       }
+
       return Promise.reject(err);
     }
     return Promise.reject(err);
