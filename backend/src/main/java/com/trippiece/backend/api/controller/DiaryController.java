@@ -3,15 +3,18 @@ package com.trippiece.backend.api.controller;
 import com.trippiece.backend.api.domain.dto.request.DecoRequestDto;
 import com.trippiece.backend.api.domain.dto.request.DiaryRequestDto;
 
+import com.trippiece.backend.api.domain.entity.Trip;
 import com.trippiece.backend.api.domain.entity.User;
 import com.trippiece.backend.api.domain.repository.DiaryRepository;
 import com.trippiece.backend.api.domain.repository.FrameRepository;
+import com.trippiece.backend.api.domain.repository.TripRepository;
 import com.trippiece.backend.api.service.DiaryService;
 import com.trippiece.backend.api.service.FrameService;
 import com.trippiece.backend.api.service.S3Service;
 import com.trippiece.backend.api.service.UserService;
 import com.trippiece.backend.exception.CustomException;
 import com.trippiece.backend.exception.ErrorCode;
+import com.trippiece.backend.util.DateConverter;
 import com.trippiece.backend.util.JwtTokenUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -39,7 +42,9 @@ public class DiaryController {
     private final FrameRepository frameRepository;
 
     private final JwtTokenUtil jwtTokenUtil;
-  
+
+
+
 
     @PostMapping("/write")
     @ApiOperation(value = "일기 추가", notes = "새로운 일기를 작성한다")
@@ -50,6 +55,11 @@ public class DiaryController {
             long diaryId;
             if (user == null) return new ResponseEntity<String>("로그인된 회원을 찾을 수 없습니다.", HttpStatus.NOT_FOUND);
             else {
+
+                    int checkCode = diaryService.checkDiary(diaryRegister.getTripId(),diaryRegister.getDiaryDate());
+                    if(checkCode==409) {
+                        return new ResponseEntity<String>("중복이야!!!!!!!! 다시써!!!", HttpStatus.CONFLICT);
+                    }
                 if (todayPhoto != null) {
                     if (todayPhoto.getSize() >= 10485760)
                         return new ResponseEntity<String>("이미지 크기 제한은 10MB 입니다.", HttpStatus.FORBIDDEN);
@@ -161,7 +171,7 @@ public class DiaryController {
                     diaryEdit.setImagePath(fileName);
                 } else {
                     //파일이 없고, ImagePath도 없는 경우 => 기존 이미지를 삭제할 경우
-                    if(diaryEdit.getImagePath().equals("") || diaryEdit.getImagePath().equals(null)) {
+                    if (diaryEdit.getImagePath().equals("") || diaryEdit.getImagePath().equals(null)) {
                         diaryEdit.setImagePath(null);
                     }
                 }
