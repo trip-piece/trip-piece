@@ -7,13 +7,13 @@ import MarketMainPage from "./Pages/Market/MarketMainPage";
 import MarketRegisterPage from "./Pages/Market/MarketRegisterPage";
 import StickerDetailPage from "./Pages/Market/StickerDetailPage";
 import TripDiaryPage from "./Pages/TripDiary/TripDiaryPage";
-import FrameSharePage from "./Pages/Frame/FrameSharePage";
-import FrameDetailPage from "./Pages/Frame/FrameDetailPage";
 import Navbar from "./Pages/Navbar/Navbar";
 import Admin from "./Pages/Admin/AdminPage";
 import NftRegister from "./Pages/Admin/NftRegisterPage";
 import QrScanner from "./Pages/QrScan/QrReader";
 import PlaceMainPage from "./Pages/Place/PlaceMainPage";
+import FrameSharePage from "./Pages/Frame/FrameSharePage";
+import FrameDetailPage from "./Pages/Frame/FrameDetailPage";
 
 const Landing = lazy(() => import("./Pages/Landing/LandingPage"));
 const Main = lazy(() => import("./Pages/Main/MainPage"));
@@ -76,10 +76,10 @@ function AnotherRouter() {
             path="places/list/mylocation"
             element={<MyLocationListPage />}
           />
-          <Route path="frames" element={<FrameSharePage />} />
-          <Route path="frames/:frameId" element={<FrameDetailPage />} />
           <Route path="qrscan" element={<QrScanner />} />
           <Route path="/places/:placeId" element={<NftResponse />} />
+          <Route path="/frames" element={<FrameSharePage />} />
+          <Route path="/frames/:frameId" element={<FrameDetailPage />} />
         </Routes>
       </Suspense>
     </>

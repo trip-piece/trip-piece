@@ -2,7 +2,7 @@ import styled from "@emotion/styled";
 import { Helmet } from "react-helmet-async";
 import { useParams } from "react-router-dom";
 import { BsFillBookmarkHeartFill, BsBookmarkHeart } from "react-icons/bs";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import axiosInstance from "../../utils/apis/api";
 import { frameApis } from "../../utils/apis/frameApis";
 
@@ -58,6 +58,7 @@ const Div = styled.div`
       color: ${(props) => props.theme.colors.red};
       top: 1rem;
       left: 1rem;
+      margin-top: 90%;
     }
   }
 `;
@@ -86,8 +87,9 @@ const Button = styled.article`
 
 function FrameDetailPage() {
   const { frameId } = useParams();
-
-  const [frameImage, setFrameImage] = useState<string>();
+  const getFrameDetail = () => {
+    axiosInstance.get(frameApis.getDetailedFrames(Number(frameId)));
+  };
   const result = {
     frameImage:
       "https://trippiece607.s3.ap-northeast-2.amazonaws.com/20220802150807-%E1%84%92%E1%85%A1%E1%86%AB%E1%84%80%E1%85%A1%E1%86%BC%E1%84%87%E1%85%AE%E1%86%AF%E1%84%87%E1%85%B5%E1%86%BE%E1%84%8B%E1%85%A3%E1%84%89%E1%85%B5%E1%84%8C%E1%85%A1%E1%86%BC.jpeg",
@@ -123,14 +125,14 @@ function FrameDetailPage() {
     ],
   };
   const [scrap, setScrap] = useState<boolean>(result.scrapped);
-  const postSaveFrame = (frameId: number) => {
+  const postSaveFrame = () => {
     const body = {
       frameId,
     };
     axiosInstance.post(frameApis.saveFrame, body);
   };
 
-  const deleteScrappedFrame = (frameId: number) => {
+  const deleteScrappedFrame = () => {
     const body = {
       frameId,
     };
@@ -148,10 +150,6 @@ function FrameDetailPage() {
     setScrap(!scrap);
   };
 
-  // useEffect(() => {
-  //   console.log(result);
-  //   setScrap(result.scrapped);
-  // }, [result]);
   return (
     <>
       <Helmet>

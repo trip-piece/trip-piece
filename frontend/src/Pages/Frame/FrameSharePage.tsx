@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import styled from "@emotion/styled";
 import { Helmet } from "react-helmet-async";
-import { Swiper, SwiperSlide } from "swiper/react";
 import { Global } from "@emotion/react";
 import CssBaseline from "@mui/material/CssBaseline";
 import Box from "@mui/material/Box";
@@ -131,11 +130,11 @@ interface Props {
 }
 
 function FrameSharePage(props: Props) {
-  const regionList: number[] = [1, 2, 4];
+  const regionList: number[] = [];
   const { window } = props;
   const [open, setOpen] = React.useState(false);
   const [isAll, setIsAll] = useState<boolean>(false);
-  const [scrap, setScrap] = useState<boolean>(false);
+  // const [scrap, setScrap] = useState<boolean>(false);
   const toggleDrawer = (newOpen: boolean) => () => {
     setOpen(newOpen);
   };
@@ -181,19 +180,9 @@ function FrameSharePage(props: Props) {
           CardComponent={MemoCard}
           SkeletonCardComponent={Skeleton}
           zeroDataText="공유한 프레임 없슴미다.."
-          count={1}
+          count={2}
           listName="content"
         />
-        {/* <div className="CardList">
-          <Swiper slidesPerView={4} spaceBetween={13}>
-            {result.length &&
-              result.map((frame) => (
-                <SwiperSlide>
-                  <Card frame={frame} />
-                </SwiperSlide>
-              ))}
-          </Swiper>
-        </div> */}
         <Root>
           <CssBaseline />
           <Global

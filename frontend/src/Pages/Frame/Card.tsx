@@ -1,7 +1,7 @@
 import styled from "@emotion/styled";
 import { memo, useEffect, useState } from "react";
 // import { InfiniteData, QueryObserverResult } from "react-query";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { BsFillBookmarkHeartFill, BsBookmarkHeart } from "react-icons/bs";
 import { frameApis } from "../../utils/apis/frameApis";
 import axiosInstance from "../../utils/apis/api";
@@ -11,19 +11,6 @@ interface FrameProps {
   diaryId: number;
   frameImage: string;
   scrapped: boolean;
-
-  // refetch: () => Promise<
-  //   QueryObserverResult<
-  //     InfiniteData<
-  //       | {
-  //           result: any;
-  //           page: any;
-  //         }
-  //       | undefined
-  //     >,
-  //     unknown
-  //   >
-  // >;
 }
 
 const Container = styled.div`
@@ -66,7 +53,6 @@ const LiContainer = styled.div`
 `;
 function Card(frame: FrameProps) {
   const [scrap, setScrap] = useState<boolean>(frame.scrapped);
-  const [frameImage, setFrameImage] = useState<string>();
   // const checkScrap = () => {
   //   if (frame.isScrapped) {
   //     <BsFillBookmarkHeartFill className="scrapicon" />;
@@ -99,15 +85,14 @@ function Card(frame: FrameProps) {
     setScrap(!scrap);
   };
 
-  useEffect(() => {
-    console.log(frame);
-    setScrap(frame.scrapped);
-  }, [frame]);
+  // useEffect(() => {
+  //   console.log(frame);
+  //   setScrap(frame.scrapped);
+  // }, [frame]);
 
   const navigate = useNavigate();
   const moveToFrame = () => {
     navigate(`/frames/${frame.frameId}`);
-    setFrameImage(frame.frameImage);
   };
 
   return (
