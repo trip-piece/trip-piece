@@ -227,37 +227,12 @@ function MarketRegisterPage() {
 
   const saveMarket = async (data: saveRequest) => {
     await axiosInstance
-      .post(marketApis.insertIntoMarket(), data)
-      .then((response: { data: string }) => {
-        console.log(response.data);
-      });
-  };
-  const testSaveMarket = async () => {
-    const data = {
-      tokenId: sticker.tokenId,
-      price: price,
-    };
-    console.log(data);
-    await axiosInstance
       .post(marketApis.insertIntoMarket, data)
       .then((response: { data: string }) => {
         console.log(response.data);
       });
   };
 
-  const getMarketList = async (e: { preventDefault: () => void }) => {
-    setLoading(true);
-    e.preventDefault();
-    try {
-      const approveResult = await MarketContract.methods
-        .getOnSaleStickerArrayLength()
-        .call();
-
-      console.log(approveResult);
-    } catch (err) {
-      console.log(err);
-    }
-  };
   return (
     <>
       <Helmet>
@@ -295,10 +270,6 @@ function MarketRegisterPage() {
             등록
           </button>
           <button onClick={moveToBeforePage}>취소</button>
-          <button onClick={getMarketList}>
-            마켓리스트 확인하기(테스트용 버튼)
-          </button>
-          <button onClick={testSaveMarket}>DB등록하기</button>
         </Button>
       </Container>
     </>
