@@ -2,10 +2,12 @@ import Modal from "@mui/material/Modal";
 import Box from "@mui/material/Box";
 import styled from "@emotion/styled";
 import html2canvas from "html2canvas";
-import { useRef, useState } from "react";
 import { v4 } from "uuid";
+import { useRecoilState } from "recoil";
 import { ISticker } from "../../utils/interfaces/diarys.interface";
 import { pixelToRem } from "../../utils/functions/util";
+import StickerImg from "../../components/atoms/StickerImg";
+import { formDataDiaryState } from "../../store/diaryAtoms";
 
 const Wrapper = styled(Box)<{ diarywidth: number }>`
   position: absolute;
@@ -27,20 +29,26 @@ const DiaryFrame = styled.div<DiaryProps>`
   border: 2px solid black;
   position: relative;
   width: ${(props) => pixelToRem(props.diaryWidth * 0.7)};
-  height: ${(props) => pixelToRem(props.diaryWidth * 0.7 * props.diaryRatio)};
+  height: ${(props) => pixelToRem(props.diaryHeight * 0.7)};
   border-radius: 15px;
 `;
 
-const StickerImg = styled.img<{ top: number; left: number }>`
-  top: ${(props) => `${props.top}px`};
-  left: ${(props) => `${props.left}px`};
-  width: 20%;
+const LoadingContainer = styled.div`
   position: absolute;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.2);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 20px;
+  z-index: 10;
 `;
 
 interface DiaryProps {
   diaryWidth: number;
-  diaryRatio: number;
+  diaryHeight: number;
 }
 
 interface ModalProps {
@@ -48,25 +56,38 @@ interface ModalProps {
   open: boolean;
   stickerList: ISticker[];
   diaryBox: any;
+  postData: (diary: FormData, frameImage?: File) => void;
 }
 
-function DecorationModal({ setOpen, open, stickerList, diaryBox }: ModalProps) {
+function DecorationModal({
+  setOpen,
+  open,
+  stickerList,
+  diaryBox,
+  postData,
+}: ModalProps) {
   const handleClose = () => setOpen(false);
-  const [imgSrc, setImageSrc] = useState("");
-  const imageRef = useRef<HTMLDivElement>(null);
+  const [diary, setDiary] = useRecoilState(formDataDiaryState);
 
-  const onClick = () => {
-    html2canvas(imageRef.current, {
+  const onClick = (dom: HTMLElement) => {
+    html2canvas(dom, {
       logging: true,
       useCORS: true,
     }).then((canvas) => {
       const imageData = canvas.toDataURL("image/png");
-      import("../../utils/functions/changeFileType").then(async (change) => {
+      import("../../utils/functions/changeFileType").then((change) => {
         const file = change.dataURLtoFile(imageData, v4());
-        const base64Image = await change.encodeFileToBase64(file);
-        setImageSrc(base64Image);
+        postData(diary, file);
+        setDiary(null);
+        handleClose();
       });
     });
+  };
+
+  const elRef = (node: HTMLElement) => {
+    if (node !== null) {
+      onClick(node);
+    }
   };
 
   return (
@@ -77,26 +98,23 @@ function DecorationModal({ setOpen, open, stickerList, diaryBox }: ModalProps) {
       aria-describedby="modal-modal-description"
     >
       <Wrapper diarywidth={diaryBox.width}>
-        <h3>프레임 </h3>
+        <LoadingContainer>프레임 공유중</LoadingContainer>
         <DiaryFrame
           diaryWidth={diaryBox.width}
-          diaryRatio={diaryBox.ratio}
-          ref={imageRef}
+          diaryHeight={diaryBox.height}
+          ref={elRef}
         >
           {stickerList.map((sticker, index) => (
             <StickerImg
-              top={sticker.originY * diaryBox.height * 0.7}
+              up={sticker.originY * diaryBox.height * 0.7}
               left={sticker.originX * diaryBox.width * 0.7}
               src={sticker.tokenURI}
+              alt="스티커"
               // eslint-disable-next-line react/no-array-index-key
               key={index}
             />
           ))}
         </DiaryFrame>
-        {imgSrc && <img src={imgSrc} alt="#" width="200px" />}
-        <button type="button" onClick={onClick}>
-          버튼 찰칵
-        </button>
       </Wrapper>
     </Modal>
   );

@@ -1,6 +1,6 @@
 import styled from "@emotion/styled";
-import { memo, useState } from "react";
-import { changeDateForamtToDot } from "../../utils/functions/util";
+import { memo, useEffect, useState } from "react";
+import { changeDateFormatToDot } from "../../utils/functions/util";
 import {
   IDistinctSticker,
   ISticker,
@@ -19,17 +19,23 @@ interface IPlaceCardProps {
   type: number;
   amount: number;
   enableStickerList: ISticker[];
-  distinctStickerList: IDistinctSticker[];
+  disinctStickerList: IDistinctSticker[];
   qrImage: string;
   posterImage: string;
   code: string;
 }
 
+interface Token {
+  tokenName: string;
+  imagePath: string;
+}
+
 const Container = styled.div`
   width: 100%;
-  margin-top: 20px;
   padding: 0.5rem;
   display: flex;
+  margin-top: 12px;
+  margin-bottom: -8px;
   flex-direction: column;
   justify-content: center;
 
@@ -51,7 +57,7 @@ const Container = styled.div`
 `;
 
 const StickerContainer = styled.div`
-  background-color: ${(props) => props.theme.colors.gray200};
+  background-color: ${(props) => props.theme.colors.lightBlue};
   height: 120px;
   width: 100%;
   border-radius: 20px;
@@ -89,38 +95,52 @@ const StickerContainer = styled.div`
 `;
 
 function Card(place: IPlaceCardProps) {
-  const [imagePath, setImagePath] = useState("");
-  const getImage = (tokenUrl: string): string => {
-    fetch(`https://www.infura-ipfs.io/ipfs/${tokenUrl}`)
-      .then((res) => {
-        return res.json();
-      })
-      .then((data) => {
-        setImagePath(data[0].image);
-      });
-    return imagePath;
+  const [NFTDetailList, setNFTDetailList] = useState<Token[]>([]);
+
+  const getImage = async () => {
+    const tokenList: React.SetStateAction<Token[]> = [];
+    for (let i = 0; i < place.disinctStickerList.length; i++) {
+      await fetch(
+        `https://www.infura-ipfs.io/ipfs/${place.disinctStickerList[i].tokenURL}`,
+      )
+        .then((res) => {
+          return res.json();
+        })
+        .then((data) => {
+          const token: Token = {
+            tokenName: String(data[0].name),
+            imagePath: String(data[0].image),
+          };
+          tokenList.push(token);
+        });
+    }
+    setNFTDetailList(tokenList);
   };
+
+  useEffect(() => {
+    getImage();
+  }, [place]);
 
   return (
     <Container>
       <div className="title">
         <p className="placeName">{place.name}</p>
         <p>
-          {changeDateForamtToDot(place.startDate)} -{" "}
-          {changeDateForamtToDot(place.endDate)}
+          {changeDateFormatToDot(place.startDate)} -{" "}
+          {changeDateFormatToDot(place.endDate)}
         </p>
       </div>
       <StickerContainer>
         <div className="location">{place.locationAddress}</div>
         <div className="stickerGroup">
-          {place.distinctStickerList.map((sticker) => (
-            <div>
+          {NFTDetailList.map((sticker, idx) => (
+            <div key={idx}>
               <img
-                src={getImage(sticker.tokenURL)}
+                src={sticker.imagePath}
                 className="sticker"
                 alt="기본이미지"
               />
-              <p>남은 수량 : {sticker.amount}</p>
+              <p>남은 수량 : {place.disinctStickerList[idx].amount}</p>
             </div>
           ))}
         </div>

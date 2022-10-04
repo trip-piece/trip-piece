@@ -4,11 +4,15 @@ export interface IDiary {
   fontType: number;
   backgroundColor: number;
   weather: number;
+  imagePath?: string | null;
+  diaryId?: number;
+  location?: string;
+  ratio: number;
 }
 
 export interface IWritedDiary<T> {
   diary: IDiary;
-  todayPhoto: T;
+  todayPhoto?: T;
 }
 
 export interface IDiaryListState<T> {
@@ -29,4 +33,24 @@ export interface ISticker extends StickerProps {
   isDragging: boolean;
   originX: number;
   originY: number;
+}
+
+export interface IFrameImageObj {
+  frameImage: File | null;
+  frameImageBase64: string | null;
+}
+
+export interface IRequestedSticker {
+  stickerId: number;
+  tokenId: number;
+  tokenName: string;
+  tokenURL: string;
+  x: number;
+  y: number;
+}
+
+export interface IRequestedDiary extends IDiary {
+  todayPhoto: string;
+  isShare: boolean;
+  stickerList: IRequestedSticker[];
 }
