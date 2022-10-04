@@ -101,7 +101,9 @@ function MyLocationListPage() {
               style={{
                 color: "#D35B5B",
                 background: "transparent",
-                width: "7%",
+                width: "fit-content",
+                margin: 0,
+                textAlign: "right",
               }}
               onClick={updateLocation}
             >
