@@ -151,4 +151,20 @@ public class PlaceController {
             return new ResponseEntity<String>("사용자 QR Log 저장 및 Place Amount 수정 실패", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    @ApiOperation(value = "사용자가 QR인식", notes = "사용자가 QR인식을 하고 스티커를 발급받으면 QRLog를 저장하고 Place의 amount값을 수정한다.")
+    @GetMapping("/QRCheck/{placeId}")
+    public ResponseEntity<?> checkQR(@RequestHeader("ACCESS_TOKEN") final String accessToken, @PathVariable final long placeId){
+        try{
+            long userId = jwtTokenUtil.getUserIdFromToken(accessToken);
+            User user = userService.findOneUser(userId);
+            if(user == null) return new ResponseEntity<String>("로그인된 회원을 찾을 수 없습니다.", HttpStatus.NOT_FOUND);
+            else {
+                return new ResponseEntity<Boolean>(placeService.checkQRLog(user, placeId), HttpStatus.OK);
+            }
+        } catch (Exception e){
+            e.printStackTrace();
+            return new ResponseEntity<String>("사용자 QR Log 저장 및 Place Amount 수정 실패", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }
