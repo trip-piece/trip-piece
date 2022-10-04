@@ -14,7 +14,10 @@ import { NFTContract } from "../../utils/common/NFT_ABI";
 import axiosInstance from "../../utils/apis/api";
 import { placeApis } from "../../utils/apis/placeApis";
 import { getLocation } from "../../utils/functions/util";
-import useGetLocation from "../../utils/hooks/useGetLocation";
+import Tx from "ethereumjs-tx";
+import Web3 from "web3";
+import { sign } from "crypto";
+import { qrApis } from "../../utils/apis/QrApis";
 
 interface placeResponse {
   data: {
@@ -23,7 +26,7 @@ interface placeResponse {
     regionName: string;
     enableStickerList: [
       {
-        stickerId: number;
+        id: number;
         tokenId: number;
         tokenName: string;
         tokenURL: string;
@@ -31,7 +34,7 @@ interface placeResponse {
     ];
     distinctStickerList: [
       {
-        stickerId: Number;
+        id: Number;
         tokenId: Number;
         tokenName: string;
         tokenURL: string;
@@ -44,9 +47,10 @@ interface placeResponse {
 }
 
 interface ISticker {
+  id: number;
   tokenName: string;
   tokenId: number;
-  tokenUrl: string;
+  tokenURL: string;
 }
 
 function NftResponse() {
@@ -70,15 +74,6 @@ function NftResponse() {
 
   const link = window.location.href;
 
-  const myLocation = async () => {
-    console.log("위치 받아와.. 소워임");
-
-    const userLocation: any = await getLocation();
-    setLocationInfo(userLocation.location);
-    setLat(userLocation.latitude);
-    setLng(userLocation.longitude);
-  };
-
   const getToken = (tokenURI: string) => {
     fetch(`https://www.infura-ipfs.io/ipfs/${tokenURI}`)
       .then((res) => {
@@ -89,31 +84,47 @@ function NftResponse() {
       });
   };
 
+  const web3 = new Web3(
+    new Web3.providers.HttpProvider(import.meta.env.VITE_WEB3_URL),
+  );
+
   const sendNFT = async (tokenId: number) => {
-    const adminAccount: string = import.meta.env.VITE_ADMIN_ADDRESS;
     const userAddress: string = userInfo.address;
-
+    const privateKey = import.meta.env.VITE_ADMIN_PRIVATE_KEY;
+    const adminAccount: string = import.meta.env.VITE_ADMIN_ADDRESS;
+    const transferFrom = NFTContract.methods.transferFrom(
+      adminAccount,
+      userAddress,
+      tokenId,
+    );
+    const encodeABI = transferFrom.encodeABI();
+    console.log(encodeABI);
+    const tx = {
+      from: adminAccount,
+      to: import.meta.env.VITE_NFT_CA,
+      gas: 2000000,
+      data: encodeABI,
+    };
     try {
-      await NFTContract.methods
-        .transferFrom(adminAccount, userAddress, tokenId)
-        .send({ from: adminAccount });
+      web3.eth.accounts.signTransaction(tx, privateKey).then((signed) => {
+        var tran = web3.eth.sendSignedTransaction(signed.rawTransaction);
+        tran.on("transactionHash", (hash) => {
+          console.log("hash");
+          console.log(hash);
+        });
 
-      contentPropsInit.result = "success";
-      contentPropsInit.stickerName = sticker.tokenName;
+        tran.on("receipt", (receipt) => {
+          console.log("reciept");
+          console.log(receipt);
+        });
 
-      getToken(sticker.tokenUrl);
-      contentPropsInit.stickerUrl = imagePath;
-
-      setState(contentPropsInit);
-
-      setLoading(false);
+        tran.on("error", console.error);
+      });
     } catch (error) {
       console.log("주다가 에러났다 ", error);
-
       contentPropsInit.result = "fail";
       contentPropsInit.stickerName = sticker.tokenName;
-      contentPropsInit.stickerUrl = sticker.tokenUrl;
-
+      contentPropsInit.stickerUrl = sticker.tokenURL;
       setState(contentPropsInit);
       setLoading(false);
     }
@@ -143,8 +154,9 @@ function NftResponse() {
     return d;
   };
 
-  const validationCode = (placeId: string) => {
+  const validationCode = async (placeId: string) => {
     console.log("코드 검증 시작 ");
+    const userLocation: any = await getLocation();
 
     try {
       axiosInstance
@@ -153,8 +165,8 @@ function NftResponse() {
           console.log(response);
 
           if (response.data.code === code) {
-            console.log(lat);
-            console.log(lng);
+            console.log(userLocation.latitude);
+            console.log(userLocation.longitude);
 
             console.log("distance 계산하삼");
 
@@ -164,8 +176,10 @@ function NftResponse() {
             const distance = getDistanceFromLatLonInKm(
               response.data.lat,
               response.data.lng,
-              lat,
-              lng,
+              response.data.lat,
+              response.data.lng,
+              // userLocation.latitude,
+              // userLocation.longitude,
             );
 
             console.log(distance);
@@ -178,16 +192,12 @@ function NftResponse() {
               console.log(rand);
 
               const selectedSticker = response.data.enableStickerList[rand];
-
-              setSticker({
-                tokenName: selectedSticker.tokenName,
-                tokenId: selectedSticker.tokenId,
-                tokenUrl: selectedSticker.tokenURL,
-              });
-
-              console.log(`tokenID : ${sticker.tokenId}`);
-
+              console.log(response.data.enableStickerList[rand]);
+              console.log(
+                `tokenID : ${response.data.enableStickerList[rand].tokenId}`,
+              );
               sendNFT(selectedSticker.tokenId);
+              setSticker(response.data.enableStickerList[rand]);
             } else {
               // 스티커 발급을 실패하노라
               contentPropsInit.result = "fail";
@@ -198,6 +208,34 @@ function NftResponse() {
             }
 
             /// 합격 @!@
+            const data = {
+              stickerId: sticker.id,
+              placeId: placeId,
+            };
+
+            try {
+              axiosInstance.patch(qrApis.qrLog, data).then((response) => {
+                console.log(response);
+              });
+            } catch (err) {
+              console.log(err);
+              contentPropsInit.result = "fail";
+              contentPropsInit.stickerName = response.data.regionName;
+              contentPropsInit.stickerUrl = response.data.posterImage;
+              setState(contentPropsInit);
+              setLoading(false);
+              return;
+            }
+
+            contentPropsInit.result = "success";
+            contentPropsInit.stickerName = sticker.tokenName;
+            console.log(sticker);
+            getToken(sticker.tokenURL);
+            contentPropsInit.stickerUrl = imagePath;
+            console.log(imagePath);
+
+            setState(contentPropsInit);
+            setLoading(false);
           } else {
             //  불합격 ~ !
             console.log("발급실패 ㅋ");
@@ -243,7 +281,6 @@ function NftResponse() {
   //  const mounted = useRef(false);
   useEffect(() => {
     // 맨 처음 렌더링 될 때 실행
-    myLocation();
     validationLink(link);
   }, []);
 

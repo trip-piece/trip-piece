@@ -42,10 +42,10 @@ const ResulButtontBox = styled.div`
 `;
 
 const StickerName = styled.div`
-  margin : 10% 0 0 0;
-  background: : ${(props) => props.theme.colors.white};
-  display:flex;
-  justify-content  :center;
+  margin: 10% 0 0 0;
+  background: ${(props) => props.theme.colors.white};
+  display: flex;
+  justify-content: center;
   font-size: ${(props) => props.theme.fontSizes.h5};
 `;
 const ResultImg = styled.img`
