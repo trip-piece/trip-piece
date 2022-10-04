@@ -21,7 +21,7 @@ const TitleGroup = styled.div`
   display: block;
   justify-content: center;
   text-align: center;
-  margin-top: 3vh;
+  margin-top: 8vh;
   > .main {
     font-size: ${(props) => props.theme.fontSizes.h1};
     font-weight: bold;
