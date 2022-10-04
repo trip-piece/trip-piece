@@ -1,14 +1,7 @@
 import { lazy, Suspense, useEffect, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { useQuery } from "react-query";
-import {
-  Outlet,
-  Route,
-  Routes,
-  useLocation,
-  useParams,
-} from "react-router-dom";
-import { v4 } from "uuid";
+import { Route, Routes, useLocation, useParams } from "react-router-dom";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination, Scrollbar, A11y } from "swiper";
 import styled from "@emotion/styled";
@@ -120,8 +113,8 @@ function TripDiaryListPage() {
               loop
             >
               {result.length &&
-                result.map((date) => (
-                  <SwiperSlide key={v4()}>
+                result.map((date, idx) => (
+                  <SwiperSlide key={idx}>
                     <TripDate date={date} />
                   </SwiperSlide>
                 ))}

@@ -2,11 +2,12 @@ import styled from "@emotion/styled";
 import { useEffect, useRef, useState } from "react";
 import { useQuery, useQueryClient } from "react-query";
 import { useNavigate, useParams } from "react-router-dom";
-import { HiPencilAlt } from "react-icons/hi";
+import { HiPencilAlt, HiTrash } from "react-icons/hi";
 import { AxiosResponse } from "axios";
 import { Icon } from "@iconify/react/dist/offline";
 import { BsFillGeoAltFill } from "react-icons/bs";
 import { GiConsoleController } from "react-icons/gi";
+import { AiTwotoneEdit } from "react-icons/ai";
 import diaryApis from "../../utils/apis/diaryApis";
 import {
   changeDateFormatToDot,
@@ -27,6 +28,7 @@ import { weatherList } from "../../utils/constants/weatherList";
 import { DIARY_COLOR_LIST, FONTTYPELIST } from "../../utils/constants/constant";
 import { getNFTImagePath } from "../../utils/functions/getNFTImagePath";
 import ColoredRoundButton from "../../components/atoms/ColoredRoundButton";
+import RecordedLocationContainer from "../../components/modules/RecordedLocationContainer";
 
 const Container = styled.article`
   min-height: 75vh;
@@ -72,7 +74,7 @@ interface TripListProps {
   endDate?: string;
 }
 
-const DiaryContents = styled.div<DiaryContentsProps>`
+const DiaryContentsContainer = styled.div<DiaryContentsContainerProps>`
   position: relative;
   white-space: pre-line;
   min-height: ${(props) => props.active && "60vh"};
@@ -89,7 +91,22 @@ const DiaryContents = styled.div<DiaryContentsProps>`
       : pixelToRem(16)};
 `;
 
-interface DiaryContentsProps {
+const ButtonListContainer = styled.div`
+  position: absolute;
+  right: 0;
+  gap: 0.5rem;
+  display: flex;
+  button {
+    display: block;
+    height: ${pixelToRem(30)};
+    padding: 0 0.5rem;
+    /* background-color: transparent; */
+    border-radius: 5px;
+    background-color: ${(props) => props.theme.colors.yellow};
+  }
+`;
+
+interface DiaryContentsContainerProps {
   fontType: number;
   diaryWidth: number;
   backgroundColor: number;
@@ -169,7 +186,6 @@ function TripDiaryPage({ startDate, today, endDate }: TripListProps) {
       state: { diaryDate: selectedDiaryDate },
     });
   };
-  console.log(diaryDate, selectedDiaryDate);
 
   if (startDate > selectedDiaryDate || diaryDate > today)
     return (
@@ -183,6 +199,7 @@ function TripDiaryPage({ startDate, today, endDate }: TripListProps) {
         </NoDiaryContainer>
       </Container>
     );
+
   return (
     <Container>
       {isLoading && <div>Loading...</div>}
@@ -202,30 +219,38 @@ function TripDiaryPage({ startDate, today, endDate }: TripListProps) {
       )}
       {isSuccess && diaryData?.data && (
         <>
-          <div>
-            <button type="button" onClick={moveToEditDiary}>
-              수정
-            </button>
-            <button type="button" onClick={onDelete}>
-              삭제
-            </button>
-          </div>
           <DateContainer>
             <h2>
-              {changeDateFormatToDot(diaryDate) ||
-                changeDateFormatToDot(selectedDiaryDate)}
+              {diaryDate
+                ? changeDateFormatToDot(diaryDate)
+                : changeDateFormatToDot(selectedDiaryDate)}
             </h2>
             <Icon icon={weatherList[diaryData?.data?.weather]} />
           </DateContainer>
-          {/* <PositionContainer> */}
-          <BsFillGeoAltFill />
-          {diaryData?.data?.location}
-          {/* </PositionContainer> */}
-          <DiaryContents
+          <RecordedLocationContainer>
+            {diaryData?.data?.location}
+          </RecordedLocationContainer>
+          <DiaryContentsContainer
             diaryWidth={diaryWidth}
             backgroundColor={diaryData?.data?.backgroundColor}
             fontType={diaryData?.data?.fontType}
           >
+            <ButtonListContainer>
+              <button
+                type="button"
+                onClick={moveToEditDiary}
+                aria-label="diary-edit-button"
+              >
+                <AiTwotoneEdit />
+              </button>
+              <button
+                type="button"
+                onClick={onDelete}
+                aria-label="diary-delete-button"
+              >
+                <HiTrash />
+              </button>
+            </ButtonListContainer>
             <div
               style={{ width: "100%", height: "fit-content" }}
               ref={diaryRef}
@@ -251,7 +276,7 @@ function TripDiaryPage({ startDate, today, endDate }: TripListProps) {
                 />
               ))}
             </div>
-          </DiaryContents>
+          </DiaryContentsContainer>
         </>
       )}
     </Container>

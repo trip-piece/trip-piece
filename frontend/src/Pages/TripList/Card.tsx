@@ -1,10 +1,8 @@
 import styled from "@emotion/styled";
 import { memo, MouseEvent, useState } from "react";
-import { BsMoonStarsFill } from "react-icons/bs";
 import { InfiniteData, QueryObserverResult } from "react-query";
 import { Link } from "react-router-dom";
 import { REGIONLIST } from "../../utils/constants/constant";
-import { changeDateFormatToDot } from "../../utils/functions/util";
 import { TripManagementModal } from "./Modal";
 import activeTicket from "../../assets/image/activeTicket.png";
 

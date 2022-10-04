@@ -10,13 +10,11 @@ import {
 } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { Icon } from "@iconify/react/dist/offline";
-import { v4 } from "uuid";
 import { Controller, useForm } from "react-hook-form";
 import { Checkbox, TextareaAutosize } from "@mui/material";
-import { BsFillGeoAltFill } from "react-icons/bs";
 import { HiTrash } from "react-icons/hi";
 import { Helmet } from "react-helmet-async";
-import { useRecoilState } from "recoil";
+import { useRecoilState, useSetRecoilState } from "recoil";
 import { useQuery } from "react-query";
 import { AxiosError, AxiosResponse } from "axios";
 import Draggable, { DraggableData } from "react-draggable";
@@ -55,6 +53,7 @@ import { NFTContract } from "../../utils/common/NFT_ABI";
 import spinner from "../../assets/image/spinner.gif";
 import useEditDiary from "../../utils/hooks/useEditDiary";
 import { getNFTImagePath } from "../../utils/functions/getNFTImagePath";
+import RecordedLocationContainer from "../../components/modules/RecordedLocationContainer";
 
 const Form = styled.form`
   display: flex;
@@ -187,6 +186,7 @@ const ImageControlContainer = styled.div`
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
+    color: ${(props) => props.theme.colors.gray900};
   }
 `;
 
@@ -274,7 +274,7 @@ interface IFormInput {
 }
 
 interface IPhoto {
-  todayPhoto: File | null | string;
+  todayPhoto: File | null;
   imageSrc: string | null;
   imagePath: string | null;
 }
@@ -383,7 +383,7 @@ function DiaryManagementPage() {
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
   const { tripId, diaryDate } = useParams();
   const { state, pathname } = useLocation();
-  const [diary, setDiary] = useRecoilState(formDataDiaryState);
+  const setDiary = useSetRecoilState(formDataDiaryState);
 
   const [stickerList, setStickerList] = useState<ISticker[]>([]);
   const [isShared, setIsShared] = useState(false);
@@ -409,7 +409,7 @@ function DiaryManagementPage() {
   const [loading, setLoading] = useState<boolean>(true);
   const [NFTDetailList, setNFTDetailList] = useState<TokenDetail[]>([]);
 
-  const getNFTList = async () => {
+  const getNFTList = useCallback(async () => {
     try {
       setLoading(true);
       const result = await NFTContract.methods
@@ -427,7 +427,7 @@ function DiaryManagementPage() {
     } catch (err) {
       console.log("Error getSticker : ", err);
     }
-  };
+  }, [userInfo]);
   useEffect(() => {
     if (!state?.diaryDate && !diaryDate) navigate(-1);
     if (pathname.includes("/edit")) setIsEditMode(true);
@@ -511,18 +511,17 @@ function DiaryManagementPage() {
           imageSrc: diaryData.data.todayPhoto,
         }));
       }
-      console.log("stickerList", diaryData.data.stickerList);
       if (diaryData.data.stickerList?.length) {
         getNFTStickerList(diaryData.data.stickerList);
       }
     }
   }, [diaryData]);
 
-  const onCancel = () => {
+  const onCancel = useCallback(() => {
     if (window.confirm(MESSAGE_LIST.DIARY_CANCEL)) {
       navigate(-1);
     }
-  };
+  }, []);
 
   const onLoadFile = async (event: ChangeEvent<HTMLInputElement>) => {
     const {
@@ -537,8 +536,6 @@ function DiaryManagementPage() {
     }
   };
 
-  console.log(stickerList);
-
   const onClick = useCallback(() => {
     if (stickerRef.current.style.maxHeight === "50vh") {
       stickerRef.current.style.maxHeight = "120px";
@@ -551,13 +548,13 @@ function DiaryManagementPage() {
     }
   }, []);
 
-  const onDelete = () => {
-    setPhoto({ todayPhoto: "", imagePath: "", imageSrc: "" });
-  };
+  const onDelete = useCallback(() => {
+    setPhoto({ todayPhoto: null, imagePath: "", imageSrc: "" });
+  }, []);
 
-  const changeMode = (e: ChangeEvent<HTMLInputElement>) => {
+  const changeMode = useCallback((e: ChangeEvent<HTMLInputElement>) => {
     setMode(e.target.value);
-  };
+  }, []);
 
   const addSticker = useCallback(
     (sticker: StickerProps) => {
@@ -713,7 +710,7 @@ function DiaryManagementPage() {
       }
       return formData;
     },
-    [sizes, locationData],
+    [sizes, locationData, isEditMode],
   );
 
   const makeDecorationData = useCallback(
@@ -772,20 +769,23 @@ function DiaryManagementPage() {
     });
   };
 
-  const onSubmit = (formInputData: IFormInput) => {
-    const formData = makeDiaryData(formInputData);
-    if (!isShared) {
-      if (isEditMode) postEditData(formData);
-      else postData(formData);
-    } else {
-      setDiary(formData);
-      setOpen(true);
-    }
-  };
+  const onSubmit = useCallback(
+    (formInputData: IFormInput) => {
+      const formData = makeDiaryData(formInputData);
+      if (!isShared) {
+        if (isEditMode) postEditData(formData);
+        else postData(formData);
+      } else {
+        setDiary(formData);
+        setOpen(true);
+      }
+    },
+    [isShared, isEditMode],
+  );
 
-  function deleteSticker() {
+  const deleteSticker = () => {
     setStickerList([]);
-  }
+  };
 
   return (
     <motion.div
@@ -829,10 +829,9 @@ function DiaryManagementPage() {
           </TabContainer>
           <DiaryStyleContainer>
             {isEditMode ? (
-              <PositionContainer>
-                <BsFillGeoAltFill />
+              <RecordedLocationContainer>
                 {diaryData?.data?.location}
-              </PositionContainer>
+              </RecordedLocationContainer>
             ) : (
               <MyLocation
                 {...{ isFetchingLocation, locationData, refetchLocation }}
