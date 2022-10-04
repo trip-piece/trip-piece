@@ -11,6 +11,8 @@ import com.trippiece.backend.exception.CustomException;
 import com.trippiece.backend.exception.ErrorCode;
 import com.trippiece.backend.util.DateConverter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -110,6 +112,18 @@ public class DiaryService {
 
     }
 
+    @Transactional
+    public int checkDiary(long tripId, String date) {
+        int resultCode = 200;
+        Trip trip = tripRepository.findById(tripId).orElseThrow(() -> new CustomException(ErrorCode.DATA_NOT_FOUND));
+        LocalDate diaryDate = dateConverter.convert(date);
+        Diary diary = diaryRepository.findByTripAndDiaryDate(trip, diaryDate);
+        if (diary != null) {
+            resultCode = 409;
+        }
+        return resultCode;
+    }
+
     /*일기 조회*/
     @Transactional
     public DiaryResponseDto findDiary(final long tripId, String date) {
@@ -117,7 +131,7 @@ public class DiaryService {
         Trip trip = tripRepository.findById(tripId).orElseThrow(() -> new CustomException(ErrorCode.DATA_NOT_FOUND));
         LocalDate diaryDate = dateConverter.convert(date);
         Diary diary = diaryRepository.findByTripAndDiaryDate(trip, diaryDate);
-        if(diary==null){
+        if (diary == null) {
             return null;
         }
         List<Decoration> list = decorationRepository.findAllByDiary(diary);
