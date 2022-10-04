@@ -6,6 +6,7 @@ import {
   useState,
   useCallback,
   memo,
+  SetStateAction,
 } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { Icon } from "@iconify/react/dist/offline";
@@ -32,6 +33,7 @@ import { shake } from "../../style/animations";
 import useWindowResize from "../../utils/hooks/useWindowResize";
 import { formDataDiaryState, writedDiaryState } from "../../store/diaryAtoms";
 import {
+  IIPFSResult,
   IRequestedDiary,
   ISticker,
   IWritedDiary,
@@ -46,7 +48,6 @@ import diaryApis from "../../utils/apis/diaryApis";
 import axiosInstance from "../../utils/apis/api";
 import TodayPhoto from "../../components/atoms/TodayPhoto";
 import useSize from "../../utils/hooks/useSize";
-import { dummyStickerList } from "../../utils/constants/dummyData";
 import LazyImage from "../../components/atoms/LazyImage";
 import DecorationModal from "./Modal";
 import useWriteDiary from "../../utils/hooks/useWriteDiary";
@@ -55,6 +56,7 @@ import { UserInfoState } from "../../store/atom";
 import { NFTContract } from "../../utils/common/NFT_ABI";
 import spinner from "../../assets/image/spinner.gif";
 import useEditDiary from "../../utils/hooks/useEditDiary";
+import { getNFTImagePath } from "../../utils/functions/getNFTImagePath";
 
 const Form = styled.form`
   display: flex;
@@ -410,22 +412,12 @@ function DiaryManagementPage() {
         .getStickerList(userInfo.address)
         .call();
       if (result) {
-        const tokenList: React.SetStateAction<TokenDetail[]> = [];
-        for (var i = 0; i < result.length; i++) {
-          await fetch(`https://www.infura-ipfs.io/ipfs/${result[i].tokenURI}`)
-            .then((res) => {
-              return res.json();
-            })
-            .then((data) => {
-              const token: TokenDetail = {
-                tokenId: Number(result[i].tokenId),
-                tokenName: String(data[0].name),
-                imagePath: String(data[0].image),
-              };
-              tokenList.push(token);
-            });
-          setNFTDetailList(tokenList);
-        }
+        const NFTList: SetStateAction<TokenDetail[]> = await Promise.all(
+          result.map((res: IIPFSResult) =>
+            getNFTImagePath(Number(res.tokenId), res.tokenURI),
+          ),
+        );
+        setNFTDetailList(NFTList);
         setLoading(false);
       }
     } catch (err) {
@@ -670,7 +662,6 @@ function DiaryManagementPage() {
 
   const makeDiaryData = useCallback(
     (formInputData: IFormInput) => {
-      console.log(formInputData);
       let body;
       if (isEditMode) {
         body = {
@@ -696,7 +687,6 @@ function DiaryManagementPage() {
 
       const formData = new FormData();
       const _diary = JSON.stringify(body);
-      console.log(body, photo.todayPhoto);
       formData.append(
         "diary",
         new Blob([_diary], { type: "application/json" }),
@@ -728,7 +718,6 @@ function DiaryManagementPage() {
         "decoration",
         new Blob([_decoration], { type: "application/json" }),
       );
-      console.log("frameImage", frameImage);
       if (frameImage) {
         formData.append("frameImage", frameImage);
       }
@@ -741,6 +730,9 @@ function DiaryManagementPage() {
       onSuccess: () => {
         if (stickerList.length < 1)
           navigate(`/trips/${tripId}/diarys/${state?.diaryDate}`);
+      },
+      onError: (err) => {
+        console.log(err);
       },
     });
 
@@ -757,6 +749,7 @@ function DiaryManagementPage() {
         mutateDecoration(makeDecorationData(data.data, frameImage), {
           onSuccess: () =>
             navigate(`/trips/${tripId}/diarys/${state?.diaryDate}`),
+          onError: (err) => console.log(err),
         });
       },
     });
@@ -777,7 +770,6 @@ function DiaryManagementPage() {
     setStickerList([]);
   }
 
-  console.log(NFTDetailList);
   return (
     <>
       <Helmet>

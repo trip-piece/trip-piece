@@ -53,6 +53,13 @@ export interface IRequestedSticker {
 
 export interface IRequestedDiary extends IDiary {
   todayPhoto: string;
-  isShare: boolean;
+  share: boolean;
   stickerList: IRequestedSticker[];
+}
+
+export interface IIPFSResult {
+  0: string;
+  1: string;
+  tokenId: string;
+  tokenURI: string;
 }

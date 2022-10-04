@@ -6,6 +6,7 @@ import { HiPencilAlt } from "react-icons/hi";
 import { AxiosResponse } from "axios";
 import { Icon } from "@iconify/react/dist/offline";
 import { BsFillGeoAltFill } from "react-icons/bs";
+import { GiConsoleController } from "react-icons/gi";
 import diaryApis from "../../utils/apis/diaryApis";
 import {
   changeDateFormatToDot,
@@ -27,6 +28,7 @@ import DateContainer from "../../components/atoms/DateContainer";
 import { weatherList } from "../../utils/constants/weatherList";
 import useSize from "../../utils/hooks/useSize";
 import { DIARY_COLOR_LIST, FONTTYPELIST } from "../../utils/constants/constant";
+import { getNFTImagePath } from "../../utils/functions/getNFTImagePath";
 
 const Container = styled.article`
   min-height: 75vh;
@@ -93,13 +95,15 @@ function TripDiaryPage({ startDate, today, endDate }: TripListProps) {
   const [selectedDiaryDate, setSelectedDiaryDate] = useState<string>(() =>
     changeDateFormatToHyphen(new Date()),
   );
+  const [diaryWidth, setDiaryWidth] = useState(0);
+  const [NFTStickerList, setNFTStickerList] = useState([]);
 
   const { tripId, diaryDate } = useParams();
   const navigate = useNavigate();
   const diaryRef = useRef<HTMLDivElement>(null);
   const imageRef = useRef<HTMLImageElement>(null);
   // const sizes = useSize(diaryRef);
-  const sizes = { width: 0, height: 0 };
+  const size = useWindowResize();
   const queryClient = useQueryClient();
 
   useEffect(() => {
@@ -109,9 +113,11 @@ function TripDiaryPage({ startDate, today, endDate }: TripListProps) {
   const getDiary = (date: string) =>
     axiosInstance.get(diaryApis.targetDiary(Number(tripId), date));
   console.log(diaryDate);
-  const { isLoading, data, isSuccess } = useQuery<
-    AxiosResponse<IRequestedDiary, null>
-  >(
+  const {
+    isLoading,
+    data: diaryData,
+    isSuccess,
+  } = useQuery<AxiosResponse<IRequestedDiary, null>>(
     [`${diaryDate || selectedDiaryDate}-diary`],
     () => getDiary(diaryDate || selectedDiaryDate),
     {
@@ -121,10 +127,32 @@ function TripDiaryPage({ startDate, today, endDate }: TripListProps) {
     },
   );
   const { mutate } = useDeleteDiary();
-  console.log(data?.data);
+
+  const getNFTList = async () => {
+    if (!diaryData) return;
+    const { data } = diaryData;
+    if (!data || data?.stickerList?.length < 1) return;
+    const _list = await Promise.all(
+      data?.stickerList?.map((sticker) =>
+        getNFTImagePath(sticker.tokenId, sticker.tokenURL, { ...sticker }),
+      ),
+    );
+    setNFTStickerList(_list);
+  };
+
+  useEffect(() => {
+    console.log(diaryRef.current?.getBoundingClientRect());
+    const wrapper = diaryRef.current?.getBoundingClientRect();
+    setDiaryWidth(wrapper?.width);
+  }, [diaryData, size]);
+
+  useEffect(() => {
+    (async () => getNFTList())();
+  }, [diaryData]);
+  console.log(diaryData?.data);
   const onDelete = () => {
     if (window.confirm("다이어리를 삭제하시겠습니까?"))
-      mutate(data?.data?.id, {
+      mutate(diaryData?.data?.id, {
         onSuccess: () => queryClient.invalidateQueries([`${diaryDate}-diary`]),
       });
   };
@@ -133,7 +161,6 @@ function TripDiaryPage({ startDate, today, endDate }: TripListProps) {
     navigate(`../../trips/${tripId}/diarys/write`, {
       state: { diaryDate: selectedDiaryDate },
     });
-    // return <Navigate to={`../trips/${tripId}/diarys/write`} />;
   };
 
   const moveToEditDiary = () => {
@@ -148,7 +175,7 @@ function TripDiaryPage({ startDate, today, endDate }: TripListProps) {
   return (
     <Container>
       {isLoading && <div>Loading...</div>}
-      {isSuccess && !data.data && (
+      {isSuccess && !diaryData.data && (
         <NoDiaryContainer>
           <HiPencilAlt />
           <p>
@@ -162,7 +189,7 @@ function TripDiaryPage({ startDate, today, endDate }: TripListProps) {
           />
         </NoDiaryContainer>
       )}
-      {isSuccess && data.data && (
+      {isSuccess && diaryData.data && (
         <>
           <div>
             <button type="button" onClick={moveToEditDiary}>
@@ -177,37 +204,37 @@ function TripDiaryPage({ startDate, today, endDate }: TripListProps) {
               {changeDateFormatToDot(diaryDate) ||
                 changeDateFormatToDot(selectedDiaryDate)}
             </h2>
-            <Icon icon={weatherList[data?.data?.weather]} />
+            <Icon icon={weatherList[diaryData?.data?.weather]} />
           </DateContainer>
           {/* <PositionContainer> */}
           <BsFillGeoAltFill />
-          {data?.data?.location}
+          {diaryData?.data?.location}
           {/* </PositionContainer> */}
           <DiaryContents
-            diaryWidth={sizes.width}
-            backgroundColor={data?.data?.backgroundColor}
-            fontType={data?.data?.fontType}
+            diaryWidth={diaryWidth}
+            backgroundColor={diaryData?.data?.backgroundColor}
+            fontType={diaryData?.data?.fontType}
           >
             <div
               style={{ width: "100%", height: "fit-content" }}
               ref={diaryRef}
             >
-              <DiaryContent>{data?.data?.content}</DiaryContent>
+              <DiaryContent>{diaryData?.data?.content}</DiaryContent>
 
-              {data.data?.todayPhoto && (
+              {diaryData.data?.todayPhoto && (
                 <TodayPhoto
-                  src={data.data?.todayPhoto}
+                  src={diaryData.data?.todayPhoto}
                   alt={`${diaryDate}-photo`}
                   ref={imageRef}
                 />
               )}
 
-              {data?.data?.stickerList?.map((sticker: IRequestedSticker) => (
+              {NFTStickerList?.map((sticker: IRequestedSticker) => (
                 <StickerImg
-                  up={sticker.y * sizes.height}
-                  left={sticker.x * sizes.width}
+                  up={sticker.y * diaryWidth * diaryData.data.ratio}
+                  left={sticker.x * diaryWidth}
                   alt={sticker.tokenName}
-                  src={sticker.tokenURL}
+                  src={sticker.imagePath}
                   key={sticker.y}
                 />
               ))}
