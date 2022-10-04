@@ -8,7 +8,6 @@ import { useRecoilState } from "recoil";
 import { pixelToRem } from "../../utils/functions/util";
 import ColoredRoundButton from "../../components/atoms/ColoredRoundButton";
 import { IQrInfo, QrInfoState } from "../../store/atom";
-import { urlSource } from "ipfs-http-client/dist/src";
 import { useNavigate } from "react-router-dom";
 // import { pixelToRem } from "../../utils/functions/util";
 // import ColoredRoundButton from "../../components/atoms/ColoredRoundButton";

@@ -40,7 +40,7 @@ function QrReaderComponent() {
     }
   }, [result]);
 
-  const handleScan = (result) => {
+  const handleScan = (result: any) => {
     if (!!result) {
       console.log("function handleScan checks");
       setResult(result);
