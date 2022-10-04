@@ -417,6 +417,11 @@ export default function Navbar() {
     navigate("/main");
   };
 
+  const moveToMyTrip = (tripId: number) => {
+    navigate(`/trips/${tripId}/diarys`);
+    setOpen(false);
+  };
+
   const {
     isLoading: isLoading,
     isSuccess: isSuccess,
@@ -631,6 +636,7 @@ export default function Navbar() {
                         whileHover={{ scale: 1.1 }}
                         whileTap={{ scale: 0.9 }}
                         type="button"
+                        onClick={moveToTrip}
                       >
                         등록하기
                       </motion.button>
@@ -651,6 +657,7 @@ export default function Navbar() {
                         whileHover={{ scale: 1.1 }}
                         whileTap={{ scale: 0.9 }}
                         type="button"
+                        onClick={() => moveToMyTrip(upcoming.tripId)}
                       >
                         기록하기
                       </motion.button>
