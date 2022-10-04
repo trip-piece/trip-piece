@@ -140,15 +140,11 @@ function StickerDetailPage() {
     setLoading(true);
     e.preventDefault();
     try {
-      const approveResult = await NFTContract.methods
-        .setApprovalForAll(import.meta.env.VITE_NFT_CA, true)
-        .send({ from: "userInfo.address" });
-
       const result = await MarketContract.methods
         .purchaseSticker(data.data.tokenId)
-        .send({ from: userInfo.address });
+        .send({ from: userInfo.address, value: data?.data?.price });
       if (result.status) {
-        saveMarket({ data: { tokenId: data.data.tokenId } });
+        deleteMarket({ data: { tokenId: data.data.tokenId } });
         console.log("DB등록완료");
       }
       alert("구매가 완료되었습니다.");
@@ -157,17 +153,7 @@ function StickerDetailPage() {
     }
   };
 
-  // const getApproval = async (e: { preventDefault: () => void }) => {
-  //   setLoading(true);
-  //   e.preventDefault;
-  //   try {
-  //     const approveResult = await NFTContract.methods.getApproval;
-  //   } catch (err) {
-  //     console.log(err);
-  //   }
-  // };
-
-  const saveMarket = async (data: deleteRequest) => {
+  const deleteMarket = async (data: deleteRequest) => {
     await axiosInstance
       .delete(marketApis.defaultURL, data)
       .then((response: { data: string }) => {
@@ -175,7 +161,21 @@ function StickerDetailPage() {
       });
   };
 
+  const testDeleteMarket = async () => {
+    console.log("token Id : " + data.data.marketId);
+    await axiosInstance
+      .delete(marketApis.defaultURL, {
+        data: {
+          marketId: data.data.marketId,
+        },
+      })
+      .then((response: { data: string }) => {
+        console.log(response.data);
+      });
+  };
+
   getImage(data?.data?.tokenURL);
+  console.log(data);
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -204,7 +204,7 @@ function StickerDetailPage() {
             <BsFillCreditCardFill />
             <p>구매</p>
           </button>
-          <button>
+          <button onClick={testDeleteMarket}>
             <BsFillCreditCardFill />
             <p>뒤로가기</p>
           </button>
