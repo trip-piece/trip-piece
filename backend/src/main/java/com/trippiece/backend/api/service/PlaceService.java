@@ -22,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.security.SecureRandom;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -265,6 +266,11 @@ public class PlaceService {
                 .sticker(sticker)
                 .build();
         qrlogRepository.save(qrlog);
+    }
+
+    public boolean checkQRLog(final User user, final long placeId) {
+        Place place = placeRepository.findById(placeId).orElseThrow(() -> new CustomException(ErrorCode.DATA_NOT_FOUND));
+        return qrlogRepository.existsByUserAndPlaceAndRegtime(user,place,LocalDate.now());
     }
 
     public String getRamdomCode(int size) {
