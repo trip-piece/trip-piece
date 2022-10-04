@@ -15,7 +15,7 @@ export interface saveRequest {
 
 export interface deleteRequest {
   data: {
-    tokenId: number;
+    marketId: number;
   };
 }
 

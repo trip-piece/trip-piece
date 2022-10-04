@@ -144,7 +144,7 @@ function StickerDetailPage() {
         .purchaseSticker(data.data.tokenId)
         .send({ from: userInfo.address, value: data?.data?.price });
       if (result.status) {
-        deleteMarket({ data: { tokenId: data.data.tokenId } });
+        deleteMarket({ data: { marketId: data.data.marketId } });
         console.log("DB등록완료");
       }
       alert("구매가 완료되었습니다.");
@@ -156,19 +156,6 @@ function StickerDetailPage() {
   const deleteMarket = async (data: deleteRequest) => {
     await axiosInstance
       .delete(marketApis.defaultURL, data)
-      .then((response: { data: string }) => {
-        console.log(response.data);
-      });
-  };
-
-  const testDeleteMarket = async () => {
-    console.log("token Id : " + data.data.marketId);
-    await axiosInstance
-      .delete(marketApis.defaultURL, {
-        data: {
-          marketId: data.data.marketId,
-        },
-      })
       .then((response: { data: string }) => {
         console.log(response.data);
       });
@@ -204,7 +191,7 @@ function StickerDetailPage() {
             <BsFillCreditCardFill />
             <p>구매</p>
           </button>
-          <button onClick={testDeleteMarket}>
+          <button>
             <BsFillCreditCardFill />
             <p>뒤로가기</p>
           </button>
