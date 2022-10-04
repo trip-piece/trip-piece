@@ -26,6 +26,7 @@ public class FrameService {
     private final DecorationRepository decorationRepository;
 
     private final DiaryRepository diaryRepository;
+
     @Transactional
     //프레임 리스트 조회 및 검색(지역필터링)
     public Page<FrameResponseDto> findFrameList(final User user, final List<Long> regionList, Pageable pageable) {
@@ -47,6 +48,7 @@ public class FrameService {
         Page<FrameResponseDto> result = new PageImpl<>(responseList.subList(start, end), pageable, responseList.size());
         return result;
     }
+
     @Transactional
     //지역별 공유된 스티커프레임 개수 조회
     public FrameCountResponseDto findFrameListCount() {
@@ -62,28 +64,30 @@ public class FrameService {
     }
 
     @Transactional
-    public void addFrame(long diaryId, String fileName) {
+    public void addFrame(long diaryId, String frameImagePath) {
         Region region = diaryRepository.findById(diaryId).orElseThrow(() -> new CustomException(ErrorCode.DATA_NOT_FOUND)).getTrip().getRegion();
         Diary diary = diaryRepository.findById(diaryId).orElseThrow(() -> new CustomException(ErrorCode.DATA_NOT_FOUND));
 
         Frame frame = Frame.builder()
                 .diary(diary)
                 .region(region)
-                .frameImage(fileName)
+                .frameImage(frameImagePath)
                 .build();
         frameRepository.save(frame);
     }
 
     @Transactional
-    public void updateFrame(long diaryId, String fileName) {
+    public void updateFrame(long diaryId, String frameImagePath) {
         Region region = diaryRepository.findById(diaryId).orElseThrow(() -> new CustomException(ErrorCode.DATA_NOT_FOUND)).getTrip().getRegion();
         Diary diary = diaryRepository.findById(diaryId).orElseThrow(() -> new CustomException(ErrorCode.DATA_NOT_FOUND));
-        Frame frame = frameRepository.findByDiary(diary);
-        System.out.println(diary);
-        System.out.println(region);
-        System.out.println(fileName);
-        frame.updateFrame(diary, region, fileName);
+        Frame frame = frameRepository.findByDiary(diary);// 근데 공유를 안해서 없을 수도 있음
+        if (frame == null)
+            addFrame(diaryId, frameImagePath);
+        else {
+            frame.updateFrame(diary, region, frameImagePath);
+        }
     }
+
     @Transactional
     //스티커 프레임 상세 조회
     public StickerFrameResponseDto findFrame(final User user, final long frameId) {
@@ -100,9 +104,10 @@ public class FrameService {
 
     //스티커 프레임 삭제
     @Transactional
-    public int deleteFrame(final User user, final long frameId) {
+    public int deleteFrame(final User user, final long diaryId) {
         int resultCode = 200;
-        Frame frame = frameRepository.findById(frameId).orElseThrow(() -> new CustomException(ErrorCode.DATA_NOT_FOUND));
+        Diary diary = diaryRepository.findById(diaryId).orElseThrow(() -> new CustomException(ErrorCode.DATA_NOT_FOUND));
+        Frame frame = frameRepository.findByDiary(diary);
         if (!frame.getDiary().getUser().equals(user)) resultCode = 406;
         else {
             frameRepository.delete(frame);

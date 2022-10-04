@@ -44,8 +44,6 @@ public class DiaryController {
     private final JwtTokenUtil jwtTokenUtil;
 
 
-
-
     @PostMapping("/write")
     @ApiOperation(value = "일기 추가", notes = "새로운 일기를 작성한다")
     public ResponseEntity<?> addDiary(@RequestHeader("ACCESS_TOKEN") final String accessToken, @RequestPart(value = "diary") DiaryRequestDto.DiaryRegister diaryRegister, @RequestPart(value = "todayPhoto", required = false) MultipartFile todayPhoto) throws IOException {
@@ -56,11 +54,11 @@ public class DiaryController {
             if (user == null) return new ResponseEntity<String>("로그인된 회원을 찾을 수 없습니다.", HttpStatus.NOT_FOUND);
             else {
 
-                    int checkCode = diaryService.checkDiary(diaryRegister.getTripId(),diaryRegister.getDiaryDate());
-                    if(checkCode==409) {
-                        return new ResponseEntity<String>("중복이야!!!!!!!! 다시써!!!", HttpStatus.CONFLICT);
-                    }
-                if (todayPhoto != null) {
+                int checkCode = diaryService.checkDiary(diaryRegister.getTripId(), diaryRegister.getDiaryDate());
+                if (checkCode == 409) {
+                    return new ResponseEntity<String>("중복이야!!!!!!!! 다시써!!!", HttpStatus.CONFLICT);
+                }
+                if (!todayPhoto.isEmpty()) {
                     if (todayPhoto.getSize() >= 10485760)
                         return new ResponseEntity<String>("이미지 크기 제한은 10MB 입니다.", HttpStatus.FORBIDDEN);
                     String originFile = todayPhoto.getOriginalFilename();
@@ -69,8 +67,8 @@ public class DiaryController {
                             && !originFileExtension.equalsIgnoreCase(".jpeg")) {
                         return new ResponseEntity<String>("jpg, jpeg, png의 이미지 파일만 업로드해주세요", HttpStatus.FORBIDDEN);
                     }
-                    String fileName = s3Service.upload("", todayPhoto); //입력하면 업로드하러 넘어감
-                    diaryRegister.setTodayPhoto(fileName);
+                    String todayPhotoPath = s3Service.upload("", todayPhoto); //입력하면 업로드하러 넘어감
+                    diaryRegister.setTodayPhoto(todayPhotoPath);
                 }
                 diaryId = diaryService.addDiary(user, diaryRegister);
                 return new ResponseEntity<Long>(diaryId, HttpStatus.OK);
@@ -90,7 +88,7 @@ public class DiaryController {
             User user = userService.findOneUser(userId);
             if (user == null) return new ResponseEntity<String>("로그인된 회원을 찾을 수 없습니다.", HttpStatus.NOT_FOUND);
             else {
-                if (frameImage != null) { //공유하기 ok
+                if (!frameImage.isEmpty()) { //공유하기 ok
                     if (frameImage.getSize() >= 10485760)
                         return new ResponseEntity<String>("이미지 크기 제한은 10MB 입니다.", HttpStatus.FORBIDDEN);
                     String originFile = frameImage.getOriginalFilename();
@@ -99,8 +97,8 @@ public class DiaryController {
                             && !originFileExtension.equalsIgnoreCase(".jpeg")) {
                         return new ResponseEntity<String>("jpg, jpeg, png의 이미지 파일만 업로드해주세요", HttpStatus.FORBIDDEN);
                     }
-                    String fileName = s3Service.upload("", frameImage);
-                    frameService.addFrame(decoRequestDto.getDiaryId(), fileName);
+                    String frameImagePath = s3Service.upload("", frameImage);
+                    frameService.addFrame(decoRequestDto.getDiaryId(), frameImagePath);
                 }
                 diaryService.addDeco(decoRequestDto);
                 return new ResponseEntity<>("꾸미기 성공!", HttpStatus.OK);
@@ -123,8 +121,8 @@ public class DiaryController {
             User user = userService.findOneUser(userId);
             if (user == null) return new ResponseEntity<String>("로그인된 회원을 찾을 수 없습니다.", HttpStatus.NOT_FOUND);
             else {
-                String currentFilePath="";
-                if (frameImage != null) { //공유하기 ok
+                String currentFilePath = "";
+                if (!frameImage.isEmpty()) { //공유하기 ok
                     if (frameImage.getSize() >= 10485760)
                         return new ResponseEntity<String>("이미지 크기 제한은 10MB 입니다.", HttpStatus.FORBIDDEN);
                     String originFile = frameImage.getOriginalFilename();
@@ -133,13 +131,13 @@ public class DiaryController {
                             && !originFileExtension.equalsIgnoreCase(".jpeg")) {
                         return new ResponseEntity<String>("jpg, jpeg, png의 이미지 파일만 업로드해주세요", HttpStatus.FORBIDDEN);
                     }
-                    if(frameRepository.existsById(decoRequestDto.getDiaryId())){
-                        currentFilePath = frameRepository.findById(decoRequestDto.getDiaryId()).orElseThrow(() -> new CustomException(ErrorCode.DATA_NOT_FOUND)).getFrameImage();
-                    }
-                    System.out.println("여기 들어오나?");
-                    String fileName = s3Service.upload(currentFilePath, frameImage); //입력하면 업로드하러 넘어감
-                    frameService.updateFrame(decoRequestDto.getDiaryId(), fileName);
+
+                    String frameImagePath = s3Service.upload("", frameImage); //입력하면 업로드하러 넘어감
+                    frameService.updateFrame(decoRequestDto.getDiaryId(), frameImagePath);
+                }else{
+                    frameService.deleteFrame(user,decoRequestDto.getDiaryId());
                 }
+
                 diaryService.updateDeco(decoRequestDto);
                 return new ResponseEntity<>("꾸미기 수정 성공!", HttpStatus.OK);
             }
@@ -167,19 +165,28 @@ public class DiaryController {
         try {
             long userId = jwtTokenUtil.getUserIdFromToken(accessToken);
             User user = userService.findOneUser(userId);
+            String todayPhotoPath = "";
             if (user == null) return new ResponseEntity<String>("로그인된 회원을 찾을 수 없습니다.", HttpStatus.NOT_FOUND);
             else {
-                if (todayPhoto != null) {
-                    String currentFilePath = diaryRepository.findById(diaryEdit.getDiaryId()).orElseThrow(() -> new CustomException(ErrorCode.DATA_NOT_FOUND)).getTodayPhoto();
-                    String fileName = s3Service.upload(currentFilePath, todayPhoto); //입력하면 업로드하러 넘어감
-                    diaryEdit.setImagePath(fileName);
+                if (!todayPhoto.isEmpty()){ //새로운 파일 넣었을 경우
+                    if (todayPhoto.getSize() >= 10485760)
+                        return new ResponseEntity<String>("이미지 크기 제한은 10MB 입니다.", HttpStatus.FORBIDDEN);
+                    String originFile = todayPhoto.getOriginalFilename();
+                    String originFileExtension = originFile.substring(originFile.lastIndexOf("."));
+                    if (!originFileExtension.equalsIgnoreCase(".jpg") && !originFileExtension.equalsIgnoreCase(".png")
+                            && !originFileExtension.equalsIgnoreCase(".jpeg")) {
+                        return new ResponseEntity<String>("jpg, jpeg, png의 이미지 파일만 업로드해주세요", HttpStatus.FORBIDDEN);
+                    }
+                    // String currentFilePath = diaryRepository.findById(diaryEdit.getDiaryId()).orElseThrow(() -> new CustomException(ErrorCode.DATA_NOT_FOUND)).getTodayPhoto();
+                    todayPhotoPath = s3Service.upload("", todayPhoto); //입력하면 업로드하러 넘어감
+                    diaryEdit.setImagePath(todayPhotoPath);
                 } else {
                     //파일이 없고, ImagePath도 없는 경우 => 기존 이미지를 삭제할 경우
                     if (diaryEdit.getImagePath().equals("") || diaryEdit.getImagePath().equals(null)) {
                         diaryEdit.setImagePath(null);
                     }
                 }
-                int updateResult = diaryService.updateDiary(user, diaryEdit, diaryEdit.getDiaryId());
+                int updateResult = diaryService.updateDiary(user, diaryEdit);
                 if (updateResult == 406)
                     return new ResponseEntity<String>("사용자가 이 일기의 소유자가 아닙니다.", HttpStatus.NOT_ACCEPTABLE);
                 else {
