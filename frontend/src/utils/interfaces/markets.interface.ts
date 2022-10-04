@@ -13,6 +13,12 @@ export interface saveRequest {
   price: number;
 }
 
+export interface deleteRequest {
+  data: {
+    tokenId: number;
+  };
+}
+
 export interface MarketStikcerListResponse {
   content: Array<IMarket>;
 }

@@ -190,12 +190,7 @@ function MarketRegisterPage() {
     setPrice(Number(e.target.value));
   };
 
-  const navigate = useNavigate();
-  const moveToBeforePage = () => {
-    navigate(-1);
-  };
-
-  const insertIntoSolMarket = async (e: { preventDefault: () => void }) => {
+  const insertIntoMarket = async (e: { preventDefault: () => void }) => {
     setLoading(true);
     e.preventDefault();
     try {
@@ -228,7 +223,7 @@ function MarketRegisterPage() {
 
   const saveMarket = async (data: saveRequest) => {
     await axiosInstance
-      .post(marketApis.insertIntoMarket, data)
+      .post(marketApis.defaultURL, data)
       .then((response: { data: string }) => {
         console.log(response.data);
       });
@@ -272,10 +267,10 @@ function MarketRegisterPage() {
         </RegisterForm>
         <Button>
           {/* 수정이면 수정 버튼으로.. */}
-          <button className="register" onClick={insertIntoSolMarket}>
+          <button className="register" onClick={insertIntoMarket}>
             등록
           </button>
-          <button onClick={moveToBeforePage}>취소</button>
+          <button>취소</button>
         </Button>
       </Container>
     </motion.div>

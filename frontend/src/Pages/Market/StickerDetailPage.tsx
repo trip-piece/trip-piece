@@ -1,15 +1,22 @@
 import styled from "@emotion/styled";
 import { Helmet } from "react-helmet-async";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { FaEthereum } from "react-icons/fa";
 import { motion } from "framer-motion";
 import { BsFillCreditCardFill } from "react-icons/bs";
-import { IMarket } from "../../utils/interfaces/markets.interface";
 import { useState } from "react";
 import { AxiosError, AxiosResponse } from "axios";
 import axiosInstance from "../../utils/apis/api";
 import { useQuery } from "react-query";
+import {
+  deleteRequest,
+  IMarket,
+} from "../../utils/interfaces/markets.interface";
 import { marketApis } from "../../utils/apis/marketApis";
+import { useRecoilState } from "recoil";
+import { UserInfoState } from "../../store/atom";
+import { MarketContract } from "../../utils/common/Market_ABI";
+import { NFTContract } from "../../utils/common/NFT_ABI";
 
 const Container = styled.article`
   min-height: 90vh;
@@ -99,10 +106,16 @@ const Button = styled.article`
     }
   }
 `;
+// const navigate = useNavigate();
+// const moveToBeforePage = () => {
+//   navigate(-1);
+// };
 
 function StickerDetailPage() {
   const { marketId } = useParams();
   const [imagePath, setImagePath] = useState<string>();
+  const [userInfo] = useRecoilState(UserInfoState);
+  const [loading, setLoading] = useState<boolean>(true);
   const { data } = useQuery<AxiosResponse<IMarket>, AxiosError>(
     ["marketDetail"],
     () => axiosInstance.get(marketApis.getMarketDetail(marketId)),
@@ -122,6 +135,46 @@ function StickerDetailPage() {
       });
     return imagePath;
   };
+
+  const buySticker = async (e: { preventDefault: () => void }) => {
+    setLoading(true);
+    e.preventDefault();
+    try {
+      const approveResult = await NFTContract.methods
+        .setApprovalForAll(import.meta.env.VITE_NFT_CA, true)
+        .send({ from: "userInfo.address" });
+
+      const result = await MarketContract.methods
+        .purchaseSticker(data.data.tokenId)
+        .send({ from: userInfo.address });
+      if (result.status) {
+        saveMarket({ data: { tokenId: data.data.tokenId } });
+        console.log("DB등록완료");
+      }
+      alert("구매가 완료되었습니다.");
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  // const getApproval = async (e: { preventDefault: () => void }) => {
+  //   setLoading(true);
+  //   e.preventDefault;
+  //   try {
+  //     const approveResult = await NFTContract.methods.getApproval;
+  //   } catch (err) {
+  //     console.log(err);
+  //   }
+  // };
+
+  const saveMarket = async (data: deleteRequest) => {
+    await axiosInstance
+      .delete(marketApis.defaultURL, data)
+      .then((response: { data: string }) => {
+        console.log(response.data);
+      });
+  };
+
   getImage(data?.data?.tokenURL);
   return (
     <motion.div
@@ -147,9 +200,13 @@ function StickerDetailPage() {
         </Price>
         <Button>
           {/* 판매글을 올린 userId가 로그인한 userId와 같으면 판매 취소 버튼으로.. */}
-          <button>
+          <button onClick={buySticker}>
             <BsFillCreditCardFill />
             <p>구매</p>
+          </button>
+          <button>
+            <BsFillCreditCardFill />
+            <p>뒤로가기</p>
           </button>
         </Button>
       </Container>
