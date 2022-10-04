@@ -53,12 +53,11 @@ public class DiaryController {
             long diaryId;
             if (user == null) return new ResponseEntity<String>("로그인된 회원을 찾을 수 없습니다.", HttpStatus.NOT_FOUND);
             else {
-
                 int checkCode = diaryService.checkDiary(diaryRegister.getTripId(), diaryRegister.getDiaryDate());
                 if (checkCode == 409) {
                     return new ResponseEntity<String>("중복이야!!!!!!!! 다시써!!!", HttpStatus.CONFLICT);
                 }
-                if (!todayPhoto.isEmpty()) {
+                if (todayPhoto!=null) {
                     if (todayPhoto.getSize() >= 10485760)
                         return new ResponseEntity<String>("이미지 크기 제한은 10MB 입니다.", HttpStatus.FORBIDDEN);
                     String originFile = todayPhoto.getOriginalFilename();
