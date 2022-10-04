@@ -69,7 +69,7 @@ function NFTInfo({ stickerName, stickerUrl }: ContentProps) {
     <>
       <StickerName>{stickerName}</StickerName>
       <ResultImg src={stickerUrl} alt="nft" />
-      nft:{stickerUrl}
+      {/* nft:{stickerUrl} */}
     </>
   );
 }
@@ -80,7 +80,7 @@ function QrInfo({ stickerName, stickerUrl }: ContentProps) {
       <StickerName>{stickerName}</StickerName>
       <ResultImg>
         <img src={stickerUrl} alt="poster" />
-        qr:{stickerUrl}
+        {/* qr:{stickerUrl} */}
       </ResultImg>
     </>
   );

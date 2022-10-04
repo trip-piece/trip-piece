@@ -70,6 +70,15 @@ function NftResponse() {
 
   const link = window.location.href;
 
+  const myLocation = async () => {
+    console.log("위치 받아와.. 소워임");
+
+    const userLocation: any = await getLocation();
+    setLocationInfo(userLocation.location);
+    setLat(userLocation.latitude);
+    setLng(userLocation.longitude);
+  };
+
   const getToken = (tokenURI: string) => {
     fetch(`https://www.infura-ipfs.io/ipfs/${tokenURI}`)
       .then((res) => {
@@ -144,22 +153,19 @@ function NftResponse() {
           console.log(response);
 
           if (response.data.code === code) {
-            const userLocation = getLocation();
-
-            console.log(userLocation.meta);
-            console.log(userLocation.latitude);
-            console.log(userLocation.longitude);
+            console.log(lat);
+            console.log(lng);
 
             console.log("distance 계산하삼");
-            console.log(userLocation);
+
             //console.log(`lat ${userLat}`);
             //console.log(`lng${userLng}`);
 
             const distance = getDistanceFromLatLonInKm(
               response.data.lat,
               response.data.lng,
-              userLocation.latitude,
-              userLocation.longitude,
+              lat,
+              lng,
             );
 
             console.log(distance);
@@ -169,6 +175,8 @@ function NftResponse() {
               const listLength = response.data.enableStickerList.length;
               const rand = Math.floor(Math.random() * listLength);
 
+              console.log(rand);
+
               const selectedSticker = response.data.enableStickerList[rand];
 
               setSticker({
@@ -176,6 +184,8 @@ function NftResponse() {
                 tokenId: selectedSticker.tokenId,
                 tokenUrl: selectedSticker.tokenURL,
               });
+
+              console.log(`tokenID : ${sticker.tokenId}`);
 
               sendNFT(selectedSticker.tokenId);
             } else {
@@ -232,7 +242,8 @@ function NftResponse() {
 
   //  const mounted = useRef(false);
   useEffect(() => {
-    //맨 처음 렌더링 될 때 실행
+    // 맨 처음 렌더링 될 때 실행
+    myLocation();
     validationLink(link);
   }, []);
 
