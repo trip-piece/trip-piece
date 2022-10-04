@@ -8,6 +8,11 @@ export interface IMarket {
   userId: number;
 }
 
+export interface saveRequest {
+  tokenId: number;
+  price: number;
+}
+
 export interface MarketStikcerListResponse {
   content: Array<IMarket>;
 }

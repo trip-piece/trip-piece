@@ -10,6 +10,7 @@ import { MarketContract } from "../../utils/common/Market_ABI";
 import { marketApis } from "../../utils/apis/marketApis";
 import axiosInstance from "../../utils/apis/api";
 import { response } from "msw";
+import { saveRequest } from "../../utils/interfaces/markets.interface";
 
 const Container = styled.article`
   min-height: 90vh;
@@ -116,7 +117,7 @@ interface NFT {
   tokenURI: string;
 }
 
-interface StickerDetail{
+interface StickerDetail {
   tokenId: number;
   imagePath: string;
   tokenName: string;
@@ -161,12 +162,12 @@ function MarketRegisterPage() {
   useEffect(() => {
     getNFTList();
   }, []);
-  
-  const stickerDefault : StickerDetail = {
-    tokenId : NFTList[0]?.tokenId,
-    tokenName : NFTDetailList[0]?.tokenName,
-    imagePath : NFTDetailList[0]?.imagePath,
-  }
+
+  const stickerDefault: StickerDetail = {
+    tokenId: NFTList[0]?.tokenId,
+    tokenName: NFTDetailList[0]?.tokenName,
+    imagePath: NFTDetailList[0]?.imagePath,
+  };
 
   const [sticker, setSticker] = useState<StickerDetail>(stickerDefault);
   const [price, setPrice] = useState(Number);
@@ -175,10 +176,10 @@ function MarketRegisterPage() {
     target: { value: SetStateAction<string> };
   }) => {
     const sticker = {
-      tokenId : NFTList[Number(e.target.value)].tokenId,
-      imagePath : NFTDetailList[Number(e.target.value)].imagePath,
-      tokenName : NFTDetailList[Number(e.target.value)].tokenName
-    }
+      tokenId: NFTList[Number(e.target.value)].tokenId,
+      imagePath: NFTDetailList[Number(e.target.value)].imagePath,
+      tokenName: NFTDetailList[Number(e.target.value)].tokenName,
+    };
     setSticker(sticker);
   };
 
@@ -193,54 +194,70 @@ function MarketRegisterPage() {
     navigate(-1);
   };
 
-  const insertIntoSolMarket = async (e: { preventDefault: () => void }) =>{
+  const insertIntoSolMarket = async (e: { preventDefault: () => void }) => {
     setLoading(true);
     e.preventDefault();
-    try{
+    try {
       if (price <= 0) alert("price에 올바른 값을 넣어주세요.");
-      else{
-        const approveResult = await NFTContract
-        .methods
-        .setApprovalForAll(import.meta.env.VITE_MARKET_CA, true)
-        .send({from : userInfo.address})
+      else {
+        const approveResult = await NFTContract.methods
+          .setApprovalForAll(import.meta.env.VITE_MARKET_CA, true)
+          .send({ from: userInfo.address });
 
-        console.log("권한 부여 성공" + approveResult.status)
+        console.log("권한 부여 성공" + approveResult.status);
 
-          const result = await MarketContract
-        .methods
-        .insertIntoMarket(sticker.tokenId, price)
-        .send({from : userInfo.address})
+        const result = await MarketContract.methods
+          .insertIntoMarket(sticker.tokenId, price)
+          .send({ from: userInfo.address });
 
-        if (result.status){
-          const response = await axiosInstance.post(marketApis.insertIntoMarket(), { tokenId : sticker.tokenId, price : price});
+        if (result.status) {
+          saveMarket({ tokenId: sticker.tokenId, price: price });
+          console.log("DB등록완료");
         }
-        console.log("nft 마켓 등록")
-        console.log(result)
-        console.log("DB 등록")
-        console.log(response)
-        alert("등록이 완료되었습니다.")
+        console.log("nft 마켓 등록");
+        console.log(result);
+        console.log("DB 등록");
+        console.log(response);
+        alert("등록이 완료되었습니다.");
       }
+    } catch (err) {
+      console.log(err);
     }
-    catch (err){
-        console.log(err)
-    }
-  }
+  };
 
-  const getMarketList = async (e: { preventDefault: () => void }) =>{
+  const saveMarket = async (data: saveRequest) => {
+    await axiosInstance
+      .post(marketApis.insertIntoMarket(), data)
+      .then((response: { data: string }) => {
+        console.log(response.data);
+      });
+  };
+  const testSaveMarket = async () => {
+    const data = {
+      tokenId: sticker.tokenId,
+      price: price,
+    };
+    console.log(data);
+    await axiosInstance
+      .post(marketApis.insertIntoMarket, data)
+      .then((response: { data: string }) => {
+        console.log(response.data);
+      });
+  };
+
+  const getMarketList = async (e: { preventDefault: () => void }) => {
     setLoading(true);
     e.preventDefault();
-    try{
-      const approveResult = await MarketContract
-      .methods
-      .getOnSaleStickerArrayLength()
-      .call()
+    try {
+      const approveResult = await MarketContract.methods
+        .getOnSaleStickerArrayLength()
+        .call();
 
-      console.log(approveResult)
+      console.log(approveResult);
+    } catch (err) {
+      console.log(err);
     }
-    catch (err){
-      console.log(err)
-    }
-  }
+  };
   return (
     <>
       <Helmet>
@@ -274,9 +291,14 @@ function MarketRegisterPage() {
         </RegisterForm>
         <Button>
           {/* 수정이면 수정 버튼으로.. */}
-          <button className="register" onClick={insertIntoSolMarket}>등록</button>
+          <button className="register" onClick={insertIntoSolMarket}>
+            등록
+          </button>
           <button onClick={moveToBeforePage}>취소</button>
-          <button onClick={getMarketList}>마켓리스트 확인하기</button>
+          <button onClick={getMarketList}>
+            마켓리스트 확인하기(테스트용 버튼)
+          </button>
+          <button onClick={testSaveMarket}>DB등록하기</button>
         </Button>
       </Container>
     </>
