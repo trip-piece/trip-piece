@@ -121,6 +121,7 @@ function FrameDetailPage() {
   const navigate = useNavigate();
   const { frameId } = useParams();
   const [frame, setFrame] = useState<Idata>();
+  const [scrap, setScrap] = useState<boolean>();
 
   const moveToFrameMain = () => {
     navigate(`/frames`);
@@ -132,43 +133,13 @@ function FrameDetailPage() {
       .then((response) => {
         const body: Idata = response.data;
         setFrame(body);
+        setScrap(body.scrapped);
       });
   };
-  const result = {
-    frameImage:
-      "https://trippiece607.s3.ap-northeast-2.amazonaws.com/20220802150807-%E1%84%92%E1%85%A1%E1%86%AB%E1%84%80%E1%85%A1%E1%86%BC%E1%84%87%E1%85%AE%E1%86%AF%E1%84%87%E1%85%B5%E1%86%BE%E1%84%8B%E1%85%A3%E1%84%89%E1%85%B5%E1%84%8C%E1%85%A1%E1%86%BC.jpeg",
-    scrapped: true,
-    stickerList: [
-      {
-        stickerId: 1,
-        tokenId: 1,
-        tokenName: "이이",
-        tokenURL:
-          "https://www.infura-ipfs.io/ipfs/QmcqJiEjJon38JNzbsdgKhLBsjfWF8tZiUT5Mi7GQbtGP4",
-        x: 3.1234,
-        y: 5.123,
-      },
-      {
-        stickerId: 1,
-        tokenId: 1,
-        tokenName: "이이2",
-        tokenURL:
-          "https://www.infura-ipfs.io/ipfs/QmcqJiEjJon38JNzbsdgKhLBsjfWF8tZiUT5Mi7GQbtGP4",
-        x: 3.1234,
-        y: 5.123,
-      },
-      {
-        stickerId: 1,
-        tokenId: 1,
-        tokenName: "이이3",
-        tokenURL:
-          "https://www.infura-ipfs.io/ipfs/QmcqJiEjJon38JNzbsdgKhLBsjfWF8tZiUT5Mi7GQbtGP4",
-        x: 3.1234,
-        y: 5.123,
-      },
-    ],
-  };
-  const [scrap, setScrap] = useState<boolean>(result.scrapped);
+
+  const dummyImage: string =
+    "https://trippiece607.s3.ap-northeast-2.amazonaws.com/20220802150807-%E1%84%92%E1%85%A1%E1%86%AB%E1%84%80%E1%85%A1%E1%86%BC%E1%84%87%E1%85%AE%E1%86%AF%E1%84%87%E1%85%B5%E1%86%BE%E1%84%8B%E1%85%A3%E1%84%89%E1%85%B5%E1%84%8C%E1%85%A1%E1%86%BC.jpeg";
+
   const postSaveFrame = () => {
     const body = {
       frameId,
@@ -186,10 +157,10 @@ function FrameDetailPage() {
   const changeScrap = () => {
     if (scrap === false) {
       // 스크랩 설정하는 api 요청
-      // postSaveFrame(Number(frameId));
+      postSaveFrame();
     } else {
       // 스크랩 해제하는 api 요청
-      // deleteScrappedFrame(Number(frameId));
+      deleteScrappedFrame();
     }
     setScrap(!scrap);
   };
@@ -209,22 +180,15 @@ function FrameDetailPage() {
         </BackSpaceBtn>
 
         <StickerCard>
-          <img src={result.frameImage} alt="기본이미지" />
+          <img src={dummyImage} alt="기본이미지" />
         </StickerCard>
         <Div>
-          <Button>
-            {result.stickerList.map((sticker, idx) => (
-              <button type="button">
-                <p>#{sticker.tokenName}</p>
-              </button>
-            ))}
-          </Button>
           <ScrapBtn onClick={changeScrap}>
             {scrap}
             {scrap ? (
-              <BsBookmarkHeart size={40} />
-            ) : (
               <BsFillBookmarkHeartFill size={40} />
+            ) : (
+              <BsBookmarkHeart size={40} />
             )}
           </ScrapBtn>
         </Div>
@@ -234,3 +198,46 @@ function FrameDetailPage() {
 }
 
 export default FrameDetailPage;
+// const result = {
+//   frameImage:
+//     "https://trippiece607.s3.ap-northeast-2.amazonaws.com/20220802150807-%E1%84%92%E1%85%A1%E1%86%AB%E1%84%80%E1%85%A1%E1%86%BC%E1%84%87%E1%85%AE%E1%86%AF%E1%84%87%E1%85%B5%E1%86%BE%E1%84%8B%E1%85%A3%E1%84%89%E1%85%B5%E1%84%8C%E1%85%A1%E1%86%BC.jpeg",
+//   scrapped: true,
+//   stickerList: [
+//     {
+//       stickerId: 1,
+//       tokenId: 1,
+//       tokenName: "이이",
+//       tokenURL:
+//         "https://www.infura-ipfs.io/ipfs/QmcqJiEjJon38JNzbsdgKhLBsjfWF8tZiUT5Mi7GQbtGP4",
+//       x: 3.1234,
+//       y: 5.123,
+//     },
+//     {
+//       stickerId: 1,
+//       tokenId: 1,
+//       tokenName: "이이2",
+//       tokenURL:
+//         "https://www.infura-ipfs.io/ipfs/QmcqJiEjJon38JNzbsdgKhLBsjfWF8tZiUT5Mi7GQbtGP4",
+//       x: 3.1234,
+//       y: 5.123,
+//     },
+//     {
+//       stickerId: 1,
+//       tokenId: 1,
+//       tokenName: "이이3",
+//       tokenURL:
+//         "https://www.infura-ipfs.io/ipfs/QmcqJiEjJon38JNzbsdgKhLBsjfWF8tZiUT5Mi7GQbtGP4",
+//       x: 3.1234,
+//       y: 5.123,
+//     },
+//   ],
+// };
+// {
+//   /* <Button>
+//             {result.stickerList.map((sticker, idx) => (
+//               <button type="button">
+//                 <p>#{sticker.tokenName}</p>
+//               </button>
+//             ))}
+//           </Button> */
+// }
