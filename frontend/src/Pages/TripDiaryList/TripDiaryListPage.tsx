@@ -35,6 +35,7 @@ const Container = styled.section`
 
 const Header = styled.nav`
   height: ${pixelToRem(75)};
+  margin-bottom: 1rem;
 `;
 
 const NestedRoute = styled.div`
@@ -111,12 +112,26 @@ function TripDiaryListPage() {
               : data && REGIONLIST[data?.data.regionId]}
           </H2>
           {isLoading && <div>Loading...</div>}
-          {isSuccess && loading && (
+          {isSuccess && loading && result.length > 5 && (
             <Swiper
               modules={[Navigation, Pagination, Scrollbar, A11y]}
               slidesPerView={5}
               initialSlide={todayIndex}
               loop
+            >
+              {result.length &&
+                result.map((date) => (
+                  <SwiperSlide key={v4()}>
+                    <TripDate date={date} />
+                  </SwiperSlide>
+                ))}
+            </Swiper>
+          )}
+          {isSuccess && loading && result.length <= 5 && (
+            <Swiper
+              modules={[Navigation, Pagination, Scrollbar, A11y]}
+              slidesPerView={result.length}
+              initialSlide={todayIndex}
             >
               {result.length &&
                 result.map((date) => (
