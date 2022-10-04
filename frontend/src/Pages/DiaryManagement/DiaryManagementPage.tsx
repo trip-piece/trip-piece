@@ -32,6 +32,7 @@ import { formDataDiaryState } from "../../store/diaryAtoms";
 import {
   IIPFSResult,
   IRequestedDiary,
+  IRequestedSticker,
   ISticker,
   StickerProps,
 } from "../../utils/interfaces/diarys.interface";
@@ -54,6 +55,7 @@ import spinner from "../../assets/image/spinner.gif";
 import useEditDiary from "../../utils/hooks/useEditDiary";
 import { getNFTImagePath } from "../../utils/functions/getNFTImagePath";
 import RecordedLocationContainer from "../../components/modules/RecordedLocationContainer";
+import useEditDecoration from "../../utils/hooks/useEditDecoration";
 
 const Form = styled.form`
   display: flex;
@@ -143,13 +145,6 @@ const ColorButtonListContainer = styled.div`
   display: flex;
   gap: 0.5rem;
   padding: 0.25rem;
-`;
-
-const PositionContainer = styled.div`
-  > svg {
-    color: ${(props) => props.theme.colors.red};
-  }
-  color: ${(props) => props.theme.colors.gray400};
 `;
 
 const ColorAndPositionContainer = styled.div`
@@ -405,10 +400,10 @@ function DiaryManagementPage() {
   const { mutate: mutateWriting } = useWriteDiary();
   const { mutate: mutateDecoration } = useDecorateDiary();
   const { mutate: mutateEditting } = useEditDiary();
+  const { mutate: mutateEdittingDecoration } = useEditDecoration();
 
   const [loading, setLoading] = useState<boolean>(true);
   const [NFTDetailList, setNFTDetailList] = useState<TokenDetail[]>([]);
-
   const getNFTList = useCallback(async () => {
     try {
       setLoading(true);
@@ -431,8 +426,10 @@ function DiaryManagementPage() {
   useEffect(() => {
     if (!state?.diaryDate && !diaryDate) navigate(-1);
     if (pathname.includes("/edit")) setIsEditMode(true);
-    if (state?.diaryDate)
+    if (state?.diaryDate) {
+      console.log(state?.diaryDate);
       setDottedDate(changeDateFormatToDot(state?.diaryDate));
+    }
   }, []);
 
   useEffect(() => {
@@ -476,10 +473,10 @@ function DiaryManagementPage() {
     };
   }, []);
 
-  const getNFTStickerList = async (NFTList) => {
+  const getNFTStickerList = async (NFTList: IRequestedSticker[]) => {
     if (NFTList?.length) {
-      const _stickerList = await Promise.all(
-        NFTList.map((sticker) => {
+      const _stickerList: ISticker[] = await Promise.all(
+        NFTList.map((sticker: IRequestedSticker) => {
           const rest = {
             tokenId: sticker.tokenId,
             x: sticker.x * sizes.width,
@@ -488,7 +485,7 @@ function DiaryManagementPage() {
             originX: sticker.x,
             originY: sticker.y,
           };
-          return getNFTImagePath(sticker.tokenId, sticker.tokenURL, {
+          return getNFTImagePath<ISticker>(sticker.tokenId, sticker.tokenURL, {
             ...rest,
           });
         }),
@@ -674,84 +671,79 @@ function DiaryManagementPage() {
     );
   }, [sizes]);
 
-  const makeDiaryData = useCallback(
-    (formInputData: IFormInput) => {
-      let body;
-      if (isEditMode) {
-        body = {
-          ...formInputData,
-          weather,
-          backgroundColor: diaryColor,
-          tripId: Number(tripId),
-          diaryId: diaryData?.data?.diaryId,
-          imagePath: photo.imagePath,
-          ratio: sizes.height / sizes.width,
-        };
-      } else {
-        body = {
-          ...formInputData,
-          weather,
-          backgroundColor: diaryColor,
-          tripId: Number(tripId),
-          diaryDate: state?.diaryDate,
-          location: locationData.location,
-          ratio: sizes.height / sizes.width,
-        };
-      }
+  const makeDiaryData = (formInputData: IFormInput) => {
+    let body;
+    if (isEditMode) {
+      body = {
+        ...formInputData,
+        weather,
+        backgroundColor: diaryColor,
+        tripId: Number(tripId),
+        diaryId: diaryData?.data?.diaryId,
+        imagePath: photo.imagePath,
+        ratio: sizes.height / sizes.width,
+      };
+    } else {
+      body = {
+        ...formInputData,
+        weather,
+        backgroundColor: diaryColor,
+        tripId: Number(tripId),
+        diaryDate: state?.diaryDate,
+        location: locationData.location,
+        ratio: sizes.height / sizes.width,
+      };
+    }
 
-      const formData = new FormData();
-      const _diary = JSON.stringify(body);
-      formData.append(
-        "diary",
-        new Blob([_diary], { type: "application/json" }),
-      );
-      if (photo.todayPhoto) {
-        formData.append("todayPhoto", photo.todayPhoto);
-      }
-      return formData;
-    },
-    [sizes, locationData, isEditMode],
-  );
+    const formData = new FormData();
+    const _diary = JSON.stringify(body);
+    formData.append("diary", new Blob([_diary], { type: "application/json" }));
+    if (photo.todayPhoto) {
+      formData.append("todayPhoto", photo.todayPhoto);
+    }
+    return formData;
+  };
 
-  const makeDecorationData = useCallback(
-    (diaryId: number, frameImage?: File) => {
-      const _stickerList = stickerList.map((sticker) => {
-        return {
-          tokenId: sticker.tokenId,
-          x: sticker.originX,
-          y: sticker.originY,
-        };
-      });
+  const makeDecorationData = (diaryId: number, frameImage?: File) => {
+    const _stickerList = stickerList.map((sticker) => {
+      return {
+        tokenId: sticker.tokenId,
+        x: sticker.originX,
+        y: sticker.originY,
+      };
+    });
 
-      const formData = new FormData();
-      const _decoration = JSON.stringify({
-        diaryId,
-        stickerList: _stickerList,
-      });
-      formData.append(
-        "decoration",
-        new Blob([_decoration], { type: "application/json" }),
-      );
-      if (frameImage) {
-        formData.append("frameImage", frameImage);
-      }
-      return formData;
-    },
-    [stickerList],
-  );
+    const formData = new FormData();
+    const _decoration = JSON.stringify({
+      diaryId,
+      stickerList: _stickerList,
+    });
+    formData.append(
+      "decoration",
+      new Blob([_decoration], { type: "application/json" }),
+    );
+    if (frameImage) {
+      formData.append("frameImage", frameImage);
+    }
+    return formData;
+  };
+
   const postEditData = (formData: FormData, frameImage?: File) => {
     mutateEditting(formData, {
       onSuccess: () => {
         if (stickerList.length < 1)
           navigate(`/trips/${tripId}/diarys/${state?.diaryDate}`);
+        else {
+          mutateEdittingDecoration(
+            makeDecorationData(diaryData.data.diaryId, frameImage),
+            {
+              onSuccess: () =>
+                navigate(`/trips/${tripId}/diarys/${state?.diaryDate}`),
+            },
+          );
+        }
       },
-      onError: (err) => {
-        console.log(err);
-      },
-    });
-
-    mutateDecoration(makeDecorationData(diaryData.data.diaryId, frameImage), {
-      onSuccess: () => navigate(`/trips/${tripId}/diarys/${state?.diaryDate}`),
+      onError: (err) => console.log(err),
     });
   };
 
@@ -760,28 +752,27 @@ function DiaryManagementPage() {
       onSuccess: (data) => {
         if (stickerList.length < 1)
           navigate(`/trips/${tripId}/diarys/${state?.diaryDate}`);
-        mutateDecoration(makeDecorationData(data.data, frameImage), {
-          onSuccess: () =>
-            navigate(`/trips/${tripId}/diarys/${state?.diaryDate}`),
-          onError: (err) => console.log(err),
-        });
+        else {
+          mutateDecoration(makeDecorationData(data?.data, frameImage), {
+            onSuccess: () =>
+              navigate(`/trips/${tripId}/diarys/${state?.diaryDate}`),
+            onError: (err) => console.log(err),
+          });
+        }
       },
     });
   };
 
-  const onSubmit = useCallback(
-    (formInputData: IFormInput) => {
-      const formData = makeDiaryData(formInputData);
-      if (!isShared) {
-        if (isEditMode) postEditData(formData);
-        else postData(formData);
-      } else {
-        setDiary(formData);
-        setOpen(true);
-      }
-    },
-    [isShared, isEditMode],
-  );
+  const onSubmit = (formInputData: IFormInput) => {
+    const formData = makeDiaryData(formInputData);
+    if (!isShared) {
+      if (isEditMode) postEditData(formData);
+      else postData(formData);
+    } else {
+      setDiary(formData);
+      setOpen(true);
+    }
+  };
 
   const deleteSticker = () => {
     setStickerList([]);

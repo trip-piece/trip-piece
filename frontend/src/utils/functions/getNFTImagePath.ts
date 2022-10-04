@@ -16,11 +16,11 @@ export const getImage = async (tokenUrl: string): Promise<any> => {
   }
 };
 
-export const getNFTImagePath = async (
+export const getNFTImagePath = async <T>(
   tokenId: number,
   tokenURI: string,
   info?: any,
-): Promise<TokenDetail> => {
+): Promise<T> => {
   try {
     const response = await axios.get(
       `https://www.infura-ipfs.io/ipfs/${tokenURI}`,

@@ -5,8 +5,6 @@ import { useNavigate, useParams } from "react-router-dom";
 import { HiPencilAlt, HiTrash } from "react-icons/hi";
 import { AxiosResponse } from "axios";
 import { Icon } from "@iconify/react/dist/offline";
-import { BsFillGeoAltFill } from "react-icons/bs";
-import { GiConsoleController } from "react-icons/gi";
 import { AiTwotoneEdit } from "react-icons/ai";
 import diaryApis from "../../utils/apis/diaryApis";
 import {
@@ -92,10 +90,9 @@ const DiaryContentsContainer = styled.div<DiaryContentsContainerProps>`
 `;
 
 const ButtonListContainer = styled.div`
-  position: absolute;
-  right: 0;
-  gap: 0.5rem;
   display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
   button {
     display: block;
     height: ${pixelToRem(30)};
@@ -106,12 +103,20 @@ const ButtonListContainer = styled.div`
   }
 `;
 
+const ControlContainer = styled.div`
+  display: flex;
+  justify-content: space-between;
+  padding: 0 1rem;
+  align-items: center;
+`;
+
 interface DiaryContentsContainerProps {
   fontType: number;
   diaryWidth: number;
   backgroundColor: number;
   active?: boolean;
 }
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function TripDiaryPage({ startDate, today, endDate }: TripListProps) {
   const [selectedDiaryDate, setSelectedDiaryDate] = useState<string>(() =>
     changeDateFormatToHyphen(new Date()),
@@ -125,7 +130,6 @@ function TripDiaryPage({ startDate, today, endDate }: TripListProps) {
   const imageRef = useRef<HTMLImageElement>(null);
   const size = useWindowResize();
   const queryClient = useQueryClient();
-
   useEffect(() => {
     if (diaryDate) setSelectedDiaryDate(diaryDate);
   }, []);
@@ -151,6 +155,7 @@ function TripDiaryPage({ startDate, today, endDate }: TripListProps) {
   const getNFTList = async () => {
     if (!diaryData) return;
     const { data } = diaryData;
+    setNFTStickerList([]);
     if (!data || data?.stickerList?.length < 1) return;
     const _list = await Promise.all(
       data?.stickerList?.map((sticker) =>
@@ -171,7 +176,10 @@ function TripDiaryPage({ startDate, today, endDate }: TripListProps) {
   const onDelete = () => {
     if (window.confirm("다이어리를 삭제하시겠습니까?"))
       mutate(diaryData?.data?.diaryId, {
-        onSuccess: () => queryClient.invalidateQueries([`${diaryDate}-diary`]),
+        onSuccess: () =>
+          queryClient.invalidateQueries([
+            `${diaryDate || selectedDiaryDate}-diary`,
+          ]),
       });
   };
 
@@ -182,9 +190,12 @@ function TripDiaryPage({ startDate, today, endDate }: TripListProps) {
   };
 
   const moveToEditDiary = () => {
-    navigate(`../../trips/${tripId}/diarys/${selectedDiaryDate}/edit`, {
-      state: { diaryDate: selectedDiaryDate },
-    });
+    navigate(
+      `../../trips/${tripId}/diarys/${diaryDate || selectedDiaryDate}/edit`,
+      {
+        state: { diaryDate: diaryDate || selectedDiaryDate },
+      },
+    );
   };
 
   if (startDate > selectedDiaryDate || diaryDate > today)
@@ -227,14 +238,10 @@ function TripDiaryPage({ startDate, today, endDate }: TripListProps) {
             </h2>
             <Icon icon={weatherList[diaryData?.data?.weather]} />
           </DateContainer>
-          <RecordedLocationContainer>
-            {diaryData?.data?.location}
-          </RecordedLocationContainer>
-          <DiaryContentsContainer
-            diaryWidth={diaryWidth}
-            backgroundColor={diaryData?.data?.backgroundColor}
-            fontType={diaryData?.data?.fontType}
-          >
+          <ControlContainer>
+            <RecordedLocationContainer>
+              {diaryData?.data?.location}
+            </RecordedLocationContainer>
             <ButtonListContainer>
               <button
                 type="button"
@@ -251,6 +258,12 @@ function TripDiaryPage({ startDate, today, endDate }: TripListProps) {
                 <HiTrash />
               </button>
             </ButtonListContainer>
+          </ControlContainer>
+          <DiaryContentsContainer
+            diaryWidth={diaryWidth}
+            backgroundColor={diaryData?.data?.backgroundColor}
+            fontType={diaryData?.data?.fontType}
+          >
             <div
               style={{ width: "100%", height: "fit-content" }}
               ref={diaryRef}
@@ -266,13 +279,13 @@ function TripDiaryPage({ startDate, today, endDate }: TripListProps) {
                   diaryWidth={diaryWidth}
                 />
               )}
-              {NFTStickerList?.map((sticker: IRequestedSticker) => (
+              {NFTStickerList?.map((sticker: IRequestedSticker, idx) => (
                 <StickerImg
                   up={sticker.y * diaryWidth * diaryData.data.ratio}
                   left={sticker.x * diaryWidth}
                   alt={sticker.tokenName}
                   src={sticker.imagePath}
-                  key={sticker.y + sticker.x}
+                  key={sticker.y + sticker.x + idx}
                 />
               ))}
             </div>
