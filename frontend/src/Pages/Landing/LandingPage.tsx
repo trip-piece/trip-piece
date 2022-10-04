@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from "react";
-
+import styled from "@emotion/styled";
 import { Helmet } from "react-helmet-async";
 import { InjectedConnector } from "@web3-react/injected-connector";
 import { useWeb3React } from "@web3-react/core";
@@ -10,9 +10,10 @@ import Web3 from "web3";
 import { setCookie } from "../../utils/cookie";
 // import { IUserInfo, UserInfoState } from "../../store/atom";
 
+import { pixelToRem } from "../../utils/functions/util";
 import LoginButton from "./LoginButton";
-import LadingButton from "./LandingButton";
 import Content from "./Text";
+import LandingPageImg from "./LandingPageImg";
 
 import userApis, { walletAddress } from "../../utils/apis/userApis";
 import axiosInstance from "../../utils/apis/api";
@@ -37,6 +38,30 @@ function moveToMain(func: NavigateFunction) {
   const navigate = func;
   navigate("/main");
 }
+const Container = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  flex-direction: column;
+`;
+
+const SeekButton = styled.button`
+  outline: none;
+  border: none;
+  border-radius: 20px;
+  background-color: transparent;
+  font-weight: bold;
+  cursor: pointer;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  width: ${pixelToRem(171)};
+  height: ${pixelToRem(38)};
+  font-size: ${(props) => props.theme.fontSizes.h5};
+  margin-top: 20%;
+  color: ${(props) => props.theme.colors.white};
+  z-index: 1;
+`;
 
 export default function LandingPage() {
   const { activate, active, account } = useWeb3React();
@@ -148,15 +173,39 @@ export default function LandingPage() {
       activate(injected, async () => {});
     }
   };
+
+  const testRef = useRef(null);
+  const scrollToElement = () =>
+    testRef.current.scrollIntoView({ behavior: "smooth" });
+
   return (
-    <>
+    <Container>
       <Helmet>
         <title>Welcome | 여행조각</title>
       </Helmet>
-
-      <Content />
-      <LoginButton func={handleActivate} />
-      <LadingButton />
-    </>
+      <div
+        style={{
+          height: "100vh",
+          display: "flex",
+          flexDirection: "column",
+          verticalAlign: "center",
+          justifyContent: "center",
+        }}
+      >
+        <Content />
+        <LoginButton func={handleActivate} />
+        <div
+          style={{
+            textAlign: "center",
+          }}
+        >
+          <SeekButton onClick={scrollToElement}>둘러보기</SeekButton>
+        </div>
+        {/* <LandingButton /> */}
+      </div>
+      <div ref={testRef}>
+        <LandingPageImg />
+      </div>
+    </Container>
   );
 }

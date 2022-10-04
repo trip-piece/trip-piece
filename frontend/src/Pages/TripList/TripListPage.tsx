@@ -61,7 +61,6 @@ function TripListPage() {
           SkeletonCardComponent={Skeleton}
           zeroDataText="여행 리스트가 존재하지 않습니다."
           count={2}
-          listName="tripList"
           isEditMode={isEditMode}
           isCreated={isCreated}
         />

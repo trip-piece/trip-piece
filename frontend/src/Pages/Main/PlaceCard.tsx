@@ -47,7 +47,7 @@ const Container = styled.article`
       border-radius: 20px;
       object-fit: fill;
       position: absolute;
-      opacity: 0.5;
+      opacity: 0.65;
     }
   }
 
@@ -76,7 +76,7 @@ function Card({ place }: CardProps) {
       <div className="ImageBox">
         <img src={place.posterImage} alt="기본이미지" />
       </div>
-      <p className="PlaceRegion">{REGIONLIST[place.regionId]} 지역</p>
+      <p className="PlaceRegion">{REGIONLIST[place.regionId]}</p>
       <p className="PlaceName">{place.name}</p>
     </Container>
   );

@@ -1,6 +1,6 @@
 import styled from "@emotion/styled";
 import { memo, useEffect, useState } from "react";
-import { changeDateForamtToDot } from "../../utils/functions/util";
+import { changeDateFormatToDot } from "../../utils/functions/util";
 import {
   IDistinctSticker,
   ISticker,
@@ -32,9 +32,10 @@ interface Token {
 
 const Container = styled.div`
   width: 100%;
-  margin-top: 20px;
   padding: 0.5rem;
   display: flex;
+  margin-top: 12px;
+  margin-bottom: -8px;
   flex-direction: column;
   justify-content: center;
 
@@ -98,7 +99,7 @@ function Card(place: IPlaceCardProps) {
 
   const getImage = async () => {
     const tokenList: React.SetStateAction<Token[]> = [];
-    for (var i = 0; i < place.disinctStickerList.length; i++) {
+    for (let i = 0; i < place.disinctStickerList.length; i++) {
       await fetch(
         `https://www.infura-ipfs.io/ipfs/${place.disinctStickerList[i].tokenURL}`,
       )
@@ -125,8 +126,8 @@ function Card(place: IPlaceCardProps) {
       <div className="title">
         <p className="placeName">{place.name}</p>
         <p>
-          {changeDateForamtToDot(place.startDate)} -{" "}
-          {changeDateForamtToDot(place.endDate)}
+          {changeDateFormatToDot(place.startDate)} -{" "}
+          {changeDateFormatToDot(place.endDate)}
         </p>
       </div>
       <StickerContainer>
