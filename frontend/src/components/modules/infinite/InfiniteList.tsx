@@ -96,7 +96,7 @@ function InfiniteList({
 
   useEffect(() => {
     if (isCreated) refetchData();
-    change(false);
+    if (change) change(false);
   }, [isCreated]);
 
   return (
@@ -110,7 +110,7 @@ function InfiniteList({
             <CardComponent
               {...target}
               index={idx}
-              key={v4()}
+              key={idx}
               func={func}
               isEditMode={isEditMode}
               refetch={refetchData}

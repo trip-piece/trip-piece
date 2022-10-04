@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useMemo, useRef, useState } from "react";
 import styled from "@emotion/styled";
 import { Helmet } from "react-helmet-async";
 import { Global } from "@emotion/react";
@@ -6,12 +6,19 @@ import CssBaseline from "@mui/material/CssBaseline";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import SwipeableDrawer from "@mui/material/SwipeableDrawer";
+import { QueryFunctionContext } from "react-query";
+import Masonry from "react-masonry-css";
 import RegionButton from "./RegionButton";
 import { MemoCard } from "./Card";
 import { REGIONLIST } from "../../utils/constants/constant";
 import { MemoInfiniteList } from "../../components/modules/infinite/ParamsInfiniteList";
 import Skeleton from "./Skeleton";
 import { frameApis } from "../../utils/apis/frameApis";
+import useFetchTripsInformation from "../../utils/hooks/useFecthTripsInformation";
+import axiosInstance from "../../utils/apis/api";
+import useObserver from "../../utils/hooks/useObserver";
+
+import "./masonry.css";
 
 const drawerBleeding = 56;
 
@@ -87,9 +94,9 @@ const Puller = styled(Box)`
   height: 6;
   background: ${(props) => props.theme.colors.gray300};
   border-radius: 3px;
-  position: "absolute";
-  paddingtop: 8;
-  paddingleft: "calc(50% - 15px)";
+  position: absolute;
+  padding-top: 8;
+  padding-left: calc(50% - 15px);
 `;
 
 const Container = styled.section`
@@ -138,6 +145,7 @@ function FrameSharePage(props: Props) {
   const { window } = props;
   const [open, setOpen] = React.useState(false);
   const [isAll, setIsAll] = useState<boolean>(false);
+  const [hasError, setHasError] = useState(false);
   // const [scrap, setScrap] = useState<boolean>(false);
   const toggleDrawer = (newOpen: boolean) => () => {
     setOpen(newOpen);
@@ -169,6 +177,50 @@ function FrameSharePage(props: Props) {
     }
   };
 
+  const getTargetComponentList = async ({
+    pageParam = 0,
+  }: QueryFunctionContext) => {
+    const res = await axiosInstance.get(
+      `${frameApis.getSharedFrames(regionList)}&page=${pageParam}`,
+    );
+    return { result: res?.data, page: pageParam };
+  };
+
+  const {
+    isLoading,
+    data,
+    error,
+    isError,
+    isSuccess,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    refetch,
+  } = useFetchTripsInformation({
+    queryKey: ["frameList"],
+    getTargetComponentList,
+  });
+
+  const onIntersect = ([entry]: any) => entry.isIntersecting && fetchNextPage();
+  const bottom = useRef(null);
+
+  const targetList = useMemo(
+    () =>
+      data &&
+      data.pages?.flatMap(
+        (page) => page?.result?.content && page?.result.content,
+      ),
+    [data],
+  );
+
+  useObserver({
+    target: bottom,
+    hasMore: hasNextPage,
+    hasError,
+    error,
+    onIntersect,
+  });
+
   return (
     <>
       <Helmet>
@@ -178,7 +230,7 @@ function FrameSharePage(props: Props) {
         <button onClick={toggleDrawer(true)} type="button">
           지역별 조회
         </button>
-        <MemoInfiniteList
+        {/* <MemoInfiniteList
           url={frameApis.getSharedFrames(regionList)}
           queryKey={["frameList"]}
           CardComponent={MemoCard}
@@ -186,7 +238,17 @@ function FrameSharePage(props: Props) {
           zeroDataText="공유한 프레임 없슴미다.."
           count={2}
           listName="content"
-        />
+        /> */}
+        <Masonry
+          breakpointCols={2}
+          className="my-masonry-grid"
+          columnClassName="my-masonry-grid_column"
+        >
+          {targetList?.map((target, idx) => (
+            <MemoCard {...target} key={idx} />
+          ))}
+          <div ref={bottom} />
+        </Masonry>
         <Root>
           <CssBaseline />
           <Global
@@ -253,6 +315,7 @@ function FrameSharePage(props: Props) {
                     data={region}
                     checkedItems={checkedItems}
                     checkedItemHandler={checkedItemHandler}
+                    key={idx}
                   />
                 ))}
               </div>
