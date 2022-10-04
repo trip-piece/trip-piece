@@ -71,6 +71,7 @@ function NestedModal() {
     const uri = urlArray[3];
     const placeId = urlArray[4];
     const rmdCode = urlArray[5];
+    console.log("네비게이트");
 
     navigate(`/${uri}/${placeId}/${rmdCode}`);
     setOpen(false);
