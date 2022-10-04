@@ -222,14 +222,20 @@ function NftResponse() {
   };
 
   const validationLink = (url: string) => {
+    console.log("validationLink 시작");
     const regax =
       /^(http(s)?:\/\/)(localhost:3000)(\/)(places)(\/)([\d]{1,2})(\/)([a-zA-Z0-9!@#$%^&]{10})/g;
 
+    console.log(url);
+    console.log(regax.test(url));
     if (regax.test(url)) {
+      console.log("validationLink Test 성공");
       contentPropsInit.result = "success";
       validationCode(Number(placeId));
     } else {
+      console.log("validationLink Test 실패 ㅠㅠ");
       contentPropsInit.result = "incorrect";
+      contentPropsInit.stickerUrl = "https://ifh.cc/g/V44V4O.png";
       setState(contentPropsInit);
       setLoading(false);
     }
