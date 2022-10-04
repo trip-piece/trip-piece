@@ -8,7 +8,7 @@ interface TokenDetail {
 export const getNFTImagePath = async (
   tokenId: number,
   tokenURI: string,
-  info: any,
+  info?: any,
 ): Promise<TokenDetail> => {
   try {
     const response = await axios.get(

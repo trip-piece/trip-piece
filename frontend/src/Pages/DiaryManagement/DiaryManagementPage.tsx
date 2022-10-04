@@ -124,13 +124,13 @@ const AutosizedTextarea = styled(TextareaAutosize)<IDiaryStyle>`
   display: block;
   font-family: ${(props) => FONTTYPELIST[props.fonttype]};
   width: 100%;
-  font-size: 24px;
   outline: none;
   border: none;
   background-color: transparent;
   padding: ${(props) => `${pixelToRem(16 + (props.diarywidth - 320) / 20)}`};
   resize: none;
   font-size: ${(props) => pixelToRem(props.diarywidth / 20)};
+  line-height: 1.1;
   &::placeholder {
     color: ${(props) => props.theme.colors.gray400};
   }
@@ -522,6 +522,8 @@ function DiaryManagementPage() {
     }
   };
 
+  console.log(stickerList);
+
   const onClick = useCallback(() => {
     if (stickerRef.current.style.maxHeight === "50vh") {
       stickerRef.current.style.maxHeight = "120px";
@@ -669,7 +671,7 @@ function DiaryManagementPage() {
           weather,
           backgroundColor: diaryColor,
           tripId: Number(tripId),
-          diaryId: diaryData?.data?.id,
+          diaryId: diaryData?.data?.diaryId,
           imagePath: photo.imagePath,
           ratio: sizes.height / sizes.width,
         };
@@ -736,7 +738,7 @@ function DiaryManagementPage() {
       },
     });
 
-    mutateDecoration(makeDecorationData(diaryData.data.id, frameImage), {
+    mutateDecoration(makeDecorationData(diaryData.data.diaryId, frameImage), {
       onSuccess: () => navigate(`/trips/${tripId}/diarys/${state?.diaryDate}`),
     });
   };

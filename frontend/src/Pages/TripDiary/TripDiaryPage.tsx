@@ -56,9 +56,15 @@ const NoDiaryContainer = styled.div`
   }
 `;
 
-const DiaryContent = styled.div`
+const DiaryContent = styled.div<{ diaryWidth: number }>`
   width: 100%;
   height: fit-content;
+  padding: ${(props) => `${pixelToRem(16 + (props.diaryWidth - 320) / 20)}`};
+  line-height: 1.1;
+  font-size: ${(props) =>
+    pixelToRem(props.diaryWidth / 20) !== "0rem"
+      ? pixelToRem(props.diaryWidth / 20)
+      : pixelToRem(16)};
 `;
 
 interface TripListProps {
@@ -75,7 +81,6 @@ const DiaryContents = styled.div<DiaryContentsProps>`
   width: 100%;
   background-color: ${(props) => DIARY_COLOR_LIST[props.backgroundColor]};
   font-family: ${(props) => FONTTYPELIST[props.fontType]};
-  padding: ${(props) => `${pixelToRem(16 + (props.diaryWidth - 320) / 20)}`};
   resize: none;
   transition: background-color 0.5s ease-in;
   overflow-wrap: break-word;
@@ -152,7 +157,7 @@ function TripDiaryPage({ startDate, today, endDate }: TripListProps) {
   console.log(diaryData?.data);
   const onDelete = () => {
     if (window.confirm("다이어리를 삭제하시겠습니까?"))
-      mutate(diaryData?.data?.id, {
+      mutate(diaryData?.data?.diaryId, {
         onSuccess: () => queryClient.invalidateQueries([`${diaryDate}-diary`]),
       });
   };
@@ -219,13 +224,16 @@ function TripDiaryPage({ startDate, today, endDate }: TripListProps) {
               style={{ width: "100%", height: "fit-content" }}
               ref={diaryRef}
             >
-              <DiaryContent>{diaryData?.data?.content}</DiaryContent>
+              <DiaryContent diaryWidth={diaryWidth}>
+                {diaryData?.data?.content}
+              </DiaryContent>
 
               {diaryData.data?.todayPhoto && (
                 <TodayPhoto
                   src={diaryData.data?.todayPhoto}
                   alt={`${diaryDate}-photo`}
                   ref={imageRef}
+                  diaryWidth={diaryWidth}
                 />
               )}
 
