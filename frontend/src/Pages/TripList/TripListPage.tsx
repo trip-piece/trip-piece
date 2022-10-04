@@ -1,5 +1,6 @@
 import styled from "@emotion/styled";
 import { useState } from "react";
+import { motion } from "framer-motion";
 import { Helmet } from "react-helmet-async";
 import { MemoInfiniteList } from "../../components/modules/infinite/InfiniteList";
 import tripApis from "../../utils/apis/tripsApis";
@@ -43,7 +44,12 @@ function TripListPage() {
   const handleEditMode = () => setIsEditMode(!isEditMode);
 
   return (
-    <>
+    <motion.div
+      initial={{ opacity: 0.2 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.5 }}
+    >
       <Helmet>
         <title>여행 폴더 | 여행조각</title>
       </Helmet>
@@ -83,7 +89,7 @@ function TripListPage() {
         )}
         <BasicModal setOpen={setOpen} open={open} setIsCreated={setIsCreated} />
       </Container>
-    </>
+    </motion.div>
   );
 }
 
