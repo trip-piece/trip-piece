@@ -130,9 +130,10 @@ public class DiaryService {
     }
 
     @Transactional
-    public int updateDiary(User user, DiaryRequestDto.DiaryEdit diaryEdit, long diaryId) {
+    public int updateDiary(User user, DiaryRequestDto.DiaryEdit diaryEdit) {
         int resultCode = 200;
-        Diary diary = diaryRepository.findById(diaryId).orElseThrow(() -> new CustomException(ErrorCode.DATA_NOT_FOUND));
+
+        Diary diary = diaryRepository.findById(diaryEdit.getDiaryId()).orElseThrow(() -> new CustomException(ErrorCode.DATA_NOT_FOUND));
         Trip trip = tripRepository.findById(diaryEdit.getTripId()).orElseThrow(() -> new CustomException(ErrorCode.DATA_NOT_FOUND));
         if (!diary.getUser().equals(user)) resultCode = 406;
         else {
