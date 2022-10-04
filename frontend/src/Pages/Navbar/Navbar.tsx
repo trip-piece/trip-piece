@@ -361,7 +361,7 @@ function IdCodeComponent({ id }: CodeProps) {
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
-  const [userInfo] = useRecoilState(UserInfoState);
+  const [userInfo, setUserInfo] = useRecoilState(UserInfoState);
   const [upcoming, setUpcoming] = useState<ITrip>();
   const [loading, setLoading] = useState<boolean>(false);
   const today = changeDateFormatToHyphen(new Date());
@@ -419,6 +419,27 @@ export default function Navbar() {
 
   const moveToMain = () => {
     navigate("/main");
+  };
+
+  const logout = () => {
+    const { active, account, deactivate } = useWeb3React();
+    if (active) {
+      console.log(`active ${active} / ${address}`);
+      console.log("로그아웃하기  ~ ");
+
+      const userLogout: IUserInfo = {
+        address: "",
+        nickname: "누군가",
+        balance: "0.0",
+        isLoggedIn: false,
+        id: 0,
+        tripCount: 0,
+        diaryCount: 0,
+      };
+
+      deactivate();
+      setUserInfo(userLogout);
+    }
   };
 
   const {
@@ -506,6 +527,7 @@ export default function Navbar() {
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
                 type="button"
+                onClick={logout}
               >
                 <MdOutlineLogout />
               </motion.button>
