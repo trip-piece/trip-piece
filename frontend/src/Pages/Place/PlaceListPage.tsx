@@ -62,7 +62,7 @@ const TitleGroup = styled.div`
 `;
 
 const ToggleGroup = styled.div`
-  width: 35%;
+  width: fit-content;
   height: 30px;
   background-color: ${(props) => props.theme.colors.gray200};
   text-align: center;
@@ -71,7 +71,7 @@ const ToggleGroup = styled.div`
   margin-bottom: 1.5rem;
 
   .inactive {
-    width: 50%;
+    width: fit-content;
     height: 100%;
     border-radius: 15px;
     background-color: transparent;
@@ -79,7 +79,7 @@ const ToggleGroup = styled.div`
   }
 
   .active {
-    width: 50%;
+    width: fit-content;
     height: 100%;
     border-radius: 15px;
     background-color: ${(props) => props.theme.colors.mainDark};
