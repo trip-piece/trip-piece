@@ -45,10 +45,7 @@ axiosInstance.interceptors.response.use(
     // const originalConfig = err.config;
 
     if (err.response) {
-      if (
-        err.response.status === 401 &&
-        err.response.data?.error === "TokenExpiredException"
-      ) {
+      if (err.response.status === 401) {
         const response = await getNewAccessToken(
           getCookie("ACCESS_TOKEN"),
           getCookie("REFRESH_TOKEN"),

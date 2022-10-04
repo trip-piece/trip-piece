@@ -1,5 +1,5 @@
 import styled from "@emotion/styled";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { ReactQueryDevtools } from "react-query/devtools";
 import { useNavigate } from "react-router-dom";
@@ -30,7 +30,7 @@ function App() {
   );
 
   const [userInfoState, setUserInfoState] = useRecoilState(UserInfoState);
-  
+
   // 새로고침 막기 변수
 
   let userInfoInit: IUserInfo;
@@ -70,16 +70,14 @@ function App() {
         userInfoInit = {
           address: response.data.walletAddress,
           nickname: response.data.nickname,
-          balance: "-1.0",
+          balance: "0.0",
           isLoggedIn: true,
           id: response.data.userId,
           tripCount: response.data.tripCount,
           diaryCount: response.data.diaryCount,
         };
-        console.log("실행");
 
         setUserInfoState(userInfoInit);
-        console.log(`유저정보 가져오기 ${userInfoInit.nickname}`);
 
         getUserBalance(response.data.walletAddress);
       },
@@ -88,11 +86,9 @@ function App() {
 
   // 브라우저에 렌더링 시 한 번만 실행하는 코드
   useEffect(() => {
-    (() => {
-      if (userInfoState.isLoggedIn) {
-        getUserInfo();
-      }
-    })();
+    if (userInfoState.isLoggedIn) {
+      getUserInfo();
+    }
   }, []);
 
   return (

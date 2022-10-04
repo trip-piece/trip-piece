@@ -96,7 +96,7 @@ function InfiniteList({
 
   useEffect(() => {
     if (isCreated) refetchData();
-    change(false);
+    if (change) change(false);
   }, [isCreated]);
 
   return (
