@@ -24,7 +24,7 @@ export const dataURLtoFile = (dataurl: string, fileName: string) => {
     u8arr[n] = bstr.charCodeAt(n);
   }
 
-  return new File([u8arr], fileName, { type: mime });
+  return new File([u8arr], `${fileName}.png`, { type: mime });
 };
 
 export const resizeImage = async (imageFile: File) => {
@@ -35,7 +35,7 @@ export const resizeImage = async (imageFile: File) => {
   };
   try {
     const compressedFile = await imageCompression(imageFile, options);
-    return compressedFile;
+    return new File([compressedFile], compressedFile.name);
   } catch {
     return imageFile;
   }

@@ -6,6 +6,7 @@ export interface IDiary {
   weather: number;
   imagePath?: string | null;
   diaryId?: number;
+  id?: number;
   location?: string;
   ratio: number;
 }
@@ -25,7 +26,7 @@ export interface AccessIDiaryListState<T> {
 
 export interface StickerProps {
   tokenId: number;
-  tokenURI: string;
+  imagePath: string;
 }
 export interface ISticker extends StickerProps {
   x: number;
@@ -33,6 +34,7 @@ export interface ISticker extends StickerProps {
   isDragging: boolean;
   originX: number;
   originY: number;
+  tokenURI?: string;
 }
 
 export interface IFrameImageObj {
@@ -41,6 +43,8 @@ export interface IFrameImageObj {
 }
 
 export interface IRequestedSticker {
+  id?: number;
+  imagePath?: string;
   stickerId: number;
   tokenId: number;
   tokenName: string;
@@ -51,6 +55,13 @@ export interface IRequestedSticker {
 
 export interface IRequestedDiary extends IDiary {
   todayPhoto: string;
-  isShare: boolean;
+  share: boolean;
   stickerList: IRequestedSticker[];
+}
+
+export interface IIPFSResult {
+  0: string;
+  1: string;
+  tokenId: string;
+  tokenURI: string;
 }

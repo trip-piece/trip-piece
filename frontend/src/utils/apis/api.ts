@@ -42,28 +42,25 @@ axiosInstance.interceptors.response.use(
     console.log(err.response.status);
     console.log(err.response);
 
-    const originalConfig = err.config;
+    // const originalConfig = err.config;
 
     if (err.response) {
-      if (err.response.status === 401) {
-        console.log(err.response.data?.error);
+      if (
+        err.response.status === 401 &&
+        err.response.data?.error === "TokenExpiredException"
+      ) {
+        const response = await getNewAccessToken(
+          getCookie("ACCESS_TOKEN"),
+          getCookie("REFRESH_TOKEN"),
+        );
+        console.log(response);
+        const { accessToken, refreshToken } = response.data;
+        setCookie("accessToken", accessToken);
+        setCookie("refreshToken", refreshToken);
+        return;
       }
+      return Promise.reject(err);
     }
-
-    // if (err.response) {
-    //   if (
-    //     err.response.status === 401 &&
-    //     err.response.data?.error === "TokenExpiredException"
-    //   ) {
-    //     const response = await getNewAccessToken(
-    //       getCookie("ACCESS_TOKEN"),
-    //       getCookie("REFRESH_TOKEN"),
-    //     );
-    //     console.log(response);
-    //     const { accessToken, refreshToken } = response.data;
-    //     setCookie("accessToken", accessToken);
-    //     setCookie("refreshToken", refreshToken);
-    //   }
-    // }
+    return Promise.reject(err);
   },
 );

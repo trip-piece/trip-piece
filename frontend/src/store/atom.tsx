@@ -32,3 +32,20 @@ export const UserInfoState = atom<IUserInfo>({
   key: "userInfoState",
   default: UserInfodata,
 });
+
+export interface IQrInfo {
+  url: (string | Location) & Location;
+  modalFlag: boolean;
+  correct?: boolean;
+}
+
+const initialQrInfoState: IQrInfo = {
+  url: null,
+  modalFlag: false,
+  correct: false,
+};
+
+export const QrInfoState = atom({
+  key: "recoilQrState",
+  default: initialQrInfoState,
+});

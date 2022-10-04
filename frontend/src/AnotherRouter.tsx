@@ -22,9 +22,6 @@ const TripList = lazy(() => import("./Pages/TripList/TripListPage"));
 const DiaryManagement = lazy(
   () => import("./Pages/DiaryManagement/DiaryManagementPage"),
 );
-const DiaryDecoration = lazy(
-  () => import("./Pages/DiaryDecoration/DiaryDecorationPage"),
-);
 const PlaceListPage = lazy(() => import("./Pages/Place/PlaceListPage"));
 const MyLocationListPage = lazy(
   () => import("./Pages/Place/MyLocationListPage"),
@@ -55,7 +52,7 @@ function AnotherRouter() {
             element={<DiaryManagement />}
           />
           <Route
-            path="trips/:tripId/diarys/:diaryDate/write"
+            path="trips/:tripId/diarys/:diaryDate/edit"
             element={<DiaryManagement />}
           />
 
@@ -75,7 +72,7 @@ function AnotherRouter() {
             element={<MyLocationListPage />}
           />
           <Route path="qrscan" element={<QrScanner />} />
-          <Route path="/places/:placeId" element={<NftResponse />} />
+          <Route path="/places/:placeId/:code" element={<NftResponse />} />
         </Routes>
       </Suspense>
     </>

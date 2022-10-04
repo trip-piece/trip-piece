@@ -18,6 +18,7 @@ interface InifinteListProps {
   count: number;
   isEditMode?: boolean;
   isCreated?: boolean;
+  change?: (bool: boolean) => void;
 }
 
 type GridProps = {
@@ -42,10 +43,10 @@ function InfiniteList({
   count,
   isEditMode,
   isCreated,
+  change,
 }: InifinteListProps) {
   const [hasError, setHasError] = useState(false);
   const bottom = useRef(null);
-
   const getTargetComponentList = async ({
     pageParam = 0,
   }: QueryFunctionContext) => {
@@ -95,8 +96,8 @@ function InfiniteList({
 
   useEffect(() => {
     if (isCreated) refetchData();
+    change(false);
   }, [isCreated]);
-  // FIXME: key change
 
   return (
     <div>

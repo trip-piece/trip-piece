@@ -6,7 +6,7 @@ function useWriteDiary() {
   return useMutation((diary: FormData) =>
     axiosInstance.post(diaryApis.diaryWrite, diary, {
       headers: {
-        "Content-Type": "multipart/form-data:",
+        "Content-Type": `multipart/form-data`,
       },
     }),
   );

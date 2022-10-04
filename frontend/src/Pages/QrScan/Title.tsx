@@ -1,8 +1,10 @@
 import React from "react";
 import styled from "@emotion/styled";
-import { MdLocationOn } from "react-icons/md";
 import { pixelToRem } from "../../utils/functions/util";
 import { TitleProps } from "../../utils/interfaces/qrscan.inteface";
+
+import useGetLocation from "../../utils/hooks/useGetLocation";
+import QrLocation from "../../components/modules/QrLocation";
 
 const Box = styled.div`
   padding: 0 ${pixelToRem(18)} 0 ${pixelToRem(18)};
@@ -19,19 +21,19 @@ const TitleBox = styled.h3`
 const GpsBox = styled.div`
   display: flex;
 `;
-const GpsText = styled.h1`
-  font-size: ${(props) => props.theme.fontSizes.s1};
-  margin: 1% 0;
-  color: ${(props) => props.theme.colors.white};
-`;
-function Title({ title, location }: TitleProps) {
+
+function Title({ title }: TitleProps) {
+  const { isFetchingLocation, locationData, refetchLocation } =
+    useGetLocation();
+
   return (
     <Box>
       <TitleBox>{title}</TitleBox>
 
       <GpsBox>
-        <MdLocationOn size="25" color="#D35B5B" />
-        <GpsText>{location}</GpsText>
+        <QrLocation
+          {...{ isFetchingLocation, locationData, refetchLocation }}
+        />
       </GpsBox>
     </Box>
   );
