@@ -29,14 +29,22 @@ public class MarketService {
 
 
     @Transactional(readOnly = true)
-    public Page<MarketStickerResponseDto> findMarketSticker(final long regionId, final int sort, String keyword, @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable
+    public Page<MarketStickerResponseDto> findMarketSticker(long regionId, int sort, String keyword, @PageableDefault(size = 10) Pageable pageable
     ) {
         List<Market> marketList = new ArrayList<>();
         List<MarketStickerResponseDto> responseList = new ArrayList<>();
 
 
-        if (regionId == 0 && sort == 0) {
-            marketList = marketRepository.findAll();
+        if (regionId == 0) {
+            if (sort == 0) {
+                marketList = marketRepository.findAll(Sort.by(Sort.Direction.DESC, "id"));
+            } else if (sort == 1) {
+                marketList = marketRepository.findAll(Sort.by(Sort.Direction.ASC, "price"));
+                System.out.println(marketList.size());
+            } else if (sort == 2) {
+                marketList = marketRepository.findAll(Sort.by(Sort.Direction.DESC, "price"));
+                System.out.println(marketList.size());
+            }
             for (Market market : marketList) {
                 responseList.add(new MarketStickerResponseDto(market));
             }
@@ -45,6 +53,8 @@ public class MarketService {
                 marketList = marketRepository.findAll(Sort.by(Sort.Direction.ASC, "price"));
             } else if (sort == 2) {
                 marketList = marketRepository.findAll(Sort.by(Sort.Direction.DESC, "price"));
+            } else {
+                marketList = marketRepository.findAll(Sort.by(Sort.Direction.DESC, "id"));
             }
             for (Market market : marketList) {
                 long maRegionId = market.getSticker().getPlace().getRegion().getId();
@@ -54,14 +64,14 @@ public class MarketService {
             }
 
         }
-        if(keyword!=null){
-
-            for(MarketStickerResponseDto s :responseList){
-                //contains 때문에 equalsIgnoreCase 못했삼. 나중에 주석 지울 거임
-                if(!s.getTokenName().toLowerCase().contains(keyword.toLowerCase())){
-                    responseList.remove(s);
+        if (keyword != null) {
+            List<MarketStickerResponseDto> removed = new ArrayList<>();
+            for (MarketStickerResponseDto s : responseList) {
+                if (!s.getTokenName().contains(keyword)) {
+                    removed.add(s);
                 }
             }
+            responseList.removeAll(removed);
         }
 
 
@@ -72,9 +82,9 @@ public class MarketService {
     }
 
     @Transactional(readOnly = true)
-    public StickerMarketResponseDto findMarketStickerDetail(long marketId){
-Market market = marketRepository.findById(marketId).orElseThrow(() -> new CustomException(ErrorCode.DATA_NOT_FOUND));
-   return new StickerMarketResponseDto(market);
+    public StickerMarketResponseDto findMarketStickerDetail(long marketId) {
+        Market market = marketRepository.findById(marketId).orElseThrow(() -> new CustomException(ErrorCode.DATA_NOT_FOUND));
+        return new StickerMarketResponseDto(market);
     }
 
     @Transactional
