@@ -195,20 +195,11 @@ function FrameSharePage(props: Props) {
     }
   };
 
-  const {
-    isLoading,
-    data,
-    error,
-    isError,
-    isSuccess,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-    refetch,
-  } = useFetchTripsInformation({
-    queryKey: ["frameList"],
-    getTargetComponentList,
-  });
+  const { data, error, fetchNextPage, hasNextPage, refetch } =
+    useFetchTripsInformation({
+      queryKey: ["frameList"],
+      getTargetComponentList,
+    });
 
   const onIntersect = ([entry]: any) => entry.isIntersecting && fetchNextPage();
   const bottom = useRef(null);

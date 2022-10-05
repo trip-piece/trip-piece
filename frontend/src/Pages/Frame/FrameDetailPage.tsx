@@ -5,12 +5,13 @@ import { BsFillBookmarkHeartFill, BsBookmarkHeart } from "react-icons/bs";
 import { useEffect, useRef, useState } from "react";
 import { FaArrowLeft } from "react-icons/fa";
 import { useQuery } from "react-query";
+import { AxiosError, AxiosResponse } from "axios";
 import axiosInstance from "../../utils/apis/api";
-import { frameApis, Idata } from "../../utils/apis/frameApis";
+import { frameApis } from "../../utils/apis/frameApis";
 import { getNFTImagePath } from "../../utils/functions/getNFTImagePath";
 import useSize from "../../utils/hooks/useSize";
-import StickerImg from "../../components/atoms/StickerImg";
 import { IRequestedSticker } from "../../utils/interfaces/diarys.interface";
+import StickerComponent from "./StickerComponent";
 
 const Container = styled.article`
   min-height: 90vh;
@@ -18,7 +19,7 @@ const Container = styled.article`
   border-radius: 30px 30px 0 0;
   padding: 1rem;
   position: relative;
-  width: inherit;
+  width: 100%;
 `;
 
 const StickerCard = styled.article<{ height: number }>`
@@ -89,9 +90,10 @@ interface IRequestedFrame {
 function FrameDetailPage() {
   const navigate = useNavigate();
   const { frameId } = useParams();
-  // const [frame, setFrame] = useState<Idata>();
   const [scrap, setScrap] = useState<boolean>();
   const [NFTStickerList, setNFTStickerList] = useState([]);
+  const [stickerNameList, setStickerNameList] = useState<string[]>([]);
+  const [selected, setSelected] = useState<number | null>(null);
   const frameRef = useRef<HTMLDivElement>(null);
   const size = useSize(frameRef);
 
@@ -117,19 +119,25 @@ function FrameDetailPage() {
     setNFTStickerList(_list);
   };
 
-  const { data: frameDetailData } = useQuery(
-    ["diary-detail", `frameId-${frameId}`],
-    () => getFrameDetail(),
-    {
-      onSuccess: async (data) => {
-        setScrap(data?.data.scrapped);
-        await getNFTList(data?.data);
-      },
-      refetchOnWindowFocus: false,
-      refetchOnReconnect: false,
-      refetchOnMount: true,
+  const distinctStickerName = (stickerList: IRequestedSticker[]) => {
+    const set = new Set<string>();
+    stickerList.forEach((sticker) => set.add(sticker.tokenName));
+    setStickerNameList([...set]);
+  };
+
+  const { data: frameDetailData } = useQuery<
+    AxiosResponse<IRequestedFrame>,
+    AxiosError
+  >(["diary-detail", `frameId-${frameId}`], () => getFrameDetail(), {
+    onSuccess: async (data) => {
+      setScrap(data?.data.scrapped);
+      await getNFTList(data?.data);
+      if (data?.data?.stickerList) distinctStickerName(data?.data?.stickerList);
     },
-  );
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+    refetchOnMount: true,
+  });
 
   const postSaveFrame = () => {
     const body = {
@@ -153,14 +161,9 @@ function FrameDetailPage() {
     }
     setScrap(!scrap);
   };
-
-  const distinctStickerName = (data: Idata) => {};
-
-  // useEffect(() => {
-  //   console.log("맨 처음 렌더링될 때 한 번만 실행");
-  //   getFrameDetail();
-  //   //  console.log(frame);
-  // }, []);
+  const onSelectSticker = (id: number | null) => {
+    setSelected(id);
+  };
   return (
     <>
       <Helmet>
@@ -170,18 +173,22 @@ function FrameDetailPage() {
         <BackSpaceBtn onClick={moveToFrameMain}>
           <FaArrowLeft size={30} />
         </BackSpaceBtn>
-
         <StickerCard
           ref={frameRef}
-          height={size?.width * frameDetailData?.data.ratio}
+          height={
+            frameDetailData?.data?.ratio &&
+            size.width * frameDetailData.data.ratio
+          }
+          onClick={() => onSelectSticker(null)}
         >
           {NFTStickerList?.map((sticker: IRequestedSticker, idx) => (
-            <StickerImg
-              up={sticker.y * size.width * frameDetailData?.data?.ratio}
-              left={sticker.x * size.width}
-              alt={sticker.tokenName}
-              src={sticker.imagePath}
-              key={sticker.y + sticker.x + idx}
+            <StickerComponent
+              sticker={sticker}
+              size={size}
+              ratio={frameDetailData.data.ratio}
+              selectedSticker={selected}
+              onSelectSticker={onSelectSticker}
+              key={idx}
             />
           ))}
         </StickerCard>
@@ -195,14 +202,9 @@ function FrameDetailPage() {
           </ScrapBtn>
         </ScarpContainer>
         <TagContainer>
-          {/* {frame.stickerList.map((sticker, idx) => {
-            sticker.tokenName;
-          })} */}
-          <HashtagButton>버튼</HashtagButton>
-          <HashtagButton>버튼</HashtagButton>
-          <HashtagButton>버튼</HashtagButton>
-          <HashtagButton>버튼</HashtagButton>
-          <HashtagButton>버튼</HashtagButton>
+          {stickerNameList?.map((stickerName, idx) => (
+            <HashtagButton key={idx}>#{stickerName}</HashtagButton>
+          ))}
         </TagContainer>
       </Container>
     </>
