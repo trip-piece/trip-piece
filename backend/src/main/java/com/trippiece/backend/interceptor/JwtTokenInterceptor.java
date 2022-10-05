@@ -58,7 +58,6 @@ public class JwtTokenInterceptor implements HandlerInterceptor {
                 }
             }
         }
-
         response.setStatus(401);
         response.setHeader("ACCESS_TOKEN", accessToken);
         response.setHeader("REFRESH_TOKEN", refreshToken);
@@ -86,3 +85,4 @@ public class JwtTokenInterceptor implements HandlerInterceptor {
         return Objects.nonNull(request.getHeader("Origin"));
     }
 }
+
