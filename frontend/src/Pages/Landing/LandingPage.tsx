@@ -118,16 +118,16 @@ export default function LandingPage() {
             diaryCount: number;
           };
         }) => {
-          userInfoInit = {
+          setUserInfoState({
+            ...userInfoState,
             address: response.data.walletAddress,
             nickname: response.data.nickname,
-            balance: "-1.0",
+            balance: "0.0",
             isLoggedIn: true,
             id: response.data.userId,
             tripCount: response.data.tripCount,
             diaryCount: response.data.diaryCount,
-          };
-
+          });
           setUserInfoState(userInfoInit);
 
           getUserBalance();

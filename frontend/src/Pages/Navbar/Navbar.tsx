@@ -21,25 +21,25 @@ import { useNavigate } from "react-router-dom";
 import AppBar from "@mui/material/AppBar";
 import { useRecoilState } from "recoil";
 import { motion } from "framer-motion";
+import { useWeb3React } from "@web3-react/core";
+import React from "react";
+import { AxiosError, AxiosResponse } from "axios";
+import { useQuery } from "react-query";
+import { useEffect, useRef, useState } from "react";
+import { ReactJSXElement } from "@emotion/react/types/jsx-namespace";
 import {
   changeDateFormatToHyphen,
   pixelToRem,
 } from "../../utils/functions/util";
 import { IUserInfo, UserInfoState } from "../../store/atom";
 import trippieceLogo from "../../assets/image/trippiece_logo.png";
-import { ReactJSXElement } from "@emotion/react/types/jsx-namespace";
 // import { ReactComponent as EtherIcon } from "../../assets/svgs/etherIcon.svg";
-import { useEffect, useRef, useState } from "react";
-import { useQuery } from "react-query";
 import axiosInstance from "../../utils/apis/api";
-import { AxiosError, AxiosResponse } from "axios";
 import { ITrip } from "../../utils/interfaces/trips.interface";
 import tripApis from "../../utils/apis/tripsApis";
-import React from "react";
 import { REGIONLIST } from "../../utils/constants/constant";
 import { CodeProps } from "../../utils/interfaces/qrscan.inteface";
 import NestedModal from "../MyPage/Modal";
-import { useWeb3React } from "@web3-react/core";
 
 const DrawerHeader = styled.div`
   display: flex;
