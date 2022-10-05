@@ -40,6 +40,7 @@ import tripApis from "../../utils/apis/tripsApis";
 import { REGIONLIST } from "../../utils/constants/constant";
 import { CodeProps } from "../../utils/interfaces/qrscan.inteface";
 import NestedModal from "../MyPage/Modal";
+import { getCookie, removeCookie, setCookie } from "../../utils/cookie";
 
 const DrawerHeader = styled.div`
   display: flex;
@@ -368,8 +369,7 @@ export default function Navbar() {
   const today = changeDateFormatToHyphen(new Date());
   const [isProgress, setIsProgress] = useState(0);
   const { active, deactivate } = useWeb3React();
-
-  const [userInfoState] = useRecoilState(UserInfoState);
+  const [login, setLogin] = useState<boolean>(true);
   const mounted = useRef(false);
 
   const toggleDrawer =
@@ -423,27 +423,35 @@ export default function Navbar() {
   };
 
   useEffect(() => {
+    const loginFlag: string = getCookie("isLogin");
+    console.log(loginFlag);
+
     if (!mounted.current) {
       mounted.current = true;
-    } else if (!userInfoState.isLoggedIn) navigate("/");
-  }, [userInfoState.isLoggedIn]);
+    } else navigate("/");
+  }, [active]);
 
   const logout = () => {
     if (active) {
       console.log("로그아웃하기  ~ ");
 
-      const userLogout: IUserInfo = {
-        address: "",
-        nickname: "누군가",
-        balance: "0.0",
-        isLoggedIn: false,
-        id: 0,
-        tripCount: 0,
-        diaryCount: 0,
-      };
+      // const userLogout: IUserInfo = {
+      //   address: "",
+      //   nickname: "누군가",
+      //   balance: "0.0",
+      //   isLoggedIn: false,
+      //   id: 0,
+      //   tripCount: 0,
+      //   diaryCount: 0,
+      // };
 
       deactivate();
-      setUserInfo(userLogout);
+      removeCookie("accessToken");
+      removeCookie("refreshToken");
+      setCookie("isLogin", "false");
+      setLogin(false);
+
+      // setUserInfo(userLogout);
     }
   };
   const moveToMyTrip = (tripId: number) => {

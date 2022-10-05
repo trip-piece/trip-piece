@@ -5,7 +5,7 @@ import { InjectedConnector } from "@web3-react/injected-connector";
 import { useWeb3React } from "@web3-react/core";
 import { NavigateFunction, useNavigate } from "react-router-dom";
 // import { useRecoilState } from "recoil";
-import { useRecoilState } from "recoil";
+import { useRecoilState, useSetRecoilState } from "recoil";
 import Web3 from "web3";
 import { setCookie } from "../../utils/cookie";
 // import { IUserInfo, UserInfoState } from "../../store/atom";
@@ -18,8 +18,9 @@ import LandingPageImg from "./LandingPageImg";
 import userApis, { walletAddress } from "../../utils/apis/userApis";
 import axiosInstance from "../../utils/apis/api";
 import { IUserInfo, UserInfoState } from "../../store/atom";
+import { Idata, IUserData } from "../../utils/hooks/useLogin";
 
-const injected = new InjectedConnector({});
+const injected = new InjectedConnector({ supportedChainIds: [5] });
 
 /**
 connector: 현재 dapp에 연결된 월렛의 connector 값
@@ -34,10 +35,7 @@ deactivate: dapp 월렛 연결 해제 수행 함수
 // const onClickDeactivate = () => {
 //   deactivate();
 // };
-function moveToMain(func: NavigateFunction) {
-  const navigate = func;
-  navigate("/main");
-}
+
 const Container = styled.div`
   display: flex;
   justify-content: center;
@@ -64,112 +62,109 @@ const SeekButton = styled.button`
 `;
 
 export default function LandingPage() {
-  const { activate, active, account } = useWeb3React();
+  const { activate, active, account, deactivate } = useWeb3React();
   const navigate = useNavigate();
-  const address: walletAddress = { walletAddress: account };
+  const [userInfo, setUserInfo] = useRecoilState(UserInfoState);
 
-  const [userInfoState, setUserInfoState] = useRecoilState(UserInfoState);
+  console.log(active);
 
+  console.log(`첫 렌더링: 지갑.. ${account}`);
 
-  console.log(`지갑.. ${account}`);
+  function useLogin(data: Idata) {
+    console.log("엥");
 
-  let userInfoInit: IUserInfo = {
-    address: "",
-    nickname: "",
-    balance: "-1",
-    isLoggedIn: false,
-    id: -1,
-    tripCount: 0,
-    diaryCount: 0,
-  };
+    const moveToMain = () => {
+      navigate("/main");
+    };
 
-  const getUserBalance = () => {
-    const web3 = new Web3(
-      new Web3.providers.HttpProvider(import.meta.env.VITE_WEB3_URL),
-    );
-
-    if (account) {
-      const address_temp = account;
-
-      web3.eth
-        .getBalance(address_temp)
-        .then((balance) => {
-          return web3.utils.fromWei(balance, "ether");
-        })
-        .then((eth) => {
-          userInfoInit = { ...userInfoInit, balance: eth };
-          setUserInfoState(userInfoInit);
-
-          moveToMain(navigate);
-        });
-    }
-  };
-  const getUserInfo = (token: string | number | boolean) => {
     axiosInstance
-      .get(userApis.getUser, { headers: { ACCESS_TOKEN: token } })
-      .then(
-        (response: {
-          data: {
-            userId: number;
-            walletAddress: string;
-            nickname: string;
-            tripCount: number;
-            diaryCount: number;
-          };
-        }) => {
-          setUserInfoState({
-            ...userInfoState,
-            address: response.data.walletAddress,
-            nickname: response.data.nickname,
-            balance: "0.0",
-            isLoggedIn: true,
-            id: response.data.userId,
-            tripCount: response.data.tripCount,
-            diaryCount: response.data.diaryCount,
-          });
-          setUserInfoState(userInfoInit);
-
-          getUserBalance();
-        },
-      );
-  };
-
-  const login = async (
-    data: string | null | undefined | walletAddress,
-    // props: IUserInfo,
-  ) => {
-    await axiosInstance
       .post(userApis.login, data)
       .then(
         (response: { data: { accessToken: string; refreshToken: string } }) => {
           setCookie("accessToken", response.data.accessToken);
           setCookie("refreshToken", response.data.refreshToken);
 
-          getUserInfo(response.data.accessToken);
+          return response.data.accessToken;
         },
-      );
-  };
+      )
+      .then((token) => {
+        axiosInstance
+          .get(userApis.getUser, { headers: { ACCESS_TOKEN: token } })
+          .then((response: { data: IUserData }) => {
+            console.log(response.data);
+
+            console.log(userInfo);
+
+            setUserInfo((prev) => ({
+              ...prev,
+              address: response.data.walletAddress,
+              nickname: response.data.nickname,
+              balance: "0.0",
+              isLoggedIn: true,
+              id: response.data.userId,
+              tripCount: response.data.tripCount,
+              diaryCount: response.data.diaryCount,
+            }));
+
+            return response.data.walletAddress;
+          })
+          .then((address) => {
+            const web3 = new Web3(
+              new Web3.providers.HttpProvider(import.meta.env.VITE_WEB3_URL),
+            );
+            if (address) {
+              web3.eth
+                .getBalance(address)
+                .then((balance) => {
+                  return web3.utils.fromWei(balance, "ether");
+                })
+                .then((eth) => {
+                  setUserInfo((prev) => ({ ...prev, balance: eth }));
+
+                  setCookie("isLogin", "true");
+                  moveToMain();
+                });
+            }
+          });
+      });
+  }
+
   const mounted = useRef(false);
   useEffect(() => {
     if (!mounted.current) {
       mounted.current = true;
     } else {
-      login(address);
+      const data: Idata = { walletAddress: account };
+      useLogin(data);
     }
   }, [account]);
 
+  // 메타마스크 연결확인
   const handleActivate = async (event: Event) => {
     event.preventDefault();
 
     if (active) {
-      console.log(`active ${active} / ${address}`);
-      login(address);
-    }
+      if (account.length !== 0) {
+        console.log("메타마스크 연결되있는데 지갑길이 받아온 상태");
 
-    if (!active) {
-      console.log("trying metamask connect...");
+        useLogin({ walletAddress: account });
+      } else {
+        console.log("메타마스크 연결되있는데 지갑 안받아온 상태");
+        console.log("연결끊기");
 
-      activate(injected, async () => {});
+        deactivate();
+        console.log("재연결");
+
+        activate(injected, async () => {});
+      }
+    } else {
+      console.log("연결안되있어서 연결하자 !");
+
+      activate(injected, async () => {}).catch((error) => {
+        console.log("activate 에러메시지");
+
+        console.log(error);
+      });
     }
   };
 
