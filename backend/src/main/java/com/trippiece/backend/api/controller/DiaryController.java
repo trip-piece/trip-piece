@@ -3,6 +3,7 @@ package com.trippiece.backend.api.controller;
 import com.trippiece.backend.api.domain.dto.request.DecoRequestDto;
 import com.trippiece.backend.api.domain.dto.request.DiaryRequestDto;
 
+import com.trippiece.backend.api.domain.entity.Diary;
 import com.trippiece.backend.api.domain.entity.Trip;
 import com.trippiece.backend.api.domain.entity.User;
 import com.trippiece.backend.api.domain.repository.DiaryRepository;
@@ -87,7 +88,7 @@ public class DiaryController {
             User user = userService.findOneUser(userId);
             if (user == null) return new ResponseEntity<String>("로그인된 회원을 찾을 수 없습니다.", HttpStatus.NOT_FOUND);
             else {
-                if (!frameImage.isEmpty()) { //공유하기 ok
+                if (frameImage!=null) { //공유하기 ok
                     if (frameImage.getSize() >= 10485760)
                         return new ResponseEntity<String>("이미지 크기 제한은 10MB 입니다.", HttpStatus.FORBIDDEN);
                     String originFile = frameImage.getOriginalFilename();
@@ -182,7 +183,10 @@ public class DiaryController {
                 } else {
                     //파일이 없고, ImagePath도 없는 경우 => 기존 이미지를 삭제할 경우
                     if (diaryEdit.getImagePath().equals("") || diaryEdit.getImagePath().equals(null)) {
-                        diaryEdit.setImagePath(null);
+                        diaryEdit.setImagePath("");
+                    } else {
+                        Diary diary = diaryRepository.getOne(diaryEdit.getDiaryId());
+                        diaryEdit.setImagePath(diary.getTodayPhoto());
                     }
                 }
                 int updateResult = diaryService.updateDiary(user, diaryEdit);

@@ -25,7 +25,32 @@
   "rules": {
     "react/react-in-jsx-scope": ["off"],
     "react/jsx-uses-react": ["off"],
-    "react/jsx-props-no-spreading": ["warn"],
-    "react/no-unescaped-entities": ["off"]
+    "react/jsx-props-no-spreading": ["off"],
+    "react/no-unescaped-entities": ["off"],
+    "consistent-return": ["off"],
+    "react/require-default-props": ["off"],
+    "import/prefer-default-export": ["off"],
+    "@typescript-eslint/naming-convention": ["off"],
+    "no-underscore-dangle": ["off"],
+    "@typescript-eslint/no-unused-expressions": ["off"],
+    "react/no-array-index-key": ["off"],
+    "no-console": ["off"],
+    "jsx-a11y/label-has-associated-control": [
+      "error",
+      {
+        "required": {
+          "some": ["nesting", "id"]
+        }
+      }
+    ],
+    "jsx-a11y/label-has-for": [
+      "error",
+      {
+        "required": {
+          "some": ["nesting", "id"]
+        }
+      }
+    ],
+    "no-alert": ["off"]
   }
 }
