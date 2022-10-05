@@ -77,36 +77,36 @@ function App() {
           diaryCount: response.data.diaryCount,
         });
 
-        getUserBalance(response.data.walletAddress);
+        getUserBalance();
       },
     );
   };
 
   // 컴포넌트 렌더링 될 때마다 실행
-  useEffect(() => {
-    if (userInfoState.isLoggedIn) {
-      console.log("새로고침 테스트1");
+  // useEffect(() => {
+  //   if (userInfoState.isLoggedIn) {
+  //     console.log("새로고침 테스트1");
 
-      getUserInfo();
-    }
-  }, []);
+  //     getUserInfo();
+  //   }
+  // }, []);
 
-  const validateActiveMetamask = () => {
-    const injected = new InjectedConnector({});
-    if (!active) {
-      activate(injected, async () => {});
-      getUserInfo;
-    }
-  };
+  // const validateActiveMetamask = () => {
+  //   const injected = new InjectedConnector({});
+  //   if (!active) {
+  //     activate(injected, async () => {});
+  //     getUserInfo;
+  //   }
+  // };
 
   // Component가 Update 되었을 때(props, state 변경)
   //const mounted = useRef(false);
-  useEffect(() => {
-    if (!userInfoState.isLoggedIn) {
-      console.log("새로고침 테스트 2");
-      validateActiveMetamask;
-    }
-  }, [userInfoState.isLoggedIn]);
+  // useEffect(() => {
+  //   if (!userInfoState.isLoggedIn) {
+  //     console.log("새로고침 테스트 2");
+  //     validateActiveMetamask;
+  //   }
+  // }, [userInfoState.isLoggedIn]);
 
   return (
     <AppContainer>

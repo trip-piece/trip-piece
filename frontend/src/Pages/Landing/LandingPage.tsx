@@ -70,7 +70,6 @@ export default function LandingPage() {
 
   const [userInfoState, setUserInfoState] = useRecoilState(UserInfoState);
 
-  const loginFlag: boolean = false;
 
   console.log(`지갑.. ${account}`);
 
