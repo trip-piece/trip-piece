@@ -58,27 +58,32 @@ const ScrapBtn = styled.button`
   color: ${(props) => props.theme.colors.red};
 `;
 
-const ScarpContainer = styled.div`
+const ScrapContainer = styled.div`
   width: auto;
   height: auto;
-  background-color: red;
-  display: flex;
+  padding-top: 0.5rem;
 `;
 
 const TagContainer = styled.div`
-  width: auto;
+  width: 90%;
   height: auto;
-  background-color: blue;
-  padding: 5%;
+  padding: 0.5rem;
 `;
 
 const HashtagButton = styled.button`
   border-radius: 15px;
-  padding: 0.5rem 0.5rem 0.5rem 0.5rem;
+  padding: 0.5rem;
   font-size: ${(props) => props.theme.fontSizes.h5};
   font-weight: bold;
   background: ${(props) => props.theme.colors.yellow};
-  margin: 0 1% 0 1%;
+  white-space: nowrap;
+  margin: 0 0.5rem 0.5rem 0;
+`;
+
+const ScrapAndNameContainer = styled.div`
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
 `;
 
 interface IRequestedFrame {
@@ -192,20 +197,22 @@ function FrameDetailPage() {
             />
           ))}
         </StickerCard>
-        <ScarpContainer>
-          <ScrapBtn onClick={changeScrap}>
-            {scrap ? (
-              <BsFillBookmarkHeartFill size={40} />
-            ) : (
-              <BsBookmarkHeart size={40} />
-            )}
-          </ScrapBtn>
-        </ScarpContainer>
-        <TagContainer>
-          {stickerNameList?.map((stickerName, idx) => (
-            <HashtagButton key={idx}>#{stickerName}</HashtagButton>
-          ))}
-        </TagContainer>
+        <ScrapAndNameContainer>
+          <TagContainer>
+            {stickerNameList?.map((stickerName, idx) => (
+              <HashtagButton key={idx}>#{stickerName}</HashtagButton>
+            ))}
+          </TagContainer>
+          <ScrapContainer>
+            <ScrapBtn onClick={changeScrap}>
+              {scrap ? (
+                <BsFillBookmarkHeartFill size={40} />
+              ) : (
+                <BsBookmarkHeart size={40} />
+              )}
+            </ScrapBtn>
+          </ScrapContainer>
+        </ScrapAndNameContainer>
       </Container>
     </>
   );

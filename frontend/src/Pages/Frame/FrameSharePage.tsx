@@ -11,7 +11,6 @@ import { useRecoilState } from "recoil";
 import RegionButton from "./RegionButton";
 import { MemoCard } from "./Card";
 import { REGIONLIST } from "../../utils/constants/constant";
-import Skeleton from "./Skeleton";
 import { frameApis } from "../../utils/apis/frameApis";
 import useFetchTripsInformation from "../../utils/hooks/useFecthTripsInformation";
 import axiosInstance from "../../utils/apis/api";
