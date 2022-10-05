@@ -7,7 +7,7 @@ import { NavigateFunction, useNavigate } from "react-router-dom";
 // import { useRecoilState } from "recoil";
 import { useRecoilState, useSetRecoilState } from "recoil";
 import Web3 from "web3";
-import { setCookie } from "../../utils/cookie";
+import { getCookie, setCookie } from "../../utils/cookie";
 // import { IUserInfo, UserInfoState } from "../../store/atom";
 
 import { pixelToRem } from "../../utils/functions/util";
@@ -133,7 +133,11 @@ export default function LandingPage() {
   useEffect(() => {
     if (!mounted.current) {
       mounted.current = true;
-    } else {
+    } else if (getCookie("isLogin") === "false") {
+      console.log("로그아웃");
+    } else if (!getCookie("isLogin")) {
+      console.log("첫로그인");
+
       const data: Idata = { walletAddress: account };
       useLogin(data);
     }

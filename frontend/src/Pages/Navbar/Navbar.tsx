@@ -376,6 +376,8 @@ export default function Navbar() {
   const { account, active, deactivate, activate } = useWeb3React();
   const mounted = useRef(false);
 
+  console.log(active);
+
   const toggleDrawer =
     // eslint-disable-next-line @typescript-eslint/no-shadow
     (open: boolean) => (event: React.KeyboardEvent | React.MouseEvent) => {
@@ -498,6 +500,10 @@ export default function Navbar() {
       setCookie("isLogin", "false");
 
       // setUserInfo(userLogout);
+    } else {
+      removeCookie("accessToken");
+      removeCookie("refreshToken");
+      setCookie("isLogin", "false");
     }
   };
   const moveToMyTrip = (tripId: number) => {
