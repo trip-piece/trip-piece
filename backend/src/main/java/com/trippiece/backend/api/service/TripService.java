@@ -75,7 +75,7 @@ public class TripService {
     public Page<TripResponseDto> findTripList(final User user, final Pageable pageable) {
         List<Trip> list = new ArrayList<>();
 
-        list.addAll(tripRepository.findAllByUser(user));
+        list.addAll(tripRepository.findAllByUserOrderByStartDate(user));
 
         List<TripResponseDto> responseList = new ArrayList<>();
         for (Trip trip : list) {
@@ -99,10 +99,10 @@ public class TripService {
     @Transactional
     public TripResponseDto isInTrip(final User user, LocalDate todayDate) {
         List<Trip> list = new ArrayList<>();
-        list.addAll(tripRepository.findAllByUser(user));
+        list.addAll(tripRepository.findAllByUserOrderByStartDate(user));
         for (Trip t : list) {
             if (todayDate.isAfter(t.getEndDate())) continue;
-            if (!todayDate.isBefore(t.getStartDate()) && todayDate.isBefore(t.getEndDate())) {
+            if (!todayDate.isBefore(t.getStartDate()) && !todayDate.isAfter(t.getEndDate())) {
                 return new TripResponseDto(t); //진행중일때
             }
         }
