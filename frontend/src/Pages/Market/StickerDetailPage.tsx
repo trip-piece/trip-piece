@@ -125,6 +125,7 @@ function StickerDetailPage() {
       refetchOnMount: true,
     },
   );
+  
   const getImage = (tokenUrl: string): string => {
     fetch(`https://www.infura-ipfs.io/ipfs/${data?.data?.tokenURL}`)
       .then((res) => {
