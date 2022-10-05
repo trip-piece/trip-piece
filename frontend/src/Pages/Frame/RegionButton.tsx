@@ -1,10 +1,11 @@
 import styled from "@emotion/styled";
-import React, { useEffect, useState } from "react";
+import React, { memo, useEffect, useState } from "react";
 
 interface Props {
   data: string;
-  checkedItems: string[];
+  checkedItems: number[];
   checkedItemHandler: Function;
+  index: number;
 }
 
 const Container = styled.div`
@@ -16,6 +17,7 @@ const Container = styled.div`
     display: flex;
     justify-content: center;
     align-items: center;
+    cursor: pointer;
     p {
       font-size: ${(props) => props.theme.fontSizes.h4};
       border-radius: 50px;
@@ -37,15 +39,20 @@ const Container = styled.div`
     }
   }
 `;
-function RegionButton({ data, checkedItems, checkedItemHandler }: Props) {
+function RegionButton({
+  data,
+  checkedItems,
+  checkedItemHandler,
+  index,
+}: Props) {
   const [isChecked, setIsChecked] = useState<boolean>(false);
   const onCheck = (e: React.ChangeEvent<HTMLInputElement>) => {
-    checkedItemHandler(e.target.value, e.target.checked);
-    setIsChecked(e.target.checked);
+    checkedItemHandler(+e.target.value, e.target.checked);
+    setIsChecked(!isChecked);
   };
 
   useEffect(() => {
-    if (checkedItems.includes(data)) {
+    if (checkedItems.includes(index)) {
       setIsChecked(true);
     } else {
       setIsChecked(false);
@@ -59,8 +66,8 @@ function RegionButton({ data, checkedItems, checkedItemHandler }: Props) {
           type="checkbox"
           name="region"
           checked={isChecked}
-          value={data}
-          onChange={(e) => onCheck(e)}
+          value={index}
+          onChange={(e) => onCheck(e, index)}
           hidden
         />
         <p className={isChecked ? "checked" : "nochecked"}>{data}</p>
@@ -68,4 +75,4 @@ function RegionButton({ data, checkedItems, checkedItemHandler }: Props) {
     </Container>
   );
 }
-export default RegionButton;
+export default memo(RegionButton);

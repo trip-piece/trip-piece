@@ -6,7 +6,7 @@ export const frameApis = {
     if (length === 0) {
       api = `/frames?regionList=`;
     } else {
-      regionList.forEach((region, idx) => {
+      regionList.forEach((region) => {
         str += region.toString();
         str += ",";
       });

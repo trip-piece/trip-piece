@@ -4,14 +4,12 @@ import { Helmet } from "react-helmet-async";
 import { Global } from "@emotion/react";
 import CssBaseline from "@mui/material/CssBaseline";
 import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
 import SwipeableDrawer from "@mui/material/SwipeableDrawer";
 import { QueryFunctionContext } from "react-query";
 import Masonry from "react-masonry-css";
 import RegionButton from "./RegionButton";
 import { MemoCard } from "./Card";
 import { REGIONLIST } from "../../utils/constants/constant";
-import { MemoInfiniteList } from "../../components/modules/infinite/ParamsInfiniteList";
 import Skeleton from "./Skeleton";
 import { frameApis } from "../../utils/apis/frameApis";
 import useFetchTripsInformation from "../../utils/hooks/useFecthTripsInformation";
@@ -37,6 +35,13 @@ const DrawerBox = styled(Box)`
   visibility: visible;
   right: 0;
   left: 0;
+`;
+
+const RegionalFrameTitle = styled.div`
+  padding: 1rem;
+  width: 100%;
+  text-align: center;
+  height: 56px;
 `;
 
 const Label = styled.label<{ active: boolean }>`
@@ -142,6 +147,7 @@ function FrameSharePage(props: Props) {
   const { window } = props;
   const [open, setOpen] = React.useState(false);
   const [isAll, setIsAll] = useState<boolean>(false);
+  const [checkedItems, setCheckedItems] = useState<number[]>([]);
   const [hasError, setHasError] = useState(false);
   // const [scrap, setScrap] = useState<boolean>(false);
   const toggleDrawer = (newOpen: boolean) => () => {
@@ -150,22 +156,24 @@ function FrameSharePage(props: Props) {
   const container =
     window !== undefined ? () => window().document.body : undefined;
 
-  const [checkedItems, setCheckedItems] = useState<string[]>([]);
-
-  const checkedItemHandler = (code: any, isChecked: any) => {
+  const checkedItemHandler = (code: number, isChecked: boolean) => {
     if (isChecked) {
       // 체크 추가할때
       setCheckedItems([...checkedItems, code]);
-    } else if (!isChecked && checkedItems.find((one: any) => one === code)) {
+    } else if (!isChecked && checkedItems.includes(code)) {
       // 체크해제할때checkedItem에 있는 경우
       const filter = checkedItems.filter((one: any) => one !== code);
+      if (isAll) setIsAll(false);
       setCheckedItems([...filter]);
     }
   };
+
   const onCheckAll = (checked: boolean) => {
     if (checked) {
-      const checkedItemArray: ((prevState: never[]) => never[]) | string[] = [];
-      REGIONLIST.forEach((region) => checkedItemArray.push(region));
+      const checkedItemArray: ((prevState: never[]) => never[]) | number[] = [];
+      REGIONLIST.slice(1).forEach((region, idx) =>
+        checkedItemArray.push(idx + 1),
+      );
       setCheckedItems(checkedItemArray);
       setIsAll(true);
     } else {
@@ -178,7 +186,7 @@ function FrameSharePage(props: Props) {
     pageParam = 0,
   }: QueryFunctionContext) => {
     const res = await axiosInstance.get(
-      `${frameApis.getSharedFrames(regionList)}&page=${pageParam}`,
+      `${frameApis.getSharedFrames(checkedItems)}&page=${pageParam}`,
     );
     return { result: res?.data, page: pageParam };
   };
@@ -242,7 +250,6 @@ function FrameSharePage(props: Props) {
           <Global
             styles={{
               ".MuiDrawer-root > .MuiPaper-root": {
-                // height: `calc(50% - ${drawerBleeding}px)`,
                 height: "fit-content",
                 overflow: "visible",
                 maxWidth: "550px",
@@ -265,9 +272,7 @@ function FrameSharePage(props: Props) {
           >
             <DrawerBox>
               <Puller />
-              <Typography sx={{ p: 2, color: "text.secondary" }}>
-                지역별 프레임 조회
-              </Typography>
+              <RegionalFrameTitle>지역별 프레임 조회</RegionalFrameTitle>
             </DrawerBox>
             <StyledBox>
               <Label active={isAll}>
@@ -280,17 +285,22 @@ function FrameSharePage(props: Props) {
                 {isAll ? "전제해제" : "전체선택"}
               </Label>
               <div className="ButtonList">
-                {REGIONLIST.map((region, idx) => (
+                {REGIONLIST.slice(1).map((region, idx) => (
                   <RegionButton
                     data={region}
                     checkedItems={checkedItems}
                     checkedItemHandler={checkedItemHandler}
+                    index={idx + 1}
                     key={idx}
                   />
                 ))}
               </div>
               <div className="searchPart">
-                <button type="button" className="searchButton">
+                <button
+                  type="button"
+                  className="searchButton"
+                  onClick={() => refetch()}
+                >
                   스티커 검색!
                 </button>
               </div>
