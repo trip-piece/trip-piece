@@ -7,6 +7,7 @@ import Box from "@mui/material/Box";
 import SwipeableDrawer from "@mui/material/SwipeableDrawer";
 import { QueryFunctionContext } from "react-query";
 import Masonry from "react-masonry-css";
+import { useRecoilState } from "recoil";
 import RegionButton from "./RegionButton";
 import { MemoCard } from "./Card";
 import { REGIONLIST } from "../../utils/constants/constant";
@@ -17,6 +18,7 @@ import axiosInstance from "../../utils/apis/api";
 import useObserver from "../../utils/hooks/useObserver";
 
 import "./masonry.css";
+import { frameRegionListState } from "../../store/atom";
 
 const drawerBleeding = 56;
 
@@ -143,13 +145,12 @@ interface Props {
 }
 
 function FrameSharePage(props: Props) {
-  const regionList: number[] = [];
   const { window } = props;
   const [open, setOpen] = React.useState(false);
   const [isAll, setIsAll] = useState<boolean>(false);
-  const [checkedItems, setCheckedItems] = useState<number[]>([]);
   const [hasError, setHasError] = useState(false);
   // const [scrap, setScrap] = useState<boolean>(false);
+  const [regionList, setRegionList] = useRecoilState(frameRegionListState);
   const toggleDrawer = (newOpen: boolean) => () => {
     setOpen(newOpen);
   };
@@ -158,13 +159,11 @@ function FrameSharePage(props: Props) {
 
   const checkedItemHandler = (code: number, isChecked: boolean) => {
     if (isChecked) {
-      // 체크 추가할때
-      setCheckedItems([...checkedItems, code]);
-    } else if (!isChecked && checkedItems.includes(code)) {
-      // 체크해제할때checkedItem에 있는 경우
-      const filter = checkedItems.filter((one: any) => one !== code);
+      setRegionList((prev) => [...prev, code]);
+    } else if (!isChecked && regionList.includes(code)) {
+      const filter = regionList.filter((one: any) => one !== code);
       if (isAll) setIsAll(false);
-      setCheckedItems([...filter]);
+      setRegionList([...filter]);
     }
   };
 
@@ -174,21 +173,26 @@ function FrameSharePage(props: Props) {
       REGIONLIST.slice(1).forEach((region, idx) =>
         checkedItemArray.push(idx + 1),
       );
-      setCheckedItems(checkedItemArray);
+      setRegionList(checkedItemArray);
       setIsAll(true);
     } else {
       setIsAll(false);
-      setCheckedItems([]);
+      setRegionList([]);
     }
   };
 
   const getTargetComponentList = async ({
     pageParam = 0,
   }: QueryFunctionContext) => {
-    const res = await axiosInstance.get(
-      `${frameApis.getSharedFrames(checkedItems)}&page=${pageParam}`,
-    );
-    return { result: res?.data, page: pageParam };
+    try {
+      const res = await axiosInstance.get(
+        `${frameApis.getSharedFrames(regionList)}&page=${pageParam}`,
+      );
+      return { result: res?.data, page: pageParam };
+    } catch {
+      setHasError(true);
+      return undefined;
+    }
   };
 
   const {
@@ -213,11 +217,10 @@ function FrameSharePage(props: Props) {
     () =>
       data &&
       data.pages?.flatMap(
-        (page) => page?.result?.content && page?.result.content,
+        (page) => page?.result?.content?.length && page?.result.content,
       ),
     [data],
   );
-
   useObserver({
     target: bottom,
     hasMore: hasNextPage,
@@ -288,7 +291,7 @@ function FrameSharePage(props: Props) {
                 {REGIONLIST.slice(1).map((region, idx) => (
                   <RegionButton
                     data={region}
-                    checkedItems={checkedItems}
+                    checkedItems={regionList}
                     checkedItemHandler={checkedItemHandler}
                     index={idx + 1}
                     key={idx}

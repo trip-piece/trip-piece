@@ -2,10 +2,15 @@ import styled from "@emotion/styled";
 import { Helmet } from "react-helmet-async";
 import { useParams, useNavigate } from "react-router-dom";
 import { BsFillBookmarkHeartFill, BsBookmarkHeart } from "react-icons/bs";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { FaArrowLeft } from "react-icons/fa";
+import { useQuery } from "react-query";
 import axiosInstance from "../../utils/apis/api";
 import { frameApis, Idata } from "../../utils/apis/frameApis";
+import { getNFTImagePath } from "../../utils/functions/getNFTImagePath";
+import useSize from "../../utils/hooks/useSize";
+import StickerImg from "../../components/atoms/StickerImg";
+import { IRequestedSticker } from "../../utils/interfaces/diarys.interface";
 
 const Container = styled.article`
   min-height: 90vh;
@@ -16,22 +21,16 @@ const Container = styled.article`
   width: inherit;
 `;
 
-const StickerCard = styled.article`
-  height: 100%;
-  background: transparent;
+const StickerCard = styled.article<{ height: number }>`
+  height: ${(props) => (props.height ? props.height : 500)}px;
+  width: 100%;
+  position: relative;
+  background-color: ${(props) => props.theme.colors.gray200};
+  border: 2px solid ${(props) => props.theme.colors.gray300};
   border-radius: 20px;
   display: flex;
   flex-direction: column;
   justify-content: space-evenly;
-
-  img {
-    display: block;
-    width: 100%;
-    height: 100%;
-    border-radius: 20px;
-    object-fit: contain;
-  }
-
   p {
     width: 100%;
     text-align: center;
@@ -81,47 +80,56 @@ const HashtagButton = styled.button`
   margin: 0 1% 0 1%;
 `;
 
+interface IRequestedFrame {
+  ratio: number;
+  scrapped: boolean;
+  stickerList: IRequestedSticker[];
+}
+
 function FrameDetailPage() {
   const navigate = useNavigate();
   const { frameId } = useParams();
-  const [frame, setFrame] = useState<Idata>();
+  // const [frame, setFrame] = useState<Idata>();
   const [scrap, setScrap] = useState<boolean>();
-  const [sticker, setSticker] = useState<string[]>();
+  const [NFTStickerList, setNFTStickerList] = useState([]);
+  const frameRef = useRef<HTMLDivElement>(null);
+  const size = useSize(frameRef);
 
   const moveToFrameMain = () => {
     navigate(`/frames`);
   };
+  useEffect(() => {
+    setNFTStickerList([]);
+  }, []);
 
-  const getFrameDetail = () => {
-    axiosInstance
-      .get(frameApis.getDetailedFrames(Number(frameId)))
-      .then((response) => {
-        const body: Idata = response.data;
-        console.log("zz");
+  const getFrameDetail = () =>
+    axiosInstance.get(frameApis.getDetailedFrames(Number(frameId)));
 
-        console.log(response.data);
-
-        console.log(`body${body}`);
-
-        //console.log(frame);
-
-        setScrap(body.scrapped);
-        return body;
-      })
-      .then((body) => {
-        console.log("씨발");
-
-        console.log(body);
-
-        setFrame(body);
-        console.log("zz");
-
-        console.log(frame);
-      });
+  const getNFTList = async (data: IRequestedFrame) => {
+    if (!data) return;
+    const { stickerList } = data;
+    if (!stickerList || stickerList?.length < 1) return;
+    const _list = await Promise.all(
+      stickerList?.map((sticker: IRequestedSticker) =>
+        getNFTImagePath(sticker.tokenId, sticker.tokenURL, { ...sticker }),
+      ),
+    );
+    setNFTStickerList(_list);
   };
 
-  const dummyImage: string =
-    "https://trippiece607.s3.ap-northeast-2.amazonaws.com/20220802150807-%E1%84%92%E1%85%A1%E1%86%AB%E1%84%80%E1%85%A1%E1%86%BC%E1%84%87%E1%85%AE%E1%86%AF%E1%84%87%E1%85%B5%E1%86%BE%E1%84%8B%E1%85%A3%E1%84%89%E1%85%B5%E1%84%8C%E1%85%A1%E1%86%BC.jpeg";
+  const { data: frameDetailData } = useQuery(
+    ["diary-detail", `frameId-${frameId}`],
+    () => getFrameDetail(),
+    {
+      onSuccess: async (data) => {
+        setScrap(data?.data.scrapped);
+        await getNFTList(data?.data);
+      },
+      refetchOnWindowFocus: false,
+      refetchOnReconnect: false,
+      refetchOnMount: true,
+    },
+  );
 
   const postSaveFrame = () => {
     const body = {
@@ -139,10 +147,8 @@ function FrameDetailPage() {
 
   const changeScrap = () => {
     if (scrap === false) {
-      // 스크랩 설정하는 api 요청
       postSaveFrame();
     } else {
-      // 스크랩 해제하는 api 요청
       deleteScrappedFrame();
     }
     setScrap(!scrap);
@@ -150,11 +156,11 @@ function FrameDetailPage() {
 
   const distinctStickerName = (data: Idata) => {};
 
-  useEffect(() => {
-    console.log("맨 처음 렌더링될 때 한 번만 실행");
-    getFrameDetail();
-    //  console.log(frame);
-  }, []);
+  // useEffect(() => {
+  //   console.log("맨 처음 렌더링될 때 한 번만 실행");
+  //   getFrameDetail();
+  //   //  console.log(frame);
+  // }, []);
   return (
     <>
       <Helmet>
@@ -165,8 +171,19 @@ function FrameDetailPage() {
           <FaArrowLeft size={30} />
         </BackSpaceBtn>
 
-        <StickerCard>
-          <img src={dummyImage} alt="기본이미지" />
+        <StickerCard
+          ref={frameRef}
+          height={size?.width * frameDetailData?.data.ratio}
+        >
+          {NFTStickerList?.map((sticker: IRequestedSticker, idx) => (
+            <StickerImg
+              up={sticker.y * size.width * frameDetailData?.data?.ratio}
+              left={sticker.x * size.width}
+              alt={sticker.tokenName}
+              src={sticker.imagePath}
+              key={sticker.y + sticker.x + idx}
+            />
+          ))}
         </StickerCard>
         <ScarpContainer>
           <ScrapBtn onClick={changeScrap}>
@@ -193,46 +210,3 @@ function FrameDetailPage() {
 }
 
 export default FrameDetailPage;
-// const result = {
-//   frameImage:
-//     "https://trippiece607.s3.ap-northeast-2.amazonaws.com/20220802150807-%E1%84%92%E1%85%A1%E1%86%AB%E1%84%80%E1%85%A1%E1%86%BC%E1%84%87%E1%85%AE%E1%86%AF%E1%84%87%E1%85%B5%E1%86%BE%E1%84%8B%E1%85%A3%E1%84%89%E1%85%B5%E1%84%8C%E1%85%A1%E1%86%BC.jpeg",
-//   scrapped: true,
-//   stickerList: [
-//     {
-//       stickerId: 1,
-//       tokenId: 1,
-//       tokenName: "이이",
-//       tokenURL:
-//         "https://www.infura-ipfs.io/ipfs/QmcqJiEjJon38JNzbsdgKhLBsjfWF8tZiUT5Mi7GQbtGP4",
-//       x: 3.1234,
-//       y: 5.123,
-//     },
-//     {
-//       stickerId: 1,
-//       tokenId: 1,
-//       tokenName: "이이2",
-//       tokenURL:
-//         "https://www.infura-ipfs.io/ipfs/QmcqJiEjJon38JNzbsdgKhLBsjfWF8tZiUT5Mi7GQbtGP4",
-//       x: 3.1234,
-//       y: 5.123,
-//     },
-//     {
-//       stickerId: 1,
-//       tokenId: 1,
-//       tokenName: "이이3",
-//       tokenURL:
-//         "https://www.infura-ipfs.io/ipfs/QmcqJiEjJon38JNzbsdgKhLBsjfWF8tZiUT5Mi7GQbtGP4",
-//       x: 3.1234,
-//       y: 5.123,
-//     },
-//   ],
-// };
-// {
-//   /* <Button>
-//             {result.stickerList.map((sticker, idx) => (
-//               <button type="button">
-//                 <p>#{sticker.tokenName}</p>
-//               </button>
-//             ))}
-//           </Button> */
-// }

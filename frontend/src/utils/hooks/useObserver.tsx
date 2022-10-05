@@ -30,7 +30,6 @@ function useObserver({
       });
       observer.observe(target.current);
     }
-
     if (!hasMore || error) {
       observer.disconnect();
     }

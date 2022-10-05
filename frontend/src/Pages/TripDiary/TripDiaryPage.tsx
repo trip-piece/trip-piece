@@ -110,6 +110,11 @@ const ControlContainer = styled.div`
   align-items: center;
 `;
 
+const PhotoDiaryContainer = styled.div`
+  width: 100%;
+  height: fit-content;
+`;
+
 interface DiaryContentsContainerProps {
   fontType: number;
   diaryWidth: number;
@@ -264,10 +269,7 @@ function TripDiaryPage({ startDate, today, endDate }: TripListProps) {
             backgroundColor={diaryData?.data?.backgroundColor}
             fontType={diaryData?.data?.fontType}
           >
-            <div
-              style={{ width: "100%", height: "fit-content" }}
-              ref={diaryRef}
-            >
+            <PhotoDiaryContainer ref={diaryRef}>
               <DiaryContent diaryWidth={diaryWidth}>
                 {diaryData?.data?.content}
               </DiaryContent>
@@ -288,7 +290,7 @@ function TripDiaryPage({ startDate, today, endDate }: TripListProps) {
                   key={sticker.y + sticker.x + idx}
                 />
               ))}
-            </div>
+            </PhotoDiaryContainer>
           </DiaryContentsContainer>
         </>
       )}

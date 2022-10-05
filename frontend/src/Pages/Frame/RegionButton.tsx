@@ -67,7 +67,7 @@ function RegionButton({
           name="region"
           checked={isChecked}
           value={index}
-          onChange={(e) => onCheck(e, index)}
+          onChange={onCheck}
           hidden
         />
         <p className={isChecked ? "checked" : "nochecked"}>{data}</p>

@@ -84,6 +84,7 @@ function InfiniteList({
   const refetchData = () => {
     refetch();
   };
+  console.log("hasNextPage", hasNextPage);
 
   useObserver({
     target: bottom,
