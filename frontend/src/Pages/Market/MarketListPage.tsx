@@ -5,9 +5,14 @@ import { useNavigate, useParams } from "react-router-dom";
 import { SetStateAction, useState } from "react";
 import { AiOutlineSearch, AiFillPlusCircle } from "react-icons/ai";
 import { REGIONLIST } from "../../utils/constants/constant";
+import { MemoInfiniteList } from "../../components/modules/infinite/ParamsInfiniteList";
+import { marketApis } from "../../utils/apis/marketApis";
+import Skeleton from "../TripList/Skeleton";
+import { InfiniteStickerCard } from "./InfiniteStickerCard";
 
 const Container = styled.article`
   min-height: 90vh;
+  height: auto;
   padding: 0 5vw 0 5vw;
   display: flex;
   flex-direction: column;
@@ -73,10 +78,11 @@ const Header = styled.article`
 `;
 
 const ListContainer = styled.article`
-  width: 100%;
-  height: 80vh;
+min-height: 80vh;  
+width: 100%;
+  height: auto;
   margin-top: 1rem;
-  background-color: ${(props) => props.theme.colors.white};
+  background-color: ${(props) => props.theme.colors.mainDark};
   text-align: center;
   font-size: ${(props) => props.theme.fontSizes.h2};
   font-weight: bold;
@@ -134,7 +140,17 @@ function MarketListPage() {
             <AiOutlineSearch className="searchIcon" />
           </button>
         </Search>
-        <ListContainer>무한스크롤 리스트 못하겠음 해주삼</ListContainer>
+        <ListContainer>
+          <MemoInfiniteList
+            url={marketApis.getMarketList("", Number(regionId), 0)}
+            queryKey={[`marketList-${Number(regionId)}`]}
+            CardComponent={InfiniteStickerCard}
+            SkeletonCardComponent={Skeleton}
+            zeroDataText="판매중인 스티커가 존재하지 않습니다."
+            count={2}
+            listName={"content"}
+                      />
+        </ListContainer>
       </Container>
     </motion.div>
   );
