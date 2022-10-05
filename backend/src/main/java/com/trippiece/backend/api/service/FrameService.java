@@ -98,7 +98,7 @@ public class FrameService {
             stickerList.add(new StickerDecorationDto(decoration));
         }
         boolean isScrapped = scrapRepository.existsByFrameAndUser(frame, user);
-        StickerFrameResponseDto result = new StickerFrameResponseDto(stickerList, isScrapped);
+        StickerFrameResponseDto result = new StickerFrameResponseDto(stickerList, isScrapped,frame.getDiary().getRatio());
         return result;
     }
 
