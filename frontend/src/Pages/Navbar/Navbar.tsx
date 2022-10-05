@@ -19,7 +19,7 @@ import { FaBook, FaEthereum } from "react-icons/fa";
 import { BsFillBookmarkHeartFill } from "react-icons/bs";
 import { useNavigate } from "react-router-dom";
 import AppBar from "@mui/material/AppBar";
-import { useRecoilState } from "recoil";
+import { useRecoilState, useResetRecoilState } from "recoil";
 import { motion } from "framer-motion";
 import { useWeb3React } from "@web3-react/core";
 import React from "react";
@@ -41,6 +41,9 @@ import { REGIONLIST } from "../../utils/constants/constant";
 import { CodeProps } from "../../utils/interfaces/qrscan.inteface";
 import NestedModal from "../MyPage/Modal";
 import { getCookie, removeCookie, setCookie } from "../../utils/cookie";
+import userApis, { Idata, IUserData } from "../../utils/apis/userApis";
+import Web3 from "web3";
+import { InjectedConnector } from "@web3-react/injected-connector";
 
 const DrawerHeader = styled.div`
   display: flex;
@@ -361,6 +364,8 @@ function IdCodeComponent({ id }: CodeProps) {
   return code;
 }
 
+const injected = new InjectedConnector({ supportedChainIds: [5] });
+
 export default function Navbar() {
   const [open, setOpen] = useState(false);
   const [userInfo, setUserInfo] = useRecoilState(UserInfoState);
@@ -368,8 +373,7 @@ export default function Navbar() {
   const [loading, setLoading] = useState<boolean>(false);
   const today = changeDateFormatToHyphen(new Date());
   const [isProgress, setIsProgress] = useState(0);
-  const { active, deactivate } = useWeb3React();
-  const [login, setLogin] = useState<boolean>(true);
+  const { account, active, deactivate, activate } = useWeb3React();
   const mounted = useRef(false);
 
   const toggleDrawer =
@@ -421,35 +425,77 @@ export default function Navbar() {
   const moveToMain = () => {
     navigate("/main");
   };
+  function getUserInfo() {
+    const token = getCookie("accessToken");
 
+    axiosInstance
+      .get(userApis.getUser, { headers: { ACCESS_TOKEN: token } })
+      .then((response: { data: IUserData }) => {
+        console.log(response.data);
+
+        setUserInfo((prev) => ({
+          ...prev,
+          address: response.data.walletAddress,
+          nickname: response.data.nickname,
+          balance: "0.0",
+          isLoggedIn: true,
+          id: response.data.userId,
+          tripCount: response.data.tripCount,
+          diaryCount: response.data.diaryCount,
+        }));
+
+        return response.data.walletAddress;
+      })
+      .then((address) => {
+        const web3 = new Web3(
+          new Web3.providers.HttpProvider(import.meta.env.VITE_WEB3_URL),
+        );
+        if (address) {
+          web3.eth
+            .getBalance(address)
+            .then((balance) => {
+              return web3.utils.fromWei(balance, "ether");
+            })
+            .then((eth) => {
+              setUserInfo((prev) => ({ ...prev, balance: eth }));
+
+              setCookie("isLogin", "true");
+            });
+        }
+      });
+  }
   useEffect(() => {
     const loginFlag: string = getCookie("isLogin");
     console.log(loginFlag);
 
     if (!mounted.current) {
       mounted.current = true;
-    } else navigate("/");
+    } else if (getCookie("isLogin") === "false") {
+      navigate("/");
+      console.log("로그아웃");
+    } else if (!active) {
+      activate(injected, async () => {});
+    }
   }, [active]);
+
+  useEffect(() => {
+    if (!mounted.current) {
+      mounted.current = true;
+    } else {
+      console.log(account);
+
+      getUserInfo();
+    }
+  }, [account]);
 
   const logout = () => {
     if (active) {
       console.log("로그아웃하기  ~ ");
 
-      // const userLogout: IUserInfo = {
-      //   address: "",
-      //   nickname: "누군가",
-      //   balance: "0.0",
-      //   isLoggedIn: false,
-      //   id: 0,
-      //   tripCount: 0,
-      //   diaryCount: 0,
-      // };
-
       deactivate();
       removeCookie("accessToken");
       removeCookie("refreshToken");
       setCookie("isLogin", "false");
-      setLogin(false);
 
       // setUserInfo(userLogout);
     }

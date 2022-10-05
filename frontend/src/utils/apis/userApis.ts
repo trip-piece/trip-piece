@@ -14,4 +14,16 @@ export interface Inickname {
   nickname: string;
 }
 
+export interface Idata {
+  walletAddress: string;
+}
+
+export interface IUserData {
+  userId: number;
+  walletAddress: string;
+  nickname: string;
+  tripCount: number;
+  diaryCount: number;
+}
+
 export default userApis;
