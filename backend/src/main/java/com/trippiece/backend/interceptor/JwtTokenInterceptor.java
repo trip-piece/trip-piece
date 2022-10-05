@@ -47,23 +47,18 @@ public class JwtTokenInterceptor implements HandlerInterceptor {
                 }
             }
         }
-            if (refreshToken != null) {
-                if (jwtTokenUtil.isValidToken(refreshToken)) {
-                    Optional<User> user = userRepository.findById(jwtTokenUtil.getUserIdFromToken(accessToken));
-                    if (user.isPresent()) {
-                        Optional<Auth> auth = authRepository.findByUser(user.get());
-                        if (auth.isPresent()) {
-                            return true;
-                        }
+        if (refreshToken != null) {
+            if (jwtTokenUtil.isValidToken(refreshToken)) {
+                Optional<User> user = userRepository.findById(jwtTokenUtil.getUserIdFromToken(accessToken));
+                if (user.isPresent()) {
+                    Optional<Auth> auth = authRepository.findByUser(user.get());
+                    if (auth.isPresent()) {
+                        return true;
                     }
                 }
             }
-            response.setStatus(401);
-            response.setHeader("ACCESS_TOKEN", accessToken);
-            response.setHeader("REFRESH_TOKEN", refreshToken);
-            response.setHeader("msg", "Invalid Token Error");
-            return false;
         }
+
         response.setStatus(401);
         response.setHeader("ACCESS_TOKEN", accessToken);
         response.setHeader("REFRESH_TOKEN", refreshToken);
@@ -91,4 +86,3 @@ public class JwtTokenInterceptor implements HandlerInterceptor {
         return Objects.nonNull(request.getHeader("Origin"));
     }
 }
-
