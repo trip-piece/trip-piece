@@ -131,7 +131,7 @@ function MarketRegisterPage() {
   const [loading, setLoading] = useState<boolean>(true);
   const [NFTList, setNFTList] = useState<NFT[]>([]);
   const [NFTDetailList, setNFTDetailList] = useState<TokenDetail[]>([]);
-  console.log(userInfo.address);
+  const navigate = useNavigate();
 
   const getNFTList = async () => {
     try {
@@ -163,26 +163,28 @@ function MarketRegisterPage() {
       console.log("Error getSticker : ", err);
     }
   };
-  
+
   useEffect(() => {
     getNFTList();
   }, []);
 
   useEffect(() => {
-    console.log(NFTDetailList)
+    console.log(NFTDetailList);
     if (NFTDetailList.length) {
       const stickerDefault: StickerDetail = {
         tokenId: NFTList[0]?.tokenId,
         tokenName: NFTDetailList[0]?.tokenName,
         imagePath: NFTDetailList[0]?.imagePath,
       };
-      setSticker(stickerDefault)
+      setSticker(stickerDefault);
     }
-  } , [NFTDetailList])
+  }, [NFTDetailList]);
 
-  
-
-  const [sticker, setSticker] = useState<StickerDetail>({tokenId: null, tokenName: '', imagePath: ''});
+  const [sticker, setSticker] = useState<StickerDetail>({
+    tokenId: null,
+    tokenName: "",
+    imagePath: "",
+  });
   const [price, setPrice] = useState(Number);
 
   const handleChangeSticker = (e: {
@@ -214,13 +216,9 @@ function MarketRegisterPage() {
 
         if (result.status) {
           saveMarket({ tokenId: sticker.tokenId, price: price });
-          console.log("DB등록완료");
         }
-        console.log("nft 마켓 등록");
-        console.log(result);
-        console.log("DB 등록");
-        console.log(response);
         alert("등록이 완료되었습니다.");
+        navigate(-1);
       }
     } catch (err) {
       console.log(err);
@@ -233,6 +231,10 @@ function MarketRegisterPage() {
       .then((response: { data: string }) => {
         console.log(response.data);
       });
+  };
+
+  const moveToBack = () => {
+    navigate(-1);
   };
 
   return (
@@ -276,7 +278,7 @@ function MarketRegisterPage() {
           <button className="register" onClick={insertIntoMarket}>
             등록
           </button>
-          <button>취소</button>
+          <button onClick={moveToBack}>취소</button>
         </Button>
       </Container>
     </motion.div>
