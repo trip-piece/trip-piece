@@ -75,7 +75,7 @@ function Tooltip({ pointX, pointY, width, ratio, sticker }: ToolTipProps) {
   }, [width]);
 
   const moveToMarket = () => {
-    navigate(`../../market?search=${sticker.tokenName}`);
+    navigate(`../../market/0/0/${sticker.tokenName}`);
   };
 
   return (

@@ -79,7 +79,7 @@ public class UserService {
 
         User user = User.builder()
                 .walletAddress(walletAddress)
-                .nickname("undefined")
+                .nickname("unknown")
                 .firstBadge(0)
                 .secondBadge(0)
                 .thirdBadge(0)
@@ -118,7 +118,7 @@ public class UserService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
         List<Badge> repBadgeList = findRepBadgeList(user);
-        long tripCount = tripRepository.findAllByUser(user).size();
+        long tripCount = tripRepository.findAllByUserOrderByStartDate(user).size();
         long diaryCount = diaryRepository.findAllByUser(user).size();
 
         UserResponseDto.Detail userDetail = UserResponseDto.Detail.builder()

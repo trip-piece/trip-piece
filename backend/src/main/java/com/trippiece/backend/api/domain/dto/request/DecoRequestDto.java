@@ -27,7 +27,6 @@ public class DecoRequestDto {
     @NoArgsConstructor(access = AccessLevel.PROTECTED)
     public static class DecoEdit{
 
-        private long decorationId;
 
         @ApiModelProperty(name = "다이어리아이디", example = "1")
         long diaryId;

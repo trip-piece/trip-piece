@@ -58,7 +58,14 @@ function AnotherRouter() {
           />
 
           <Route path="market" element={<MarketMainPage />} />
-          <Route path="market/:regionId" element={<MarketListPage />} />
+          <Route
+            path="market/:regionId/:orderNum/:getSearchKeyword"
+            element={<MarketListPage />}
+          />
+          <Route
+            path="market/:regionId/:orderNum/"
+            element={<MarketListPage />}
+          />
           <Route
             path="market/:marketId/detail"
             element={<StickerDetailPage />}

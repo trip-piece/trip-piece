@@ -10,7 +10,7 @@ import java.util.List;
 
 @Repository
 public interface ScrapRepository extends JpaRepository<Scrap, Long> {
-    boolean existsByFrameAndUser(User user, Frame frame);
-    Scrap findByFrameAndUser(User user, Frame frame);
+    boolean existsByFrameAndUser(Frame frame, User user);
+    Scrap findByFrameAndUser(Frame frame, User user);
     List<Scrap> findByUser(User user);
 }

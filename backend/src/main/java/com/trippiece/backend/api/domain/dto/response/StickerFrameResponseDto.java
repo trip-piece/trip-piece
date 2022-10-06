@@ -8,9 +8,11 @@ import java.util.List;
 public class StickerFrameResponseDto {
     private List<StickerDecorationDto> stickerList;
     private boolean isScrapped;
+    private float ratio;
 
-    public StickerFrameResponseDto(List<StickerDecorationDto> stickerList, boolean isScrapped) {
+    public StickerFrameResponseDto(List<StickerDecorationDto> stickerList, boolean isScrapped, float ratio) {
         this.stickerList=stickerList;
         this.isScrapped=isScrapped;
+        this.ratio=ratio;
     }
 }

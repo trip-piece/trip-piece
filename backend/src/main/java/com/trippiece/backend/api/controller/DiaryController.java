@@ -3,15 +3,19 @@ package com.trippiece.backend.api.controller;
 import com.trippiece.backend.api.domain.dto.request.DecoRequestDto;
 import com.trippiece.backend.api.domain.dto.request.DiaryRequestDto;
 
+import com.trippiece.backend.api.domain.entity.Diary;
+import com.trippiece.backend.api.domain.entity.Trip;
 import com.trippiece.backend.api.domain.entity.User;
 import com.trippiece.backend.api.domain.repository.DiaryRepository;
 import com.trippiece.backend.api.domain.repository.FrameRepository;
+import com.trippiece.backend.api.domain.repository.TripRepository;
 import com.trippiece.backend.api.service.DiaryService;
 import com.trippiece.backend.api.service.FrameService;
 import com.trippiece.backend.api.service.S3Service;
 import com.trippiece.backend.api.service.UserService;
 import com.trippiece.backend.exception.CustomException;
 import com.trippiece.backend.exception.ErrorCode;
+import com.trippiece.backend.util.DateConverter;
 import com.trippiece.backend.util.JwtTokenUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -43,16 +47,28 @@ public class DiaryController {
 
     @PostMapping("/write")
     @ApiOperation(value = "일기 추가", notes = "새로운 일기를 작성한다")
-    public ResponseEntity<?> addDiary(@RequestHeader("ACCESS_TOKEN") final String accessToken, @RequestPart(value = "diaryRequestDto") DiaryRequestDto.DiaryRegister diaryRegister, @RequestPart(value = "file", required = false) MultipartFile todayPhoto) throws IOException {
+    public ResponseEntity<?> addDiary(@RequestHeader("ACCESS_TOKEN") final String accessToken, @RequestPart(value = "diary") DiaryRequestDto.DiaryRegister diaryRegister, @RequestPart(value = "todayPhoto", required = false) MultipartFile todayPhoto) throws IOException {
         try {
             long userId = jwtTokenUtil.getUserIdFromToken(accessToken);
             User user = userService.findOneUser(userId);
             long diaryId;
             if (user == null) return new ResponseEntity<String>("로그인된 회원을 찾을 수 없습니다.", HttpStatus.NOT_FOUND);
             else {
-                if (todayPhoto != null) {
-                    String fileName = s3Service.upload("", todayPhoto); //입력하면 업로드하러 넘어감
-                    diaryRegister.setTodayPhoto(fileName);
+                int checkCode = diaryService.checkDiary(diaryRegister.getTripId(), diaryRegister.getDiaryDate());
+                if (checkCode == 409) {
+                    return new ResponseEntity<String>("중복이야!!!!!!!! 다시써!!!", HttpStatus.CONFLICT);
+                }
+                if (todayPhoto!=null) {
+                    if (todayPhoto.getSize() >= 10485760)
+                        return new ResponseEntity<String>("이미지 크기 제한은 10MB 입니다.", HttpStatus.FORBIDDEN);
+                    String originFile = todayPhoto.getOriginalFilename();
+                    String originFileExtension = originFile.substring(originFile.lastIndexOf("."));
+                    if (!originFileExtension.equalsIgnoreCase(".jpg") && !originFileExtension.equalsIgnoreCase(".png")
+                            && !originFileExtension.equalsIgnoreCase(".jpeg")) {
+                        return new ResponseEntity<String>("jpg, jpeg, png의 이미지 파일만 업로드해주세요", HttpStatus.FORBIDDEN);
+                    }
+                    String todayPhotoPath = s3Service.upload("", todayPhoto); //입력하면 업로드하러 넘어감
+                    diaryRegister.setTodayPhoto(todayPhotoPath);
                 }
                 diaryId = diaryService.addDiary(user, diaryRegister);
                 return new ResponseEntity<Long>(diaryId, HttpStatus.OK);
@@ -66,17 +82,23 @@ public class DiaryController {
 
     @PostMapping("/decoration")
     @ApiOperation(value = "일기 꾸미기", notes = "일기를 보유스티커로 꾸미고 공유할거면 이미지화 해서 저장")
-    public ResponseEntity<?> decoDiary(@RequestHeader("ACCESS_TOKEN") final String accessToken, @RequestPart(value = "diaryRequestDto") DecoRequestDto.DecoRegister decoRequestDto, @RequestPart(value = "file", required = false) MultipartFile frameImage) throws IOException {
+    public ResponseEntity<?> decoDiary(@RequestHeader("ACCESS_TOKEN") final String accessToken, @RequestPart(value = "decoration") DecoRequestDto.DecoRegister decoRequestDto, @RequestPart(value = "frameImage", required = false) MultipartFile frameImage) throws IOException {
         try {
             long userId = jwtTokenUtil.getUserIdFromToken(accessToken);
             User user = userService.findOneUser(userId);
             if (user == null) return new ResponseEntity<String>("로그인된 회원을 찾을 수 없습니다.", HttpStatus.NOT_FOUND);
             else {
-                if (frameImage != null) { //공유하기 ok
+                if (frameImage!=null) { //공유하기 ok
                     if (frameImage.getSize() >= 10485760)
                         return new ResponseEntity<String>("이미지 크기 제한은 10MB 입니다.", HttpStatus.FORBIDDEN);
-                    String fileName = s3Service.upload("", frameImage);
-                    frameService.addFrame(decoRequestDto.getDiaryId(), fileName);
+                    String originFile = frameImage.getOriginalFilename();
+                    String originFileExtension = originFile.substring(originFile.lastIndexOf("."));
+                    if (!originFileExtension.equalsIgnoreCase(".jpg") && !originFileExtension.equalsIgnoreCase(".png")
+                            && !originFileExtension.equalsIgnoreCase(".jpeg")) {
+                        return new ResponseEntity<String>("jpg, jpeg, png의 이미지 파일만 업로드해주세요", HttpStatus.FORBIDDEN);
+                    }
+                    String frameImagePath = s3Service.upload("", frameImage);
+                    frameService.addFrame(decoRequestDto.getDiaryId(), frameImagePath);
                 }
                 diaryService.addDeco(decoRequestDto);
                 return new ResponseEntity<>("꾸미기 성공!", HttpStatus.OK);
@@ -89,20 +111,33 @@ public class DiaryController {
 
     }
 
-    @PatchMapping
+
+    @PostMapping
     @ApiOperation(value = "일기 꾸미기 수정", notes = "일기 꾸민 스티커 위치 조정,추가,삭제 등 모두 수정")
-    public ResponseEntity<?> editDecoDiary(@RequestHeader("ACCESS_TOKEN") final String accessToken, @RequestPart(value = "diaryRequestDto") DecoRequestDto.DecoEdit decoRequestDto, @RequestPart(value = "file", required = false) MultipartFile frameImage) throws IOException {
+    public ResponseEntity<?> editDecoDiary(@RequestHeader("ACCESS_TOKEN") final String accessToken, @RequestPart(value = "decoration") DecoRequestDto.DecoRegister decoRequestDto, @RequestPart(value = "frameImage", required = false) MultipartFile frameImage) throws IOException {
 
         try {
             long userId = jwtTokenUtil.getUserIdFromToken(accessToken);
             User user = userService.findOneUser(userId);
             if (user == null) return new ResponseEntity<String>("로그인된 회원을 찾을 수 없습니다.", HttpStatus.NOT_FOUND);
             else {
-                if (frameImage != null) { //공유하기 ok
-                    String currentFilePath = frameRepository.findById(decoRequestDto.getDiaryId()).orElseThrow(() -> new CustomException(ErrorCode.DATA_NOT_FOUND)).getFrameImage();
-                    String fileName = s3Service.upload(currentFilePath, frameImage); //입력하면 업로드하러 넘어감
-                    frameService.updateFrame(decoRequestDto.getDiaryId(), fileName);
+                String currentFilePath = "";
+                if (frameImage!=null) { //공유하기 ok
+                    if (frameImage.getSize() >= 10485760)
+                        return new ResponseEntity<String>("이미지 크기 제한은 10MB 입니다.", HttpStatus.FORBIDDEN);
+                    String originFile = frameImage.getOriginalFilename();
+                    String originFileExtension = originFile.substring(originFile.lastIndexOf("."));
+                    if (!originFileExtension.equalsIgnoreCase(".jpg") && !originFileExtension.equalsIgnoreCase(".png")
+                            && !originFileExtension.equalsIgnoreCase(".jpeg")) {
+                        return new ResponseEntity<String>("jpg, jpeg, png의 이미지 파일만 업로드해주세요", HttpStatus.FORBIDDEN);
+                    }
+
+                    String frameImagePath = s3Service.upload("", frameImage); //입력하면 업로드하러 넘어감
+                    frameService.updateFrame(decoRequestDto.getDiaryId(), frameImagePath);
+                } else {
+                    frameService.deleteFrame(user,decoRequestDto.getDiaryId());
                 }
+
                 diaryService.updateDeco(decoRequestDto);
                 return new ResponseEntity<>("꾸미기 수정 성공!", HttpStatus.OK);
             }
@@ -115,7 +150,7 @@ public class DiaryController {
 
     @GetMapping
     @ApiOperation(value = "일기조회", notes = "작성한 일기 내용을 조회")
-    public ResponseEntity<?> getDiary(@RequestHeader("ACCESS_TOKEN") final String accessToken, @PathVariable("trip_id") long tripId, @PathVariable("date") LocalDate date) {
+    public ResponseEntity<?> getDiary(@RequestHeader("ACCESS_TOKEN") final String accessToken, @RequestParam final long tripId, @RequestParam String date) {
         long userId = jwtTokenUtil.getUserIdFromToken(accessToken);
         User user = userService.findOneUser(userId);
         if (user == null) return new ResponseEntity<String>("로그인된 회원을 찾을 수 없습니다.", HttpStatus.NOT_FOUND);
@@ -126,18 +161,35 @@ public class DiaryController {
 
     @PostMapping("/edit")
     @ApiOperation(value = "일기 내용 수정", notes = "일기 내용 수정한다")
-    public ResponseEntity<?> editDiary(@RequestHeader("ACCESS_TOKEN") final String accessToken, @RequestPart(value = "diaryRequestDto") DiaryRequestDto.DiaryEdit diaryEdit, @RequestPart(value = "file", required = false) MultipartFile todayPhoto) throws IOException {
+    public ResponseEntity<?> editDiary(@RequestHeader("ACCESS_TOKEN") final String accessToken, @RequestPart(value = "diary") DiaryRequestDto.DiaryEdit diaryEdit, @RequestPart(value = "todayPhoto", required = false) MultipartFile todayPhoto) throws IOException {
         try {
             long userId = jwtTokenUtil.getUserIdFromToken(accessToken);
             User user = userService.findOneUser(userId);
+            String todayPhotoPath = "";
             if (user == null) return new ResponseEntity<String>("로그인된 회원을 찾을 수 없습니다.", HttpStatus.NOT_FOUND);
             else {
-                if (todayPhoto != null) {
-                    String currentFilePath = diaryRepository.findById(diaryEdit.getDiaryId()).orElseThrow(() -> new CustomException(ErrorCode.DATA_NOT_FOUND)).getTodayPhoto();
-                    String fileName = s3Service.upload(currentFilePath, todayPhoto); //입력하면 업로드하러 넘어감
-                    diaryEdit.setTodayPhoto(fileName);
+                if (todayPhoto!=null){ //새로운 파일 넣었을 경우
+                    if (todayPhoto.getSize() >= 10485760)
+                        return new ResponseEntity<String>("이미지 크기 제한은 10MB 입니다.", HttpStatus.FORBIDDEN);
+                    String originFile = todayPhoto.getOriginalFilename();
+                    String originFileExtension = originFile.substring(originFile.lastIndexOf("."));
+                    if (!originFileExtension.equalsIgnoreCase(".jpg") && !originFileExtension.equalsIgnoreCase(".png")
+                            && !originFileExtension.equalsIgnoreCase(".jpeg")) {
+                        return new ResponseEntity<String>("jpg, jpeg, png의 이미지 파일만 업로드해주세요", HttpStatus.FORBIDDEN);
+                    }
+                    // String currentFilePath = diaryRepository.findById(diaryEdit.getDiaryId()).orElseThrow(() -> new CustomException(ErrorCode.DATA_NOT_FOUND)).getTodayPhoto();
+                    todayPhotoPath = s3Service.upload("", todayPhoto); //입력하면 업로드하러 넘어감
+                    diaryEdit.setImagePath(todayPhotoPath);
+                } else {
+                    //파일이 없고, ImagePath도 없는 경우 => 기존 이미지를 삭제할 경우
+                    if (diaryEdit.getImagePath().equals("") || diaryEdit.getImagePath().equals(null)) {
+                        diaryEdit.setImagePath("");
+                    } else {
+                        Diary diary = diaryRepository.getOne(diaryEdit.getDiaryId());
+                        diaryEdit.setImagePath(diary.getTodayPhoto());
+                    }
                 }
-                int updateResult = diaryService.updateDiary(user, diaryEdit, diaryEdit.getDiaryId());
+                int updateResult = diaryService.updateDiary(user, diaryEdit);
                 if (updateResult == 406)
                     return new ResponseEntity<String>("사용자가 이 일기의 소유자가 아닙니다.", HttpStatus.NOT_ACCEPTABLE);
                 else {

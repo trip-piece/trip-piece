@@ -7,7 +7,7 @@ import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Getter
 @NoArgsConstructor
@@ -33,7 +33,7 @@ public class QRlog extends BaseEntity {
     private Sticker sticker;
 
     @Column(nullable = false)
-    private LocalDateTime regtime = LocalDateTime.now();
+    private LocalDate regtime = LocalDate.now();
 
     @Builder
     public QRlog (User user, Place place, Sticker sticker){

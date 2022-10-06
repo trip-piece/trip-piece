@@ -2,6 +2,7 @@ package com.trippiece.backend.api.service;
 
 import com.trippiece.backend.api.domain.dto.DistinctStickerDto;
 import com.trippiece.backend.api.domain.dto.StickerDto;
+import com.trippiece.backend.api.domain.dto.newStickerDto;
 import com.trippiece.backend.api.domain.dto.request.PlaceRequestDto;
 import com.trippiece.backend.api.domain.dto.response.PlaceResponseDto;
 import com.trippiece.backend.api.domain.entity.*;
@@ -21,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.security.SecureRandom;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -141,6 +143,7 @@ public class PlaceService {
                 .posterImage(posterImage)
                 .amount(request.getAmount())
                 .activated(activated)
+                .managerEmail(request.getManagerEmail())
                 .build();
         Place place = placeRepository.save(placeBuilder);
         if(activated) {
@@ -151,10 +154,12 @@ public class PlaceService {
             emailService.sendQRCode(place, qrImage);
         }
 
-        List<StickerDto> list = request.getStickerList();
-        for(StickerDto stickerDto : list) {
+        List<newStickerDto> list = request.getStickerList();
+        for(newStickerDto stickerDto : list) {
             Sticker sticker = Sticker.builder()
                     .tokenId(stickerDto.getTokenId())
+                    .tokenName(stickerDto.getTokenName())
+                    .tokenURL(stickerDto.getTokenURL())
                     .place(place)
                     .build();
             stickerRepository.save(sticker);
@@ -209,7 +214,7 @@ public class PlaceService {
             if(updateStickerList.size()!=0) {
                 for(StickerDto stickerDto : updateStickerList) {
                     Sticker sticker = stickerRepository.findById(stickerDto.getId()).orElseThrow(() -> new CustomException(ErrorCode.DATA_NOT_FOUND));
-                    stickerRepository.save(new Sticker(sticker.getTokenId(), place));
+                    stickerRepository.save(new Sticker(sticker.getTokenId(), stickerDto.getTokenName(), stickerDto.getTokenURL(), place));
                 }
             }
         }
@@ -261,6 +266,11 @@ public class PlaceService {
                 .sticker(sticker)
                 .build();
         qrlogRepository.save(qrlog);
+    }
+
+    public boolean checkQRLog(final User user, final long placeId) {
+        Place place = placeRepository.findById(placeId).orElseThrow(() -> new CustomException(ErrorCode.DATA_NOT_FOUND));
+        return qrlogRepository.existsByUserAndPlaceAndRegtime(user,place,LocalDate.now());
     }
 
     public String getRamdomCode(int size) {

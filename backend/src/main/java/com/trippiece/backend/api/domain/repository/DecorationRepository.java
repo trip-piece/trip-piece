@@ -8,4 +8,7 @@ import java.util.List;
 
 public interface DecorationRepository extends JpaRepository<Decoration, Long> {
     List<Decoration> findAllByDiary(Diary diary);
+
+    @Override
+    boolean existsById(Long aLong);
 }

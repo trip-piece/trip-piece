@@ -6,6 +6,7 @@ import com.trippiece.backend.api.domain.entity.User;
 import com.trippiece.backend.api.service.PlaceService;
 import com.trippiece.backend.api.service.S3Service;
 import com.trippiece.backend.api.service.UserService;
+import com.trippiece.backend.util.DateConverter;
 import com.trippiece.backend.util.JwtTokenUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -31,6 +32,7 @@ public class PlaceController {
     private final S3Service s3Service;
     private final UserService userService;
     private final JwtTokenUtil jwtTokenUtil;
+    private final DateConverter dateConverter;
 
     @PostMapping
     @ApiOperation(value = "스팟/축제 등록", notes = "이벤트가 열릴 스팟이나 축제를 등록한다.")
@@ -45,6 +47,8 @@ public class PlaceController {
                 return new ResponseEntity<String>("jpg, jpeg, png의 이미지 파일만 업로드해주세요", HttpStatus.FORBIDDEN);
             }
             String posterImagePath = s3Service.upload("",posterImage);
+            place.setStartDate(dateConverter.convert(place.getSstartDate()));
+            place.setEndDate(dateConverter.convert(place.getSendDate()));
             placeService.insertPlace(place, posterImagePath);
             return new ResponseEntity<String>("이벤트 스팟/축제 등록 성공", HttpStatus.OK);
         } catch (Exception e) {
@@ -69,6 +73,8 @@ public class PlaceController {
                 }
                 posterImagePath = s3Service.upload("", posterImage);
             }
+            place.setStartDate(dateConverter.convert(place.getSstartDate()));
+            place.setEndDate(dateConverter.convert(place.getSendDate()));
             placeService.updatePlace(place, posterImagePath);
             return new ResponseEntity<String>("이벤트 스팟/축제 수정 성공", HttpStatus.OK);
         } catch (Exception e) {
@@ -127,7 +133,7 @@ public class PlaceController {
     }
 
     @ApiOperation(value = "사용자가 QR인식", notes = "사용자가 QR인식을 하고 스티커를 발급받으면 QRLog를 저장하고 Place의 amount값을 수정한다.")
-    @PatchMapping("/QR")
+    @PostMapping("/QR")
     public ResponseEntity<?> doQRLog(@RequestHeader("ACCESS_TOKEN") final String accessToken, @RequestBody final Map<String, Long> request){
         long placeId = request.get("placeId");
         long stickerId = request.get("stickerId");
@@ -139,6 +145,22 @@ public class PlaceController {
                 placeService.insertQRLog(user, placeId, stickerId);
                 placeService.updatePlaceAmount(placeId);
                 return new ResponseEntity<String>("사용자 QR Log 저장 및 Place Amount 수정 성공", HttpStatus.OK);
+            }
+        } catch (Exception e){
+            e.printStackTrace();
+            return new ResponseEntity<String>("사용자 QR Log 저장 및 Place Amount 수정 실패", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @ApiOperation(value = "사용자가 QR인식", notes = "사용자가 QR인식을 하고 스티커를 발급받으면 QRLog를 저장하고 Place의 amount값을 수정한다.")
+    @GetMapping("/QRCheck/{placeId}")
+    public ResponseEntity<?> checkQR(@RequestHeader("ACCESS_TOKEN") final String accessToken, @PathVariable final long placeId){
+        try{
+            long userId = jwtTokenUtil.getUserIdFromToken(accessToken);
+            User user = userService.findOneUser(userId);
+            if(user == null) return new ResponseEntity<String>("로그인된 회원을 찾을 수 없습니다.", HttpStatus.NOT_FOUND);
+            else {
+                return new ResponseEntity<Boolean>(placeService.checkQRLog(user, placeId), HttpStatus.OK);
             }
         } catch (Exception e){
             e.printStackTrace();
