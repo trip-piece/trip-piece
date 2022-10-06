@@ -489,6 +489,7 @@ export default function Navbar() {
       mounted.current = true;
     } else {
       //console.log(account);
+      // eslint-disable-next-line no-lonely-if
       if (getCookie("accessToken")) {
         getUserInfo();
       }
@@ -530,7 +531,7 @@ export default function Navbar() {
     removeCookie("accessToken");
     removeCookie("refreshToken");
     setIsLoggedIn(false);
-    window.location.replace("http://localhost:3000/");
+    window.location.replace("https://j7a607.q.ssafy.io/");
   };
   const moveToMyTrip = (tripId: number) => {
     navigate(`/trips/${tripId}/diarys`);
