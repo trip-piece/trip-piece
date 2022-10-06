@@ -87,6 +87,23 @@ public class MarketService {
         return new StickerMarketResponseDto(market);
     }
 
+    @Transactional(readOnly = true)
+    public Page<MarketStickerResponseDto> findMyStickers(User user, @PageableDefault(size = 10) Pageable pageable
+    ) {
+
+        List<Market> marketList = marketRepository.findAllByUserOrderByIdDesc(user);
+        List<MarketStickerResponseDto> responseList = new ArrayList<>();
+
+        for (Market market : marketList) responseList.add(new MarketStickerResponseDto(market));
+
+        int start = (int) pageable.getOffset();
+        int end = Math.min((start + pageable.getPageSize()), responseList.size());
+        Page<MarketStickerResponseDto> result = new PageImpl<>(responseList.subList(start, end), pageable, responseList.size());
+        return result;
+    }
+
+
+
     @Transactional
     public void addMarketSticker(User user, long tokenId, float price) {
         Sticker sticker = stickerRepository.findByTokenId(tokenId);
