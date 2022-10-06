@@ -486,11 +486,8 @@ export default function Navbar() {
   useEffect(() => {
     if (!mounted.current) {
       mounted.current = true;
-    } else {
-      // console.log(account);
-      if (getCookie("accessToken")) {
-        getUserInfo();
-      }
+    } else if (getCookie("accessToken")) {
+      getUserInfo();
     }
   }, [account]);
 
@@ -529,7 +526,7 @@ export default function Navbar() {
     removeCookie("accessToken");
     removeCookie("refreshToken");
     setIsLoggedIn(false);
-    window.location.replace("http://localhost:3000/");
+    window.location.replace("https://j7a607.q.ssafy.io/");
   };
   const moveToMyTrip = (tripId: number) => {
     navigate(`/trips/${tripId}/diarys`);
