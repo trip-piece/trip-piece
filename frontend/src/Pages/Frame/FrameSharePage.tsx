@@ -22,7 +22,7 @@ import LoadingCard from "../../components/atoms/LoadingCard";
 
 const drawerBleeding = 56;
 
-const GridContainer = styled.div<GridProps>`
+const GridContainer = styled.div<{ gridColumnCount: number }>`
   display: grid;
   grid-template-columns: ${(props) =>
     props.gridColumnCount && `repeat(${props.gridColumnCount}, 1fr)`};

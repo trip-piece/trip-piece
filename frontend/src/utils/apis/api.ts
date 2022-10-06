@@ -48,7 +48,7 @@ axiosInstance.interceptors.response.use(
     return res;
   },
   async (err) => {
-    console.log("인터셉터 발동");
+    //  console.log("인터셉터 발동");
     console.log(err);
     console.log(err.response.status);
 
@@ -92,9 +92,9 @@ axiosInstance.interceptors.response.use(
           //     },
           //   );
 
-          console.log(response);
-          const { accessToken, refreshToken } = response.data;
-          console.log(accessToken);
+          // console.log(response);
+          // const { accessToken, refreshToken } = response.data;
+          // console.log(accessToken);
 
           setCookie("accessToken", accessToken);
           setCookie("refreshToken", refreshToken);
