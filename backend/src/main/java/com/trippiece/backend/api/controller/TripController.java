@@ -5,6 +5,7 @@ import com.trippiece.backend.api.domain.dto.response.TripResponseDto;
 import com.trippiece.backend.api.domain.entity.User;
 import com.trippiece.backend.api.service.TripService;
 import com.trippiece.backend.api.service.UserService;
+import com.trippiece.backend.util.DateConverter;
 import com.trippiece.backend.util.JwtTokenUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -17,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.util.Map;
 
 @Api(value = "여행티켓 관련 API", tags = {"Trip"})
 @RestController
@@ -29,16 +31,18 @@ public class TripController {
     private final UserService userService;
     private final JwtTokenUtil jwtTokenUtil;
 
+    private final DateConverter dateConverter;
+
     @PostMapping
     @ApiOperation(value = "여행 티켓추가", notes = "가고자 하는 여행지와 일정을 추가한다.")
-    public ResponseEntity<?> addTrip(@RequestHeader("ACCESS_TOKEN") final String accessToken, @RequestBody TripRequestDto tripRequestDto) {
+    public ResponseEntity<?> addTrip(@RequestHeader("ACCESS_TOKEN") final String accessToken, @RequestBody TripRequestDto.TripRegister tripRequestDto) {
         try {
             long userId = jwtTokenUtil.getUserIdFromToken(accessToken);
             User user = userService.findOneUser(userId);
             if (user == null) return new ResponseEntity<String>("로그인된 회원을 찾을 수 없습니다.", HttpStatus.NOT_FOUND);
             else {
                 tripService.addTrip(user, tripRequestDto);
-                return new ResponseEntity<String>("티켓 추가 성공!", HttpStatus.CREATED);
+                return new ResponseEntity<String>("티켓 추가 성공!", HttpStatus.OK);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -51,7 +55,8 @@ public class TripController {
 
     @DeleteMapping
     @ApiOperation(value = "여행 티켓 삭제", notes = "등록해 놓은 여행 일정을 삭제한다.")
-    public ResponseEntity<?> deleteTrip(@RequestHeader("ACCESS_TOKEN") final String accessToken, @PathVariable long tripId) {
+    public ResponseEntity<?> deleteTrip(@RequestHeader("ACCESS_TOKEN") final String accessToken, @RequestBody final Map<String, Long> request) {
+        long tripId = request.get("tripId");
         try {
             long userId = jwtTokenUtil.getUserIdFromToken(accessToken);
             User user = userService.findOneUser(userId);
@@ -71,11 +76,12 @@ public class TripController {
 
     @PatchMapping
     @ApiOperation(value = "여행 티켓 수정", notes = "등록한 여행 일정을 수정한다.")
-    public ResponseEntity<?> updateTrip(@RequestHeader("ACCESS_TOKEN") final String accessToken, @PathVariable("tripId") long tripId, @RequestBody TripRequestDto tripRequestDto) {
+    public ResponseEntity<?> updateTrip(@RequestHeader("ACCESS_TOKEN") final String accessToken, @RequestBody TripRequestDto.TripEdit tripRequestDto) {
+
         try {
             long userId = jwtTokenUtil.getUserIdFromToken(accessToken);
             User user = userService.findOneUser(userId);
-            int updateResult = tripService.updateTrip(user, tripId, tripRequestDto);
+            int updateResult = tripService.updateTrip(user, tripRequestDto);
             if (updateResult == 406)
                 return new ResponseEntity<String>("사용자가 티켓의 소유자가 아닙니다.", HttpStatus.NOT_ACCEPTABLE);
             else {
@@ -101,7 +107,7 @@ public class TripController {
         }
     }
 
-    @GetMapping("/{tripId}")
+    @GetMapping("/{tripId}/detail")
     @ApiOperation(value = "여행 티켓 한 개 조회", notes = "사용자가 등록했던 모든 여행의 일정 중 선택된 하나만 조회한다. ")
     public ResponseEntity<?> getTrip(@RequestHeader("ACCESS_TOKEN") final String accessToken, @PathVariable("tripId") long tripId) {
         long userId = jwtTokenUtil.getUserIdFromToken(accessToken);
@@ -114,11 +120,13 @@ public class TripController {
 
     @GetMapping("/{todayDate}")
     @ApiOperation(value = "진행중 및 예정된 여행티켓", notes = "홈 화면에 보여줄 현재 진행중인 여행. 현재 진행중인 여행이 없다면, 가장 가깝게 예정된 여행 반환 .예정된 여행마저 없다면 null")
-    public ResponseEntity<?> getInprogressTrip(@RequestHeader("ACCESS_TOKEN") final String accessToken, @PathVariable("todayDate") LocalDate todayDate) {
+    public ResponseEntity<?> getInprogressTrip(@RequestHeader("ACCESS_TOKEN") final String accessToken, @PathVariable("todayDate") String date) {
         long userId = jwtTokenUtil.getUserIdFromToken(accessToken);
         User user = userService.findOneUser(userId);
         if (user == null) return new ResponseEntity<String>("로그인된 회원을 찾을 수 없습니다.", HttpStatus.NOT_FOUND);
         else {
+            LocalDate todayDate = dateConverter.convert(date);
+
             return new ResponseEntity<>(tripService.isInTrip(user, todayDate), HttpStatus.OK);
         }
     }

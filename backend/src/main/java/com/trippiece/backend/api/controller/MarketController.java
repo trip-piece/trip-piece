@@ -1,5 +1,6 @@
 package com.trippiece.backend.api.controller;
 
+import com.trippiece.backend.api.domain.dto.request.MarketRequestDto;
 import com.trippiece.backend.api.domain.dto.response.MarketStickerResponseDto;
 import com.trippiece.backend.api.domain.entity.User;
 import com.trippiece.backend.api.service.MarketService;
@@ -30,13 +31,13 @@ public class MarketController {
 
     @PostMapping
     @ApiOperation(value = "스티커마켓등록", notes = "스티커 판매를 위해 등록한다.")
-    public ResponseEntity<?> addMarketSticker(@RequestHeader("ACCESS_TOKEN") final String accessToken, @RequestBody long tokenId, float price) {
+    public ResponseEntity<?> addMarketSticker(@RequestHeader("ACCESS_TOKEN") final String accessToken, @RequestBody MarketRequestDto.Register request) {
         try {
             long userId = jwtTokenUtil.getUserIdFromToken(accessToken);
             User user = userService.findOneUser(userId);
             if (user == null) return new ResponseEntity<String>("로그인된 회원을 찾을 수 없습니다.", HttpStatus.NOT_FOUND);
             else {
-                marketService.addMarketSticker(user, tokenId, price);
+                marketService.addMarketSticker(user, request.getTokenId(), request.getPrice());
                 return new ResponseEntity<>("마켓에 스티커 등록 성공!", HttpStatus.OK);
             }
         } catch (Exception e) {
@@ -63,7 +64,7 @@ public class MarketController {
 
     @GetMapping("/{marketId}")
     @ApiOperation(value = "스티커 상세 조회", notes = "사용자가 클릭한 스티커 조회")
-    public ResponseEntity<?> getMarketStickerDetail(@RequestHeader("ACCESS_TOKEN") final String accessToken, @RequestParam long marketId) {
+    public ResponseEntity<?> getMarketStickerDetail(@RequestHeader("ACCESS_TOKEN") final String accessToken, @PathVariable(value="marketId") long marketId) {
         long userId = jwtTokenUtil.getUserIdFromToken(accessToken);
         User user = userService.findOneUser(userId);
         if (user == null) return new ResponseEntity<String>("로그인된 회원을 찾을 수 없습니다.", HttpStatus.NOT_FOUND);
@@ -74,14 +75,13 @@ public class MarketController {
 
     @DeleteMapping
     @ApiOperation(value = "스티커 판매 목록에서 제거", notes = "스티커가 판매완료되어 목록에서 제거")
-    public ResponseEntity<?> deleteMarketSticker(@RequestHeader("ACCESS_TOKEN") final String accessToken, @RequestBody final Map<String, Long> request) {
-        long marketId = request.get("marketId");
+    public ResponseEntity<?> deleteMarketSticker(@RequestHeader("ACCESS_TOKEN") final String accessToken, @RequestBody MarketRequestDto.Delete request) {
         try {
             long userId = jwtTokenUtil.getUserIdFromToken(accessToken);
             User user = userService.findOneUser(userId);
             if (user == null) return new ResponseEntity<String>("로그인된 회원을 찾을 수 없습니다.", HttpStatus.NOT_FOUND);
             else {
-                marketService.deleteMarketSticker(user, marketId);
+                marketService.deleteMarketSticker(user, request.getMarketId());
                 return new ResponseEntity<String>("스티커 판매 완료", HttpStatus.OK);
             }
         } catch (Exception e) {

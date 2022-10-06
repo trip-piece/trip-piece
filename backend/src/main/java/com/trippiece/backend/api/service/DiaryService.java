@@ -9,7 +9,10 @@ import com.trippiece.backend.api.domain.entity.*;
 import com.trippiece.backend.api.domain.repository.*;
 import com.trippiece.backend.exception.CustomException;
 import com.trippiece.backend.exception.ErrorCode;
+import com.trippiece.backend.util.DateConverter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,19 +33,25 @@ public class DiaryService {
 
     private final StickerRepository stickerRepository;
     private final FrameRepository frameRepository;
+    private final DateConverter dateConverter;
+
+
 
     /*일기 내용 추가*/
     @Transactional
     public long addDiary(User user, DiaryRequestDto.DiaryRegister diaryRegister) {
         Trip trip = tripRepository.findById(diaryRegister.getTripId()).orElseThrow(() -> new CustomException(ErrorCode.DATA_NOT_FOUND));
-        ;
+        LocalDate convertedDate = dateConverter.convert(diaryRegister.getDiaryDate());
         Diary diary = Diary.builder()
                 .content(diaryRegister.getContent())
                 .createDate(LocalDateTime.now())
                 .fontType(diaryRegister.getFontType())
+                .diaryDate(convertedDate)
+                .location(diaryRegister.getLocation())
                 .backgroundColor(diaryRegister.getBackgroundColor())
                 .weather(diaryRegister.getWeather())
                 .todayPhoto(diaryRegister.getTodayPhoto())
+                .ratio(diaryRegister.getRatio())
                 .trip(trip)
                 .user(user)
                 .build();
@@ -67,49 +76,47 @@ public class DiaryService {
     }
 
     @Transactional
-    public void updateDeco(DecoRequestDto.DecoEdit request) {
+    public void updateDeco(DecoRequestDto.DecoRegister request) {
         Diary diary = diaryRepository.findById(request.getDiaryId()).orElseThrow(() -> new CustomException(ErrorCode.DATA_NOT_FOUND));
-        List<Decoration> list = decorationRepository.findAllByDiary(diary); //다이어리에 있는 데코레이션 목록 다 가져와
-        List<StickerDecorationDto> originStickerList = new ArrayList<>();
-        List<StickerDecorationDto> deleteStickerList = new ArrayList<>();
-        for (Decoration decoration : list) {
-            originStickerList.add(new StickerDecorationDto(decoration));
-            deleteStickerList.add(new StickerDecorationDto(decoration));
+        List<Decoration> deleteList = decorationRepository.findAllByDiary(diary); //다이어리에 있는 데코레이션 목록 다 가져와
+        for (Decoration deco : deleteList) {
+            decorationRepository.delete(deco);
         }
-
-        List<StickerDecorationDto> newStickerList = (ArrayList<StickerDecorationDto>) request.getStickerList();
-        List<StickerDecorationDto> updateStickerList = new ArrayList<>();
-        for (StickerDecorationDto decoration : newStickerList) {
-            updateStickerList.add(decoration);
-        }
-        Collections.sort(newStickerList);
-        if (!newStickerList.equals(originStickerList)) {
-            updateStickerList.removeAll(originStickerList);
-            deleteStickerList.removeAll(newStickerList);
-
-            if (deleteStickerList.size() != 0) {
-                for (StickerDecorationDto stickerDto : deleteStickerList) {
-                    Decoration decoration = decorationRepository.findById(stickerDto.getStickerId()).orElseThrow(() -> new CustomException(ErrorCode.DATA_NOT_FOUND));
-                    decorationRepository.delete(decoration);
-                }
-            }
-
-            if (updateStickerList.size() != 0) {
-                for (StickerDecorationDto stickerDto : updateStickerList) {
-                    Decoration decoration = decorationRepository.findById(stickerDto.getId()).orElseThrow(() -> new CustomException(ErrorCode.DATA_NOT_FOUND));
-                    decorationRepository.save(new Decoration(decoration.getSticker(), decoration.getDiary(), decoration.getX(), decoration.getY()));
-                }
-            }
+        List<StickerRequestDto.StickerDecoRegister> newList = request.getStickerList();
+        for (StickerRequestDto.StickerDecoRegister st : newList) {
+            Decoration decoration = Decoration.builder()
+                    .diary(diary)
+                    .sticker(stickerRepository.findByTokenId(st.getTokenId()))
+                    .x(st.getX())
+                    .y(st.getY())
+                    .build();
+            decorationRepository.save(decoration);
         }
 
     }
 
+    @Transactional
+    public int checkDiary(long tripId, String date) {
+        int resultCode = 200;
+        Trip trip = tripRepository.findById(tripId).orElseThrow(() -> new CustomException(ErrorCode.DATA_NOT_FOUND));
+        LocalDate diaryDate = dateConverter.convert(date);
+        Diary diary = diaryRepository.findByTripAndDiaryDate(trip, diaryDate);
+        if (diary != null) {
+            resultCode = 409;
+        }
+        return resultCode;
+    }
+
     /*일기 조회*/
     @Transactional
-    public DiaryResponseDto findDiary(final long tripId, LocalDate date) {
+    public DiaryResponseDto findDiary(final long tripId, String date) {
         boolean isShare = false;
         Trip trip = tripRepository.findById(tripId).orElseThrow(() -> new CustomException(ErrorCode.DATA_NOT_FOUND));
-        Diary diary = diaryRepository.findByTripAndCreateDate(trip, date);
+        LocalDate diaryDate = dateConverter.convert(date);
+        Diary diary = diaryRepository.findByTripAndDiaryDate(trip, diaryDate);
+        if (diary == null) {
+            return null;
+        }
         List<Decoration> list = decorationRepository.findAllByDiary(diary);
         List<StickerDecorationDto> deco = list.stream().map(StickerDecorationDto::new).collect(Collectors.toList());
 
@@ -123,9 +130,10 @@ public class DiaryService {
     }
 
     @Transactional
-    public int updateDiary(User user, DiaryRequestDto.DiaryEdit diaryEdit, long diaryId) {
+    public int updateDiary(User user, DiaryRequestDto.DiaryEdit diaryEdit) {
         int resultCode = 200;
-        Diary diary = diaryRepository.findById(diaryId).orElseThrow(() -> new CustomException(ErrorCode.DATA_NOT_FOUND));
+
+        Diary diary = diaryRepository.findById(diaryEdit.getDiaryId()).orElseThrow(() -> new CustomException(ErrorCode.DATA_NOT_FOUND));
         Trip trip = tripRepository.findById(diaryEdit.getTripId()).orElseThrow(() -> new CustomException(ErrorCode.DATA_NOT_FOUND));
         if (!diary.getUser().equals(user)) resultCode = 406;
         else {

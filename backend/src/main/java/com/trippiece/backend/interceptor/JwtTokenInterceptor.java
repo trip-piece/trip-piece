@@ -6,12 +6,14 @@ import com.trippiece.backend.api.domain.repository.AuthRepository;
 import com.trippiece.backend.api.domain.repository.UserRepository;
 import com.trippiece.backend.util.JwtTokenUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Objects;
 import java.util.Optional;
 
 @Component
@@ -29,27 +31,61 @@ public class JwtTokenInterceptor implements HandlerInterceptor {
         String accessToken = request.getHeader("ACCESS_TOKEN");
         String refreshToken = request.getHeader("REFRESH_TOKEN");
 
-        if (request.getMethod().equals("OPTIONS")) {
+        if (isPreflightRequest(request)) {
             return true;
         }
+
+        if (accessToken == null && refreshToken == null){
+            response.setStatus(401);
+            response.setHeader("ACCESS_TOKEN", accessToken);
+            response.setHeader("REFRESH_TOKEN", refreshToken);
+            response.setHeader("msg", "There is no Tokens.");
+            return false;
+        }
+
         if (accessToken != null) {
-            Optional<User> user = userRepository.findById(jwtTokenUtil.getUserIdFromToken(accessToken));
-            if (user.isPresent()) {
-                Optional<Auth> auth = authRepository.findByUser(user.get());
-                if (auth.isPresent()) {
-                    if (jwtTokenUtil.isValidToken(accessToken)) {
+            if (accessToken.length() < 1){
+                response.setStatus(401);
+                response.setHeader("ACCESS_TOKEN", accessToken);
+                response.setHeader("REFRESH_TOKEN", refreshToken);
+                response.setHeader("msg", "AccessToken is empty.");
+                return false;
+            }
+            if (jwtTokenUtil.isValidToken(accessToken)) {
+                Optional<User> user = userRepository.findById(jwtTokenUtil.getUserIdFromToken(accessToken));
+                if (user.isPresent()) {
+                    Optional<Auth> auth = authRepository.findByUser(user.get());
+                    if (auth.isPresent()) {
                         return true;
                     }
+                }
+            }
+
+            else {
+                if (refreshToken == null){
+                    response.setStatus(401);
+                    response.setHeader("ACCESS_TOKEN", accessToken);
+                    response.setHeader("REFRESH_TOKEN", refreshToken);
+                    response.setHeader("msg", "Invalid AccessToken Error.");
+                    return false;
                 }
             }
         }
 
         if (refreshToken != null) {
-            Optional<User> user = userRepository.findById(jwtTokenUtil.getUserIdFromToken(accessToken));
-            if (user.isPresent()) {
-                Optional<Auth> auth = authRepository.findByUser(user.get());
-                if (auth.isPresent()) {
-                    if (jwtTokenUtil.isValidToken(accessToken) && auth.get().getRefreshToken().equals(refreshToken)) {
+            if (refreshToken.length() < 1){
+                response.setStatus(401);
+                response.setHeader("ACCESS_TOKEN", accessToken);
+                response.setHeader("REFRESH_TOKEN", refreshToken);
+                response.setHeader("msg", "RefreshToken is empty.");
+                return false;
+            }
+
+            if (jwtTokenUtil.isValidToken(refreshToken)) {
+                Optional<User> user = userRepository.findById(jwtTokenUtil.getUserIdFromToken(accessToken));
+                if (user.isPresent()) {
+                    Optional<Auth> auth = authRepository.findByUser(user.get());
+                    if (auth.isPresent()) {
                         return true;
                     }
                 }
@@ -59,7 +95,27 @@ public class JwtTokenInterceptor implements HandlerInterceptor {
         response.setStatus(401);
         response.setHeader("ACCESS_TOKEN", accessToken);
         response.setHeader("REFRESH_TOKEN", refreshToken);
-        response.setHeader("msg", "Invalid Token Error");
+        response.setHeader("msg", "Invalid RefreshToken Error.");
         return false;
+    }
+
+    private boolean isPreflightRequest(HttpServletRequest request) {
+        return isOptions(request) && hasHeaders(request) && hasMethod(request) && hasOrigin(request);
+    }
+
+    private boolean isOptions(HttpServletRequest request) {
+        return request.getMethod().equalsIgnoreCase(HttpMethod.OPTIONS.toString());
+    }
+
+    private boolean hasHeaders(HttpServletRequest request) {
+        return Objects.nonNull(request.getHeader("Access-Control-Request-Headers"));
+    }
+
+    private boolean hasMethod(HttpServletRequest request) {
+        return Objects.nonNull(request.getHeader("Access-Control-Request-Method"));
+    }
+
+    private boolean hasOrigin(HttpServletRequest request) {
+        return Objects.nonNull(request.getHeader("Origin"));
     }
 }

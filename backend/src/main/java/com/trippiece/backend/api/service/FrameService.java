@@ -27,6 +27,7 @@ public class FrameService {
 
     private final DiaryRepository diaryRepository;
 
+    @Transactional
     //프레임 리스트 조회 및 검색(지역필터링)
     public Page<FrameResponseDto> findFrameList(final User user, final List<Long> regionList, Pageable pageable) {
         List<Frame> list = new ArrayList<>();
@@ -40,7 +41,7 @@ public class FrameService {
         }
         List<FrameResponseDto> responseList = new ArrayList<>();
         for (Frame frame : list) {
-            responseList.add(new FrameResponseDto(frame, scrapRepository.existsByFrameAndUser(user, frame)));
+            responseList.add(new FrameResponseDto(frame, scrapRepository.existsByFrameAndUser(frame, user)));
         }
         int start = (int) pageable.getOffset();
         int end = Math.min((start + pageable.getPageSize()), responseList.size());
@@ -48,6 +49,7 @@ public class FrameService {
         return result;
     }
 
+    @Transactional
     //지역별 공유된 스티커프레임 개수 조회
     public FrameCountResponseDto findFrameListCount() {
         List<Region> regionList = regionRepository.findAll();
@@ -62,26 +64,31 @@ public class FrameService {
     }
 
     @Transactional
-    public void addFrame(long diaryId, String fileName) {
+    public void addFrame(long diaryId, String frameImagePath) {
         Region region = diaryRepository.findById(diaryId).orElseThrow(() -> new CustomException(ErrorCode.DATA_NOT_FOUND)).getTrip().getRegion();
         Diary diary = diaryRepository.findById(diaryId).orElseThrow(() -> new CustomException(ErrorCode.DATA_NOT_FOUND));
 
         Frame frame = Frame.builder()
                 .diary(diary)
                 .region(region)
-                .frameImage(fileName)
+                .frameImage(frameImagePath)
                 .build();
         frameRepository.save(frame);
     }
 
     @Transactional
-    public void updateFrame(long diaryId, String fileName) {
+    public void updateFrame(long diaryId, String frameImagePath) {
         Region region = diaryRepository.findById(diaryId).orElseThrow(() -> new CustomException(ErrorCode.DATA_NOT_FOUND)).getTrip().getRegion();
         Diary diary = diaryRepository.findById(diaryId).orElseThrow(() -> new CustomException(ErrorCode.DATA_NOT_FOUND));
-        Frame frame = frameRepository.findByDiary(diary);
-        frame.updateFrame(diary, region, fileName);
+        Frame frame = frameRepository.findByDiary(diary);// 근데 공유를 안해서 없을 수도 있음
+        if (frame == null)
+            addFrame(diaryId, frameImagePath);
+        else {
+            frame.updateFrame(diary, region, frameImagePath);
+        }
     }
 
+    @Transactional
     //스티커 프레임 상세 조회
     public StickerFrameResponseDto findFrame(final User user, final long frameId) {
         Frame frame = frameRepository.findById(frameId).orElseThrow(() -> new CustomException(ErrorCode.DATA_NOT_FOUND));
@@ -90,19 +97,22 @@ public class FrameService {
         for (Decoration decoration : decorationList) {
             stickerList.add(new StickerDecorationDto(decoration));
         }
-        boolean isScrapped = scrapRepository.existsByFrameAndUser(user, frame);
-        StickerFrameResponseDto result = new StickerFrameResponseDto(stickerList, isScrapped);
+        boolean isScrapped = scrapRepository.existsByFrameAndUser(frame, user);
+        StickerFrameResponseDto result = new StickerFrameResponseDto(stickerList, isScrapped,frame.getDiary().getRatio());
         return result;
     }
 
     //스티커 프레임 삭제
     @Transactional
-    public int deleteFrame(final User user, final long frameId) {
+    public int deleteFrame(final User user, final long diaryId) {
         int resultCode = 200;
-        Frame frame = frameRepository.findById(frameId).orElseThrow(() -> new CustomException(ErrorCode.DATA_NOT_FOUND));
-        if (!frame.getDiary().getUser().equals(user)) resultCode = 406;
-        else {
-            frameRepository.delete(frame);
+        Diary diary = diaryRepository.findById(diaryId).orElseThrow(() -> new CustomException(ErrorCode.DATA_NOT_FOUND));
+        Frame frame = frameRepository.findByDiary(diary);
+        if(frame!=null){
+            if (!frame.getDiary().getUser().equals(user)) resultCode = 406;
+            else {
+                frameRepository.delete(frame);
+            }
         }
         return resultCode;
     }
@@ -122,7 +132,7 @@ public class FrameService {
     @Transactional
     public void deleteFrameScrap(final User user, final long frameId) {
         Frame frame = frameRepository.findById(frameId).orElseThrow(() -> new CustomException(ErrorCode.DATA_NOT_FOUND));
-        Scrap scrap = scrapRepository.findByFrameAndUser(user, frame);
+        Scrap scrap = scrapRepository.findByFrameAndUser(frame, user);
         scrapRepository.delete(scrap);
     }
 }
