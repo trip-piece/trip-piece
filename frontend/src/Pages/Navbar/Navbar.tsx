@@ -382,7 +382,7 @@ export default function Navbar() {
     axiosInstance
       .get(userApis.getUser)
       .then((response: { data: IUserData }) => {
-        console.log(response.data);
+        // console.log(response.data);
 
         console.log(userInfo);
 
@@ -486,35 +486,55 @@ export default function Navbar() {
   useEffect(() => {
     if (!mounted.current) {
       mounted.current = true;
-    } else if (getCookie("accessToken")) {
-      getUserInfo();
+    } else {
+      // console.log(account);
+      // eslint-disable-next-line no-lonely-if
+      if (getCookie("accessToken")) {
+        getUserInfo();
+      }
     }
   }, [account]);
 
-  // useLayoutEffect(() => {
-  //   console.log(userInfo.tripCount);
-  //   if (getCookie("accessToken")) {
-  //     getUserInfo();
+  // useEffect(() => {
+  //   if (!mounted.current) {
+  //     mounted.current = true;
+  //   } else {
+  //     //console.log(account);
+  //     // eslint-disable-next-line no-lonely-if
+  //     if (getCookie("accessToken")) {
+  //       getUserInfo();
+  //     }
   //   }
-  // }, [userInfo]);
+  // }, [userInfo.tripCount]);
+  // useEffect(() => {
+  //   if (!mounted.current) {
+  //     mounted.current = true;
+  //   } else {
+  //     //console.log(account);
+  //     // eslint-disable-next-line no-lonely-if
+  //     if (getCookie("accessToken")) {
+  //       getUserInfo();
+  //     }
+  //   }
+  // }, [userInfo.diaryCount]);
 
-  const setApproval = async (e: { preventDefault: () => void }) => {
-    // setLoading;
-    e?.preventDefault();
-    try {
-      const approveResult = await NFTContract.methods
-        .setApprovalForAll(import.meta.env.VITE_MARKET_CA, true)
-        .send({ from: userInfo.address });
+  // const setApproval = async (e: { preventDefault: () => void }) => {
+  //   //setLoading;
+  //   e.preventDefault();
+  //   try {
+  //     const approveResult = await NFTContract.methods
+  //       .setApprovalForAll(import.meta.env.VITE_MARKET_CA, true)
+  //       .send({ from: userInfo.address });
 
-      // console.log("권한 부여 성공" + approveResult.status);
-    } catch (err) {
-      console.log(err);
-    }
-  };
-  useEffect(() => {
-    // console.log("맨 처음 렌더링될 때 한 번만 실행");
-    setApproval();
-  }, []);
+  //     // console.log("권한 부여 성공" + approveResult.status);
+  //   } catch (err) {
+  //     console.log(err);
+  //   }
+  // };
+  // useEffect(() => {
+  //   //console.log("맨 처음 렌더링될 때 한 번만 실행");
+  //   setApproval();
+  // }, []);
 
   const logout = () => {
     if (active) {
