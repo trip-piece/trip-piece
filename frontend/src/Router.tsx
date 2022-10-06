@@ -9,7 +9,7 @@ function Router() {
   const preventClose = (e: BeforeUnloadEvent) => {
     e.preventDefault();
 
-    if (getCookie("isLogin") === "false") {
+    if (getCookie("isLogin")) {
       removeCookie("isLogin");
     }
 
