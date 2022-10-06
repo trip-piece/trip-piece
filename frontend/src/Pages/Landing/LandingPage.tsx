@@ -4,24 +4,23 @@ import { Helmet } from "react-helmet-async";
 import { InjectedConnector } from "@web3-react/injected-connector";
 import { useWeb3React } from "@web3-react/core";
 import { motion } from "framer-motion";
-import { NavigateFunction, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 // import { useRecoilState } from "recoil";
-import { useRecoilState, useSetRecoilState } from "recoil";
+import { useRecoilState } from "recoil";
 import Web3 from "web3";
-import {
-  accessTokenExpiredSetting,
-  getCookie,
-  refreshTokenExpiredSetting,
-  setCookie,
-} from "../../utils/cookie";
+import { getCookie, setCookie } from "../../utils/cookie";
 // import { IUserInfo, UserInfoState } from "../../store/atom";
 import { pixelToRem } from "../../utils/functions/util";
 import LoginButton from "./LoginButton";
 import Content from "./Text";
 import LandingPageImg from "./LandingPageImg";
-import userApis, { walletAddress } from "../../utils/apis/userApis";
+import userApis, { Idata, IUserData } from "../../utils/apis/userApis";
 import axiosInstance from "../../utils/apis/api";
-import { IUserInfo, UserInfoState } from "../../store/atom";
+import {
+  isLoggedinState,
+  IsLoggedinState,
+  UserInfoState,
+} from "../../store/atom";
 
 const injected = new InjectedConnector({ supportedChainIds: [5] });
 //const injected = new InjectedConnector({});
@@ -78,17 +77,18 @@ export default function LandingPage() {
   const { activate, active, account, deactivate } = useWeb3React();
   const navigate = useNavigate();
   const [userInfo, setUserInfo] = useRecoilState(UserInfoState);
+  const [isLoggedIn, setIsLoggedIn] = useRecoilState(isLoggedinState);
 
   console.log(active);
 
   console.log(`첫 렌더링: 지갑.. ${account}`);
-
+ const moveToMain = () => {
+      navigate("/main");
+    };
   function useLogin(data: Idata) {
     console.log("엥");
 
-    const moveToMain = () => {
-      navigate("/main");
-    };
+   
 
     axiosInstance
       .post(userApis.login, data)
@@ -148,6 +148,31 @@ export default function LandingPage() {
       });
   }
 
+  function login(data: Idata) {
+    console.log("jwt 로그인");
+
+    // const moveToMain = () => {
+    //   navigate("/main");
+    // };
+
+    axiosInstance
+      .post(userApis.login, data)
+      .then(
+        (response: { data: { accessToken: string; refreshToken: string } }) => {
+          setCookie("accessToken", response.data.accessToken, {
+            maxAge: 1000 * 60 * 60 * 24,
+            sameSite: true,
+          });
+          setCookie("refreshToken", response.data.refreshToken, {
+            maxAge: 1000 * 60 * 60 * 24 * 7,
+            sameSite: true,
+          });
+          setIsLoggedIn(true);
+        },
+        moveToMain();
+      );
+  }
+
   const mounted = useRef(false);
   useEffect(() => {
     if (!mounted.current) {
@@ -159,7 +184,8 @@ export default function LandingPage() {
       console.log("첫로그인");
 
       const data: Idata = { walletAddress: account };
-      useLogin(data);
+      login(data);
+      // useLogin(data);
     }
   }, [account]);
 

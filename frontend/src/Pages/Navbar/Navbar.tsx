@@ -22,7 +22,7 @@ import AppBar from "@mui/material/AppBar";
 import { useRecoilState, useResetRecoilState } from "recoil";
 import { motion } from "framer-motion";
 import { useWeb3React } from "@web3-react/core";
-import React from "react";
+import React, { useLayoutEffect } from "react";
 import { AxiosError, AxiosResponse } from "axios";
 import { useQuery } from "react-query";
 import { useEffect, useRef, useState } from "react";
@@ -31,7 +31,7 @@ import {
   changeDateFormatToHyphen,
   pixelToRem,
 } from "../../utils/functions/util";
-import { IUserInfo, UserInfoState } from "../../store/atom";
+import { isLoggedinState, IUserInfo, UserInfoState } from "../../store/atom";
 import trippieceLogo from "../../assets/image/trippiece_logo.png";
 // import { ReactComponent as EtherIcon } from "../../assets/svgs/etherIcon.svg";
 import axiosInstance from "../../utils/apis/api";
@@ -374,27 +374,28 @@ export default function Navbar() {
   const today = changeDateFormatToHyphen(new Date());
   const [isProgress, setIsProgress] = useState(0);
   const { account, active, deactivate, activate } = useWeb3React();
+  const [isLoggedIn, setIsLoggedIn] = useRecoilState(isLoggedinState);
   const mounted = useRef(false);
 
   console.log(`nav active ${active}`);
-  function getUserInfo() {
-    const token = getCookie("accessToken");
-
+  const getUserInfo = () => {
     axiosInstance
-      .get(userApis.getUser, { headers: { ACCESS_TOKEN: token } })
+      .get(userApis.getUser)
       .then((response: { data: IUserData }) => {
         console.log(response.data);
+
+        console.log(userInfo);
 
         setUserInfo((prev) => ({
           ...prev,
           address: response.data.walletAddress,
           nickname: response.data.nickname,
+          balance: "0.0",
           isLoggedIn: true,
           id: response.data.userId,
           tripCount: response.data.tripCount,
           diaryCount: response.data.diaryCount,
         }));
-
         return response.data.walletAddress;
       })
       .then((address) => {
@@ -410,18 +411,18 @@ export default function Navbar() {
             .then((eth) => {
               setUserInfo((prev) => ({ ...prev, balance: eth }));
 
-              setCookie("isLogin", "true");
+              //setCookie("isLogin", "true");
+              //moveToMain();
             });
         }
       });
-  }
+  };
   const toggleDrawer =
     // eslint-disable-next-line @typescript-eslint/no-shadow
     (open: boolean) => (event: React.KeyboardEvent | React.MouseEvent) => {
       if (event.type === "keydown") {
         return;
       }
-      getUserInfo();
 
       setOpen(open);
     };
@@ -467,17 +468,15 @@ export default function Navbar() {
   };
 
   useEffect(() => {
-    const loginFlag: string = getCookie("isLogin");
-    console.log(loginFlag);
-
     if (!mounted.current) {
       mounted.current = true;
-    } else if (getCookie("isLogin") === "false") {
+    }
+    if (getCookie("accessToken")) {
       removeCookie("isLogin");
       navigate("/");
       console.log("로그아웃");
     } else if (!active) {
-      if (getCookie("isLogin") === "true") {
+      if (getCookie("accessToken")) {
         console.log("메타마스크 연결 재시도");
 
         activate(injected, async () => {});
@@ -490,33 +489,29 @@ export default function Navbar() {
       mounted.current = true;
     } else {
       console.log(account);
-      if (getCookie("isLogin") === "true") {
+      if (getCookie("accessToken")) {
         getUserInfo();
       }
     }
   }, [account]);
-  useEffect(() => {
+
+  useLayoutEffect(() => {
     console.log(userInfo.tripCount);
-    if (getCookie("isLogin") === "true") {
+    if (getCookie("accessToken")) {
       getUserInfo();
     }
-  }, [userInfo.tripCount]);
+  }, [userInfo]);
 
   const logout = () => {
     if (active) {
       console.log("로그아웃하기  ~ ");
 
       deactivate();
-      removeCookie("accessToken");
-      removeCookie("refreshToken");
-      setCookie("isLogin", "false");
-
       // setUserInfo(userLogout);
-    } else {
-      removeCookie("accessToken");
-      removeCookie("refreshToken");
-      setCookie("isLogin", "false");
     }
+    removeCookie("accessToken");
+    removeCookie("refreshToken");
+    setIsLoggedIn(false);
   };
   const moveToMyTrip = (tripId: number) => {
     navigate(`/trips/${tripId}/diarys`);

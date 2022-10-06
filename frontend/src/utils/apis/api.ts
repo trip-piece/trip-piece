@@ -10,6 +10,12 @@ const axiosInstance: AxiosInstance = axios.create({
     "Access-Control-Allow-Origin": "*",
   },
 });
+export const instance = axios.create({
+  baseURL: "https://j7a607.q.ssafy.io/api",
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
 
 export default axiosInstance;
 
@@ -29,7 +35,10 @@ axiosInstance.interceptors.request.use(
 
 const getNewAccessToken = (access: string, refresh: string) => {
   return axiosInstance.patch(userApis.tokenReissue, {
-    headers: { ACCESS_TOKEN: access, REFRESH_TOKEN: refresh },
+    headers: {
+      ACCESS_TOKEN: access,
+      REFRESH_TOKEN: refresh,
+    },
   });
 };
 

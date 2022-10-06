@@ -4,7 +4,7 @@ export interface IUserInfo {
   address: string | null | undefined;
   nickname: string;
   balance: string;
-  isLoggedIn: boolean;
+
   id: number;
   tripCount: number;
   diaryCount: number;
@@ -16,11 +16,15 @@ const UserInfodata: IUserInfo = {
   address: "",
   nickname: "누군가",
   balance: "0.0",
-  isLoggedIn: false,
   id: 0,
   tripCount: 0,
   diaryCount: 0,
 };
+
+export const isLoggedinState = atom<boolean>({
+  key: "isLoggedinState",
+  default: false,
+});
 
 export const UserInfoState = atom<IUserInfo>({
   key: "userInfoState",

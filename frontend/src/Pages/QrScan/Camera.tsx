@@ -54,7 +54,7 @@ function QrReaderComponent() {
         onResult={handleScan}
         constraints={{ facingMode: "environment" }}
       />
-      <BottonContainer>QR코드를 카메라에 비춰주세용</BottonContainer>
+      <BottonContainer>QR코드를 카메라에 비춰주세요</BottonContainer>
     </>
   );
 }
