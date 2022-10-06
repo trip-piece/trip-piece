@@ -13,6 +13,9 @@ import axiosInstance from "../../utils/apis/api";
 import { useQuery } from "react-query";
 import { MarketStikcerListResponse } from "../../utils/interfaces/markets.interface";
 import { AxiosError, AxiosResponse } from "axios";
+import { NFTContract } from "../../utils/common/NFT_ABI";
+import { useRecoilState } from "recoil";
+import { UserInfoState } from "../../store/atom";
 
 const Container = styled.article`
   min-height: 90vh;
@@ -141,6 +144,8 @@ const CateContainer = styled.article`
 `;
 
 function MarketMainPage() {
+  const [userInfo] = useRecoilState(UserInfoState);
+  const [loading, setLoading] = useState<boolean>(true);
   const { data } = useQuery<
     AxiosResponse<MarketStikcerListResponse>,
     AxiosError
@@ -169,6 +174,20 @@ function MarketMainPage() {
     navigate("/market/register");
   };
 
+  const setApproval = async (e: { preventDefault: () => void }) => {
+    setLoading(true);
+    e.preventDefault();
+    try{
+      const approveResult = await NFTContract.methods
+            .setApprovalForAll(import.meta.env.VITE_MARKET_CA, true)
+            .send({ from: userInfo.address });
+  
+          console.log("권한 부여 성공" + approveResult.status);
+    }catch (err){
+      console.log(err);
+    }
+  }
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -191,6 +210,9 @@ function MarketMainPage() {
             <AiOutlineSearch className="searchIcon" />
           </button>
         </Search>
+        <button onClick={setApproval}>
+          TripPiece Access
+        </button>
         <CardContainer>
           <div className="Header">
             <p>

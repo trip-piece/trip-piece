@@ -99,10 +99,14 @@ function TripDiaryListPage() {
       <Container>
         <Header>
           <H2>
-            {state ? state.title : data?.data.title}
-            {state?.regionId
-              ? REGIONLIST[state.regionId]
-              : data && REGIONLIST[data?.data.regionId]}
+            <span>
+              [
+              {state?.regionId
+                ? REGIONLIST[state.regionId]
+                : data && REGIONLIST[data?.data.regionId]}
+              ]
+            </span>
+            &nbsp;{state ? state.title : data?.data.title}
           </H2>
           {isLoading && <div>Loading...</div>}
           {isSuccess && loading && result.length > 5 && (

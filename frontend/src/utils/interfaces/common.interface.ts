@@ -7,3 +7,8 @@ export interface IWindowSize {
 export interface IChildren {
   children: ReactNode;
 }
+
+export interface IUseSize {
+  width: number;
+  height: number;
+}

@@ -3,6 +3,7 @@ import styled from "@emotion/styled";
 import { Helmet } from "react-helmet-async";
 import { InjectedConnector } from "@web3-react/injected-connector";
 import { useWeb3React } from "@web3-react/core";
+import { motion } from "framer-motion";
 import { NavigateFunction, useNavigate } from "react-router-dom";
 // import { useRecoilState } from "recoil";
 import { useRecoilState, useSetRecoilState } from "recoil";
@@ -14,12 +15,10 @@ import {
   setCookie,
 } from "../../utils/cookie";
 // import { IUserInfo, UserInfoState } from "../../store/atom";
-
 import { pixelToRem } from "../../utils/functions/util";
 import LoginButton from "./LoginButton";
 import Content from "./Text";
 import LandingPageImg from "./LandingPageImg";
-
 import userApis, { walletAddress } from "../../utils/apis/userApis";
 import axiosInstance from "../../utils/apis/api";
 import { IUserInfo, UserInfoState } from "../../store/atom";
@@ -49,21 +48,31 @@ const Container = styled.div`
   flex-direction: column;
 `;
 
-const SeekButton = styled.button`
-  outline: none;
-  border: none;
-  border-radius: 20px;
-  background-color: transparent;
-  font-weight: bold;
-  cursor: pointer;
-  padding-left: 1rem;
-  padding-right: 1rem;
-  width: ${pixelToRem(171)};
-  height: ${pixelToRem(38)};
-  font-size: ${(props) => props.theme.fontSizes.h5};
-  margin-top: 20%;
-  color: ${(props) => props.theme.colors.white};
-  z-index: 1;
+const DivContainer = styled.div`
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  vertical-align: center;
+  justify-content: center;
+  align-items: center;
+
+  .aroundButton {
+    outline: none;
+    border: none;
+    border-radius: 20px;
+    background-color: transparent;
+    font-weight: bold;
+    cursor: pointer;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    width: ${pixelToRem(171)};
+    height: ${pixelToRem(38)};
+    font-size: ${(props) => props.theme.fontSizes.h5};
+    margin-top: 80%;
+    color: ${(props) => props.theme.colors.white};
+    z-index: 1;
+    cursor: pointer;
+  }
 `;
 
 export default function LandingPage() {
@@ -197,15 +206,7 @@ export default function LandingPage() {
       <Helmet>
         <title>Welcome | 여행조각</title>
       </Helmet>
-      <div
-        style={{
-          height: "100vh",
-          display: "flex",
-          flexDirection: "column",
-          verticalAlign: "center",
-          justifyContent: "center",
-        }}
-      >
+      <DivContainer>
         <Content />
         <LoginButton func={handleActivate} />
         <div
@@ -213,10 +214,20 @@ export default function LandingPage() {
             textAlign: "center",
           }}
         >
-          <SeekButton onClick={scrollToElement}>둘러보기</SeekButton>
+          <motion.div
+            animate={{ scale: [1.2, 1, 1.2, 1, 1.2] }}
+            transition={{
+              duration: 4,
+              repeat: Infinity,
+            }}
+            className="aroundButton"
+            onClick={scrollToElement}
+          >
+            👇 둘러보기 👇
+          </motion.div>
         </div>
         {/* <LandingButton /> */}
-      </div>
+      </DivContainer>
       <div ref={testRef}>
         <LandingPageImg />
       </div>

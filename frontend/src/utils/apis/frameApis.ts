@@ -6,7 +6,7 @@ export const frameApis = {
     if (length === 0) {
       api = `/frames?regionList=`;
     } else {
-      regionList.forEach(function (region, idx) {
+      regionList.forEach((region) => {
         str += region.toString();
         str += ",";
       });
@@ -25,3 +25,17 @@ export const frameApis = {
   deleteSharedFrame: "/frames",
   deleteScrappedFrame: "/frames/scrap",
 };
+export interface Idata {
+  stickerList: [
+    {
+      id: number;
+      stickerId: number;
+      tokenId: number;
+      tokenName: string;
+      tokenURL: string;
+      x: number;
+      y: number;
+    },
+  ];
+  scrapped: boolean;
+}

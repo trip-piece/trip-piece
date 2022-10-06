@@ -12,8 +12,9 @@ import Admin from "./Pages/Admin/AdminPage";
 import NftRegister from "./Pages/Admin/NftRegisterPage";
 import QrScanner from "./Pages/QrScan/QrReader";
 import PlaceMainPage from "./Pages/Place/PlaceMainPage";
+import FrameSharePage from "./Pages/Frame/FrameSharePage";
+import FrameDetailPage from "./Pages/Frame/FrameDetailPage";
 
-const Landing = lazy(() => import("./Pages/Landing/LandingPage"));
 const Main = lazy(() => import("./Pages/Main/MainPage"));
 const TripDiaryList = lazy(
   () => import("./Pages/TripDiaryList/TripDiaryListPage"),
@@ -72,6 +73,8 @@ function AnotherRouter() {
             element={<MyLocationListPage />}
           />
           <Route path="qrscan" element={<QrScanner />} />
+          <Route path="/frames" element={<FrameSharePage />} />
+          <Route path="/frames/:frameId" element={<FrameDetailPage />} />
           <Route path="/places/:placeId/:code" element={<NftResponse />} />
         </Routes>
       </Suspense>
