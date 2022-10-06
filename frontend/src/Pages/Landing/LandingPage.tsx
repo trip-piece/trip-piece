@@ -22,7 +22,6 @@ import LandingPageImg from "./LandingPageImg";
 import userApis, { walletAddress } from "../../utils/apis/userApis";
 import axiosInstance from "../../utils/apis/api";
 import { IUserInfo, UserInfoState } from "../../store/atom";
-import { Idata, IUserData } from "../../utils/hooks/useLogin";
 
 const injected = new InjectedConnector({ supportedChainIds: [5] });
 //const injected = new InjectedConnector({});
