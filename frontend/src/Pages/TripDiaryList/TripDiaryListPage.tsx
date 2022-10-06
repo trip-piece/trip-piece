@@ -57,23 +57,6 @@ function TripDiaryListPage() {
   const [loading, setLoading] = useState<boolean>(false);
   const [today] = useState(() => changeDateFormatToHyphen(new Date()));
   const setUserInfo = useSetRecoilState(UserInfoState);
-  const getUserInfo = () => {
-    axiosInstance
-      .get(userApis.getUser)
-      .then((response: { data: IUserData }) => {
-        setUserInfo((prev) => ({
-          ...prev,
-          address: response.data.walletAddress,
-          nickname: response.data.nickname,
-          balance: "0.0",
-          isLoggedIn: true,
-          id: response.data.userId,
-          tripCount: response.data.tripCount,
-          diaryCount: response.data.diaryCount,
-        }));
-        return response.data.walletAddress;
-      });
-  };
 
   const { tripId } = useParams();
 
@@ -91,6 +74,24 @@ function TripDiaryListPage() {
       refetchOnMount: true,
     },
   );
+
+  const getUserInfo = () => {
+    axiosInstance
+      .get(userApis.getUser)
+      .then((response: { data: IUserData }) => {
+        setUserInfo((prev) => ({
+          ...prev,
+          address: response.data.walletAddress,
+          nickname: response.data.nickname,
+          balance: "0.0",
+          isLoggedIn: true,
+          id: response.data.userId,
+          tripCount: response.data.tripCount,
+          diaryCount: response.data.diaryCount,
+        }));
+        return response.data.walletAddress;
+      });
+  };
   useEffect(() => {
     getUserInfo();
   }, []);

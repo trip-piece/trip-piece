@@ -9,7 +9,6 @@ import Skeleton from "./Skeleton";
 import TripCreateButton from "./TripCreationButton";
 import BasicModal from "./Modal";
 import Container from "../../components/atoms/Container";
-import { loading } from "../../style/animations";
 import InfiniteLoading from "../../components/modules/InfiniteLoading";
 
 const Title = styled.h2`
