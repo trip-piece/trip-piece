@@ -57,6 +57,8 @@ function NftResponse() {
   const { placeId, code } = useParams();
   const [loading, setLoading] = useState(true);
   const [userInfo, setUserInfo] = useRecoilState(UserInfoState);
+  const [recoilQrInfo, setRecoilQrInfo] = useRecoilState(QrInfoState);
+
   const [locationInfo, setLocationInfo] = useState("");
   const [state, setState] = useState<ContentProps>({
     result: "null",
@@ -212,6 +214,8 @@ function NftResponse() {
             });
         }
       });
+
+      setRecoilQrInfo((prev) => ({ ...prev, modalFlag: false }));
     } catch (error) {
       contentPropsInit.result = "incorrect";
       contentPropsInit.stickerUrl = "https://ifh.cc/g/V44V4O.png";
@@ -221,10 +225,10 @@ function NftResponse() {
   };
 
   const validationLink = (url: string) => {
-    const regax =
-      /^(http(s)?:\/\/)(j7a607.q.ssafy.io)(\/)(places)(\/)([\d]{1,2})(\/)([a-zA-Z0-9!@#$%^&]{10})/g;
     // const regax =
-    //   /^(http(s)?:\/\/)(localhost:3000)(\/)(places)(\/)([\d]{1,2})(\/)([a-zA-Z0-9!@#$%^&]{10})/g;
+    //   /^(http(s)?:\/\/)(j7a607.q.ssafy.io)(\/)(places)(\/)([\d]{1,2})(\/)([a-zA-Z0-9!@#$%^&]{10})/g;
+    const regax =
+      /^(http(s)?:\/\/)(localhost:3000)(\/)(places)(\/)([\d]{1,2})(\/)([a-zA-Z0-9!@#$%^&]{10})/g;
 
     if (regax.test(url)) {
       console.log("validationLink Test 성공");
@@ -268,5 +272,3 @@ function NftResponse() {
     </motion.div>
   );
 }
-
-export default NftResponse;
