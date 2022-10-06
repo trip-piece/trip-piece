@@ -19,9 +19,7 @@ public class CorsConfig {
       config.addAllowedOriginPattern("*");// e.g. http://domain1.com
       config.addAllowedHeader("*");
       config.addAllowedMethod("*");
-      config.setExposedHeaders(Collections.singletonList("msg"));
-      config.addAllowedHeader("msg");
-
+    
       source.registerCorsConfiguration("/**", config);
       return new CorsFilter(source);
    }
