@@ -26,47 +26,6 @@ function Router() {
     e.returnValue = ""; // Chrome에서 동작하도록;
   };
 
-  const getUserInfo = () => {
-    axiosInstance
-      .get(userApis.getUser)
-      .then((response: { data: IUserData }) => {
-        console.log(response.data);
-
-        console.log(userInfo);
-
-        setUserInfo((prev) => ({
-          ...prev,
-          address: response.data.walletAddress,
-          nickname: response.data.nickname,
-          balance: "0.0",
-          isLoggedIn: true,
-          id: response.data.userId,
-          tripCount: response.data.tripCount,
-          diaryCount: response.data.diaryCount,
-        }));
-        return response.data.walletAddress;
-      })
-      .then((address) => {
-        const web3 = new Web3(
-          new Web3.providers.HttpProvider(import.meta.env.VITE_WEB3_URL),
-        );
-        if (address) {
-          web3.eth
-            .getBalance(address)
-            .then((balance) => {
-              return web3.utils.fromWei(balance, "ether");
-            })
-            .then((eth) => {
-              setUserInfo((prev) => ({ ...prev, balance: eth }));
-
-              //setCookie("isLogin", "true");
-              //moveToMain();
-              window.location.replace("http://localhost:3000/main");
-            });
-        }
-      });
-  };
-
   useEffect(() => {
     (() => {
       window.addEventListener("unload", preventClose);
@@ -77,8 +36,6 @@ function Router() {
   }, []);
 
   useEffect(() => {
-    if (isLoggedIn) getUserInfo();
-
     if (!isLoggedIn && getCookie("accessToken")) {
       setIsLoggedIn(true);
     }

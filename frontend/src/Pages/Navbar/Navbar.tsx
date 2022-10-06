@@ -471,11 +471,10 @@ export default function Navbar() {
     if (!mounted.current) {
       mounted.current = true;
     }
-    if (getCookie("accessToken")) {
-      removeCookie("isLogin");
-      navigate("/");
-      console.log("로그아웃");
-    } else if (!active) {
+    // if (getCookie("accessToken") && isLoggedIn) {
+    //   navigate("/");
+    //   console.log("로그아웃");
+    if (!active) {
       if (getCookie("accessToken")) {
         console.log("메타마스크 연결 재시도");
 
@@ -495,12 +494,12 @@ export default function Navbar() {
     }
   }, [account]);
 
-  useLayoutEffect(() => {
-    console.log(userInfo.tripCount);
-    if (getCookie("accessToken")) {
-      getUserInfo();
-    }
-  }, [userInfo]);
+  // useLayoutEffect(() => {
+  //   console.log(userInfo.tripCount);
+  //   if (getCookie("accessToken")) {
+  //     getUserInfo();
+  //   }
+  // }, [userInfo]);
 
   const logout = () => {
     if (active) {

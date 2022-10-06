@@ -82,71 +82,9 @@ export default function LandingPage() {
   console.log(active);
 
   console.log(`첫 렌더링: 지갑.. ${account}`);
- const moveToMain = () => {
-      navigate("/main");
-    };
-  function useLogin(data: Idata) {
-    console.log("엥");
-
-   
-
-    axiosInstance
-      .post(userApis.login, data)
-      .then(
-        (response: { data: { accessToken: string; refreshToken: string } }) => {
-          setCookie("accessToken", response.data.accessToken, {
-            maxAge: 1000 * 60 * 60 * 24,
-            sameSite: true,
-          });
-          setCookie("refreshToken", response.data.refreshToken, {
-            maxAge: 1000 * 60 * 60 * 24 * 7,
-            sameSite: true,
-          });
-
-          return response.data.accessToken;
-        },
-      )
-      .then((token) => {
-        axiosInstance
-          .get(userApis.getUser, { headers: { ACCESS_TOKEN: token } })
-          .then((response: { data: IUserData }) => {
-            console.log(response.data);
-
-            console.log(userInfo);
-
-            setUserInfo((prev) => ({
-              ...prev,
-              address: response.data.walletAddress,
-              nickname: response.data.nickname,
-              balance: "0.0",
-              isLoggedIn: true,
-              id: response.data.userId,
-              tripCount: response.data.tripCount,
-              diaryCount: response.data.diaryCount,
-            }));
-
-            return response.data.walletAddress;
-          })
-          .then((address) => {
-            const web3 = new Web3(
-              new Web3.providers.HttpProvider(import.meta.env.VITE_WEB3_URL),
-            );
-            if (address) {
-              web3.eth
-                .getBalance(address)
-                .then((balance) => {
-                  return web3.utils.fromWei(balance, "ether");
-                })
-                .then((eth) => {
-                  setUserInfo((prev) => ({ ...prev, balance: eth }));
-
-                  setCookie("isLogin", "true");
-                  moveToMain();
-                });
-            }
-          });
-      });
-  }
+  const moveToMain = () => {
+    navigate("/main");
+  };
 
   function login(data: Idata) {
     console.log("jwt 로그인");
@@ -154,7 +92,6 @@ export default function LandingPage() {
     // const moveToMain = () => {
     //   navigate("/main");
     // };
-
     axiosInstance
       .post(userApis.login, data)
       .then(
@@ -168,8 +105,8 @@ export default function LandingPage() {
             sameSite: true,
           });
           setIsLoggedIn(true);
+          moveToMain();
         },
-        moveToMain();
       );
   }
 
@@ -177,15 +114,9 @@ export default function LandingPage() {
   useEffect(() => {
     if (!mounted.current) {
       mounted.current = true;
-      console.log(getCookie("isLogin"));
-    } else if (getCookie("isLogin") === "false") {
-      console.log("로그아웃");
-    } else if (!getCookie("isLogin")) {
-      console.log("첫로그인");
-
+    } else if (!getCookie("accessToken") && account.length !== 0) {
       const data: Idata = { walletAddress: account };
       login(data);
-      // useLogin(data);
     }
   }, [account]);
 
@@ -196,8 +127,8 @@ export default function LandingPage() {
     if (active) {
       if (account.length !== 0) {
         console.log("메타마스크 연결되있는데 지갑길이 받아온 상태");
-
-        useLogin({ walletAddress: account });
+        moveToMain();
+        // login({ walletAddress: account });
       } else {
         console.log("메타마스크 연결되있는데 지갑 안받아온 상태");
         console.log("연결끊기");
