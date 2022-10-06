@@ -44,6 +44,7 @@ import { getCookie, removeCookie, setCookie } from "../../utils/cookie";
 import userApis, { Idata, IUserData } from "../../utils/apis/userApis";
 import Web3 from "web3";
 import { InjectedConnector } from "@web3-react/injected-connector";
+import { NFTContract } from "../../utils/common/NFT_ABI";
 
 const DrawerHeader = styled.div`
   display: flex;
@@ -476,7 +477,7 @@ export default function Navbar() {
     //   console.log("로그아웃");
     if (!active) {
       if (getCookie("accessToken")) {
-        console.log("메타마스크 연결 재시도");
+        //  console.log("메타마스크 연결 재시도");
 
         activate(injected, async () => {});
       }
@@ -487,7 +488,7 @@ export default function Navbar() {
     if (!mounted.current) {
       mounted.current = true;
     } else {
-      console.log(account);
+      //console.log(account);
       if (getCookie("accessToken")) {
         getUserInfo();
       }
@@ -501,9 +502,27 @@ export default function Navbar() {
   //   }
   // }, [userInfo]);
 
+  const setApproval = async (e: { preventDefault: () => void }) => {
+    //setLoading;
+    e.preventDefault();
+    try {
+      const approveResult = await NFTContract.methods
+        .setApprovalForAll(import.meta.env.VITE_MARKET_CA, true)
+        .send({ from: userInfo.address });
+
+      // console.log("권한 부여 성공" + approveResult.status);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+  useEffect(() => {
+    //console.log("맨 처음 렌더링될 때 한 번만 실행");
+    setApproval();
+  }, []);
+
   const logout = () => {
     if (active) {
-      console.log("로그아웃하기  ~ ");
+      //  console.log("로그아웃하기  ~ ");
 
       deactivate();
       // setUserInfo(userLogout);

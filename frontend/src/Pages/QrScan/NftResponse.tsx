@@ -93,7 +93,7 @@ function NftResponse() {
         web3.eth.sendSignedTransaction(signed.rawTransaction);
       });
     } catch (error) {
-      console.log("주다가 에러났다 ", error);
+     // console.log("주다가 에러났다 ", error);
       contentPropsInit.result = "fail";
       contentPropsInit.stickerName = "ERROR !";
       contentPropsInit.stickerUrl = "https://ifh.cc/g/V44V4O.png";
@@ -225,17 +225,17 @@ function NftResponse() {
   };
 
   const validationLink = (url: string) => {
-    // const regax =
-    //   /^(http(s)?:\/\/)(j7a607.q.ssafy.io)(\/)(places)(\/)([\d]{1,2})(\/)([a-zA-Z0-9!@#$%^&]{10})/g;
     const regax =
-      /^(http(s)?:\/\/)(localhost:3000)(\/)(places)(\/)([\d]{1,2})(\/)([a-zA-Z0-9!@#$%^&]{10})/g;
+      /^(http(s)?:\/\/)(j7a607.q.ssafy.io)(\/)(places)(\/)([\d]{1,2})(\/)([a-zA-Z0-9!@#$%^&]{10})/g;
+    // const regax =
+    //   /^(http(s)?:\/\/)(localhost:3000)(\/)(places)(\/)([\d]{1,2})(\/)([a-zA-Z0-9!@#$%^&]{10})/g;
 
     if (regax.test(url)) {
-      console.log("validationLink Test 성공");
+      //console.log("validationLink Test 성공");
       contentPropsInit.result = "success";
       validationCode(Number(placeId));
     } else {
-      console.log("validationLink Test 실패 ㅠㅠ");
+     // console.log("validationLink Test 실패 ㅠㅠ");
       contentPropsInit.result = "incorrect";
       contentPropsInit.stickerUrl = "https://ifh.cc/g/V44V4O.png";
       setState(contentPropsInit);

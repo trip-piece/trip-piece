@@ -79,15 +79,15 @@ export default function LandingPage() {
   const [userInfo, setUserInfo] = useRecoilState(UserInfoState);
   const [isLoggedIn, setIsLoggedIn] = useRecoilState(isLoggedinState);
 
-  console.log(active);
+  //console.log(active);
 
-  console.log(`첫 렌더링: 지갑.. ${account}`);
+ // console.log(`첫 렌더링: 지갑.. ${account}`);
   const moveToMain = () => {
     navigate("/main");
   };
 
   function login(data: Idata) {
-    console.log("jwt 로그인");
+  //  console.log("jwt 로그인");
 
     // const moveToMain = () => {
     //   navigate("/main");
@@ -126,29 +126,29 @@ export default function LandingPage() {
 
     if (active) {
       if (account.length !== 0) {
-        console.log("메타마스크 연결되있는데 지갑길이 받아온 상태");
+        //console.log("메타마스크 연결되있는데 지갑길이 받아온 상태");
         moveToMain();
         // login({ walletAddress: account });
       } else {
-        console.log("메타마스크 연결되있는데 지갑 안받아온 상태");
-        console.log("연결끊기");
+       // console.log("메타마스크 연결되있는데 지갑 안받아온 상태");
+       // console.log("연결끊기");
 
         deactivate();
-        console.log("재연결");
+      //  console.log("재연결");
 
         activate(injected, async () => {});
       }
     } else {
-      console.log("연결안되있어서 연결하자 !");
+     // console.log("연결안되있어서 연결하자 !");
 
-      console.log(`active ${active}`);
+    //  console.log(`active ${active}`);
 
       activate(injected, async () => {
         return Error;
       }).catch((error) => {
-        console.log("activate 에러메시지");
+      //  console.log("activate 에러메시지");
 
-        console.log(error);
+      //  console.log(error);
       });
     }
   };

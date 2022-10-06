@@ -13,27 +13,10 @@ import { getCookie, removeCookie } from "./utils/cookie";
 
 function Router() {
   const [isLoggedIn, setIsLoggedIn] = useRecoilState(isLoggedinState);
-  const [userInfo, setUserInfo] = useRecoilState(UserInfoState);
-  //const navigate = useNavigate();
 
-  const preventClose = (e: BeforeUnloadEvent) => {
-    e.preventDefault();
-
-    if (getCookie("isLogin")) {
-      removeCookie("isLogin");
-    }
-
-    e.returnValue = ""; // Chrome에서 동작하도록;
+  const isLogin = () => {
+    return isLoggedIn;
   };
-
-  useEffect(() => {
-    (() => {
-      window.addEventListener("unload", preventClose);
-    })();
-    return () => {
-      window.removeEventListener("unload", preventClose);
-    };
-  }, []);
 
   useEffect(() => {
     if (!isLoggedIn && getCookie("accessToken")) {
@@ -45,7 +28,7 @@ function Router() {
     <BrowserRouter>
       <Routes>
         <Route path="" element={<Landing />} />
-        <Route path="/*" element={<AnotherRouter />} />
+        {isLoggedIn && <Route path="/*" element={<AnotherRouter />} />}
       </Routes>
     </BrowserRouter>
   );
