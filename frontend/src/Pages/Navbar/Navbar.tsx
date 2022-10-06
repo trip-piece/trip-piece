@@ -496,28 +496,28 @@ export default function Navbar() {
     }
   }, [account]);
 
-  useEffect(() => {
-    if (!mounted.current) {
-      mounted.current = true;
-    } else {
-      //console.log(account);
-      // eslint-disable-next-line no-lonely-if
-      if (getCookie("accessToken")) {
-        getUserInfo();
-      }
-    }
-  }, [userInfo.tripCount]);
-  useEffect(() => {
-    if (!mounted.current) {
-      mounted.current = true;
-    } else {
-      //console.log(account);
-      // eslint-disable-next-line no-lonely-if
-      if (getCookie("accessToken")) {
-        getUserInfo();
-      }
-    }
-  }, [userInfo.diaryCount]);
+  // useEffect(() => {
+  //   if (!mounted.current) {
+  //     mounted.current = true;
+  //   } else {
+  //     //console.log(account);
+  //     // eslint-disable-next-line no-lonely-if
+  //     if (getCookie("accessToken")) {
+  //       getUserInfo();
+  //     }
+  //   }
+  // }, [userInfo.tripCount]);
+  // useEffect(() => {
+  //   if (!mounted.current) {
+  //     mounted.current = true;
+  //   } else {
+  //     //console.log(account);
+  //     // eslint-disable-next-line no-lonely-if
+  //     if (getCookie("accessToken")) {
+  //       getUserInfo();
+  //     }
+  //   }
+  // }, [userInfo.diaryCount]);
 
   // const setApproval = async (e: { preventDefault: () => void }) => {
   //   //setLoading;
