@@ -4,28 +4,19 @@ import { Helmet } from "react-helmet-async";
 import { InjectedConnector } from "@web3-react/injected-connector";
 import { useWeb3React } from "@web3-react/core";
 import { motion } from "framer-motion";
-import { NavigateFunction, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 // import { useRecoilState } from "recoil";
-import { useRecoilState, useSetRecoilState } from "recoil";
+import { useRecoilState } from "recoil";
 import Web3 from "web3";
-import {
-  accessTokenExpiredSetting,
-  getCookie,
-  refreshTokenExpiredSetting,
-  setCookie,
-} from "../../utils/cookie";
+import { getCookie, setCookie } from "../../utils/cookie";
 // import { IUserInfo, UserInfoState } from "../../store/atom";
 import { pixelToRem } from "../../utils/functions/util";
 import LoginButton from "./LoginButton";
 import Content from "./Text";
 import LandingPageImg from "./LandingPageImg";
-import userApis, {
-  Idata,
-  IUserData,
-  walletAddress,
-} from "../../utils/apis/userApis";
+import userApis, { Idata } from "../../utils/apis/userApis";
 import axiosInstance from "../../utils/apis/api";
-import { IUserInfo, UserInfoState } from "../../store/atom";
+import { isLoggedinState, UserInfoState } from "../../store/atom";
 
 const injected = new InjectedConnector({ supportedChainIds: [5] });
 //const injected = new InjectedConnector({});
@@ -86,18 +77,21 @@ export default function LandingPage() {
   const { activate, active, account, deactivate } = useWeb3React();
   const navigate = useNavigate();
   const [userInfo, setUserInfo] = useRecoilState(UserInfoState);
+  const [isLoggedIn, setIsLoggedIn] = useRecoilState(isLoggedinState);
 
-  console.log(active);
+  //console.log(active);
 
-  console.log(`첫 렌더링: 지갑.. ${account}`);
+  // console.log(`첫 렌더링: 지갑.. ${account}`);
+  const moveToMain = () => {
+    navigate("/main");
+  };
 
-  function useLogin(data: Idata) {
-    console.log("엥");
+  function login(data: Idata) {
+    //  console.log("jwt 로그인");
 
-    const moveToMain = () => {
-      navigate("/main");
-    };
-
+    // const moveToMain = () => {
+    //   navigate("/main");
+    // };
     axiosInstance
       .post(userApis.login, data)
       .then(
@@ -110,64 +104,19 @@ export default function LandingPage() {
             maxAge: 1000 * 60 * 60 * 24 * 7,
             sameSite: true,
           });
-
-          return response.data.accessToken;
+          setIsLoggedIn(true);
+          moveToMain();
         },
-      )
-      .then((token) => {
-        axiosInstance
-          .get(userApis.getUser, { headers: { ACCESS_TOKEN: token } })
-          .then((response: { data: IUserData }) => {
-            console.log(response.data);
-
-            console.log(userInfo);
-
-            setUserInfo((prev) => ({
-              ...prev,
-              address: response.data.walletAddress,
-              nickname: response.data.nickname,
-              balance: "0.0",
-              isLoggedIn: true,
-              id: response.data.userId,
-              tripCount: response.data.tripCount,
-              diaryCount: response.data.diaryCount,
-            }));
-
-            return response.data.walletAddress;
-          })
-          .then((address) => {
-            const web3 = new Web3(
-              new Web3.providers.HttpProvider(import.meta.env.VITE_WEB3_URL),
-            );
-            if (address) {
-              web3.eth
-                .getBalance(address)
-                .then((balance) => {
-                  return web3.utils.fromWei(balance, "ether");
-                })
-                .then((eth) => {
-                  setUserInfo((prev) => ({ ...prev, balance: eth }));
-
-                  setCookie("isLogin", "true");
-                  moveToMain();
-                });
-            }
-          });
-      });
+      );
   }
 
   const mounted = useRef(false);
   useEffect(() => {
     if (!mounted.current) {
       mounted.current = true;
-      console.log(getCookie("isLogin"));
-    } else if (getCookie("isLogin") === "false") {
-      console.log("로그아웃");
-    } else if (!getCookie("isLogin")) {
-      console.log("첫로그인");
-
+    } else if (!getCookie("accessToken") && account.length !== 0) {
       const data: Idata = { walletAddress: account };
-      useLogin(data);
+      login(data);
     }
   }, [account]);
 
@@ -177,29 +126,28 @@ export default function LandingPage() {
 
     if (active) {
       if (account.length !== 0) {
-        console.log("메타마스크 연결되있는데 지갑길이 받아온 상태");
-
-        useLogin({ walletAddress: account });
+        //console.log("메타마스크 연결되있는데 지갑길이 받아온 상태");
+        moveToMain();
+        // login({ walletAddress: account });
       } else {
-        console.log("메타마스크 연결되있는데 지갑 안받아온 상태");
-        console.log("연결끊기");
+        // console.log("메타마스크 연결되있는데 지갑 안받아온 상태");
+        // console.log("연결끊기");
 
         deactivate();
-        console.log("재연결");
+        //  console.log("재연결");
 
         activate(injected, async () => {});
       }
     } else {
-      console.log("연결안되있어서 연결하자 !");
+      // console.log("연결안되있어서 연결하자 !");
 
-      console.log(`active ${active}`);
+      //  console.log(`active ${active}`);
 
       activate(injected, async () => {
         return Error;
       }).catch((error) => {
-        console.log("activate 에러메시지");
-
-        console.log(error);
+        //  console.log("activate 에러메시지");
+        //  console.log(error);
       });
     }
   };
