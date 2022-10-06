@@ -22,11 +22,12 @@ import AppBar from "@mui/material/AppBar";
 import { useRecoilState, useResetRecoilState } from "recoil";
 import { motion } from "framer-motion";
 import { useWeb3React } from "@web3-react/core";
-import React, { useLayoutEffect } from "react";
+import React, { useLayoutEffect, useEffect, useRef, useState } from "react";
 import { AxiosError, AxiosResponse } from "axios";
 import { useQuery } from "react-query";
-import { useEffect, useRef, useState } from "react";
 import { ReactJSXElement } from "@emotion/react/types/jsx-namespace";
+import Web3 from "web3";
+import { InjectedConnector } from "@web3-react/injected-connector";
 import {
   changeDateFormatToHyphen,
   pixelToRem,
@@ -42,8 +43,6 @@ import { CodeProps } from "../../utils/interfaces/qrscan.inteface";
 import NestedModal from "../MyPage/Modal";
 import { getCookie, removeCookie, setCookie } from "../../utils/cookie";
 import userApis, { Idata, IUserData } from "../../utils/apis/userApis";
-import Web3 from "web3";
-import { InjectedConnector } from "@web3-react/injected-connector";
 import { NFTContract } from "../../utils/common/NFT_ABI";
 
 const DrawerHeader = styled.div`
@@ -378,12 +377,12 @@ export default function Navbar() {
   const [isLoggedIn, setIsLoggedIn] = useRecoilState(isLoggedinState);
   const mounted = useRef(false);
 
-  //console.log(`nav active ${active}`);
+  // console.log(`nav active ${active}`);
   const getUserInfo = () => {
     axiosInstance
       .get(userApis.getUser)
       .then((response: { data: IUserData }) => {
-        //console.log(response.data);
+        // console.log(response.data);
 
         console.log(userInfo);
 
@@ -412,8 +411,8 @@ export default function Navbar() {
             .then((eth) => {
               setUserInfo((prev) => ({ ...prev, balance: eth }));
 
-              //setCookie("isLogin", "true");
-              //moveToMain();
+              // setCookie("isLogin", "true");
+              // moveToMain();
             });
         }
       });
@@ -488,7 +487,7 @@ export default function Navbar() {
     if (!mounted.current) {
       mounted.current = true;
     } else {
-      //console.log(account);
+      // console.log(account);
       // eslint-disable-next-line no-lonely-if
       if (getCookie("accessToken")) {
         getUserInfo();
@@ -554,11 +553,10 @@ export default function Navbar() {
     setOpen(false);
   };
 
-  const {
-    isLoading: isLoading,
-    isSuccess: isSuccess,
-    data: data,
-  } = useQuery<AxiosResponse<ITrip>, AxiosError>(
+  const { isLoading, isSuccess, data } = useQuery<
+    AxiosResponse<ITrip>,
+    AxiosError
+  >(
     [`${userInfo.id}-upcomingTrip`],
     () => axiosInstance.get(tripApis.upcomingTrip(today)),
     {

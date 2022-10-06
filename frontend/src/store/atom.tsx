@@ -1,4 +1,6 @@
 import { atom } from "recoil";
+import { v4 } from "uuid";
+import { getCookie } from "../utils/cookie";
 
 export interface IUserInfo {
   address: string | null | undefined;
@@ -22,12 +24,12 @@ const UserInfodata: IUserInfo = {
 };
 
 export const isLoggedinState = atom<boolean>({
-  key: "isLoggedinState",
-  default: false,
+  key: `isLoggedinState/${v4()}`,
+  default: !!getCookie("accessToken"),
 });
 
 export const UserInfoState = atom<IUserInfo>({
-  key: "userInfoState",
+  key: `userInfoState/${v4()}`,
   default: UserInfodata,
 });
 
@@ -44,11 +46,11 @@ const initialQrInfoState: IQrInfo = {
 };
 
 export const QrInfoState = atom({
-  key: "recoilQrState",
+  key: `recoilQrState/${v4()}`,
   default: initialQrInfoState,
 });
 
 export const frameRegionListState = atom<number[]>({
-  key: "frameRegionListState",
+  key: `frameRegionListState/${v4()}`,
   default: [],
 });

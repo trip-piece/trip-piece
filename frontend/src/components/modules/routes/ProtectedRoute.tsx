@@ -1,15 +1,11 @@
-/* eslint-disable react/require-default-props */
-import { ReactNode } from "react";
 import { Navigate, Outlet } from "react-router-dom";
-import { useRecoilState } from "recoil";
-import { UserInfoState } from "../../../store/atom";
 
 interface RouteProps {
-  children?: ReactNode;
+  children?: JSX.Element;
+  loggedIn: boolean;
 }
 
-function ProtectedRoute({ children }: RouteProps) {
-  const loggedIn = useRecoilState(UserInfoState);
+function ProtectedRoute({ loggedIn, children }: RouteProps): JSX.Element {
   if (!loggedIn) {
     return <Navigate to="/" replace />;
   }

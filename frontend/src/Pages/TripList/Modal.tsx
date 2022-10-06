@@ -18,6 +18,7 @@ import "../../style/DatePicker.css";
 import { AiFillCaretDown } from "react-icons/ai";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { InfiniteData, QueryObserverResult } from "react-query";
+import { useSetRecoilState } from "recoil";
 import {
   changeDateFormatToHyphen,
   createDate,
@@ -30,6 +31,8 @@ import DateInfomation from "./DateInfomation";
 import tripApis from "../../utils/apis/tripsApis";
 import { ITrip } from "../../utils/interfaces/trips.interface";
 import axiosInstance from "../../utils/apis/api";
+import userApis, { IUserData } from "../../utils/apis/userApis";
+import { UserInfoState } from "../../store/atom";
 
 const Wrapper = styled(Box)`
   position: absolute;
@@ -211,9 +214,28 @@ function BasicModal({
       day: "",
     },
   );
+  const setUserInfo = useSetRecoilState(UserInfoState);
 
   const cancel = () => {
     setOpen(false);
+  };
+
+  const getUserInfo = () => {
+    axiosInstance
+      .get(userApis.getUser)
+      .then((response: { data: IUserData }) => {
+        setUserInfo((prev) => ({
+          ...prev,
+          address: response.data.walletAddress,
+          nickname: response.data.nickname,
+          balance: "0.0",
+          isLoggedIn: true,
+          id: response.data.userId,
+          tripCount: response.data.tripCount,
+          diaryCount: response.data.diaryCount,
+        }));
+        return response.data.walletAddress;
+      });
   };
 
   useEffect(() => {
@@ -305,6 +327,7 @@ function BasicModal({
     try {
       if (response.status === 200 || response.status === 201) {
         if (refetch) refetch();
+        getUserInfo();
         handleClose();
         setValue("regionId", 1);
         setValue("title", "");
@@ -327,6 +350,7 @@ function BasicModal({
 
       if (response.status === 200 || response.status === 204) {
         if (refetch) refetch();
+        getUserInfo();
         handleClose();
       }
     } catch (err) {

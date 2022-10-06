@@ -9,6 +9,8 @@ import { MemoInfiniteList } from "../../components/modules/infinite/ParamsInfini
 import { marketApis } from "../../utils/apis/marketApis";
 import Skeleton from "../TripList/Skeleton";
 import { InfiniteStickerCard } from "./InfiniteStickerCard";
+import InfiniteLoading from "../../components/modules/InfiniteLoading";
+import LoadingCard from "../../components/atoms/LoadingCard";
 
 const Container = styled.article`
   min-height: 90vh;
@@ -92,8 +94,9 @@ function MarketListPage() {
   const { regionId, orderNum, getSearchKeyword } = useParams();
   const regionName = REGIONLIST;
   const [keyword, setKeyword] = useState("");
+  const navigate = useNavigate();
 
-  var searchKeyword: string = "";
+  let searchKeyword: string = "";
   if (getSearchKeyword) {
     searchKeyword = getSearchKeyword;
   }
@@ -106,7 +109,6 @@ function MarketListPage() {
     setKeyword(e.target.value);
   };
 
-  const navigate = useNavigate();
   const moveToRegisterPage = () => {
     navigate("/market/register");
   };
@@ -148,7 +150,7 @@ function MarketListPage() {
               value={keyword}
               onChange={searchChange}
             />
-            <button>
+            <button type="button">
               <AiOutlineSearch className="searchIcon" />
             </button>
           </Search>
@@ -166,10 +168,10 @@ function MarketListPage() {
               )}`,
             ]}
             CardComponent={InfiniteStickerCard}
-            SkeletonCardComponent={Skeleton}
+            SkeletonCardComponent={LoadingCard}
             zeroDataText="판매중인 스티커가 존재하지 않습니다."
             count={2}
-            listName={"content"}
+            listName="content"
           />
         </ListContainer>
       </Container>
