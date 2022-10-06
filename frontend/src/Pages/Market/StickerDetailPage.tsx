@@ -4,7 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { FaEthereum } from "react-icons/fa";
 import { motion } from "framer-motion";
 import { BsFillCreditCardFill } from "react-icons/bs";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AxiosError, AxiosResponse } from "axios";
 import axiosInstance from "../../utils/apis/api";
 import { useQuery } from "react-query";
@@ -106,16 +106,14 @@ const Button = styled.article`
     }
   }
 `;
-// const navigate = useNavigate();
-// const moveToBeforePage = () => {
-//   navigate(-1);
-// };
 
 function StickerDetailPage() {
   const { marketId } = useParams();
   const [imagePath, setImagePath] = useState<string>();
   const [userInfo] = useRecoilState(UserInfoState);
   const [loading, setLoading] = useState<boolean>(true);
+  const [mine, setMine] = useState<boolean>(false);
+  const navigate = useNavigate();
   const { data } = useQuery<AxiosResponse<IMarket>, AxiosError>(
     ["marketDetail"],
     () => axiosInstance.get(marketApis.getMarketDetail(marketId)),
@@ -125,7 +123,7 @@ function StickerDetailPage() {
       refetchOnMount: true,
     },
   );
-  
+
   const getImage = (tokenUrl: string): string => {
     fetch(`https://www.infura-ipfs.io/ipfs/${data?.data?.tokenURL}`)
       .then((res) => {
@@ -146,9 +144,27 @@ function StickerDetailPage() {
         .send({ from: userInfo.address, value: data?.data?.price });
       if (result.status) {
         deleteMarket({ data: { marketId: data.data.marketId } });
-        console.log("DB등록완료");
       }
       alert("구매가 완료되었습니다.");
+      navigate(-1);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const cancelSticker = async (e: { preventDefault: () => void }) => {
+    setLoading(true);
+    e.preventDefault();
+    try {
+      const result = await MarketContract.methods
+        .cancelSticker(data.data.tokenId)
+        .send({ from: userInfo.address });
+      if (result.status) {
+        deleteMarket({ data: { marketId: data.data.marketId } });
+        console.log("DB삭제완료");
+      }
+      alert("등록이 취소되었습니다.");
+      navigate(-1);
     } catch (err) {
       console.log(err);
     }
@@ -162,8 +178,14 @@ function StickerDetailPage() {
       });
   };
 
+  useEffect(() => {
+    if (data?.data?.userId == userInfo.id) setMine(true);
+  }, ["marketDetail"]);
+
+  const moveToBack = () => {
+    navigate(-1);
+  };
   getImage(data?.data?.tokenURL);
-  console.log(data);
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -187,13 +209,18 @@ function StickerDetailPage() {
           </div>
         </Price>
         <Button>
-          {/* 판매글을 올린 userId가 로그인한 userId와 같으면 판매 취소 버튼으로.. */}
-          <button onClick={buySticker}>
-            <BsFillCreditCardFill />
-            <p>구매</p>
-          </button>
-          <button>
-            <BsFillCreditCardFill />
+          {mine && (
+            <button onClick={cancelSticker}>
+              <p>등록 취소</p>
+            </button>
+          )}
+          {!mine && (
+            <button onClick={buySticker}>
+              <BsFillCreditCardFill />
+              <p>구매</p>
+            </button>
+          )}
+          <button style={{ marginTop: "5px" }} onClick={moveToBack}>
             <p>뒤로가기</p>
           </button>
         </Button>

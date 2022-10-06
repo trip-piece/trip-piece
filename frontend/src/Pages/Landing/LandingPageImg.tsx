@@ -16,6 +16,8 @@ const Container = styled.div`
   min-height: 100vh;
   width: 100%;
   flex-direction: column;
+  max-width: 550px;
+  min-width: 320px;
 `;
 
 const PageImg = styled.img`
@@ -46,9 +48,9 @@ const DivContainer = styled.div`
 
   .clickButton {
     width: 80%;
-    margin-left: 130px;
     height: 7vh;
     position: absolute;
+    padding-left: 115px;
     margin-top: 90vh;
     background: transparent;
     color: ${(props) => props.theme.colors.white};

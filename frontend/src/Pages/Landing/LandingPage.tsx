@@ -14,13 +14,9 @@ import { pixelToRem } from "../../utils/functions/util";
 import LoginButton from "./LoginButton";
 import Content from "./Text";
 import LandingPageImg from "./LandingPageImg";
-import userApis, { Idata, IUserData } from "../../utils/apis/userApis";
+import userApis, { Idata } from "../../utils/apis/userApis";
 import axiosInstance from "../../utils/apis/api";
-import {
-  isLoggedinState,
-  IsLoggedinState,
-  UserInfoState,
-} from "../../store/atom";
+import { isLoggedinState, UserInfoState } from "../../store/atom";
 
 const injected = new InjectedConnector({ supportedChainIds: [5] });
 //const injected = new InjectedConnector({});
@@ -44,6 +40,8 @@ const Container = styled.div`
   align-items: center;
   min-height: 100vh;
   flex-direction: column;
+  max-width: 550px;
+  min-width: 320px;
 `;
 
 const DivContainer = styled.div`
@@ -53,6 +51,8 @@ const DivContainer = styled.div`
   vertical-align: center;
   justify-content: center;
   align-items: center;
+  max-width: 550px;
+  min-width: 320px;
 
   .aroundButton {
     outline: none;
@@ -81,13 +81,13 @@ export default function LandingPage() {
 
   //console.log(active);
 
- // console.log(`첫 렌더링: 지갑.. ${account}`);
+  // console.log(`첫 렌더링: 지갑.. ${account}`);
   const moveToMain = () => {
     navigate("/main");
   };
 
   function login(data: Idata) {
-  //  console.log("jwt 로그인");
+    //  console.log("jwt 로그인");
 
     // const moveToMain = () => {
     //   navigate("/main");
@@ -130,25 +130,24 @@ export default function LandingPage() {
         moveToMain();
         // login({ walletAddress: account });
       } else {
-       // console.log("메타마스크 연결되있는데 지갑 안받아온 상태");
-       // console.log("연결끊기");
+        // console.log("메타마스크 연결되있는데 지갑 안받아온 상태");
+        // console.log("연결끊기");
 
         deactivate();
-      //  console.log("재연결");
+        //  console.log("재연결");
 
         activate(injected, async () => {});
       }
     } else {
-     // console.log("연결안되있어서 연결하자 !");
+      // console.log("연결안되있어서 연결하자 !");
 
-    //  console.log(`active ${active}`);
+      //  console.log(`active ${active}`);
 
       activate(injected, async () => {
         return Error;
       }).catch((error) => {
-      //  console.log("activate 에러메시지");
-
-      //  console.log(error);
+        //  console.log("activate 에러메시지");
+        //  console.log(error);
       });
     }
   };

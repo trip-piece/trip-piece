@@ -378,7 +378,7 @@ export default function Navbar() {
   const [isLoggedIn, setIsLoggedIn] = useRecoilState(isLoggedinState);
   const mounted = useRef(false);
 
-  console.log(`nav active ${active}`);
+  //console.log(`nav active ${active}`);
   const getUserInfo = () => {
     axiosInstance
       .get(userApis.getUser)
