@@ -384,7 +384,7 @@ export default function Navbar() {
       .then((response: { data: IUserData }) => {
         // console.log(response.data);
 
-        console.log(userInfo);
+        //console.log(userInfo);
 
         setUserInfo((prev) => ({
           ...prev,
