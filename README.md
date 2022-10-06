@@ -1,11 +1,19 @@
 ###
 
 <div>
-<div align="left">
- <img src="https://user-images.githubusercontent.com/82889580/194323588-0e855199-2221-4231-b67b-c68f97e27166.png" width="300" align="left" />
- </div>
-<div align="right"><h1 align="right"><font align="left" size="6" color="#ffffff">🧩 여행 조각</font></h1></div>
+<img align="left" src="https://user-images.githubusercontent.com/82889580/194323588-0e855199-2221-4231-b67b-c68f97e27166.png" width="280" />  
 </div>
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<div align="right">
+    <h1 align="right">
+      <font align="left" size="6" color="#ffffff"> 🧩 여행 조각</font>
+    </h1>
+  </div>
 
 ### 목차
 
@@ -18,6 +26,7 @@
 1. [**개발 팀 소개**](#7)
 1. [**개발 기간 및 일정**](#8)
 1. [**실행 방법**](#9)
+<hr />
 
 <div id="1"></div>
 
@@ -31,14 +40,16 @@
 >
 > 사용하지 않는 NFT는 마켓에서 **팔아**보세요
 
+<br />
+
 <div id="2"></div>
 
-## 📌버전 기록
+## 📌 버전 기록
 
 |   버전   | <div align="center">업데이트 내용</div> | 업데이트 날짜 |
 | :------: | --------------------------------------- | ------------- |
 | `v1.0.0` | 여행 조각 서비스 오픈                   | 22.10.06      |
-
+<br />
 <div id="3"></div>
 
 ## 🛠 기술 스택
@@ -104,7 +115,7 @@
     </td>
   </tr>
 <table>
-
+<br />
 <div id="4"></div>
 
 ## 💡 주요 기능
@@ -191,18 +202,17 @@
     </tr>
   </tbody>
 <table>
-
-
+<br />
 <div id="5"></div>
 
 ## 📂 프로젝트 구성도
 
-|                  **아키텍쳐(Archtecture)**                   |
-| :----------------------------------------------------------: |
-| <img src="https://user-images.githubusercontent.com/82889580/194323651-c3382c53-f449-472c-8597-4d8dc31f82f2.png" width="700"/> |
-|                   **개체-관계 모델 (ERD)**                   |
+|                                                          **아키텍쳐(Archtecture)**                                                           |
+| :------------------------------------------------------------------------------------------------------------------------------------------: |
+|        <img src="https://user-images.githubusercontent.com/82889580/194323651-c3382c53-f449-472c-8597-4d8dc31f82f2.png" width="700"/>        |
+|                                                           **개체-관계 모델 (ERD)**                                                           |
 | <img src="https://user-images.githubusercontent.com/82889580/194323639-91f83f03-b36b-49ee-8865-4a7c0c77b895.png" width="600" height="500" /> |
-
+<br />
 <div id="6"></div>
 
 ## 🎥 데모 영상
@@ -218,18 +228,18 @@
   <tr>
     <td>
       <a href="">
-        <img src="README.assets/4c80c25e3cf969a2.png" width=400 height=240/>
+        <img src="https://user-images.githubusercontent.com/82889580/194323588-0e855199-2221-4231-b67b-c68f97e27166.png" width=400 height=240/>
       </a>
     </td>
     <td>
       <a href="">
-        <img src="README.assets/KakaoTalk_Photo_2022-10-01-02-04-59-min-min.png" width=400 height=240/>
+        <img src="https://user-images.githubusercontent.com/82889580/194366060-ba8cde4b-0fed-4c29-b171-797ca7ca2441.png" width=400 height=240/>
       </a>
     </td>
   </tr>
   </tbody>
 <table>
-
+<br />
 <div id="7"></div>
 
 ## 👨‍👩‍👧‍👦 개발 팀 소개
@@ -301,24 +311,26 @@
   </tr>
 </table>
 
-|  이름  |          역할          | <div align="center">개발 내용</div>                          |
-| :----: | :--------------------: | :----------------------------------------------------------- |
-| 유지연 |  Front-end<br />팀장   |                                                              |
-| 남은열 |       Front-end        | - 여행 일정 등록 · 수정 · 삭제 · 조회 기능<br />- 여행 다이어리 작성 · 수정 · 삭제 · 조회 기능<br />  - GPS 기반 위치 정보 조회, 날씨, 다이어리 글씨, 다이어리 글 작성, 사진 업로드<br />  - NFT 스티커 기반 다이어리 꾸미기<br />  - 스티커 프레임 스크린샷 및 프레임 공유<br />  - 스티커 프레임 꾸미기<br />- 공유 프레임 조회 기능<br />  - 전체 및 지역별 조회<br />  - 프레임 상세 페이지 스티커 렌더링<br />  - 스티커 위치에 따른 tooltip 방향 제어<br />  - 스티커 tooltip 클릭 시 마켓 연결<br />- 'Recoil', 'React-Query'를 이용한 상태 관리<br />- 'Mock Service Worker'를 이용해 목업 API 구현 및 API 테스트 진행 |
-| 임상빈 |       Front-end        |                                                              |
-| 박지원 | Back-end<br />Solidity |                                                              |
-| 이현규 | Back-end<br />Solidity |                                                              |
-|  허설  | Back-end<br />Solidity |                                                              |
-
+|  이름  |          역할          | <div align="center">개발 내용</div>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| :----: | :--------------------: | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 유지연 |  Front-end<br />팀장   |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| 남은열 |       Front-end        | - 여행 일정 등록 · 수정 · 삭제 · 조회 기능<br />- 여행 다이어리 작성 · 수정 · 삭제 · 조회 기능<br /> - GPS 기반 위치 정보 조회, 날씨, 다이어리 글씨, 다이어리 글 작성, 사진 업로드<br /> - NFT 스티커 기반 다이어리 꾸미기<br /> - 스티커 프레임 스크린샷 및 프레임 공유<br /> - 스티커 프레임 꾸미기<br />- 공유 프레임 조회 기능<br /> - 전체 및 지역별 조회<br /> - 프레임 상세 페이지 스티커 렌더링<br /> - 스티커 위치에 따른 tooltip 방향 제어<br /> - 스티커 tooltip 클릭 시 마켓 연결<br />- 'Recoil', 'React-Query'를 이용한 상태 관리<br />- 'Mock Service Worker'를 이용해 목업 API 구현 및 API 테스트 진행 |
+| 임상빈 |       Front-end        |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| 박지원 | Back-end<br />Solidity |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| 이현규 | Back-end<br />Solidity |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+|  허설  | Back-end<br />Solidity |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+<br />
 <div id="8"></div>
 
 ## 📅 개발 기간
 
 22.10.06. ~ 운영 관리 중
 
+<br />
 <div id="9"></div>
 
 ## 💻 실행 방법
+<br />
 
 ### Client 실행
 
@@ -350,7 +362,9 @@ $ yarn start
 
 ### Solidity 실행
 
-## git convention
+<br />
+
+## 🦊 git convention
 
 | Emoji | Code                          | 기능     | Description              |
 | ----- | ----------------------------- | -------- | ------------------------ |
