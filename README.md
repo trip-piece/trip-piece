@@ -33,7 +33,7 @@
 
 ## 🧩 웹 서비스 소개
 
-### **여행에 조각을 더하다, NFT Sticker + _READ, WRITE, SALE_** ✈️
+### **여행에 조각을 더하다, NFT Sticker + _READ, WRITE, SELL_** ✈️
 
 > 대한민국 방방곡곡을 돌아다녀보세요.🚶🏻‍♀️🚶🏻
 >
@@ -50,6 +50,7 @@
 |   버전   | <div align="center">업데이트 내용</div> | 업데이트 날짜 |
 | :------: | --------------------------------------- | ------------- |
 | `v1.0.0` | 여행 조각 서비스 오픈                   | 22.10.06      |
+
 <br />
 <div id="3"></div>
 
@@ -131,7 +132,7 @@
   <tbody>
     <tr>
       <td>
-        <img src="https://user-images.githubusercontent.com/82889580/194330234-336edb4a-940f-40c7-ba5c-bdfc7f19b5f9.gif" width=200/>
+        <img src="https://user-images.githubusercontent.com/82889580/194330234-336edb4a-940f-40c7-ba5c-bdfc7f19b5f9.gif" width=400/>
       </td>
       <td>
         <b>NFT 스티커 발급</b>
@@ -140,7 +141,7 @@
     </tr>
     <tr>
       <td>
-        <img src="https://user-images.githubusercontent.com/82889580/194330234-336edb4a-940f-40c7-ba5c-bdfc7f19b5f9.gif" width=200/>
+        <img src="https://user-images.githubusercontent.com/82889580/194330234-336edb4a-940f-40c7-ba5c-bdfc7f19b5f9.gif" width=400/>
       </td>
       <td>
         <b>여행 등록</b>
@@ -149,7 +150,7 @@
     </tr>
     <tr>
       <td>
-        <img src="https://user-images.githubusercontent.com/82889580/194330234-336edb4a-940f-40c7-ba5c-bdfc7f19b5f9.gif" width=200/>
+        <img src="https://user-images.githubusercontent.com/82889580/194330234-336edb4a-940f-40c7-ba5c-bdfc7f19b5f9.gif" width=400/>
       </td>
       <td>
         <b>다이어리 작성</b>
@@ -158,7 +159,7 @@
     </tr>
     <tr>
       <td>
-        <img src="https://user-images.githubusercontent.com/82889580/194330234-336edb4a-940f-40c7-ba5c-bdfc7f19b5f9.gif" width=200/>
+        <img src="https://user-images.githubusercontent.com/82889580/194330234-336edb4a-940f-40c7-ba5c-bdfc7f19b5f9.gif" width=400/>
       </td>
       <td>
         <b>다이어리 꾸미기 및 프레임 공유</b>
@@ -167,7 +168,7 @@
     </tr>
     <tr>
       <td>
-        <img src="https://user-images.githubusercontent.com/82889580/194330234-336edb4a-940f-40c7-ba5c-bdfc7f19b5f9.gif" width=200/>
+        <img src="https://user-images.githubusercontent.com/82889580/194330234-336edb4a-940f-40c7-ba5c-bdfc7f19b5f9.gif" width=400/>
       </td>
       <td>
         <b>스티커 발급 가능 지역 조회</b>
@@ -176,7 +177,7 @@
     </tr>
     <tr>
       <td>
-        <img src="https://user-images.githubusercontent.com/82889580/194330234-336edb4a-940f-40c7-ba5c-bdfc7f19b5f9.gif" width=200/>
+        <img src="https://user-images.githubusercontent.com/82889580/194330234-336edb4a-940f-40c7-ba5c-bdfc7f19b5f9.gif" width=400/>
       </td>
       <td>
         <b>공유 프레임 조회</b>
@@ -185,7 +186,7 @@
     </tr>
     <tr>
       <td>
-        <img src="https://user-images.githubusercontent.com/82889580/194330234-336edb4a-940f-40c7-ba5c-bdfc7f19b5f9.gif" width=200/>
+        <img src="https://user-images.githubusercontent.com/82889580/194330234-336edb4a-940f-40c7-ba5c-bdfc7f19b5f9.gif" width=400/>
       </td>
       <td>
         <b>NFT 스티커 조회</b>
@@ -194,7 +195,7 @@
     </tr>
     <tr>
       <td>
-        <img src="https://user-images.githubusercontent.com/82889580/194330234-336edb4a-940f-40c7-ba5c-bdfc7f19b5f9.gif" width=200/>
+        <img src="https://user-images.githubusercontent.com/82889580/194330234-336edb4a-940f-40c7-ba5c-bdfc7f19b5f9.gif" width=400/>
       </td>
       <td>
         <b>NFT 마켓</b>
@@ -208,11 +209,12 @@
 
 ## 📂 프로젝트 구성도
 
-|                                                          **아키텍쳐(Archtecture)**                                                           |
+|                                               <div align="center">아키텍쳐(Archtecture)</div>                                                |
 | :------------------------------------------------------------------------------------------------------------------------------------------: |
 |        <img src="https://user-images.githubusercontent.com/82889580/194323651-c3382c53-f449-472c-8597-4d8dc31f82f2.png" width="700"/>        |
 |                                                           **개체-관계 모델 (ERD)**                                                           |
 | <img src="https://user-images.githubusercontent.com/82889580/194323639-91f83f03-b36b-49ee-8865-4a7c0c77b895.png" width="600" height="500" /> |
+
 <br />
 <div id="6"></div>
 
@@ -320,6 +322,7 @@
 | 박지원 | Back-end<br />Solidity |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
 | 이현규 | Back-end<br />Solidity |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
 |  허설  | Back-end<br />Solidity |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+
 <br />
 <div id="8"></div>
 
@@ -331,6 +334,7 @@
 <div id="9"></div>
 
 ## 💻 실행 방법
+
 <br />
 
 ### Client 실행
