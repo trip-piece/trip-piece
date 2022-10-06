@@ -62,6 +62,15 @@ public class MarketController {
         }
     }
 
+    @GetMapping("/my")
+    @ApiOperation(value = "내 스티커 검색/조회", notes = "사용자가 마켓에 등록한 스티커 조회")
+    public ResponseEntity<?> getMyMarketStickers(@RequestHeader("ACCESS_TOKEN") final String accessToken, @PageableDefault(size = 10) Pageable pageable) {
+        long userId = jwtTokenUtil.getUserIdFromToken(accessToken);
+        User user = userService.findOneUser(userId);
+        if (user == null) return new ResponseEntity<String>("로그인된 회원을 찾을 수 없습니다.", HttpStatus.NOT_FOUND);
+        else return new ResponseEntity<Page<MarketStickerResponseDto>>(marketService.findMyStickers(user, pageable), HttpStatus.OK);
+    }
+
     @GetMapping("/{marketId}")
     @ApiOperation(value = "스티커 상세 조회", notes = "사용자가 클릭한 스티커 조회")
     public ResponseEntity<?> getMarketStickerDetail(@RequestHeader("ACCESS_TOKEN") final String accessToken, @PathVariable(value="marketId") long marketId) {

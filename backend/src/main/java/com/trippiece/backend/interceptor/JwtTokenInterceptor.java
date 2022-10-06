@@ -36,7 +36,7 @@ public class JwtTokenInterceptor implements HandlerInterceptor {
         }
 
         if (accessToken == null && refreshToken == null){
-            response.setStatus(401);
+            response.setStatus(400);
             response.setHeader("ACCESS_TOKEN", accessToken);
             response.setHeader("REFRESH_TOKEN", refreshToken);
             response.setHeader("msg", "There is no Tokens.");
@@ -45,7 +45,7 @@ public class JwtTokenInterceptor implements HandlerInterceptor {
 
         if (accessToken != null) {
             if (accessToken.length() < 1){
-                response.setStatus(401);
+                response.setStatus(400);
                 response.setHeader("ACCESS_TOKEN", accessToken);
                 response.setHeader("REFRESH_TOKEN", refreshToken);
                 response.setHeader("msg", "AccessToken is empty.");
@@ -74,7 +74,7 @@ public class JwtTokenInterceptor implements HandlerInterceptor {
 
         if (refreshToken != null) {
             if (refreshToken.length() < 1){
-                response.setStatus(401);
+                response.setStatus(400);
                 response.setHeader("ACCESS_TOKEN", accessToken);
                 response.setHeader("REFRESH_TOKEN", refreshToken);
                 response.setHeader("msg", "RefreshToken is empty.");
@@ -92,7 +92,7 @@ public class JwtTokenInterceptor implements HandlerInterceptor {
             }
         }
 
-        response.setStatus(401);
+        response.setStatus(403);
         response.setHeader("ACCESS_TOKEN", accessToken);
         response.setHeader("REFRESH_TOKEN", refreshToken);
         response.setHeader("msg", "Invalid RefreshToken Error.");
