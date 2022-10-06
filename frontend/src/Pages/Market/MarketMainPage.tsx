@@ -16,6 +16,7 @@ import { AxiosError, AxiosResponse } from "axios";
 import { NFTContract } from "../../utils/common/NFT_ABI";
 import { useRecoilState } from "recoil";
 import { UserInfoState } from "../../store/atom";
+import MyCard from "./MyCard";
 
 const Container = styled.article`
   min-height: 90vh;
@@ -259,6 +260,9 @@ function MarketMainPage() {
           </div>
           <div className="CateList">
             <Swiper slidesPerView={1.9} spaceBetween={13}>
+              <SwiperSlide>
+                <MyCard />
+              </SwiperSlide>
               {region.length &&
                 region.map(
                   (region, idx) =>

@@ -5,12 +5,10 @@ import { useNavigate, useParams } from "react-router-dom";
 import { SetStateAction, useState } from "react";
 import { AiOutlineSearch, AiFillPlusCircle } from "react-icons/ai";
 import { REGIONLIST } from "../../utils/constants/constant";
-import { MemoInfiniteList } from "../../components/modules/infinite/ParamsInfiniteList";
+import { MemoInfiniteList } from "../../components/modules/infinite/InfiniteList";
 import { marketApis } from "../../utils/apis/marketApis";
 import Skeleton from "../TripList/Skeleton";
 import { InfiniteStickerCard } from "./InfiniteStickerCard";
-import InfiniteLoading from "../../components/modules/InfiniteLoading";
-import LoadingCard from "../../components/atoms/LoadingCard";
 
 const Container = styled.article`
   min-height: 90vh;
@@ -90,12 +88,12 @@ const ListContainer = styled.article`
   font-weight: bold;
 `;
 
-function MarketListPage() {
+function MarketUserPage() {
   const { regionId, orderNum, getSearchKeyword } = useParams();
   const regionName = REGIONLIST;
   const [keyword, setKeyword] = useState("");
 
-  let searchKeyword: string = "";
+  var searchKeyword: string = "";
   if (getSearchKeyword) {
     searchKeyword = getSearchKeyword;
   }
@@ -133,45 +131,18 @@ function MarketListPage() {
       <Container>
         <Header>
           <p>
-            {regionName[Number(regionId)]} 지역{" "}
+            내 스티커
             <AiFillPlusCircle className="sell" onClick={moveToRegisterPage} />
           </p>
-          <select onChange={handleChange} value={orderNum}>
-            <option value="0">최신순</option>
-            <option value="1">최저가순</option>
-            <option value="2">최고가순</option>
-          </select>
         </Header>
-        <form onSubmit={searchSticker}>
-          <Search>
-            <input
-              type="text"
-              placeholder="검색어를 입력하세요."
-              value={keyword}
-              onChange={searchChange}
-            />
-            <button>
-              <AiOutlineSearch className="searchIcon" />
-            </button>
-          </Search>
-        </form>
         <ListContainer>
           <MemoInfiniteList
-            url={marketApis.getMarketList(
-              searchKeyword,
-              Number(regionId),
-              Number(orderNum),
-            )}
-            queryKey={[
-              `marketList_${Number(regionId)}_${searchKeyword}_${Number(
-                orderNum,
-              )}`,
-            ]}
+            url={marketApis.getMyStickerList}
+            queryKey={[`MarketMyStickerList`]}
             CardComponent={InfiniteStickerCard}
-            SkeletonCardComponent={LoadingCard}
+            SkeletonCardComponent={Skeleton}
             zeroDataText="판매중인 스티커가 존재하지 않습니다."
             count={2}
-            listName="content"
           />
         </ListContainer>
       </Container>
@@ -179,4 +150,4 @@ function MarketListPage() {
   );
 }
 
-export default MarketListPage;
+export default MarketUserPage;

@@ -18,8 +18,17 @@ import useObserver from "../../utils/hooks/useObserver";
 
 import "./masonry.css";
 import { frameRegionListState } from "../../store/atom";
+import LoadingCard from "../../components/atoms/LoadingCard";
 
 const drawerBleeding = 56;
+
+const GridContainer = styled.div<GridProps>`
+  display: grid;
+  grid-template-columns: ${(props) =>
+    props.gridColumnCount && `repeat(${props.gridColumnCount}, 1fr)`};
+  grid-gap: 1rem;
+  margin-bottom: 1rem;
+`;
 
 const Root = styled.div`
   height: 90%;
@@ -194,7 +203,7 @@ function FrameSharePage(props: Props) {
     }
   };
 
-  const { data, error, fetchNextPage, hasNextPage, refetch } =
+  const { isLoading, data, error, fetchNextPage, hasNextPage, refetch } =
     useFetchTripsInformation({
       queryKey: ["frameList"],
       getTargetComponentList,
@@ -228,6 +237,13 @@ function FrameSharePage(props: Props) {
         <button onClick={toggleDrawer(true)} type="button">
           지역별 조회
         </button>
+        {isLoading && (
+          <GridContainer gridColumnCount={2}>
+            {Array.from({ length: 8 }, (_, idx) => idx).map((i) => (
+              <LoadingCard key={i} />
+            ))}
+          </GridContainer>
+        )}
         <Masonry
           breakpointCols={2}
           className="my-masonry-grid"

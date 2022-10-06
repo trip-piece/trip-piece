@@ -14,7 +14,9 @@ import QrScanner from "./Pages/QrScan/QrReader";
 import PlaceMainPage from "./Pages/Place/PlaceMainPage";
 import FrameSharePage from "./Pages/Frame/FrameSharePage";
 import FrameDetailPage from "./Pages/Frame/FrameDetailPage";
+
 import Loading from "./components/modules/LoadingSpinner";
+import MarketUserPage from "./Pages/Market/MarketUserPage";
 
 const Main = lazy(() => import("./Pages/Main/MainPage"));
 const TripDiaryList = lazy(
@@ -60,6 +62,7 @@ function AnotherRouter() {
           />
 
           <Route path="market" element={<MarketMainPage />} />
+          <Route path="market/my" element={<MarketUserPage />} />
           <Route
             path="market/:regionId/:orderNum/:getSearchKeyword"
             element={<MarketListPage />}
