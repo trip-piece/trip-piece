@@ -287,23 +287,6 @@ function MainPage() {
     },
   );
 
-  const myLocation = async () => {
-    const userLocation: any = await getLocation();
-    setLocationInfo(userLocation.location);
-    setLat(userLocation.latitude);
-    setLng(userLocation.longitude);
-  };
-
-  const updateLocation = async () => {
-    await myLocation();
-    axiosInstance
-      .get(placeApis.getLocationPlaces(lat, lng))
-      .then((response) => {
-        setPlaces(response.data);
-        refetch();
-      });
-  };
-
   const {
     isLoading: isLoading2,
     isSuccess: isSuccess2,
@@ -326,6 +309,23 @@ function MainPage() {
       refetchOnMount: true,
     },
   );
+
+  const myLocation = async () => {
+    const userLocation: any = await getLocation();
+    setLocationInfo(userLocation.location);
+    setLat(userLocation.latitude);
+    setLng(userLocation.longitude);
+  };
+
+  const updateLocation = async () => {
+    await myLocation();
+    axiosInstance
+      .get(placeApis.getLocationPlaces(lat, lng))
+      .then((response) => {
+        setPlaces(response.data);
+        refetch();
+      });
+  };
 
   useEffect(() => {
     if (data1?.data) {
@@ -377,6 +377,7 @@ function MainPage() {
               <img
                 src={spinner}
                 style={{ width: "auto", height: "50%", textAlign: "center" }}
+                alt="loading-spinner"
               />
             </div>
           )}
@@ -631,28 +632,27 @@ function MainPage() {
                 <img
                   src={spinner}
                   style={{ width: "auto", height: "70%", textAlign: "center" }}
+                  alt="loading-spinner"
                 />
               </div>
             )}
 
-            {isSuccess2 && loading && (
-              <>
-                {places?.length ? (
-                  <Swiper slidesPerView={2.1} spaceBetween={13}>
-                    {places.map((place: IPlace) => (
-                      <SwiperSlide key={place.id}>
-                        <Card place={place} />
-                      </SwiperSlide>
-                    ))}
-                  </Swiper>
-                ) : (
-                  <p>
-                    <br />
-                    근처에 발급 가능한 곳이 없어요.
-                  </p>
-                )}
-              </>
-            )}
+            {isSuccess2 &&
+              loading &&
+              (places?.length ? (
+                <Swiper slidesPerView={2.1} spaceBetween={13}>
+                  {places.map((place: IPlace) => (
+                    <SwiperSlide key={place.id}>
+                      <Card place={place} />
+                    </SwiperSlide>
+                  ))}
+                </Swiper>
+              ) : (
+                <p>
+                  <br />
+                  근처에 발급 가능한 곳이 없어요.
+                </p>
+              ))}
           </PlaceList>
         </SubBox>
         <MiddleTitlePosition>

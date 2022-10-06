@@ -1,15 +1,22 @@
 import styled from "@emotion/styled";
 import { Helmet } from "react-helmet-async";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { FaEthereum } from "react-icons/fa";
 import { motion } from "framer-motion";
 import { BsFillCreditCardFill } from "react-icons/bs";
-import { IMarket } from "../../utils/interfaces/markets.interface";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AxiosError, AxiosResponse } from "axios";
 import axiosInstance from "../../utils/apis/api";
 import { useQuery } from "react-query";
+import {
+  deleteRequest,
+  IMarket,
+} from "../../utils/interfaces/markets.interface";
 import { marketApis } from "../../utils/apis/marketApis";
+import { useRecoilState } from "recoil";
+import { UserInfoState } from "../../store/atom";
+import { MarketContract } from "../../utils/common/Market_ABI";
+import { NFTContract } from "../../utils/common/NFT_ABI";
 
 const Container = styled.article`
   min-height: 90vh;
@@ -103,6 +110,10 @@ const Button = styled.article`
 function StickerDetailPage() {
   const { marketId } = useParams();
   const [imagePath, setImagePath] = useState<string>();
+  const [userInfo] = useRecoilState(UserInfoState);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [mine, setMine] = useState<boolean>(false);
+  const navigate = useNavigate();
   const { data } = useQuery<AxiosResponse<IMarket>, AxiosError>(
     ["marketDetail"],
     () => axiosInstance.get(marketApis.getMarketDetail(marketId)),
@@ -112,6 +123,7 @@ function StickerDetailPage() {
       refetchOnMount: true,
     },
   );
+
   const getImage = (tokenUrl: string): string => {
     fetch(`https://www.infura-ipfs.io/ipfs/${data?.data?.tokenURL}`)
       .then((res) => {
@@ -121,6 +133,57 @@ function StickerDetailPage() {
         setImagePath(data[0].image);
       });
     return imagePath;
+  };
+
+  const buySticker = async (e: { preventDefault: () => void }) => {
+    setLoading(true);
+    e.preventDefault();
+    try {
+      const result = await MarketContract.methods
+        .purchaseSticker(data.data.tokenId)
+        .send({ from: userInfo.address, value: data?.data?.price });
+      if (result.status) {
+        deleteMarket({ data: { marketId: data.data.marketId } });
+      }
+      alert("구매가 완료되었습니다.");
+      navigate(-1);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const cancelSticker = async (e: { preventDefault: () => void }) => {
+    setLoading(true);
+    e.preventDefault();
+    try {
+      const result = await MarketContract.methods
+        .cancelSticker(data.data.tokenId)
+        .send({ from: userInfo.address });
+      if (result.status) {
+        deleteMarket({ data: { marketId: data.data.marketId } });
+        console.log("DB삭제완료");
+      }
+      alert("등록이 취소되었습니다.");
+      navigate(-1);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const deleteMarket = async (data: deleteRequest) => {
+    await axiosInstance
+      .delete(marketApis.defaultURL, data)
+      .then((response: { data: string }) => {
+        console.log(response.data);
+      });
+  };
+
+  useEffect(() => {
+    if (data?.data?.userId == userInfo.id) setMine(true);
+  }, ["marketDetail"]);
+
+  const moveToBack = () => {
+    navigate(-1);
   };
   getImage(data?.data?.tokenURL);
   return (
@@ -146,10 +209,19 @@ function StickerDetailPage() {
           </div>
         </Price>
         <Button>
-          {/* 판매글을 올린 userId가 로그인한 userId와 같으면 판매 취소 버튼으로.. */}
-          <button>
-            <BsFillCreditCardFill />
-            <p>구매</p>
+          {mine && (
+            <button onClick={cancelSticker}>
+              <p>등록 취소</p>
+            </button>
+          )}
+          {!mine && (
+            <button onClick={buySticker}>
+              <BsFillCreditCardFill />
+              <p>구매</p>
+            </button>
+          )}
+          <button style={{ marginTop: "5px" }} onClick={moveToBack}>
+            <p>뒤로가기</p>
           </button>
         </Button>
       </Container>

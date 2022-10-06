@@ -2,7 +2,6 @@
 import styled from "@emotion/styled";
 import { ElementType, memo, useEffect, useMemo, useRef, useState } from "react";
 import { QueryFunctionContext } from "react-query";
-import { v4 } from "uuid";
 import axiosInstance from "../../../utils/apis/api";
 import { isQueryError } from "../../../utils/functions/util";
 import useFetchTripsInformation from "../../../utils/hooks/useFecthTripsInformation";
@@ -53,14 +52,13 @@ function InfiniteList({
     try {
       const res = await axiosInstance.get(`${url}?page=${pageParam}`);
       return { result: res?.data, page: pageParam };
-    } catch (_) {
+    } catch {
       setHasError(true);
       return undefined;
     }
   };
 
   const {
-    isLoading,
     data,
     error,
     isError,
@@ -96,13 +94,12 @@ function InfiniteList({
 
   useEffect(() => {
     if (isCreated) refetchData();
-    change(false);
+    if (change) change(false);
   }, [isCreated]);
 
   return (
     <div>
       {isSuccess && targetList?.length < 1 && <div>{zeroDataText}</div>}
-      {isLoading && <div>Loading ...</div>}
       {isError && isQueryError(error) && <p>{error?.message}</p>}
       {targetList && (
         <GridContainer gridColumnCount={count}>
@@ -110,7 +107,7 @@ function InfiniteList({
             <CardComponent
               {...target}
               index={idx}
-              key={v4()}
+              key={idx}
               func={func}
               isEditMode={isEditMode}
               refetch={refetchData}

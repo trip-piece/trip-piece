@@ -43,9 +43,11 @@ interface propsType {
 
 function RegionCard({ name, id }: propsType) {
   const image = "/image/region/" + name + ".png";
+  const searchKeyword = "";
+  const orderNum = "0";
   const navigate = useNavigate();
   const moveToListPage = (regionId: Number) => {
-    navigate("/market/" + regionId);
+    navigate(`/market/${regionId}/${orderNum}/${searchKeyword}`);
   };
   return (
     <Container onClick={() => moveToListPage(id)}>

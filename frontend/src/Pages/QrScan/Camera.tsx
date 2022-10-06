@@ -33,16 +33,16 @@ function QrReaderComponent() {
   const [recoilQrState, setRecoilQrInfo] = useRecoilState(QrInfoState);
 
   useEffect(() => {
-    console.log(result);
+    //console.log(result);
     if (!!result) {
-      console.log("react hook checks");
+    //  console.log("react hook checks");
       setRecoilQrInfo({ url: result, modalFlag: true });
     }
   }, [result]);
 
   const handleScan = (result: any) => {
     if (!!result) {
-      console.log("function handleScan checks");
+    //  console.log("function handleScan checks");
       setResult(result);
     }
   };
@@ -54,7 +54,7 @@ function QrReaderComponent() {
         onResult={handleScan}
         constraints={{ facingMode: "environment" }}
       />
-      <BottonContainer>QR코드를 카메라에 비춰주세용</BottonContainer>
+      <BottonContainer>QR코드를 카메라에 비춰주세요</BottonContainer>
     </>
   );
 }

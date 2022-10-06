@@ -12,6 +12,8 @@ import { marketApis } from "../../utils/apis/marketApis";
 import axiosInstance from "../../utils/apis/api";
 import { response } from "msw";
 import { saveRequest } from "../../utils/interfaces/markets.interface";
+import { GiConsoleController } from "react-icons/gi";
+import { resourceLimits } from "worker_threads";
 
 const Container = styled.article`
   min-height: 90vh;
@@ -129,7 +131,7 @@ function MarketRegisterPage() {
   const [loading, setLoading] = useState<boolean>(true);
   const [NFTList, setNFTList] = useState<NFT[]>([]);
   const [NFTDetailList, setNFTDetailList] = useState<TokenDetail[]>([]);
-  console.log(userInfo.address);
+  const navigate = useNavigate();
 
   const getNFTList = async () => {
     try {
@@ -137,6 +139,7 @@ function MarketRegisterPage() {
       const result = await NFTContract.methods
         .getStickerList(userInfo.address)
         .call();
+
       if (result) {
         setNFTList(result);
         const tokenList: React.SetStateAction<TokenDetail[]> = [];
@@ -160,17 +163,28 @@ function MarketRegisterPage() {
       console.log("Error getSticker : ", err);
     }
   };
+
   useEffect(() => {
     getNFTList();
   }, []);
 
-  const stickerDefault: StickerDetail = {
-    tokenId: NFTList[0]?.tokenId,
-    tokenName: NFTDetailList[0]?.tokenName,
-    imagePath: NFTDetailList[0]?.imagePath,
-  };
+  useEffect(() => {
+    console.log(NFTDetailList);
+    if (NFTDetailList.length) {
+      const stickerDefault: StickerDetail = {
+        tokenId: NFTList[0]?.tokenId,
+        tokenName: NFTDetailList[0]?.tokenName,
+        imagePath: NFTDetailList[0]?.imagePath,
+      };
+      setSticker(stickerDefault);
+    }
+  }, [NFTDetailList]);
 
-  const [sticker, setSticker] = useState<StickerDetail>(stickerDefault);
+  const [sticker, setSticker] = useState<StickerDetail>({
+    tokenId: null,
+    tokenName: "",
+    imagePath: "",
+  });
   const [price, setPrice] = useState(Number);
 
   const handleChangeSticker = (e: {
@@ -190,36 +204,21 @@ function MarketRegisterPage() {
     setPrice(Number(e.target.value));
   };
 
-  const navigate = useNavigate();
-  const moveToBeforePage = () => {
-    navigate(-1);
-  };
-
-  const insertIntoSolMarket = async (e: { preventDefault: () => void }) => {
+  const insertIntoMarket = async (e: { preventDefault: () => void }) => {
     setLoading(true);
     e.preventDefault();
     try {
       if (price <= 0) alert("price에 올바른 값을 넣어주세요.");
       else {
-        const approveResult = await NFTContract.methods
-          .setApprovalForAll(import.meta.env.VITE_MARKET_CA, true)
-          .send({ from: userInfo.address });
-
-        console.log("권한 부여 성공" + approveResult.status);
-
         const result = await MarketContract.methods
           .insertIntoMarket(sticker.tokenId, price)
           .send({ from: userInfo.address });
 
         if (result.status) {
           saveMarket({ tokenId: sticker.tokenId, price: price });
-          console.log("DB등록완료");
         }
-        console.log("nft 마켓 등록");
-        console.log(result);
-        console.log("DB 등록");
-        console.log(response);
         alert("등록이 완료되었습니다.");
+        navigate(-1);
       }
     } catch (err) {
       console.log(err);
@@ -228,10 +227,14 @@ function MarketRegisterPage() {
 
   const saveMarket = async (data: saveRequest) => {
     await axiosInstance
-      .post(marketApis.insertIntoMarket, data)
+      .post(marketApis.defaultURL, data)
       .then((response: { data: string }) => {
         console.log(response.data);
       });
+  };
+
+  const moveToBack = () => {
+    navigate(-1);
   };
 
   return (
@@ -246,7 +249,7 @@ function MarketRegisterPage() {
       </Helmet>
       <Container>
         <StickerCard>
-          {sticker !== undefined && (
+          {sticker.imagePath && (
             <>
               <img src={sticker.imagePath} />
               <p>{sticker.tokenName}</p>
@@ -272,10 +275,10 @@ function MarketRegisterPage() {
         </RegisterForm>
         <Button>
           {/* 수정이면 수정 버튼으로.. */}
-          <button className="register" onClick={insertIntoSolMarket}>
+          <button className="register" onClick={insertIntoMarket}>
             등록
           </button>
-          <button onClick={moveToBeforePage}>취소</button>
+          <button onClick={moveToBack}>취소</button>
         </Button>
       </Container>
     </motion.div>

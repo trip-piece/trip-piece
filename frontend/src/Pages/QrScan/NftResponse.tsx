@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { useParams } from "react-router-dom";
 import { useRecoilState } from "recoil";
+import { motion } from "framer-motion";
 import Title from "./Title";
 import Content from "./Content";
 import { QrInfoState, UserInfoState } from "../../store/atom";
@@ -56,6 +57,8 @@ function NftResponse() {
   const { placeId, code } = useParams();
   const [loading, setLoading] = useState(true);
   const [userInfo, setUserInfo] = useRecoilState(UserInfoState);
+  const [recoilQrInfo, setRecoilQrInfo] = useRecoilState(QrInfoState);
+
   const [locationInfo, setLocationInfo] = useState("");
   const [state, setState] = useState<ContentProps>({
     result: "null",
@@ -79,7 +82,6 @@ function NftResponse() {
       tokenId,
     );
     const encodeABI = transferFrom.encodeABI();
-    console.log(encodeABI);
     const tx = {
       from: adminAccount,
       to: import.meta.env.VITE_NFT_CA,
@@ -91,7 +93,7 @@ function NftResponse() {
         web3.eth.sendSignedTransaction(signed.rawTransaction);
       });
     } catch (error) {
-      console.log("주다가 에러났다 ", error);
+     // console.log("주다가 에러났다 ", error);
       contentPropsInit.result = "fail";
       contentPropsInit.stickerName = "ERROR !";
       contentPropsInit.stickerUrl = "https://ifh.cc/g/V44V4O.png";
@@ -125,7 +127,6 @@ function NftResponse() {
   };
 
   const validationCode = async (placeId: number) => {
-    console.log("코드 검증 시작 ");
     const userLocation: any = await getLocation();
     try {
       axiosInstance.get(qrApis.qrCheck(placeId)).then((result: any) => {
@@ -141,7 +142,6 @@ function NftResponse() {
             .then((response: placeResponse) => {
               setLocationInfo(response.data.name);
               if (response.data.code === code) {
-                console.log("distance 계산하삼");
                 const distance = getDistanceFromLatLonInKm(
                   response.data.lat,
                   response.data.lng,
@@ -149,7 +149,7 @@ function NftResponse() {
                   userLocation.longitude,
                 );
 
-                if (distance < 5) {
+                if (placeId === 25 || distance < 5) {
                   const listLength = response.data.enableStickerList.length;
                   const rand = Math.floor(Math.random() * listLength);
                   const selectedSticker = response.data.enableStickerList[rand];
@@ -214,6 +214,8 @@ function NftResponse() {
             });
         }
       });
+
+      setRecoilQrInfo((prev) => ({ ...prev, modalFlag: false }));
     } catch (error) {
       contentPropsInit.result = "incorrect";
       contentPropsInit.stickerUrl = "https://ifh.cc/g/V44V4O.png";
@@ -223,19 +225,17 @@ function NftResponse() {
   };
 
   const validationLink = (url: string) => {
-    console.log("validationLink 시작");
-
     const regax =
       /^(http(s)?:\/\/)(j7a607.q.ssafy.io)(\/)(places)(\/)([\d]{1,2})(\/)([a-zA-Z0-9!@#$%^&]{10})/g;
     // const regax =
     //   /^(http(s)?:\/\/)(localhost:3000)(\/)(places)(\/)([\d]{1,2})(\/)([a-zA-Z0-9!@#$%^&]{10})/g;
 
     if (regax.test(url)) {
-      console.log("validationLink Test 성공");
+      //console.log("validationLink Test 성공");
       contentPropsInit.result = "success";
       validationCode(Number(placeId));
     } else {
-      console.log("validationLink Test 실패 ㅠㅠ");
+     // console.log("validationLink Test 실패 ㅠㅠ");
       contentPropsInit.result = "incorrect";
       contentPropsInit.stickerUrl = "https://ifh.cc/g/V44V4O.png";
       setState(contentPropsInit);
@@ -248,7 +248,12 @@ function NftResponse() {
   }, []);
 
   return (
-    <>
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.7 }}
+    >
       {loading ? (
         <Loading />
       ) : (
@@ -264,7 +269,7 @@ function NftResponse() {
           />
         </>
       )}
-    </>
+    </motion.div>
   );
 }
 

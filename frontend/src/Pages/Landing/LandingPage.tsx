@@ -3,24 +3,23 @@ import styled from "@emotion/styled";
 import { Helmet } from "react-helmet-async";
 import { InjectedConnector } from "@web3-react/injected-connector";
 import { useWeb3React } from "@web3-react/core";
-import { NavigateFunction, useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 // import { useRecoilState } from "recoil";
 import { useRecoilState } from "recoil";
 import Web3 from "web3";
-import { setCookie } from "../../utils/cookie";
+import { getCookie, setCookie } from "../../utils/cookie";
 // import { IUserInfo, UserInfoState } from "../../store/atom";
-
 import { pixelToRem } from "../../utils/functions/util";
 import LoginButton from "./LoginButton";
 import Content from "./Text";
 import LandingPageImg from "./LandingPageImg";
-
-import userApis, { walletAddress } from "../../utils/apis/userApis";
+import userApis, { Idata } from "../../utils/apis/userApis";
 import axiosInstance from "../../utils/apis/api";
-import { IUserInfo, UserInfoState } from "../../store/atom";
+import { isLoggedinState, UserInfoState } from "../../store/atom";
 
-const injected = new InjectedConnector({});
-
+const injected = new InjectedConnector({ supportedChainIds: [5] });
+//const injected = new InjectedConnector({});
 /**
 connector: 현재 dapp에 연결된 월렛의 connector 값
 library: web3 provider 제공
@@ -34,143 +33,122 @@ deactivate: dapp 월렛 연결 해제 수행 함수
 // const onClickDeactivate = () => {
 //   deactivate();
 // };
-function moveToMain(func: NavigateFunction) {
-  const navigate = func;
-  navigate("/main");
-}
+
 const Container = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
   min-height: 100vh;
   flex-direction: column;
+  max-width: 550px;
+  min-width: 320px;
 `;
 
-const SeekButton = styled.button`
-  outline: none;
-  border: none;
-  border-radius: 20px;
-  background-color: transparent;
-  font-weight: bold;
-  cursor: pointer;
-  padding-left: 1rem;
-  padding-right: 1rem;
-  width: ${pixelToRem(171)};
-  height: ${pixelToRem(38)};
-  font-size: ${(props) => props.theme.fontSizes.h5};
-  margin-top: 20%;
-  color: ${(props) => props.theme.colors.white};
-  z-index: 1;
+const DivContainer = styled.div`
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  vertical-align: center;
+  justify-content: center;
+  align-items: center;
+  max-width: 550px;
+  min-width: 320px;
+
+  .aroundButton {
+    outline: none;
+    border: none;
+    border-radius: 20px;
+    background-color: transparent;
+    font-weight: bold;
+    cursor: pointer;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    width: ${pixelToRem(171)};
+    height: ${pixelToRem(38)};
+    font-size: ${(props) => props.theme.fontSizes.h5};
+    margin-top: 80%;
+    color: ${(props) => props.theme.colors.white};
+    z-index: 1;
+    cursor: pointer;
+  }
 `;
 
 export default function LandingPage() {
-  const { activate, active, account } = useWeb3React();
+  const { activate, active, account, deactivate } = useWeb3React();
   const navigate = useNavigate();
-  const address: walletAddress = { walletAddress: account };
+  const [userInfo, setUserInfo] = useRecoilState(UserInfoState);
+  const [isLoggedIn, setIsLoggedIn] = useRecoilState(isLoggedinState);
 
-  const [userInfoState, setUserInfoState] = useRecoilState(UserInfoState);
+  //console.log(active);
 
-  const loginFlag: boolean = false;
-
-  console.log(`지갑.. ${account}`);
-
-  let userInfoInit: IUserInfo = {
-    address: "",
-    nickname: "",
-    balance: "-1",
-    isLoggedIn: false,
-    id: -1,
-    tripCount: 0,
-    diaryCount: 0,
+  // console.log(`첫 렌더링: 지갑.. ${account}`);
+  const moveToMain = () => {
+    navigate("/main");
   };
 
-  const getUserBalance = () => {
-    const web3 = new Web3(
-      new Web3.providers.HttpProvider(import.meta.env.VITE_WEB3_URL),
-    );
+  function login(data: Idata) {
+    //  console.log("jwt 로그인");
 
-    if (account) {
-      const address_temp = account;
-
-      web3.eth
-        .getBalance(address_temp)
-        .then((balance) => {
-          return web3.utils.fromWei(balance, "ether");
-        })
-        .then((eth) => {
-          userInfoInit = { ...userInfoInit, balance: eth };
-          setUserInfoState(userInfoInit);
-
-          moveToMain(navigate);
-        });
-    }
-  };
-  const getUserInfo = (token: string | number | boolean) => {
+    // const moveToMain = () => {
+    //   navigate("/main");
+    // };
     axiosInstance
-      .get(userApis.getUser, { headers: { ACCESS_TOKEN: token } })
-      .then(
-        (response: {
-          data: {
-            userId: number;
-            walletAddress: string;
-            nickname: string;
-            tripCount: number;
-            diaryCount: number;
-          };
-        }) => {
-          userInfoInit = {
-            address: response.data.walletAddress,
-            nickname: response.data.nickname,
-            balance: "-1.0",
-            isLoggedIn: true,
-            id: response.data.userId,
-            tripCount: response.data.tripCount,
-            diaryCount: response.data.diaryCount,
-          };
-
-          setUserInfoState(userInfoInit);
-
-          getUserBalance();
-        },
-      );
-  };
-
-  const login = async (
-    data: string | null | undefined | walletAddress,
-    // props: IUserInfo,
-  ) => {
-    await axiosInstance
       .post(userApis.login, data)
       .then(
         (response: { data: { accessToken: string; refreshToken: string } }) => {
-          setCookie("accessToken", response.data.accessToken);
-          setCookie("refreshToken", response.data.refreshToken);
-
-          getUserInfo(response.data.accessToken);
+          setCookie("accessToken", response.data.accessToken, {
+            maxAge: 1000 * 60 * 60 * 24,
+            sameSite: true,
+          });
+          setCookie("refreshToken", response.data.refreshToken, {
+            maxAge: 1000 * 60 * 60 * 24 * 7,
+            sameSite: true,
+          });
+          setIsLoggedIn(true);
+          moveToMain();
         },
       );
-  };
+  }
+
   const mounted = useRef(false);
   useEffect(() => {
     if (!mounted.current) {
       mounted.current = true;
-    } else {
-      login(address);
+    } else if (!getCookie("accessToken") && account.length !== 0) {
+      const data: Idata = { walletAddress: account };
+      login(data);
     }
   }, [account]);
 
+  // 메타마스크 연결확인
   const handleActivate = async (event: Event) => {
     event.preventDefault();
 
     if (active) {
-      console.log(`active ${active} / ${address}`);
-      login(address);
-    }
+      if (account.length !== 0) {
+        //console.log("메타마스크 연결되있는데 지갑길이 받아온 상태");
+        moveToMain();
+        // login({ walletAddress: account });
+      } else {
+        // console.log("메타마스크 연결되있는데 지갑 안받아온 상태");
+        // console.log("연결끊기");
 
-    if (!active) {
-      console.log("trying metamask connect...");
+        deactivate();
+        //  console.log("재연결");
 
-      activate(injected, async () => {});
+        activate(injected, async () => {});
+      }
+    } else {
+      // console.log("연결안되있어서 연결하자 !");
+
+      //  console.log(`active ${active}`);
+
+      activate(injected, async () => {
+        return Error;
+      }).catch((error) => {
+        //  console.log("activate 에러메시지");
+        //  console.log(error);
+      });
     }
   };
 
@@ -183,15 +161,7 @@ export default function LandingPage() {
       <Helmet>
         <title>Welcome | 여행조각</title>
       </Helmet>
-      <div
-        style={{
-          height: "100vh",
-          display: "flex",
-          flexDirection: "column",
-          verticalAlign: "center",
-          justifyContent: "center",
-        }}
-      >
+      <DivContainer>
         <Content />
         <LoginButton func={handleActivate} />
         <div
@@ -199,10 +169,20 @@ export default function LandingPage() {
             textAlign: "center",
           }}
         >
-          <SeekButton onClick={scrollToElement}>둘러보기</SeekButton>
+          <motion.div
+            animate={{ scale: [1.2, 1, 1.2, 1, 1.2] }}
+            transition={{
+              duration: 4,
+              repeat: Infinity,
+            }}
+            className="aroundButton"
+            onClick={scrollToElement}
+          >
+            👇 둘러보기 👇
+          </motion.div>
         </div>
         {/* <LandingButton /> */}
-      </div>
+      </DivContainer>
       <div ref={testRef}>
         <LandingPageImg />
       </div>

@@ -12,7 +12,7 @@ const ButtonText = styled.div`
   font-size: ${(props) => props.theme.fontSizes.h5};
   font-weight: bold;
   /* 색상 */
-  font-color: ${(props) => props.theme.colors.MainDark};
+  color: ${(props) => props.theme.colors.MainDark};
 `;
 
 interface LoginButtonProps {

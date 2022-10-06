@@ -1,16 +1,12 @@
-/* eslint-disable import/prefer-default-export */
 import { atom } from "recoil";
-// import { v1 } from "uuid";
+import { v4 } from "uuid";
+import { getCookie } from "../utils/cookie";
 
-// export const loggedInState = atom({
-//   key: `loggedIn/${v1()}`,
-//   default: !!"accessToken",
-// });n
 export interface IUserInfo {
   address: string | null | undefined;
   nickname: string;
   balance: string;
-  isLoggedIn: boolean;
+
   id: number;
   tripCount: number;
   diaryCount: number;
@@ -22,14 +18,18 @@ const UserInfodata: IUserInfo = {
   address: "",
   nickname: "누군가",
   balance: "0.0",
-  isLoggedIn: false,
   id: 0,
   tripCount: 0,
   diaryCount: 0,
 };
 
+export const isLoggedinState = atom<boolean>({
+  key: `isLoggedinState/${v4()}`,
+  default: !!getCookie("accessToken"),
+});
+
 export const UserInfoState = atom<IUserInfo>({
-  key: "userInfoState",
+  key: `userInfoState/${v4()}`,
   default: UserInfodata,
 });
 
@@ -46,6 +46,11 @@ const initialQrInfoState: IQrInfo = {
 };
 
 export const QrInfoState = atom({
-  key: "recoilQrState",
+  key: `recoilQrState/${v4()}`,
   default: initialQrInfoState,
+});
+
+export const frameRegionListState = atom<number[]>({
+  key: `frameRegionListState/${v4()}`,
+  default: [],
 });

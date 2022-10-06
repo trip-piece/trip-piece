@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import { REGIONLIST } from "../../utils/constants/constant";
 import { TripManagementModal } from "./Modal";
 import activeTicket from "../../assets/image/activeTicket.png";
+import { pixelToRem } from "../../utils/functions/util";
 
 interface ITripCardProps {
   tripId: number;
@@ -30,6 +31,21 @@ interface ITripCardProps {
 const Container = styled.div`
   height: 100%;
   width: 100%;
+
+  .EditButton {
+    position: absolute;
+    margin-left: ${pixelToRem(28)};
+    margin-top: ${pixelToRem(33)};
+    text-align: center;
+    background: transparent;
+    border: 1px solid #f8f8f8;
+    color: #f8f8f8;
+    border-radius: 5px;
+    width: 45px;
+    height: 25px;
+    font-size: ${(props) => props.theme.fontSizes.s3};
+    z-index: 999;
+  }
 `;
 
 const LinkContainer = styled(Link)<{ editmode: number }>`
@@ -161,24 +177,7 @@ function Card({
   return (
     <Container>
       {isEditMode && (
-        <button
-          type="button"
-          onClick={handleOpen}
-          style={{
-            position: "absolute",
-            marginLeft: "1.8rem",
-            marginTop: "3.7vh",
-            textAlign: "center",
-            background: "transparent",
-            border: "1px solid #f8f8f8",
-            color: "#f8f8f8",
-            borderRadius: "5px",
-            width: "45px",
-            height: "25px",
-            fontSize: "12pt",
-            zIndex: 999,
-          }}
-        >
+        <button type="button" onClick={handleOpen} className="EditButton">
           편집
         </button>
       )}

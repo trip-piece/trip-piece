@@ -6,6 +6,7 @@ import { HiPencilAlt, HiTrash } from "react-icons/hi";
 import { AxiosResponse } from "axios";
 import { Icon } from "@iconify/react/dist/offline";
 import { AiTwotoneEdit } from "react-icons/ai";
+import { motion } from "framer-motion";
 import diaryApis from "../../utils/apis/diaryApis";
 import {
   changeDateFormatToDot,
@@ -27,6 +28,7 @@ import { DIARY_COLOR_LIST, FONTTYPELIST } from "../../utils/constants/constant";
 import { getNFTImagePath } from "../../utils/functions/getNFTImagePath";
 import ColoredRoundButton from "../../components/atoms/ColoredRoundButton";
 import RecordedLocationContainer from "../../components/modules/RecordedLocationContainer";
+import LoadingSpinner from "../../components/modules/LoadingSpinner";
 
 const Container = styled.article`
   min-height: 75vh;
@@ -87,6 +89,9 @@ const DiaryContentsContainer = styled.div<DiaryContentsContainerProps>`
     pixelToRem(props.diaryWidth / 20) !== "0rem"
       ? pixelToRem(props.diaryWidth / 20)
       : pixelToRem(16)};
+  div {
+    font-family: ${(props) => FONTTYPELIST[props.fontType]};
+  }
 `;
 
 const ButtonListContainer = styled.div`
@@ -95,12 +100,13 @@ const ButtonListContainer = styled.div`
   gap: 0.5rem;
   button {
     display: block;
-    height: ${pixelToRem(30)};
+    height: ${pixelToRem(28)};
     padding: 0 0.5rem;
     /* background-color: transparent; */
     border-radius: 5px;
     background-color: ${(props) => props.theme.colors.yellow};
   }
+  margin-bottom: 5px;
 `;
 
 const ControlContainer = styled.div`
@@ -108,6 +114,11 @@ const ControlContainer = styled.div`
   justify-content: space-between;
   padding: 0 1rem;
   align-items: center;
+`;
+
+const PhotoDiaryContainer = styled.div`
+  width: 100%;
+  height: fit-content;
 `;
 
 interface DiaryContentsContainerProps {
@@ -201,35 +212,54 @@ function TripDiaryPage({ startDate, today, endDate }: TripListProps) {
   if (startDate > selectedDiaryDate || diaryDate > today)
     return (
       <Container>
-        <NoDiaryContainer>
-          <HiPencilAlt />
-          <p>
-            미래는 아무도 모르는 법! <br /> 다이어리 작성은 몇밤만 더 자고
-            오세용~
-          </p>
-        </NoDiaryContainer>
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.7 }}
+        >
+          <NoDiaryContainer>
+            <HiPencilAlt />
+            <p>
+              미래는 아무도 모르는 법! <br /> 다이어리 작성은 몇밤만 더 자고
+              오세용~
+            </p>
+          </NoDiaryContainer>
+        </motion.div>
       </Container>
     );
 
   return (
     <Container>
-      {isLoading && <div>Loading...</div>}
+      {isLoading && <LoadingSpinner />}
       {isSuccess && !diaryData?.data && (
-        <NoDiaryContainer>
-          <HiPencilAlt />
-          <p>
-            이 날짜에 작성된 기록이 없습니다. <br /> 다이어리를 작성해주세요.
-          </p>
-          <ColoredRoundButton
-            text="작성하기"
-            color="gray400"
-            type="button"
-            func={moveToWriteDiary}
-          />
-        </NoDiaryContainer>
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.7 }}
+        >
+          <NoDiaryContainer>
+            <HiPencilAlt />
+            <p>
+              이 날짜에 작성된 기록이 없습니다. <br /> 다이어리를 작성해주세요.
+            </p>
+            <ColoredRoundButton
+              text="작성하기"
+              color="gray400"
+              type="button"
+              func={moveToWriteDiary}
+            />
+          </NoDiaryContainer>
+        </motion.div>
       )}
       {isSuccess && diaryData?.data && (
-        <>
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.7 }}
+        >
           <DateContainer>
             <h2>
               {diaryDate
@@ -264,10 +294,7 @@ function TripDiaryPage({ startDate, today, endDate }: TripListProps) {
             backgroundColor={diaryData?.data?.backgroundColor}
             fontType={diaryData?.data?.fontType}
           >
-            <div
-              style={{ width: "100%", height: "fit-content" }}
-              ref={diaryRef}
-            >
+            <PhotoDiaryContainer ref={diaryRef}>
               <DiaryContent diaryWidth={diaryWidth}>
                 {diaryData?.data?.content}
               </DiaryContent>
@@ -288,9 +315,9 @@ function TripDiaryPage({ startDate, today, endDate }: TripListProps) {
                   key={sticker.y + sticker.x + idx}
                 />
               ))}
-            </div>
+            </PhotoDiaryContainer>
           </DiaryContentsContainer>
-        </>
+        </motion.div>
       )}
     </Container>
   );

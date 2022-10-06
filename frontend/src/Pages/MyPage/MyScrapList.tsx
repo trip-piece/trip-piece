@@ -1,12 +1,18 @@
-import React from "react";
+import React, { useMemo, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import styled from "@emotion/styled";
 import { Modal, Select } from "@mui/material";
+import Masonry from "react-masonry-css";
+import { QueryFunctionContext } from "react-query";
 import { pixelToRem } from "../../utils/functions/util";
 import { MemoInfiniteList } from "../../components/modules/infinite/InfiniteList";
 import userApis from "../../utils/apis/userApis";
 import { MemoCard } from "./Card";
 import Skeleton from "./Skeleton";
+import "../Frame/masonry.css";
+import useFetchMyScrappInformation from "../../utils/hooks/useFetchMyScrappInformation";
+import axiosInstance from "../../utils/apis/api";
+import useObserver from "../../utils/hooks/useObserver";
 
 const StickerBox = styled.div`
   box-shadow: 0 4px 4px 2px rgb(0 0 0/25%);
@@ -43,6 +49,47 @@ const StickerContainer = styled.div`
 `;
 
 function MyScrapList() {
+  const [hasError, setHasError] = useState(false);
+
+  const getTargetComponentList = async ({
+    pageParam = 0,
+  }: QueryFunctionContext) => {
+    try {
+      const res = await axiosInstance.get(
+        `${userApis.getMyScraps}?page=${pageParam}`,
+      );
+      return { result: res?.data, page: pageParam };
+    } catch {
+      setHasError(true);
+      return undefined;
+    }
+  };
+
+  const { data, error, fetchNextPage, hasNextPage, refetch } =
+    useFetchMyScrappInformation({
+      queryKey: ["scrapList"],
+      getTargetComponentList,
+    });
+
+  const targetList = useMemo(
+    () =>
+      data &&
+      data.pages?.flatMap(
+        (page) => page?.result?.content?.length && page?.result.content,
+      ),
+    [data],
+  );
+
+  const onIntersect = ([entry]: any) => entry.isIntersecting && fetchNextPage();
+  const bottom = useRef(null);
+  useObserver({
+    target: bottom,
+    hasMore: hasNextPage,
+    hasError,
+    error,
+    onIntersect,
+  });
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -55,14 +102,24 @@ function MyScrapList() {
           <Title>내가 스크랩한 프레임</Title>
         </TitleBox>
         <StickerContainer>
-          <MemoInfiniteList
+          <Masonry
+            breakpointCols={2}
+            className="my-masonry-grid"
+            columnClassName="my-masonry-grid_column"
+          >
+            {targetList?.map((target, idx) => (
+              <MemoCard {...target} key={idx} />
+            ))}
+            <div ref={bottom} />
+          </Masonry>
+          {/* <MemoInfiniteList
             url={userApis.getMyScraps}
             queryKey={["scrapList"]}
             CardComponent={MemoCard}
             SkeletonCardComponent={Skeleton}
             zeroDataText="스크랩이 존재하지..않습니다"
             count={2}
-          />
+          /> */}
         </StickerContainer>
       </StickerBox>
     </motion.div>

@@ -6,5 +6,6 @@ export const marketApis = {
     sort: number | undefined,
   ): string => `/market?keyword=${keyword}&regionId=${regionId}&sort=${sort}`,
   getMarketDetail: (marketId: string | null): string => `/market/${marketId}`,
-  insertIntoMarket: "/market",
+  getMyStickerList: "/market/my",
+  defaultURL: "/market",
 };

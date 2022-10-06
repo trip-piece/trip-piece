@@ -12,8 +12,12 @@ import Admin from "./Pages/Admin/AdminPage";
 import NftRegister from "./Pages/Admin/NftRegisterPage";
 import QrScanner from "./Pages/QrScan/QrReader";
 import PlaceMainPage from "./Pages/Place/PlaceMainPage";
+import FrameSharePage from "./Pages/Frame/FrameSharePage";
+import FrameDetailPage from "./Pages/Frame/FrameDetailPage";
 
-const Landing = lazy(() => import("./Pages/Landing/LandingPage"));
+import Loading from "./components/modules/LoadingSpinner";
+import MarketUserPage from "./Pages/Market/MarketUserPage";
+
 const Main = lazy(() => import("./Pages/Main/MainPage"));
 const TripDiaryList = lazy(
   () => import("./Pages/TripDiaryList/TripDiaryListPage"),
@@ -32,13 +36,14 @@ const NftResponse = lazy(() => import("./Pages/QrScan/NftResponse"));
 const Header = styled.header`
   height: 10vh;
 `;
+
 function AnotherRouter() {
   return (
     <>
       <Header>
         <Navbar />
       </Header>
-      <Suspense fallback={<div>Loading...</div>}>
+      <Suspense fallback={<Loading />}>
         <Routes>
           <Route path="main" element={<Main />} />
           <Route path="trips" element={<TripList />} />
@@ -57,7 +62,15 @@ function AnotherRouter() {
           />
 
           <Route path="market" element={<MarketMainPage />} />
-          <Route path="market/:regionId" element={<MarketListPage />} />
+          <Route path="market/my" element={<MarketUserPage />} />
+          <Route
+            path="market/:regionId/:orderNum/:getSearchKeyword"
+            element={<MarketListPage />}
+          />
+          <Route
+            path="market/:regionId/:orderNum/"
+            element={<MarketListPage />}
+          />
           <Route
             path="market/:marketId/detail"
             element={<StickerDetailPage />}
@@ -72,6 +85,8 @@ function AnotherRouter() {
             element={<MyLocationListPage />}
           />
           <Route path="qrscan" element={<QrScanner />} />
+          <Route path="/frames" element={<FrameSharePage />} />
+          <Route path="/frames/:frameId" element={<FrameDetailPage />} />
           <Route path="/places/:placeId/:code" element={<NftResponse />} />
         </Routes>
       </Suspense>

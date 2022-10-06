@@ -60,7 +60,7 @@ function NestedModal() {
   const MoveToLink = () => {
     const link = recoilQrState.url;
 
-    console.log(link);
+   // console.log(link);
 
     // const baseUrl = "j7a607.q.ssafy.io";
     // const baseUrl2 = "http://localhost:3000/";
@@ -70,7 +70,7 @@ function NestedModal() {
     const uri = urlArray[3];
     const placeId = urlArray[4];
     const rmdCode = urlArray[5];
-    console.log("네비게이트");
+  //  console.log("네비게이트");
 
     navigate(`/${uri}/${placeId}/${rmdCode}`);
     setOpen(false);

@@ -19,26 +19,31 @@ import { FaBook, FaEthereum } from "react-icons/fa";
 import { BsFillBookmarkHeartFill } from "react-icons/bs";
 import { useNavigate } from "react-router-dom";
 import AppBar from "@mui/material/AppBar";
-import { useRecoilState } from "recoil";
+import { useRecoilState, useResetRecoilState } from "recoil";
 import { motion } from "framer-motion";
+import { useWeb3React } from "@web3-react/core";
+import React, { useLayoutEffect, useEffect, useRef, useState } from "react";
+import { AxiosError, AxiosResponse } from "axios";
+import { useQuery } from "react-query";
+import { ReactJSXElement } from "@emotion/react/types/jsx-namespace";
+import Web3 from "web3";
+import { InjectedConnector } from "@web3-react/injected-connector";
 import {
   changeDateFormatToHyphen,
   pixelToRem,
 } from "../../utils/functions/util";
-import { UserInfoState } from "../../store/atom";
+import { isLoggedinState, IUserInfo, UserInfoState } from "../../store/atom";
 import trippieceLogo from "../../assets/image/trippiece_logo.png";
-import { ReactJSXElement } from "@emotion/react/types/jsx-namespace";
 // import { ReactComponent as EtherIcon } from "../../assets/svgs/etherIcon.svg";
-import { useEffect, useState } from "react";
-import { useQuery } from "react-query";
 import axiosInstance from "../../utils/apis/api";
-import { AxiosError, AxiosResponse } from "axios";
 import { ITrip } from "../../utils/interfaces/trips.interface";
 import tripApis from "../../utils/apis/tripsApis";
-import React from "react";
 import { REGIONLIST } from "../../utils/constants/constant";
 import { CodeProps } from "../../utils/interfaces/qrscan.inteface";
 import NestedModal from "../MyPage/Modal";
+import { getCookie, removeCookie, setCookie } from "../../utils/cookie";
+import userApis, { Idata, IUserData } from "../../utils/apis/userApis";
+import { NFTContract } from "../../utils/common/NFT_ABI";
 
 const DrawerHeader = styled.div`
   display: flex;
@@ -359,14 +364,59 @@ function IdCodeComponent({ id }: CodeProps) {
   return code;
 }
 
+const injected = new InjectedConnector({ supportedChainIds: [5] });
+
 export default function Navbar() {
   const [open, setOpen] = useState(false);
-  const [userInfo] = useRecoilState(UserInfoState);
+  const [userInfo, setUserInfo] = useRecoilState(UserInfoState);
   const [upcoming, setUpcoming] = useState<ITrip>();
   const [loading, setLoading] = useState<boolean>(false);
   const today = changeDateFormatToHyphen(new Date());
   const [isProgress, setIsProgress] = useState(0);
+  const { account, active, deactivate, activate } = useWeb3React();
+  const [isLoggedIn, setIsLoggedIn] = useRecoilState(isLoggedinState);
+  const mounted = useRef(false);
 
+  // console.log(`nav active ${active}`);
+  const getUserInfo = () => {
+    axiosInstance
+      .get(userApis.getUser)
+      .then((response: { data: IUserData }) => {
+        // console.log(response.data);
+
+        console.log(userInfo);
+
+        setUserInfo((prev) => ({
+          ...prev,
+          address: response.data.walletAddress,
+          nickname: response.data.nickname,
+          balance: "0.0",
+          isLoggedIn: true,
+          id: response.data.userId,
+          tripCount: response.data.tripCount,
+          diaryCount: response.data.diaryCount,
+        }));
+        return response.data.walletAddress;
+      })
+      .then((address) => {
+        const web3 = new Web3(
+          new Web3.providers.HttpProvider(import.meta.env.VITE_WEB3_URL),
+        );
+        if (address) {
+          web3.eth
+            .getBalance(address)
+            .then((balance) => {
+              return web3.utils.fromWei(balance, "ether");
+            })
+            .then((eth) => {
+              setUserInfo((prev) => ({ ...prev, balance: eth }));
+
+              // setCookie("isLogin", "true");
+              // moveToMain();
+            });
+        }
+      });
+  };
   const toggleDrawer =
     // eslint-disable-next-line @typescript-eslint/no-shadow
     (open: boolean) => (event: React.KeyboardEvent | React.MouseEvent) => {
@@ -417,16 +467,96 @@ export default function Navbar() {
     navigate("/main");
   };
 
+  useEffect(() => {
+    if (!mounted.current) {
+      mounted.current = true;
+    }
+    // if (getCookie("accessToken") && isLoggedIn) {
+    //   navigate("/");
+    //   console.log("로그아웃");
+    if (!active) {
+      if (getCookie("accessToken")) {
+        //  console.log("메타마스크 연결 재시도");
+
+        activate(injected, async () => {});
+      }
+    }
+  }, [active]);
+
+  useEffect(() => {
+    if (!mounted.current) {
+      mounted.current = true;
+    } else {
+      // console.log(account);
+      // eslint-disable-next-line no-lonely-if
+      if (getCookie("accessToken")) {
+        getUserInfo();
+      }
+    }
+  }, [account]);
+
+  // useEffect(() => {
+  //   if (!mounted.current) {
+  //     mounted.current = true;
+  //   } else {
+  //     //console.log(account);
+  //     // eslint-disable-next-line no-lonely-if
+  //     if (getCookie("accessToken")) {
+  //       getUserInfo();
+  //     }
+  //   }
+  // }, [userInfo.tripCount]);
+  // useEffect(() => {
+  //   if (!mounted.current) {
+  //     mounted.current = true;
+  //   } else {
+  //     //console.log(account);
+  //     // eslint-disable-next-line no-lonely-if
+  //     if (getCookie("accessToken")) {
+  //       getUserInfo();
+  //     }
+  //   }
+  // }, [userInfo.diaryCount]);
+
+  // const setApproval = async (e: { preventDefault: () => void }) => {
+  //   //setLoading;
+  //   e.preventDefault();
+  //   try {
+  //     const approveResult = await NFTContract.methods
+  //       .setApprovalForAll(import.meta.env.VITE_MARKET_CA, true)
+  //       .send({ from: userInfo.address });
+
+  //     // console.log("권한 부여 성공" + approveResult.status);
+  //   } catch (err) {
+  //     console.log(err);
+  //   }
+  // };
+  // useEffect(() => {
+  //   //console.log("맨 처음 렌더링될 때 한 번만 실행");
+  //   setApproval();
+  // }, []);
+
+  const logout = () => {
+    if (active) {
+      //  console.log("로그아웃하기  ~ ");
+
+      deactivate();
+      // setUserInfo(userLogout);
+    }
+    removeCookie("accessToken");
+    removeCookie("refreshToken");
+    setIsLoggedIn(false);
+    window.location.replace("https://j7a607.q.ssafy.io/");
+  };
   const moveToMyTrip = (tripId: number) => {
     navigate(`/trips/${tripId}/diarys`);
     setOpen(false);
   };
 
-  const {
-    isLoading: isLoading,
-    isSuccess: isSuccess,
-    data: data,
-  } = useQuery<AxiosResponse<ITrip>, AxiosError>(
+  const { isLoading, isSuccess, data } = useQuery<
+    AxiosResponse<ITrip>,
+    AxiosError
+  >(
     [`${userInfo.id}-upcomingTrip`],
     () => axiosInstance.get(tripApis.upcomingTrip(today)),
     {
@@ -507,6 +637,7 @@ export default function Navbar() {
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
                 type="button"
+                onClick={logout}
               >
                 <MdOutlineLogout />
               </motion.button>

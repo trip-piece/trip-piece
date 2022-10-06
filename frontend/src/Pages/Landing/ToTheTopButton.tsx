@@ -12,7 +12,7 @@ const Button = styled.button`
   width: ${pixelToRem(117)};
   height: ${pixelToRem(38)};
   font-size: ${(props) => props.theme.fontSizes.h5};
-  font-color: white;
+  color: ${(props) => props.theme.colors.gray800};
 `;
 
 function ToTheTop() {
@@ -43,7 +43,7 @@ function ToTheTop() {
 
   // 토글 여부 state에 따라 버튼을 보여주거나 감추게 만듦
   return toggleBtn ? (
-    <div style={{ padding: "5vh" }}>
+    <div style={{ padding: "2vh" }}>
       <Button type="button" onClick={goToTop}>
         여행가기
       </Button>
