@@ -34,7 +34,6 @@ function ScrappedFrameCard({ frameId, image }: IMyScrappedFrameProps) {
     <Container>
       <LinkContainer to={frameApis.getDetailedFrames(frameId)}>
         <ScrapImg src={imgUrl} />
-        {/* <ScrapImg src={img} /> */}
       </LinkContainer>
     </Container>
   );
