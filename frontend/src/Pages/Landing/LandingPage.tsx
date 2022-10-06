@@ -7,7 +7,12 @@ import { NavigateFunction, useNavigate } from "react-router-dom";
 // import { useRecoilState } from "recoil";
 import { useRecoilState, useSetRecoilState } from "recoil";
 import Web3 from "web3";
-import { getCookie, setCookie } from "../../utils/cookie";
+import {
+  accessTokenExpiredSetting,
+  getCookie,
+  refreshTokenExpiredSetting,
+  setCookie,
+} from "../../utils/cookie";
 // import { IUserInfo, UserInfoState } from "../../store/atom";
 
 import { pixelToRem } from "../../utils/functions/util";
@@ -81,8 +86,14 @@ export default function LandingPage() {
       .post(userApis.login, data)
       .then(
         (response: { data: { accessToken: string; refreshToken: string } }) => {
-          setCookie("accessToken", response.data.accessToken);
-          setCookie("refreshToken", response.data.refreshToken);
+          setCookie("accessToken", response.data.accessToken, {
+            maxAge: 1000 * 60 * 60 * 24,
+            sameSite: true,
+          });
+          setCookie("refreshToken", response.data.refreshToken, {
+            maxAge: 1000 * 60 * 60 * 24 * 7,
+            sameSite: true,
+          });
 
           return response.data.accessToken;
         },
