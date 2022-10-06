@@ -27,6 +27,7 @@ import { DIARY_COLOR_LIST, FONTTYPELIST } from "../../utils/constants/constant";
 import { getNFTImagePath } from "../../utils/functions/getNFTImagePath";
 import ColoredRoundButton from "../../components/atoms/ColoredRoundButton";
 import RecordedLocationContainer from "../../components/modules/RecordedLocationContainer";
+import { motion } from "framer-motion";
 
 const Container = styled.article`
   min-height: 75vh;
@@ -95,12 +96,13 @@ const ButtonListContainer = styled.div`
   gap: 0.5rem;
   button {
     display: block;
-    height: ${pixelToRem(30)};
+    height: ${pixelToRem(28)};
     padding: 0 0.5rem;
     /* background-color: transparent; */
     border-radius: 5px;
     background-color: ${(props) => props.theme.colors.yellow};
   }
+  margin-bottom: 5px;
 `;
 
 const ControlContainer = styled.div`
@@ -206,13 +208,20 @@ function TripDiaryPage({ startDate, today, endDate }: TripListProps) {
   if (startDate > selectedDiaryDate || diaryDate > today)
     return (
       <Container>
-        <NoDiaryContainer>
-          <HiPencilAlt />
-          <p>
-            미래는 아무도 모르는 법! <br /> 다이어리 작성은 몇밤만 더 자고
-            오세용~
-          </p>
-        </NoDiaryContainer>
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.7 }}
+        >
+          <NoDiaryContainer>
+            <HiPencilAlt />
+            <p>
+              미래는 아무도 모르는 법! <br /> 다이어리 작성은 몇밤만 더 자고
+              오세용~
+            </p>
+          </NoDiaryContainer>
+        </motion.div>
       </Container>
     );
 
@@ -220,21 +229,33 @@ function TripDiaryPage({ startDate, today, endDate }: TripListProps) {
     <Container>
       {isLoading && <div>Loading...</div>}
       {isSuccess && !diaryData?.data && (
-        <NoDiaryContainer>
-          <HiPencilAlt />
-          <p>
-            이 날짜에 작성된 기록이 없습니다. <br /> 다이어리를 작성해주세요.
-          </p>
-          <ColoredRoundButton
-            text="작성하기"
-            color="gray400"
-            type="button"
-            func={moveToWriteDiary}
-          />
-        </NoDiaryContainer>
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.7 }}
+        >
+          <NoDiaryContainer>
+            <HiPencilAlt />
+            <p>
+              이 날짜에 작성된 기록이 없습니다. <br /> 다이어리를 작성해주세요.
+            </p>
+            <ColoredRoundButton
+              text="작성하기"
+              color="gray400"
+              type="button"
+              func={moveToWriteDiary}
+            />
+          </NoDiaryContainer>
+        </motion.div>
       )}
       {isSuccess && diaryData?.data && (
-        <>
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.7 }}
+        >
           <DateContainer>
             <h2>
               {diaryDate
@@ -292,7 +313,7 @@ function TripDiaryPage({ startDate, today, endDate }: TripListProps) {
               ))}
             </PhotoDiaryContainer>
           </DiaryContentsContainer>
-        </>
+        </motion.div>
       )}
     </Container>
   );

@@ -421,6 +421,7 @@ function DiaryManagementPage() {
       }
     } catch (err) {
       console.log("Error getSticker : ", err);
+      setLoading(false);
     }
   }, [userInfo]);
   useEffect(() => {
@@ -1004,7 +1005,7 @@ function DiaryManagementPage() {
           style={{ visibility: mode !== "decoration" ? "hidden" : "visible" }}
         >
           <button type="button" onClick={onClick}>
-            보유한 스티커
+            보유한 스티커 ▴
           </button>
           <div ref={stickerBoxRef}>
             {loading && (
@@ -1017,6 +1018,7 @@ function DiaryManagementPage() {
               </div>
             )}
             {!loading &&
+              NFTDetailList.length !== 0 &&
               NFTDetailList.map((sticker, index) => (
                 <MemoizedImageButton
                   onClick={addSticker}
@@ -1024,6 +1026,13 @@ function DiaryManagementPage() {
                   key={index}
                 />
               ))}
+            {!loading && !NFTDetailList.length && (
+              <div
+                style={{ color: "white", width: "100%", textAlign: "center" }}
+              >
+                None
+              </div>
+            )}
           </div>
         </StickerZone>
 
