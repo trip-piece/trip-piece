@@ -29,7 +29,7 @@ const ScrapImg = styled.img`
 `;
 
 function ScrappedFrameCard({ frameId, image }: IMyScrappedFrameProps) {
-  const imgUrl: string = `https://www.infura-ipfs.io/ipfs/${image}`;
+  const imgUrl: string = `https://trippiece607.s3.ap-northeast-2.amazonaws.com/${image}`;
   return (
     <Container>
       <LinkContainer to={frameApis.getDetailedFrames(frameId)}>
