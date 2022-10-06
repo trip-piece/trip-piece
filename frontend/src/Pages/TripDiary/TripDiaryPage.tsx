@@ -95,12 +95,13 @@ const ButtonListContainer = styled.div`
   gap: 0.5rem;
   button {
     display: block;
-    height: ${pixelToRem(30)};
+    height: ${pixelToRem(28)};
     padding: 0 0.5rem;
     /* background-color: transparent; */
     border-radius: 5px;
     background-color: ${(props) => props.theme.colors.yellow};
   }
+  margin-bottom: 5px;
 `;
 
 const ControlContainer = styled.div`
