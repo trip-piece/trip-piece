@@ -1,5 +1,5 @@
 import axios, { AxiosInstance } from "axios";
-import { getCookie, setCookie } from "../cookie";
+import { getCookie, setCookie, removeCookie } from "../cookie";
 import userApis from "./userApis";
 
 const axiosInstance: AxiosInstance = axios.create({
@@ -45,10 +45,7 @@ axiosInstance.interceptors.response.use(
     const originalConfig = err.config;
 
     if (err.response) {
-      if (
-        err.response.status === 401 &&
-        err.response.data?.error === "TokenExpiredException"
-      ) {
+      if (err.response.status === 401) {
         const response = await getNewAccessToken(
           getCookie("ACCESS_TOKEN"),
           getCookie("REFRESH_TOKEN"),
@@ -57,8 +54,17 @@ axiosInstance.interceptors.response.use(
         const { accessToken, refreshToken } = response.data;
         setCookie("accessToken", accessToken);
         setCookie("refreshToken", refreshToken);
+        return axiosInstance(originalConfig);
+      }
+
+      if (err.response.status === 500) {
+        removeCookie("accessToken");
+        removeCookie("refreshToken");
+
+        window.location.href = "/";
         return;
       }
+
       return Promise.reject(err);
     }
     return Promise.reject(err);
