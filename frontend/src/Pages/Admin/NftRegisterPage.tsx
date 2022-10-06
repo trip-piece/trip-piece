@@ -113,6 +113,7 @@ function NftRegisterPage() {
       else {
         const PrivKey = "0x" + privKey;
         const myaddress = getAddressFrom(PrivKey);
+        console.log(myaddress);
         const added = await ipfs.add(item);
         const url = `https://www.infura-ipfs.io/ipfs/${added.path}`;
         var metadata = [
@@ -124,8 +125,7 @@ function NftRegisterPage() {
         const metaadded = await ipfs.add(Buffer.from(JSON.stringify(metadata)));
         const tokenUrl = `${metaadded.path}`;
 
-        if (!(window as any).ethereum.enable())
-          (window as any).ethereum.enable();
+        (window as any).ethereum.enable();
         const result = await NFTContract.methods
           .create(myaddress, tokenUrl)
           .send({ from: myaddress });
@@ -139,12 +139,14 @@ function NftRegisterPage() {
         if (response.status) {
           console.log(response);
         }
+        alert("생성되었습니다.");
+        setLoading(false);
       }
     } catch (err) {
       console.log("Error uploading the file: ", err);
+      alert("NFT 생성 실패.");
+      setLoading(false);
     }
-    alert("생성되었습니다.");
-    setLoading(false);
   };
 
   return (

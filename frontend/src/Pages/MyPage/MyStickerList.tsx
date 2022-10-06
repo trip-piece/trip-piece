@@ -92,6 +92,7 @@ function MyStickerList() {
       }
     } catch (err) {
       console.log("Error getSticker : ", err);
+      setLoading(false);
     }
   };
 
@@ -128,7 +129,7 @@ function MyStickerList() {
               />
             </div>
           )}
-          {!loading && (
+          {!loading && NFTDetailList.length !== 0 && (
             <div className="gridComponent">
               {NFTDetailList.map((NFTdetail, idx) => (
                 <div key={idx} style={{ padding: "0.5rem" }}>
@@ -136,6 +137,25 @@ function MyStickerList() {
                   <p>{NFTdetail.tokenName}</p>
                 </div>
               ))}
+            </div>
+          )}
+          {!loading && !NFTDetailList.length && (
+            <div
+              style={{
+                padding: "0.5rem",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                flexDirection: "column",
+              }}
+            >
+              <img
+                src="https://ifh.cc/g/V44V4O.png"
+                style={{ width: "60%", height: "auto" }}
+                alt=""
+              />
+              <br />
+              <p>보유하신 스티커가 없습니다.</p>
             </div>
           )}
         </StickerContainer>
