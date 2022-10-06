@@ -1,5 +1,5 @@
 import styled from "@emotion/styled";
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { motion } from "framer-motion";
 import { Helmet } from "react-helmet-async";
 import { MemoInfiniteList } from "../../components/modules/infinite/InfiniteList";
@@ -9,6 +9,8 @@ import Skeleton from "./Skeleton";
 import TripCreateButton from "./TripCreationButton";
 import BasicModal from "./Modal";
 import Container from "../../components/atoms/Container";
+import { loading } from "../../style/animations";
+import InfiniteLoading from "../../components/modules/InfiniteLoading";
 
 const Title = styled.h2`
   text-align: center;
@@ -61,23 +63,24 @@ function TripListPage() {
         <Button type="button" onClick={handleEditMode}>
           {!isEditMode ? "여행 편집" : "편집 완료"}
         </Button>
-
-        <MemoInfiniteList
-          url={tripApis.trip}
-          queryKey={["tripList"]}
-          CardComponent={MemoCard}
-          SkeletonCardComponent={Skeleton}
-          zeroDataText="여행 리스트가 존재하지 않습니다."
-          count={2}
-          isEditMode={isEditMode}
-          isCreated={isCreated}
-          change={setIsCreated}
-        />
-        {!isEditMode && (
-          <FixedContainer>
-            <TripCreateButton func={handleOpen} />
-          </FixedContainer>
-        )}
+        <Suspense fallback={<InfiniteLoading />}>
+          <MemoInfiniteList
+            url={tripApis.trip}
+            queryKey={["tripList"]}
+            CardComponent={MemoCard}
+            SkeletonCardComponent={Skeleton}
+            zeroDataText="여행 리스트가 존재하지 않습니다."
+            count={2}
+            isEditMode={isEditMode}
+            isCreated={isCreated}
+            change={setIsCreated}
+          />
+          {!isEditMode && (
+            <FixedContainer>
+              <TripCreateButton func={handleOpen} />
+            </FixedContainer>
+          )}
+        </Suspense>
         <BasicModal setOpen={setOpen} open={open} setIsCreated={setIsCreated} />
       </Container>
     </motion.div>

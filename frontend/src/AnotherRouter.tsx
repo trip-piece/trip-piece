@@ -14,6 +14,7 @@ import QrScanner from "./Pages/QrScan/QrReader";
 import PlaceMainPage from "./Pages/Place/PlaceMainPage";
 import FrameSharePage from "./Pages/Frame/FrameSharePage";
 import FrameDetailPage from "./Pages/Frame/FrameDetailPage";
+import Loading from "./components/modules/LoadingSpinner";
 
 const Main = lazy(() => import("./Pages/Main/MainPage"));
 const TripDiaryList = lazy(
@@ -33,13 +34,14 @@ const NftResponse = lazy(() => import("./Pages/QrScan/NftResponse"));
 const Header = styled.header`
   height: 10vh;
 `;
+
 function AnotherRouter() {
   return (
     <>
       <Header>
         <Navbar />
       </Header>
-      <Suspense fallback={<div>Loading...</div>}>
+      <Suspense fallback={<Loading />}>
         <Routes>
           <Route path="main" element={<Main />} />
           <Route path="trips" element={<TripList />} />

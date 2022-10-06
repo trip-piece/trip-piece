@@ -59,7 +59,6 @@ function InfiniteList({
   };
 
   const {
-    isLoading,
     data,
     error,
     isError,
@@ -84,7 +83,6 @@ function InfiniteList({
   const refetchData = () => {
     refetch();
   };
-  console.log("hasNextPage", hasNextPage);
 
   useObserver({
     target: bottom,
@@ -102,7 +100,6 @@ function InfiniteList({
   return (
     <div>
       {isSuccess && targetList?.length < 1 && <div>{zeroDataText}</div>}
-      {isLoading && <div>Loading ...</div>}
       {isError && isQueryError(error) && <p>{error?.message}</p>}
       {targetList && (
         <GridContainer gridColumnCount={count}>
