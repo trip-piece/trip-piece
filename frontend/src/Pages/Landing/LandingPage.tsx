@@ -21,7 +21,7 @@ import { IUserInfo, UserInfoState } from "../../store/atom";
 import { Idata, IUserData } from "../../utils/hooks/useLogin";
 
 const injected = new InjectedConnector({ supportedChainIds: [5] });
-
+//const injected = new InjectedConnector({});
 /**
 connector: 현재 dapp에 연결된 월렛의 connector 값
 library: web3 provider 제공
@@ -133,6 +133,7 @@ export default function LandingPage() {
   useEffect(() => {
     if (!mounted.current) {
       mounted.current = true;
+      console.log(getCookie("isLogin"));
     } else if (getCookie("isLogin") === "false") {
       console.log("로그아웃");
     } else if (!getCookie("isLogin")) {
@@ -164,7 +165,11 @@ export default function LandingPage() {
     } else {
       console.log("연결안되있어서 연결하자 !");
 
-      activate(injected, async () => {}).catch((error) => {
+      console.log(`active ${active}`);
+
+      activate(injected, async () => {
+        return Error;
+      }).catch((error) => {
         console.log("activate 에러메시지");
 
         console.log(error);

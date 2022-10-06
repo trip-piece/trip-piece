@@ -376,7 +376,7 @@ export default function Navbar() {
   const { account, active, deactivate, activate } = useWeb3React();
   const mounted = useRef(false);
 
-  console.log(active);
+  console.log(`nav active ${active}`);
 
   const toggleDrawer =
     // eslint-disable-next-line @typescript-eslint/no-shadow
@@ -473,10 +473,15 @@ export default function Navbar() {
     if (!mounted.current) {
       mounted.current = true;
     } else if (getCookie("isLogin") === "false") {
+      removeCookie("isLogin");
       navigate("/");
       console.log("로그아웃");
     } else if (!active) {
-      activate(injected, async () => {});
+      if (getCookie("isLogin") === "true") {
+        console.log("메타마스크 연결 재시도");
+
+        activate(injected, async () => {});
+      }
     }
   }, [active]);
 
@@ -485,8 +490,9 @@ export default function Navbar() {
       mounted.current = true;
     } else {
       console.log(account);
-
-      getUserInfo();
+      if (getCookie("isLogin") === "true") {
+        getUserInfo();
+      }
     }
   }, [account]);
 

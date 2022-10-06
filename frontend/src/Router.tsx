@@ -9,7 +9,7 @@ function Router() {
   const preventClose = (e: BeforeUnloadEvent) => {
     e.preventDefault();
 
-    if (getCookie("isLogin")) {
+    if (getCookie("isLogin") === "false") {
       removeCookie("isLogin");
     }
 
@@ -17,10 +17,10 @@ function Router() {
   };
   useEffect(() => {
     (() => {
-      window.addEventListener("beforeunload", preventClose);
+      window.addEventListener("unload", preventClose);
     })();
     return () => {
-      window.removeEventListener("beforeunload", preventClose);
+      window.removeEventListener("unload", preventClose);
     };
   }, []);
 
