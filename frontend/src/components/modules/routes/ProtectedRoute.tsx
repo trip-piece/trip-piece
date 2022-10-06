@@ -1,15 +1,14 @@
-/* eslint-disable react/require-default-props */
-import { ReactNode } from "react";
 import { Navigate, Outlet } from "react-router-dom";
 
 interface RouteProps {
-  children?: ReactNode;
+  children?: JSX.Element;
   loggedIn: boolean;
 }
 
-function ProtectedRoute({ loggedIn, children }: RouteProps) {
-  if (!loggedIn) <Navigate to="/" replace />;
-
+function ProtectedRoute({ loggedIn, children }: RouteProps): JSX.Element {
+  if (!loggedIn) {
+    return <Navigate to="/" replace />;
+  }
   return children || <Outlet />;
 }
 

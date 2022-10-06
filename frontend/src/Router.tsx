@@ -16,6 +16,7 @@ function Router() {
       setIsLoggedIn(true);
     }
   }, [isLoggedIn]);
+  console.log("isLoggedIn", isLoggedIn);
 
   return (
     <BrowserRouter>
