@@ -511,6 +511,7 @@ export default function Navbar() {
     removeCookie("accessToken");
     removeCookie("refreshToken");
     setIsLoggedIn(false);
+    window.location.replace("http://localhost:3000/");
   };
   const moveToMyTrip = (tripId: number) => {
     navigate(`/trips/${tripId}/diarys`);
