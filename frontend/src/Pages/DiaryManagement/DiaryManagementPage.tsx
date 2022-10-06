@@ -779,6 +779,13 @@ function DiaryManagementPage() {
     setStickerList([]);
   };
 
+  const preventCheckBox = (): boolean => {
+    console.log(stickerList.length);
+
+    if (stickerList.length < 1) return false;
+    return true;
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0.2 }}
@@ -978,6 +985,7 @@ function DiaryManagementPage() {
                 name="isShared"
                 checked={isShared}
                 onChange={() => setIsShared((prev) => !prev)}
+                disabled={preventCheckBox}
               />
               다른 사람에게 프레임 공유하기
             </label>

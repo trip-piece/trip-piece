@@ -88,6 +88,9 @@ const DiaryContentsContainer = styled.div<DiaryContentsContainerProps>`
     pixelToRem(props.diaryWidth / 20) !== "0rem"
       ? pixelToRem(props.diaryWidth / 20)
       : pixelToRem(16)};
+  div {
+    font-family: ${(props) => FONTTYPELIST[props.fontType]};
+  }
 `;
 
 const ButtonListContainer = styled.div`
