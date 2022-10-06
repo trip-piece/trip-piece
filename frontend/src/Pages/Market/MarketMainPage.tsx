@@ -167,8 +167,12 @@ function MarketMainPage() {
   };
 
   const navigate = useNavigate();
-  const moveToListPage = (regionId: Number) => {
-    navigate("/market/" + regionId);
+  const moveToListPage = (
+    regionId: Number,
+    orderNum: Number,
+    searchKeyword: string,
+  ) => {
+    navigate(`/market/${regionId}/${orderNum}/${searchKeyword}`);
   };
   const moveToRegisterPage = () => {
     navigate("/market/register");
@@ -177,16 +181,20 @@ function MarketMainPage() {
   const setApproval = async (e: { preventDefault: () => void }) => {
     setLoading(true);
     e.preventDefault();
-    try{
+    try {
       const approveResult = await NFTContract.methods
-            .setApprovalForAll(import.meta.env.VITE_MARKET_CA, true)
-            .send({ from: userInfo.address });
-  
-          console.log("권한 부여 성공" + approveResult.status);
-    }catch (err){
+        .setApprovalForAll(import.meta.env.VITE_MARKET_CA, true)
+        .send({ from: userInfo.address });
+
+      console.log("권한 부여 성공" + approveResult.status);
+    } catch (err) {
       console.log(err);
     }
-  }
+  };
+
+  const searchSticker = () => {
+    navigate(`/market/0/0/${keyword}`);
+  };
 
   return (
     <motion.div
@@ -199,20 +207,20 @@ function MarketMainPage() {
         <title>마켓</title>
       </Helmet>
       <Container>
-        <Search>
-          <input
-            type="text"
-            value={keyword}
-            onChange={searchChange}
-            placeholder="검색어를 입력하세요."
-          />{" "}
-          <button>
-            <AiOutlineSearch className="searchIcon" />
-          </button>
-        </Search>
-        <button onClick={setApproval}>
-          TripPiece Access
-        </button>
+        <form onSubmit={searchSticker}>
+          <Search>
+            <input
+              type="text"
+              value={keyword}
+              onChange={searchChange}
+              placeholder="검색어를 입력하세요."
+            />{" "}
+            <button>
+              <AiOutlineSearch className="searchIcon" />
+            </button>
+          </Search>
+        </form>
+        <button onClick={setApproval}>TripPiece Access</button>
         <CardContainer>
           <div className="Header">
             <p>
@@ -223,8 +231,16 @@ function MarketMainPage() {
               </button>
             </p>
             <hr />
-            <button onClick={() => moveToListPage(0)}>전체 보기</button>
+            <button onClick={() => moveToListPage(0, 0, "")}>전체 보기</button>
           </div>
+          {!data?.data?.content?.length && (
+            <div
+              className="Header"
+              style={{ textAlign: "center", marginTop: "130px" }}
+            >
+              <p>{"판매 중인 스티커가 존재하지 없습니다."}</p>
+            </div>
+          )}
           <div className="CardList">
             <Swiper slidesPerView={1.2} spaceBetween={13}>
               {data?.data?.content?.length &&

@@ -78,8 +78,8 @@ const Header = styled.article`
 `;
 
 const ListContainer = styled.article`
-min-height: 80vh;  
-width: 100%;
+  min-height: 80vh;
+  width: 100%;
   height: auto;
   margin-top: 1rem;
   background-color: ${(props) => props.theme.colors.mainDark};
@@ -89,13 +89,17 @@ width: 100%;
 `;
 
 function MarketListPage() {
-  const { regionId } = useParams();
+  const { regionId, orderNum, getSearchKeyword } = useParams();
   const regionName = REGIONLIST;
-  const [sorting, setSorting] = useState("0");
   const [keyword, setKeyword] = useState("");
 
+  var searchKeyword: string = "";
+  if (getSearchKeyword) {
+    searchKeyword = getSearchKeyword;
+  }
+
   const handleChange = (e: { target: { value: SetStateAction<string> } }) => {
-    setSorting(e.target.value);
+    navigate(`/market/${regionId}/${e.target.value}/${searchKeyword}`);
   };
 
   const searchChange = (e: { target: { value: SetStateAction<string> } }) => {
@@ -105,6 +109,13 @@ function MarketListPage() {
   const navigate = useNavigate();
   const moveToRegisterPage = () => {
     navigate("/market/register");
+  };
+  const moveToListPage = () => {
+    navigate(`/market/${regionId}/${orderNum}/${searchKeyword}`);
+  };
+
+  const searchSticker = () => {
+    navigate(`/market/${regionId}/0/${keyword}`);
   };
 
   return (
@@ -123,33 +134,43 @@ function MarketListPage() {
             {regionName[Number(regionId)]} 지역{" "}
             <AiFillPlusCircle className="sell" onClick={moveToRegisterPage} />
           </p>
-          <select onChange={handleChange} value={sorting}>
+          <select onChange={handleChange} value={orderNum}>
             <option value="0">최신순</option>
             <option value="1">최저가순</option>
             <option value="2">최고가순</option>
           </select>
         </Header>
-        <Search>
-          <input
-            type="text"
-            placeholder="검색어를 입력하세요."
-            value={keyword}
-            onChange={searchChange}
-          />
-          <button>
-            <AiOutlineSearch className="searchIcon" />
-          </button>
-        </Search>
+        <form onSubmit={searchSticker}>
+          <Search>
+            <input
+              type="text"
+              placeholder="검색어를 입력하세요."
+              value={keyword}
+              onChange={searchChange}
+            />
+            <button>
+              <AiOutlineSearch className="searchIcon" />
+            </button>
+          </Search>
+        </form>
         <ListContainer>
           <MemoInfiniteList
-            url={marketApis.getMarketList("", Number(regionId), 0)}
-            queryKey={[`marketList-${Number(regionId)}`]}
+            url={marketApis.getMarketList(
+              searchKeyword,
+              Number(regionId),
+              Number(orderNum),
+            )}
+            queryKey={[
+              `marketList_${Number(regionId)}_${searchKeyword}_${Number(
+                orderNum,
+              )}`,
+            ]}
             CardComponent={InfiniteStickerCard}
             SkeletonCardComponent={Skeleton}
             zeroDataText="판매중인 스티커가 존재하지 않습니다."
             count={2}
             listName={"content"}
-                      />
+          />
         </ListContainer>
       </Container>
     </motion.div>
