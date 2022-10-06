@@ -272,3 +272,5 @@ function NftResponse() {
     </motion.div>
   );
 }
+
+export default NftResponse;

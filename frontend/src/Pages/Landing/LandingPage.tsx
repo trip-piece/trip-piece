@@ -19,10 +19,13 @@ import { pixelToRem } from "../../utils/functions/util";
 import LoginButton from "./LoginButton";
 import Content from "./Text";
 import LandingPageImg from "./LandingPageImg";
-import userApis, { walletAddress } from "../../utils/apis/userApis";
+import userApis, {
+  Idata,
+  IUserData,
+  walletAddress,
+} from "../../utils/apis/userApis";
 import axiosInstance from "../../utils/apis/api";
 import { IUserInfo, UserInfoState } from "../../store/atom";
-import { Idata, IUserData } from "../../utils/hooks/useLogin";
 
 const injected = new InjectedConnector({ supportedChainIds: [5] });
 //const injected = new InjectedConnector({});
@@ -46,6 +49,8 @@ const Container = styled.div`
   align-items: center;
   min-height: 100vh;
   flex-direction: column;
+  max-width: 550px;
+  min-width: 320px;
 `;
 
 const DivContainer = styled.div`
@@ -55,6 +60,8 @@ const DivContainer = styled.div`
   vertical-align: center;
   justify-content: center;
   align-items: center;
+  max-width: 550px;
+  min-width: 320px;
 
   .aroundButton {
     outline: none;
