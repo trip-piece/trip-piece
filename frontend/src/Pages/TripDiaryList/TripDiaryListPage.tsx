@@ -8,7 +8,7 @@ import styled from "@emotion/styled";
 import { isSameDay } from "date-fns";
 import { AxiosError, AxiosResponse } from "axios";
 import { motion } from "framer-motion";
-import tripApis from "../../utils/apis/tripsApis";
+import { useSetRecoilState } from "recoil";
 import {
   changeDateFormatToHyphen,
   getDatesStartToLast,
@@ -19,6 +19,9 @@ import { ITrip } from "../../utils/interfaces/trips.interface";
 import axiosInstance from "../../utils/apis/api";
 import { REGIONLIST } from "../../utils/constants/constant";
 import "swiper/css";
+import tripApis from "../../utils/apis/tripsApis";
+import { UserInfoState } from "../../store/atom";
+import userApis, { IUserData } from "../../utils/apis/userApis";
 
 const TripDiary = lazy(() => import("../TripDiary/TripDiaryPage"));
 
@@ -53,6 +56,25 @@ function TripDiaryListPage() {
   const [todayIndex, setTodayIndex] = useState<number>(5);
   const [loading, setLoading] = useState<boolean>(false);
   const [today] = useState(() => changeDateFormatToHyphen(new Date()));
+  const setUserInfo = useSetRecoilState(UserInfoState);
+  const getUserInfo = () => {
+    axiosInstance
+      .get(userApis.getUser)
+      .then((response: { data: IUserData }) => {
+        setUserInfo((prev) => ({
+          ...prev,
+          address: response.data.walletAddress,
+          nickname: response.data.nickname,
+          balance: "0.0",
+          isLoggedIn: true,
+          id: response.data.userId,
+          tripCount: response.data.tripCount,
+          diaryCount: response.data.diaryCount,
+        }));
+        return response.data.walletAddress;
+      });
+  };
+
   const { tripId } = useParams();
 
   const { state } = useLocation() as RouteState;
@@ -69,7 +91,9 @@ function TripDiaryListPage() {
       refetchOnMount: true,
     },
   );
-
+  useEffect(() => {
+    getUserInfo();
+  }, []);
   useEffect(() => {
     if (data) {
       const _result = getDatesStartToLast(

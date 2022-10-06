@@ -6,6 +6,7 @@ import { HiPencilAlt, HiTrash } from "react-icons/hi";
 import { AxiosResponse } from "axios";
 import { Icon } from "@iconify/react/dist/offline";
 import { AiTwotoneEdit } from "react-icons/ai";
+import { motion } from "framer-motion";
 import diaryApis from "../../utils/apis/diaryApis";
 import {
   changeDateFormatToDot,
@@ -27,7 +28,7 @@ import { DIARY_COLOR_LIST, FONTTYPELIST } from "../../utils/constants/constant";
 import { getNFTImagePath } from "../../utils/functions/getNFTImagePath";
 import ColoredRoundButton from "../../components/atoms/ColoredRoundButton";
 import RecordedLocationContainer from "../../components/modules/RecordedLocationContainer";
-import { motion } from "framer-motion";
+import LoadingSpinner from "../../components/modules/LoadingSpinner";
 
 const Container = styled.article`
   min-height: 75vh;
@@ -230,7 +231,7 @@ function TripDiaryPage({ startDate, today, endDate }: TripListProps) {
 
   return (
     <Container>
-      {isLoading && <div>Loading...</div>}
+      {isLoading && <LoadingSpinner />}
       {isSuccess && !diaryData?.data && (
         <motion.div
           initial={{ opacity: 0 }}

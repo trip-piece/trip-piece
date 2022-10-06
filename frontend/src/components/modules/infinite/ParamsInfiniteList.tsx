@@ -122,6 +122,7 @@ function InfiniteList({
           <img
             src={spinner}
             style={{ width: "auto", height: "20%", textAlign: "center" }}
+            alt="로딩 스피너"
           />
         </div>
       )}

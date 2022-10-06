@@ -503,7 +503,7 @@ export default function Navbar() {
 
   const setApproval = async (e: { preventDefault: () => void }) => {
     // setLoading;
-    e.preventDefault();
+    e?.preventDefault();
     try {
       const approveResult = await NFTContract.methods
         .setApprovalForAll(import.meta.env.VITE_MARKET_CA, true)

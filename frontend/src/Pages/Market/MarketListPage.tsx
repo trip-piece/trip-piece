@@ -94,6 +94,7 @@ function MarketListPage() {
   const { regionId, orderNum, getSearchKeyword } = useParams();
   const regionName = REGIONLIST;
   const [keyword, setKeyword] = useState("");
+  const navigate = useNavigate();
 
   let searchKeyword: string = "";
   if (getSearchKeyword) {
@@ -108,7 +109,6 @@ function MarketListPage() {
     setKeyword(e.target.value);
   };
 
-  const navigate = useNavigate();
   const moveToRegisterPage = () => {
     navigate("/market/register");
   };
@@ -150,7 +150,7 @@ function MarketListPage() {
               value={keyword}
               onChange={searchChange}
             />
-            <button>
+            <button type="button">
               <AiOutlineSearch className="searchIcon" />
             </button>
           </Search>
