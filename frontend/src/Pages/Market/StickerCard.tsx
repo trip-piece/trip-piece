@@ -48,6 +48,10 @@ const Container = styled.article`
     flex-direction: row;
     justify-content: end;
   }
+
+  .Icon {
+    color: ${(props) => props.theme.colors.yellow};
+  }
 `;
 
 function Card({ sticker }: CardProps) {
@@ -76,7 +80,7 @@ function Card({ sticker }: CardProps) {
       </div>
       <p className="NFTName">{sticker.tokenName}</p>
       <p className="NFTPrice">
-        <FaEthereum />
+        <FaEthereum className="Icon" />
         {sticker.price}
       </p>
     </Container>

@@ -146,6 +146,7 @@ function StickerDetailPage() {
         deleteMarket({ data: { marketId: data.data.marketId } });
       }
       alert("구매가 완료되었습니다.");
+      navigate(-1);
     } catch (err) {
       console.log(err);
     }
@@ -163,6 +164,7 @@ function StickerDetailPage() {
         console.log("DB삭제완료");
       }
       alert("등록이 취소되었습니다.");
+      navigate(-1);
     } catch (err) {
       console.log(err);
     }
@@ -183,7 +185,6 @@ function StickerDetailPage() {
   const moveToBack = () => {
     navigate(-1);
   };
-
   getImage(data?.data?.tokenURL);
   return (
     <motion.div

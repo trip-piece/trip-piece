@@ -216,13 +216,9 @@ function MarketRegisterPage() {
 
         if (result.status) {
           saveMarket({ tokenId: sticker.tokenId, price: price });
-          console.log("DB등록완료");
         }
-        console.log("nft 마켓 등록");
-        console.log(result);
-        console.log("DB 등록");
-        console.log(response);
         alert("등록이 완료되었습니다.");
+        navigate(-1);
       }
     } catch (err) {
       console.log(err);
