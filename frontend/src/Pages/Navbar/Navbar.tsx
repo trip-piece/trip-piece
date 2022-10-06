@@ -377,13 +377,51 @@ export default function Navbar() {
   const mounted = useRef(false);
 
   console.log(`nav active ${active}`);
+  function getUserInfo() {
+    const token = getCookie("accessToken");
 
+    axiosInstance
+      .get(userApis.getUser, { headers: { ACCESS_TOKEN: token } })
+      .then((response: { data: IUserData }) => {
+        console.log(response.data);
+
+        setUserInfo((prev) => ({
+          ...prev,
+          address: response.data.walletAddress,
+          nickname: response.data.nickname,
+          isLoggedIn: true,
+          id: response.data.userId,
+          tripCount: response.data.tripCount,
+          diaryCount: response.data.diaryCount,
+        }));
+
+        return response.data.walletAddress;
+      })
+      .then((address) => {
+        const web3 = new Web3(
+          new Web3.providers.HttpProvider(import.meta.env.VITE_WEB3_URL),
+        );
+        if (address) {
+          web3.eth
+            .getBalance(address)
+            .then((balance) => {
+              return web3.utils.fromWei(balance, "ether");
+            })
+            .then((eth) => {
+              setUserInfo((prev) => ({ ...prev, balance: eth }));
+
+              setCookie("isLogin", "true");
+            });
+        }
+      });
+  }
   const toggleDrawer =
     // eslint-disable-next-line @typescript-eslint/no-shadow
     (open: boolean) => (event: React.KeyboardEvent | React.MouseEvent) => {
       if (event.type === "keydown") {
         return;
       }
+      getUserInfo();
 
       setOpen(open);
     };
@@ -427,45 +465,7 @@ export default function Navbar() {
   const moveToMain = () => {
     navigate("/main");
   };
-  function getUserInfo() {
-    const token = getCookie("accessToken");
 
-    axiosInstance
-      .get(userApis.getUser, { headers: { ACCESS_TOKEN: token } })
-      .then((response: { data: IUserData }) => {
-        console.log(response.data);
-
-        setUserInfo((prev) => ({
-          ...prev,
-          address: response.data.walletAddress,
-          nickname: response.data.nickname,
-          balance: "0.0",
-          isLoggedIn: true,
-          id: response.data.userId,
-          tripCount: response.data.tripCount,
-          diaryCount: response.data.diaryCount,
-        }));
-
-        return response.data.walletAddress;
-      })
-      .then((address) => {
-        const web3 = new Web3(
-          new Web3.providers.HttpProvider(import.meta.env.VITE_WEB3_URL),
-        );
-        if (address) {
-          web3.eth
-            .getBalance(address)
-            .then((balance) => {
-              return web3.utils.fromWei(balance, "ether");
-            })
-            .then((eth) => {
-              setUserInfo((prev) => ({ ...prev, balance: eth }));
-
-              setCookie("isLogin", "true");
-            });
-        }
-      });
-  }
   useEffect(() => {
     const loginFlag: string = getCookie("isLogin");
     console.log(loginFlag);
@@ -495,6 +495,12 @@ export default function Navbar() {
       }
     }
   }, [account]);
+  useEffect(() => {
+    console.log(userInfo.tripCount);
+    if (getCookie("isLogin") === "true") {
+      getUserInfo();
+    }
+  }, [userInfo.tripCount]);
 
   const logout = () => {
     if (active) {
