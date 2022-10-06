@@ -1,13 +1,12 @@
 import useResizeObserver from "@react-hook/resize-observer";
-import { MutableRefObject, useEffect, useLayoutEffect, useState } from "react";
+import { MutableRefObject, useLayoutEffect, useState } from "react";
 
 const useSize = (target: MutableRefObject<HTMLElement>) => {
   const [size, setSize] = useState({
     width: 0,
     height: 0,
   });
-  // console.log(target);
-  // console.log(target?.current?.clientHeight);
+
   useLayoutEffect(() => {
     const wrapper = target?.current?.getBoundingClientRect();
     if (wrapper) {
