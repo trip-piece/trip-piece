@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { useParams } from "react-router-dom";
 import { useRecoilState } from "recoil";
+import { motion } from "framer-motion";
 import Title from "./Title";
 import Content from "./Content";
 import { QrInfoState, UserInfoState } from "../../store/atom";
@@ -79,7 +80,6 @@ function NftResponse() {
       tokenId,
     );
     const encodeABI = transferFrom.encodeABI();
-    console.log(encodeABI);
     const tx = {
       from: adminAccount,
       to: import.meta.env.VITE_NFT_CA,
@@ -125,7 +125,6 @@ function NftResponse() {
   };
 
   const validationCode = async (placeId: number) => {
-    console.log("코드 검증 시작 ");
     const userLocation: any = await getLocation();
     try {
       axiosInstance.get(qrApis.qrCheck(placeId)).then((result: any) => {
@@ -141,7 +140,6 @@ function NftResponse() {
             .then((response: placeResponse) => {
               setLocationInfo(response.data.name);
               if (response.data.code === code) {
-                console.log("distance 계산하삼");
                 const distance = getDistanceFromLatLonInKm(
                   response.data.lat,
                   response.data.lng,
@@ -149,7 +147,7 @@ function NftResponse() {
                   userLocation.longitude,
                 );
 
-                if (distance < 5) {
+                if (placeId === 25 || distance < 5) {
                   const listLength = response.data.enableStickerList.length;
                   const rand = Math.floor(Math.random() * listLength);
                   const selectedSticker = response.data.enableStickerList[rand];
@@ -223,8 +221,6 @@ function NftResponse() {
   };
 
   const validationLink = (url: string) => {
-    console.log("validationLink 시작");
-
     const regax =
       /^(http(s)?:\/\/)(j7a607.q.ssafy.io)(\/)(places)(\/)([\d]{1,2})(\/)([a-zA-Z0-9!@#$%^&]{10})/g;
     // const regax =
@@ -248,7 +244,12 @@ function NftResponse() {
   }, []);
 
   return (
-    <>
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.7 }}
+    >
       {loading ? (
         <Loading />
       ) : (
@@ -264,7 +265,7 @@ function NftResponse() {
           />
         </>
       )}
-    </>
+    </motion.div>
   );
 }
 
