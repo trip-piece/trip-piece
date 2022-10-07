@@ -101,15 +101,19 @@ function MyScrapList() {
         <TitleBox>
           <Title>내가 스크랩한 프레임</Title>
         </TitleBox>
+        {targetList[0] === 0 && (
+          <div style={{ marginTop: "10px" }}>스크랩한 프레임이 없습니다.</div>
+        )}
         <StickerContainer>
           <Masonry
             breakpointCols={2}
             className="my-masonry-grid"
             columnClassName="my-masonry-grid_column"
           >
-            {targetList?.map((target, idx) => (
-              <MemoCard {...target} key={idx} />
-            ))}
+            {targetList[0] !== 0 &&
+              targetList?.map((target, idx) => (
+                <MemoCard {...target} key={idx} />
+              ))}
             <div ref={bottom} />
           </Masonry>
           {/* <MemoInfiniteList

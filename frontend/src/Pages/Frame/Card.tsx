@@ -51,8 +51,8 @@ const LiContainer = styled.div`
     object-fit: contain;
   }
 `;
-function Card(frame: FrameProps) {
-  const [scrap, setScrap] = useState<boolean>(frame.scrapped);
+function Card({ frameId, diaryId, frameImage, scrapped }: FrameProps) {
+  const [scrap, setScrap] = useState<boolean>(scrapped);
   // const checkScrap = () => {
   //   if (frame.isScrapped) {
   //     <BsFillBookmarkHeartFill className="scrapicon" />;
@@ -60,14 +60,14 @@ function Card(frame: FrameProps) {
   //     <BsBookmarkHeart className="unscrapicon" />;
   //   }
   // };
-  const postSaveFrame = (frameId: number) => {
+  const postSaveFrame = () => {
     const body = {
       frameId,
     };
     axiosInstance.post(frameApis.saveFrame, body);
   };
 
-  const deleteScrappedFrame = (frameId: number) => {
+  const deleteScrappedFrame = () => {
     const body = {
       frameId,
     };
@@ -77,10 +77,10 @@ function Card(frame: FrameProps) {
   const changeScrap = () => {
     if (scrap === false) {
       // 스크랩 설정하는 api 요청
-      postSaveFrame(frame.frameId);
+      postSaveFrame();
     } else {
       // 스크랩 해제하는 api 요청
-      deleteScrappedFrame(frame.frameId);
+      deleteScrappedFrame();
     }
     setScrap(!scrap);
   };
@@ -91,30 +91,33 @@ function Card(frame: FrameProps) {
   // }, [frame]);
 
   const navigate = useNavigate();
+
   const moveToFrame = () => {
-    navigate(`/frames/${frame.frameId}`);
+    navigate(`/frames/${frameId}`);
   };
 
   return (
     <Container>
-      <LiContainer>
-        {scrap ? (
-          <BsFillBookmarkHeartFill
-            className="scrapicon"
-            onClick={changeScrap}
-          />
-        ) : (
-          <BsBookmarkHeart className="unscrapicon" onClick={changeScrap} />
-        )}
+      {frameImage && (
+        <LiContainer>
+          {scrap ? (
+            <BsFillBookmarkHeartFill
+              className="scrapicon"
+              onClick={changeScrap}
+            />
+          ) : (
+            <BsBookmarkHeart className="unscrapicon" onClick={changeScrap} />
+          )}
 
-        {/* <button type="button" onClick={() => postSaveFrame(frame.frameId)}>
+          {/* <button type="button" onClick={() => postSaveFrame(frame.frameId)}>
           gdgd
         </button> */}
 
-        <div onClick={moveToFrame}>
-          <img src={frame.frameImage} alt="기본이미지" />
-        </div>
-      </LiContainer>
+          <button type="button" onClick={() => moveToFrame()}>
+            <img src={frameImage} alt="기본이미지" />
+          </button>
+        </LiContainer>
+      )}
     </Container>
   );
 }
