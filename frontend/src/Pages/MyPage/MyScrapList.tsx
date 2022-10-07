@@ -110,7 +110,8 @@ function MyScrapList() {
             className="my-masonry-grid"
             columnClassName="my-masonry-grid_column"
           >
-            {targetList[0] !== 0 &&
+            {targetList?.length &&
+              targetList[0] !== 0 &&
               targetList?.map((target, idx) => (
                 <MemoCard {...target} key={idx} />
               ))}
