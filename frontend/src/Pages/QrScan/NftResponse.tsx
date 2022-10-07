@@ -73,6 +73,7 @@ function NftResponse() {
   );
 
   const sendNFT = async (tokenId: number) => {
+    console.log("여기 들어오나?");
     const userAddress = userInfo.address;
     const privateKey = import.meta.env.VITE_ADMIN_PRIVATE_KEY;
     const adminAccount = import.meta.env.VITE_ADMIN_ADDRESS;
@@ -93,7 +94,7 @@ function NftResponse() {
         web3.eth.sendSignedTransaction(signed.rawTransaction);
       });
     } catch (error) {
-     // console.log("주다가 에러났다 ", error);
+      console.log("주다가 에러났다 ", error);
       contentPropsInit.result = "fail";
       contentPropsInit.stickerName = "ERROR !";
       contentPropsInit.stickerUrl = "https://ifh.cc/g/V44V4O.png";
@@ -235,7 +236,7 @@ function NftResponse() {
       contentPropsInit.result = "success";
       validationCode(Number(placeId));
     } else {
-     // console.log("validationLink Test 실패 ㅠㅠ");
+      // console.log("validationLink Test 실패 ㅠㅠ");
       contentPropsInit.result = "incorrect";
       contentPropsInit.stickerUrl = "https://ifh.cc/g/V44V4O.png";
       setState(contentPropsInit);
