@@ -82,7 +82,7 @@ const StyledBox = styled(Box)`
     display: grid;
     grid-template-columns: repeat(5, 1fr);
     column-gap: 10px;
-    height: 60%;
+    height: 30vh;
   }
   .searchPart {
     width: 100%;

@@ -125,7 +125,7 @@
   <tbody>
     <tr>
       <td>
-        <img src="https://user-images.githubusercontent.com/82889580/194330234-336edb4a-940f-40c7-ba5c-bdfc7f19b5f9.gif" width=400/>
+        <img src="https://user-images.githubusercontent.com/82889580/194465980-a1127570-06b8-4042-91e9-adc5733e0cd9.gif" width=250/>
       </td>
       <td>
         <b>NFT 스티커 발급</b>
@@ -134,7 +134,7 @@
     </tr>
     <tr>
       <td>
-        <img src="https://user-images.githubusercontent.com/82889580/194330234-336edb4a-940f-40c7-ba5c-bdfc7f19b5f9.gif" width=400/>
+        <img src="https://user-images.githubusercontent.com/82889580/194466160-4a36a599-1a15-4630-baac-14bcb312eb02.gif" width=250/>
       </td>
       <td>
         <b>여행 등록</b>
@@ -143,7 +143,7 @@
     </tr>
     <tr>
       <td>
-        <img src="https://user-images.githubusercontent.com/82889580/194330234-336edb4a-940f-40c7-ba5c-bdfc7f19b5f9.gif" width=400/>
+        <img src="https://user-images.githubusercontent.com/82889580/194466826-e0768287-9dce-4aba-b2c1-0763a7d4e1de.gif" width=250/>
       </td>
       <td>
         <b>다이어리 작성</b>
@@ -152,7 +152,7 @@
     </tr>
     <tr>
       <td>
-        <img src="https://user-images.githubusercontent.com/82889580/194330234-336edb4a-940f-40c7-ba5c-bdfc7f19b5f9.gif" width=400/>
+        <img src="https://user-images.githubusercontent.com/82889580/194466958-d6c59c1a-dabb-4b1e-8052-9000cb91429a.gif" width=250/>
       </td>
       <td>
         <b>다이어리 꾸미기 및 프레임 공유</b>
@@ -161,7 +161,7 @@
     </tr>
     <tr>
       <td>
-        <img src="https://user-images.githubusercontent.com/82889580/194330234-336edb4a-940f-40c7-ba5c-bdfc7f19b5f9.gif" width=400/>
+        <img src="https://user-images.githubusercontent.com/82889580/194467059-c898de01-70a8-472e-b91e-a7e0fd730b17.gif" width=250/>
       </td>
       <td>
         <b>스티커 발급 가능 지역 조회</b>
@@ -170,7 +170,7 @@
     </tr>
     <tr>
       <td>
-        <img src="https://user-images.githubusercontent.com/82889580/194330234-336edb4a-940f-40c7-ba5c-bdfc7f19b5f9.gif" width=400/>
+        <img src="https://user-images.githubusercontent.com/82889580/194467193-df1892f4-57f4-4b29-b1fb-79d665689ef3.gif" width=250/>
       </td>
       <td>
         <b>공유 프레임 조회</b>
@@ -179,7 +179,7 @@
     </tr>
     <tr>
       <td>
-        <img src="https://user-images.githubusercontent.com/82889580/194330234-336edb4a-940f-40c7-ba5c-bdfc7f19b5f9.gif" width=400/>
+        <img src="https://user-images.githubusercontent.com/82889580/194467193-df1892f4-57f4-4b29-b1fb-79d665689ef3.gif" width=250/>
       </td>
       <td>
         <b>NFT 스티커 조회</b>
@@ -188,7 +188,7 @@
     </tr>
     <tr>
       <td>
-        <img src="https://user-images.githubusercontent.com/82889580/194330234-336edb4a-940f-40c7-ba5c-bdfc7f19b5f9.gif" width=400/>
+        <img src="https://user-images.githubusercontent.com/82889580/194467952-d019d262-52a9-4ac6-bf37-2d7e64467133.gif" width=250/>
       </td>
       <td>
         <b>NFT 마켓</b>
@@ -228,7 +228,7 @@
       </a>
     </td>
     <td>
-      <a href="">
+      <a href="https://youtu.be/F9abdKcMTTo" target="_blank">
         <img src="https://user-images.githubusercontent.com/82889580/194366060-ba8cde4b-0fed-4c29-b171-797ca7ca2441.png" width=400 height=240/>
       </a>
     </td>
@@ -309,12 +309,12 @@
 
 |  이름  |          역할          | <div align="center">개발 내용</div>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 | :----: | :--------------------: | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 유지연 |       Front-end<br />팀장        | - web3,web3-react를 이용한 메타마스크 지갑 연결, 지갑주소, 잔액 조회<br />- 로그인  ·  로그아웃 기능<br /> - 사용자 정보 조회, 닉네임 수정 기능<br /> - NFT 스티커, 공유프레임 조회 기능<br /> - 스크랩한 프레임 클릭시 프레임 공유 상세 페이지 연결<br /> - QR코드 리더 기능, 정규식을 이용한 QR URL링크 판별<br />- 공유 프레임 조회 기능<br /> - 전체 및 지역별 조회<br /> - 프레임 상세 페이지 스티커 렌더링<br /> - 스티커 위치에 따른 tooltip 방향 제어<br /> - Recoil, React-Query를 이용한 상태관리 |
+| 유지연 |  Front-end<br />팀장   | - web3,web3-react를 이용한 메타마스크 지갑 연결, 지갑주소, 잔액 조회<br />- 로그인 · 로그아웃 기능<br /> - 사용자 정보 조회, 닉네임 수정 기능<br /> - NFT 스티커, 공유프레임 조회 기능<br /> - 스크랩한 프레임 클릭시 프레임 공유 상세 페이지 연결<br /> - QR코드 리더 기능, 정규식을 이용한 QR URL링크 판별<br />- 공유 프레임 조회 기능<br /> - 전체 및 지역별 조회<br /> - 프레임 상세 페이지 스티커 렌더링<br /> - 스티커 위치에 따른 tooltip 방향 제어<br /> - Recoil, React-Query를 이용한 상태관리                                                                                                              |
 | 남은열 |       Front-end        | - 여행 일정 등록 · 수정 · 삭제 · 조회 기능<br />- 여행 다이어리 작성 · 수정 · 삭제 · 조회 기능<br /> - GPS 기반 위치 정보 조회, 날씨, 다이어리 글씨, 다이어리 글 작성, 사진 업로드<br /> - NFT 스티커 기반 다이어리 꾸미기<br /> - 스티커 프레임 스크린샷 및 프레임 공유<br /> - 스티커 프레임 꾸미기<br />- 공유 프레임 조회 기능<br /> - 전체 및 지역별 조회<br /> - 프레임 상세 페이지 스티커 렌더링<br /> - 스티커 위치에 따른 tooltip 방향 제어<br /> - 스티커 tooltip 클릭 시 마켓 연결<br />- 'Recoil', 'React-Query'를 이용한 상태 관리<br />- 'Mock Service Worker'를 이용해 목업 API 구현 및 API 테스트 진행 |
-| 임상빈 |       Front-end        |                  - 홈 / 네비게이션 바 / 스티커지도 레이아웃 구현 <br/> - 티켓 / 지도 제작 <br/> - 프로젝트 내 사용되는 스티커 일러스트 제작 <br/> - 랜딩페이지 내 삽입되는 소개페이지 디자인 / 버튼 구현 |
-| 박지원 | Back-end<br />Solidity |__Back-end__<br />- DB 설계<br /> - Frame, Place, Qrlog CRUD API 작성<br /> - 배치 스케쥴러를 통한 자동 QR 생성 및 이미지 업로드 <br /> - QR이미지 이메일 전송 서비스<br />__Solidity__<br />- NFT 등록 및 전송 스마트 컨트랙트 작성<br />__Front__<br />- 홈, 메뉴, 발급가능지역 API 연결 <br />- Admin 페이지 (장소 등록, NFT 생성) 레이아웃 및 스마트 컨트랙트 연결 <br />- GPS 연결 작업 <br />- 전체적인 CSS 디자인 |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
-| 이현규 | Back-end<br />Solidity |__Back-end__<br />- DB 설계<br /> - 회원 로그인 · 조회 · 수정 · 기능 API 작성<br /> - JWT 인증 방식 구현<br /> - Access Token, Refresh Token 재발급 API 작성<br />__Solidity__<br />- NFT 마켓 등록 · 구매 · 삭제 기능 컨트랙트 작생<br />__Front__<br />- 마켓 조회 · 등록 · 삭제 기능 API 연결<br />- 마켓 조회 · 등록 · 삭제 기능 이더리움 네트워크 연결 |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
-|  허설  | Back-end<br />Solidity |- 여행 일정 등록 · 수정 · 삭제 · 조회 기능API 작성<br /> - 여행 다이어리 작성 · 수정 · 삭제 · 조회 기능API 작성<br /> - 다이어리 스티커 프레임 등록 · 삭제 · 조회 기능 API  작성<br /> - 마켓 스티커 등록, 조회 검색 및 필터링 기능API 작성<br /> Solidity<br /> - 사용자별 자신이 가지고 있는 보유 스티커 조회 작성<br /> Frontend<br /> - 관리자페이지 레이아웃<br /> - 공유프레임 레이아웃<br /> |
+| 임상빈 |       Front-end        | - 홈 / 네비게이션 바 / 스티커지도 레이아웃 구현 <br/> - 티켓 / 지도 제작 <br/> - 프로젝트 내 사용되는 스티커 일러스트 제작 <br/> - 랜딩페이지 내 삽입되는 소개페이지 디자인 / 버튼 구현                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| 박지원 | Back-end<br />Solidity | **Back-end**<br />- DB 설계<br /> - Frame, Place, Qrlog CRUD API 작성<br /> - 배치 스케쥴러를 통한 자동 QR 생성 및 이미지 업로드 <br /> - QR이미지 이메일 전송 서비스<br />**Solidity**<br />- NFT 등록 및 전송 스마트 컨트랙트 작성<br />**Front**<br />- 홈, 메뉴, 발급가능지역 API 연결 <br />- Admin 페이지 (장소 등록, NFT 생성) 레이아웃 및 스마트 컨트랙트 연결 <br />- GPS 연결 작업 <br />- 전체적인 CSS 디자인                                                                                                                                                                                               |
+| 이현규 | Back-end<br />Solidity | **Back-end**<br />- DB 설계<br /> - 회원 로그인 · 조회 · 수정 · 기능 API 작성<br /> - JWT 인증 방식 구현<br /> - Access Token, Refresh Token 재발급 API 작성<br />**Solidity**<br />- NFT 마켓 등록 · 구매 · 삭제 기능 컨트랙트 작생<br />**Front**<br />- 마켓 조회 · 등록 · 삭제 기능 API 연결<br />- 마켓 조회 · 등록 · 삭제 기능 이더리움 네트워크 연결                                                                                                                                                                                                                                                            |
+|  허설  | Back-end<br />Solidity | - 여행 일정 등록 · 수정 · 삭제 · 조회 기능API 작성<br /> - 여행 다이어리 작성 · 수정 · 삭제 · 조회 기능API 작성<br /> - 다이어리 스티커 프레임 등록 · 삭제 · 조회 기능 API 작성<br /> - 마켓 스티커 등록, 조회 검색 및 필터링 기능API 작성<br /> Solidity<br /> - 사용자별 자신이 가지고 있는 보유 스티커 조회 작성<br /> Frontend<br /> - 관리자페이지 레이아웃<br /> - 공유프레임 레이아웃<br />                                                                                                                                                                                                                     |
 
 <br />
 <div id="8"></div>
