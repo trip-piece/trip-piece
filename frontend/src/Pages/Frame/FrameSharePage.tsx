@@ -211,7 +211,6 @@ function FrameSharePage(props: Props) {
 
   const onIntersect = ([entry]: any) => entry.isIntersecting && fetchNextPage();
   const bottom = useRef(null);
-  console.log("data", data);
 
   const targetList = useMemo(
     () =>
