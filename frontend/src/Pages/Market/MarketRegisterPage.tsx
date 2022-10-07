@@ -14,6 +14,7 @@ import { response } from "msw";
 import { saveRequest } from "../../utils/interfaces/markets.interface";
 import { GiConsoleController } from "react-icons/gi";
 import { resourceLimits } from "worker_threads";
+import spinner from "../../assets/image/spinner.gif";
 
 const Container = styled.article`
   min-height: 90vh;
@@ -128,7 +129,7 @@ interface StickerDetail {
 
 function MarketRegisterPage() {
   const [userInfo] = useRecoilState(UserInfoState);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loading, setLoading] = useState<boolean>(false);
   const [NFTList, setNFTList] = useState<NFT[]>([]);
   const [NFTDetailList, setNFTDetailList] = useState<TokenDetail[]>([]);
   const navigate = useNavigate();
@@ -161,6 +162,7 @@ function MarketRegisterPage() {
       }
     } catch (err) {
       console.log("Error getSticker : ", err);
+      setLoading(false);
     }
   };
 
@@ -218,10 +220,12 @@ function MarketRegisterPage() {
           saveMarket({ tokenId: sticker.tokenId, price: price });
         }
         alert("등록이 완료되었습니다.");
+        setLoading(false);
         navigate(-1);
       }
     } catch (err) {
       console.log(err);
+      setLoading(false);
     }
   };
 
@@ -256,22 +260,44 @@ function MarketRegisterPage() {
             </>
           )}
         </StickerCard>
+
         <RegisterForm>
-          <select
-            placeholder="스티커를 선택해주세요."
-            onChange={(e) => handleChangeSticker(e)}
-          >
-            {NFTDetailList?.length &&
-              NFTDetailList?.map((sticker, idx) => (
-                <option value={idx}>{sticker.tokenName}</option>
-              ))}
-          </select>
-          <input
-            type="number"
-            placeholder="가격을 입력해주세요."
-            onChange={(e) => handleChangePrice(e)}
-            value={price}
-          />
+          {loading && (
+            <div
+              style={{
+                width: "100%",
+                height: "100%",
+                display: "flex",
+                flexDirection: "row",
+                textAlign: "center",
+                justifyContent: "center",
+              }}
+            >
+              <img
+                src={spinner}
+                style={{ width: "50%", height: "auto", textAlign: "center" }}
+              />
+            </div>
+          )}
+          {!loading && (
+            <select
+              placeholder="스티커를 선택해주세요."
+              onChange={(e) => handleChangeSticker(e)}
+            >
+              {NFTDetailList?.length &&
+                NFTDetailList?.map((sticker, idx) => (
+                  <option value={idx}>{sticker.tokenName}</option>
+                ))}
+            </select>
+          )}
+          {!loading && (
+            <input
+              type="number"
+              placeholder="가격을 입력해주세요."
+              onChange={(e) => handleChangePrice(e)}
+              value={price}
+            />
+          )}
         </RegisterForm>
         <Button>
           {/* 수정이면 수정 버튼으로.. */}

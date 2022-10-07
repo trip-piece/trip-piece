@@ -16,6 +16,7 @@ import { marketApis } from "../../utils/apis/marketApis";
 import { useRecoilState } from "recoil";
 import { UserInfoState } from "../../store/atom";
 import { MarketContract } from "../../utils/common/Market_ABI";
+import spinner from "../../assets/image/spinner.gif";
 import { NFTContract } from "../../utils/common/NFT_ABI";
 
 const Container = styled.article`
@@ -111,7 +112,7 @@ function StickerDetailPage() {
   const { marketId } = useParams();
   const [imagePath, setImagePath] = useState<string>();
   const [userInfo] = useRecoilState(UserInfoState);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loading, setLoading] = useState<boolean>(false);
   const [mine, setMine] = useState<boolean>(false);
   const navigate = useNavigate();
   const { data } = useQuery<AxiosResponse<IMarket>, AxiosError>(
@@ -146,9 +147,11 @@ function StickerDetailPage() {
         deleteMarket({ data: { marketId: data.data.marketId } });
       }
       alert("구매가 완료되었습니다.");
+      setLoading(false);
       navigate(-1);
     } catch (err) {
       console.log(err);
+      setLoading(false);
     }
   };
 
@@ -164,8 +167,10 @@ function StickerDetailPage() {
         console.log("DB삭제완료");
       }
       alert("등록이 취소되었습니다.");
+      setLoading(false);
       navigate(-1);
     } catch (err) {
+      setLoading(false);
       console.log(err);
     }
   };
@@ -180,7 +185,7 @@ function StickerDetailPage() {
 
   useEffect(() => {
     if (data?.data?.userId == userInfo.id) setMine(true);
-  }, ["marketDetail"]);
+  }, [data]);
 
   const moveToBack = () => {
     navigate(-1);
@@ -201,13 +206,32 @@ function StickerDetailPage() {
           <img src={imagePath} />
           <p>{data?.data?.tokenName}</p>
         </StickerCard>
-        <Price>
-          <p>판매 가격</p>
-          <div className="price">
-            <FaEthereum />
-            <p>{data?.data?.price}</p>
+        {loading && (
+          <div
+            style={{
+              width: "100%",
+              height: "100%",
+              display: "flex",
+              flexDirection: "row",
+              textAlign: "center",
+              justifyContent: "center",
+            }}
+          >
+            <img
+              src={spinner}
+              style={{ width: "50%", height: "auto", textAlign: "center" }}
+            />
           </div>
-        </Price>
+        )}
+        {!loading && (
+          <Price>
+            <p>판매 가격</p>
+            <div className="price">
+              <FaEthereum />
+              <p>{data?.data?.price}</p>
+            </div>
+          </Price>
+        )}
         <Button>
           {mine && (
             <button onClick={cancelSticker}>
