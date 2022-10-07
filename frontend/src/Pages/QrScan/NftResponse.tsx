@@ -150,68 +150,67 @@ function NftResponse() {
                   userLocation.longitude,
                 );
 
-                if (placeId === 25 || distance < 5) {
-                  const listLength = response.data.enableStickerList.length;
-                  const rand = Math.floor(Math.random() * listLength);
-                  const selectedSticker = response.data.enableStickerList[rand];
-                  console.log(
-                    `tokenID : ${response.data.enableStickerList[rand].tokenId}`,
-                  );
-                  sendNFT(selectedSticker.tokenId);
+                // if (placeId === 25 || distance < 5) {
+                const listLength = response.data.enableStickerList.length;
+                const rand = Math.floor(Math.random() * listLength);
+                const selectedSticker = response.data.enableStickerList[rand];
+                console.log(
+                  `tokenID : ${response.data.enableStickerList[rand].tokenId}`,
+                );
+                sendNFT(selectedSticker.tokenId);
 
-                  /// 합격 @!@
-                  try {
-                    const data = {
-                      placeId: placeId,
-                      stickerId: selectedSticker.id,
-                    };
-                    axiosInstance
-                      .post(qrApis.qrLog, data)
-                      .then(async (result1: any) => {
-                        console.log(result1);
-                        contentPropsInit.result = "success";
-                        contentPropsInit.stickerName =
-                          selectedSticker.tokenName;
-                        await fetch(
-                          "https://www.infura-ipfs.io/ipfs/" +
-                            selectedSticker.tokenURL,
-                        )
-                          .then((res) => {
-                            return res.json();
-                          })
-                          .then((data) => {
-                            contentPropsInit.stickerUrl = String(data[0].image);
-                            console.log(contentPropsInit.stickerUrl);
-                          });
-                        setState(contentPropsInit);
-                        console.log(contentPropsInit);
-                        setLoading(false);
-                      });
-                  } catch (err) {
-                    console.log(err);
-                    contentPropsInit.result = "fail";
-                    contentPropsInit.stickerName = response.data.name;
-                    contentPropsInit.stickerUrl = "https://ifh.cc/g/V44V4O.png";
-                    setState(contentPropsInit);
-                    setLoading(false);
-                  }
-                } else {
-                  // 스티커 발급을 실패하노라
-                  contentPropsInit.result = "distance";
-                  contentPropsInit.stickerName = "ERROR !";
+                /// 합격 @!@
+                try {
+                  const data = {
+                    placeId: placeId,
+                    stickerId: selectedSticker.id,
+                  };
+                  axiosInstance
+                    .post(qrApis.qrLog, data)
+                    .then(async (result1: any) => {
+                      console.log(result1);
+                      contentPropsInit.result = "success";
+                      contentPropsInit.stickerName = selectedSticker.tokenName;
+                      await fetch(
+                        "https://www.infura-ipfs.io/ipfs/" +
+                          selectedSticker.tokenURL,
+                      )
+                        .then((res) => {
+                          return res.json();
+                        })
+                        .then((data) => {
+                          contentPropsInit.stickerUrl = String(data[0].image);
+                          console.log(contentPropsInit.stickerUrl);
+                        });
+                      setState(contentPropsInit);
+                      console.log(contentPropsInit);
+                      setLoading(false);
+                    });
+                } catch (err) {
+                  console.log(err);
+                  contentPropsInit.result = "fail";
+                  contentPropsInit.stickerName = response.data.name;
                   contentPropsInit.stickerUrl = "https://ifh.cc/g/V44V4O.png";
                   setState(contentPropsInit);
                   setLoading(false);
                 }
               } else {
-                //  불합격 ~ !
-                console.log("발급실패");
-                contentPropsInit.result = "incorrect";
+                // 스티커 발급을 실패하노라
+                contentPropsInit.result = "distance";
                 contentPropsInit.stickerName = "ERROR !";
                 contentPropsInit.stickerUrl = "https://ifh.cc/g/V44V4O.png";
                 setState(contentPropsInit);
                 setLoading(false);
               }
+              // } else {
+              //   //  불합격 ~ !
+              //   console.log("발급실패");
+              //   contentPropsInit.result = "incorrect";
+              //   contentPropsInit.stickerName = "ERROR !";
+              //   contentPropsInit.stickerUrl = "https://ifh.cc/g/V44V4O.png";
+              //   setState(contentPropsInit);
+              //   setLoading(false);
+              // }
             });
         }
       });
