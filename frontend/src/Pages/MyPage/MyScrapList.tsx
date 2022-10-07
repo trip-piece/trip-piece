@@ -101,7 +101,7 @@ function MyScrapList() {
         <TitleBox>
           <Title>내가 스크랩한 프레임</Title>
         </TitleBox>
-        {targetList[0] === 0 && (
+        {targetList?.length && targetList[0] === 0 && (
           <div style={{ marginTop: "10px" }}>스크랩한 프레임이 없습니다.</div>
         )}
         <StickerContainer>

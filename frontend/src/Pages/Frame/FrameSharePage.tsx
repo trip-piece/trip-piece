@@ -228,7 +228,7 @@ function FrameSharePage(props: Props) {
     error,
     onIntersect,
   });
-  console.log("targetList?.length", targetList);
+
   return (
     <>
       <Helmet>
@@ -245,7 +245,7 @@ function FrameSharePage(props: Props) {
             ))}
           </GridContainer>
         )}
-        {targetList[0] === 0 && (
+        {targetList?.length && targetList[0] === 0 && (
           <div style={{ color: "white" }}>공유된 프레임이 없습니다.</div>
         )}
         <Masonry
