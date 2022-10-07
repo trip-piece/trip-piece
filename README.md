@@ -1,17 +1,10 @@
 ###
 
-<div>
-<img align="left" src="https://user-images.githubusercontent.com/82889580/194323588-0e855199-2221-4231-b67b-c68f97e27166.png" width="280" />  
+<div align="center">
+<img align="center" src="https://user-images.githubusercontent.com/82889580/194366060-ba8cde4b-0fed-4c29-b171-797ca7ca2441.png" width="400" />  
 </div>
-<br />
-<br />
-<br />
-<br />
-<br />
-<br />
-<br />
-<div align="right">
-    <h1 align="right">
+<div align="left">
+    <h1 align="left">
       <font align="left" size="6" color="#ffffff"> 🧩 여행 조각</font>
     </h1>
   </div>
@@ -319,7 +312,7 @@
 | 유지연 |  Front-end<br />팀장   |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
 | 남은열 |       Front-end        | - 여행 일정 등록 · 수정 · 삭제 · 조회 기능<br />- 여행 다이어리 작성 · 수정 · 삭제 · 조회 기능<br /> - GPS 기반 위치 정보 조회, 날씨, 다이어리 글씨, 다이어리 글 작성, 사진 업로드<br /> - NFT 스티커 기반 다이어리 꾸미기<br /> - 스티커 프레임 스크린샷 및 프레임 공유<br /> - 스티커 프레임 꾸미기<br />- 공유 프레임 조회 기능<br /> - 전체 및 지역별 조회<br /> - 프레임 상세 페이지 스티커 렌더링<br /> - 스티커 위치에 따른 tooltip 방향 제어<br /> - 스티커 tooltip 클릭 시 마켓 연결<br />- 'Recoil', 'React-Query'를 이용한 상태 관리<br />- 'Mock Service Worker'를 이용해 목업 API 구현 및 API 테스트 진행 |
 | 임상빈 |       Front-end        |                  - 홈 / 네비게이션 바 / 스티커지도 레이아웃 구현 <br/> - 티켓 / 지도 제작 <br/> - 프로젝트 내 사용되는 스티커 일러스트 제작 <br/> - 랜딩페이지 내 삽입되는 소개페이지 디자인 / 버튼 구현 |
-| 박지원 | Back-end<br />Solidity |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| 박지원 | Back-end<br />Solidity |__Back-end__<br />- DB 설계<br /> - Frame, Place, Qrlog CRUD API 작성<br /> - 배치 스케쥴러를 통한 자동 QR 생성 및 이미지 업로드 <br /> - QR이미지 이메일 전송 서비스<br />__Solidity__<br />- NFT 등록 및 전송 스마트 컨트랙트 작성<br />__Front__<br />- 홈, 메뉴, 발급가능지역 API 연결 <br />- Admin 페이지 (장소 등록, NFT 생성) 레이아웃 및 스마트 컨트랙트 연결 <br />- 전체적인 CSS 디자인 |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
 | 이현규 | Back-end<br />Solidity |__Back-end__<br />- DB 설계<br /> - 회원 로그인 · 조회 · 수정 · 기능 API 작성<br /> - JWT 인증 방식 구현<br /> - Access Token, Refresh Token 재발급 API 작성<br />__Solidity__<br />- NFT 마켓 등록 · 구매 · 삭제 기능 컨트랙트 작생<br />__Front__<br />- 마켓 조회 · 등록 · 삭제 기능 API 연결<br />- 마켓 조회 · 등록 · 삭제 기능 이더리움 네트워크 연결 |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
 |  허설  | Back-end<br />Solidity |- 여행 일정 등록 · 수정 · 삭제 · 조회 기능API 작성<br /> - 여행 다이어리 작성 · 수정 · 삭제 · 조회 기능API 작성<br /> - 다이어리 스티커 프레임 등록 · 삭제 · 조회 기능 API  작성<br /> - 마켓 스티커 등록, 조회 검색 및 필터링 기능API 작성<br /> Solidity<br /> - 사용자별 자신이 가지고 있는 보유 스티커 조회 작성<br /> Frontend<br /> - 관리자페이지 레이아웃<br /> - 공유프레임 레이아웃<br /> |
 
