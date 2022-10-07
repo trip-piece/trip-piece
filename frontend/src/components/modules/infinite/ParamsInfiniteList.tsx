@@ -103,7 +103,7 @@ function InfiniteList({
   return (
     <div>
       {isSuccess && (targetList?.length < 1 || targetList[0] === undefined) && (
-        <div style={{ textAlign: "center", marginTop: "20px" }}>
+        <div style={{ textAlign: "center", marginTop: "20px", color: "white" }}>
           {zeroDataText}
         </div>
       )}

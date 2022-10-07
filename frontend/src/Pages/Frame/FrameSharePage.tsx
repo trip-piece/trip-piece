@@ -211,6 +211,7 @@ function FrameSharePage(props: Props) {
 
   const onIntersect = ([entry]: any) => entry.isIntersecting && fetchNextPage();
   const bottom = useRef(null);
+  console.log("data", data);
 
   const targetList = useMemo(
     () =>
@@ -227,7 +228,7 @@ function FrameSharePage(props: Props) {
     error,
     onIntersect,
   });
-
+  console.log("targetList?.length", targetList);
   return (
     <>
       <Helmet>
@@ -244,14 +245,18 @@ function FrameSharePage(props: Props) {
             ))}
           </GridContainer>
         )}
+        {targetList[0] === 0 && (
+          <div style={{ color: "white" }}>공유된 프레임이 없습니다.</div>
+        )}
         <Masonry
           breakpointCols={2}
           className="my-masonry-grid"
           columnClassName="my-masonry-grid_column"
         >
-          {targetList?.map((target, idx) => (
-            <MemoCard {...target} key={idx} />
-          ))}
+          {targetList?.length &&
+            targetList?.map((target, idx) => (
+              <MemoCard {...target} key={idx} />
+            ))}
           <div ref={bottom} />
         </Masonry>
         <Root>
