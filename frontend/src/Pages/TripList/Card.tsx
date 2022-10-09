@@ -96,7 +96,7 @@ const LinkContainer = styled(Link)<{ editmode: number }>`
           display: block;
           width: 100%;
           height: 100%;
-          object-fit: fill;
+          /* object-fit: fill; */
           opacity: 0.6;
           border-radius: 3px;
         }
@@ -172,7 +172,7 @@ function Card({
     event.preventDefault();
     setOpen(true);
   };
-  const regionImage = `/image/region/${REGIONLIST[regionId]}.png`;
+  const regionImage = `/image/trip-region/${REGIONLIST[regionId]}`;
 
   return (
     <Container>
@@ -194,12 +194,18 @@ function Card({
         editmode={isEditMode ? 1 : 0}
         state={{ tripId, regionId, title, startDate, endDate }}
       >
-        <img src={activeTicket} alt="기본이미지" />
+        <img src={activeTicket} alt="티켓" width="436" height="819" />
         <div className="ticket">
           <div className="ticketMain">
-            <div className="imageBox">
-              <img src={regionImage} alt="기본이미지" />
-            </div>
+            <picture className="imageBox">
+              <source srcSet={`${regionImage}.webp`} type="image/webp" />
+              <img
+                src={`${regionImage}.png`}
+                alt={REGIONLIST[regionId]}
+                width="450"
+                height="731"
+              />
+            </picture>
             <div className="textBox">
               <p className="regionName">{REGIONLIST[regionId]}</p>
               <hr />
