@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import { REGIONLIST } from "../../utils/constants/constant";
 import { TripManagementModal } from "./Modal";
 import activeTicket from "../../assets/image/activeTicket.png";
+import activeTicketWebp from "../../assets/image/activeTicket.webp";
 import { pixelToRem } from "../../utils/functions/util";
 
 interface ITripCardProps {
@@ -96,7 +97,6 @@ const LinkContainer = styled(Link)<{ editmode: number }>`
           display: block;
           width: 100%;
           height: 100%;
-          /* object-fit: fill; */
           opacity: 0.6;
           border-radius: 3px;
         }
@@ -194,7 +194,10 @@ function Card({
         editmode={isEditMode ? 1 : 0}
         state={{ tripId, regionId, title, startDate, endDate }}
       >
-        <img src={activeTicket} alt="티켓" width="436" height="819" />
+        <picture>
+          <source srcSet={activeTicketWebp} type="image/webp" />
+          <img src={activeTicket} alt="티켓" width="436" height="819" />
+        </picture>
         <div className="ticket">
           <div className="ticketMain">
             <picture className="imageBox">

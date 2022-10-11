@@ -20,12 +20,15 @@ import {
 } from "../../utils/functions/util";
 import { ITrip } from "../../utils/interfaces/trips.interface";
 import upcomingIcon from "../../assets/image/homeicon.png";
+import upcomingIconWebp from "../../assets/image/homeicon.webp";
 import { REGIONLIST } from "../../utils/constants/constant";
 import Card from "./PlaceCard";
 import { IPlace } from "../../utils/interfaces/places.interface";
 import { placeApis } from "../../utils/apis/placeApis";
 import activeTicket from "../../assets/image/activeTicket.png";
+import activeTicketWebp from "../../assets/image/activeTicket.webp";
 import unactiveTicket from "../../assets/image/unactiveTicket.png";
+import unactiveTicketWebp from "../../assets/image/unactiveTicket.webp";
 import spinner from "../../assets/image/spinner.gif";
 
 const MainBox = styled.div`
@@ -108,15 +111,24 @@ const RightInsideContent = styled.div`
   justify-content: center;
   align-items: center;
   position: relative;
+  > picture {
+    width: fit-content;
+    height: fit-content;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
   img {
-    width: auto;
-    height: 85%;
+    width: 90%;
+    height: 90%;
   }
 
   .ticket {
-    width: 70%;
-    height: 80%;
+    width: 100%;
+    height: 100%;
     position: absolute;
+    top: 0;
+    left: 0;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -124,7 +136,7 @@ const RightInsideContent = styled.div`
     text-align: center;
 
     .ticketMain {
-      width: ${pixelToRem(100)};
+      width: 60%;
       height: 65%;
       position: relative;
       display: flex;
@@ -135,8 +147,9 @@ const RightInsideContent = styled.div`
       border-radius: 3px;
 
       .imageBox {
-        width: 100%;
-        height: 100%;
+        top: 20px;
+        width: 90%;
+        height: 90%;
         background-color: black;
         position: absolute;
         border-radius: 3px;
@@ -145,7 +158,6 @@ const RightInsideContent = styled.div`
           display: block;
           width: 100%;
           height: 100%;
-          object-fit: fill;
           opacity: 0.6;
           border-radius: 3px;
         }
@@ -330,7 +342,7 @@ function MainPage() {
   useEffect(() => {
     if (data1?.data) {
       setUpcoming(data1.data);
-      setRegionImage(`/image/region/${REGIONLIST[data1?.data.regionId]}.png`);
+      setRegionImage(`/image/trip-region/${REGIONLIST[data1?.data.regionId]}`);
       if (changeHyphenToDateFormat(data1.data.startDate) > new Date()) {
         setIsProgress(2);
       } else setIsProgress(1);
@@ -422,11 +434,16 @@ function MainPage() {
                         exit={{ opacity: 0 }}
                         transition={{ delay: 0.3 }}
                       >
-                        <img
-                          src={upcomingIcon}
-                          alt="기본이미지"
-                          style={{ width: "85px", height: "85px" }}
-                        />
+                        <picture>
+                          <source srcSet={upcomingIconWebp} type="image/webp" />
+                          <img
+                            src={upcomingIcon}
+                            alt="기본이미지"
+                            style={{ width: "85px", height: "85px" }}
+                            width="85"
+                            height="85"
+                          />
+                        </picture>
                       </motion.div>
                       <InnerTextTitle>{upcoming?.title}</InnerTextTitle>
                       <InnerTextBody>
@@ -482,7 +499,15 @@ function MainPage() {
               <InsideRightBox>
                 {isProgress === 0 && (
                   <RightInsideContent>
-                    <img src={unactiveTicket} alt="기본이미지" />
+                    <picture>
+                      <source srcSet={unactiveTicketWebp} type="image/webp" />
+                      <img
+                        src={unactiveTicket}
+                        alt="unactive-ticket"
+                        width="436"
+                        height="819"
+                      />
+                    </picture>
                     <div className="ticket">
                       <div
                         className="ticketMain"
@@ -516,28 +541,45 @@ function MainPage() {
                 )}
                 {isProgress === 1 && upcoming && (
                   <RightInsideContent>
-                    <img src={activeTicket} alt="기본이미지" />
-                    <div className="ticket">
-                      <div className="ticketMain">
-                        <div className="imageBox">
-                          <img src={regionImage} alt="기본이미지" />
+                    <picture>
+                      <source srcSet={activeTicketWebp} type="image/webp" />
+                      <img
+                        src={activeTicket}
+                        alt="active-ticket"
+                        width="439"
+                        height="819"
+                      />
+                      <div className="ticket">
+                        <div className="ticketMain">
+                          <picture className="imageBox">
+                            <source
+                              srcSet={`${regionImage}.webp`}
+                              type="image/webp"
+                            />
+                            <img
+                              src={`${regionImage}.png`}
+                              alt="여행지"
+                              width=""
+                              height=""
+                            />
+                          </picture>
+                          <div className="textBox">
+                            <p className="regionName">
+                              {REGIONLIST[upcoming.regionId]}
+                            </p>
+                            <hr />
+                            <p className="tripTitle">{upcoming?.title}</p>
+                            <p className="date">
+                              <span>{upcoming?.startDate} ~ </span>
+                              <span style={{ textAlign: "right" }}>
+                                {upcoming?.endDate}
+                              </span>
+                            </p>
+                          </div>
                         </div>
-                        <div className="textBox">
-                          <p className="regionName">
-                            {REGIONLIST[upcoming.regionId]}
-                          </p>
-                          <hr />
-                          <p className="tripTitle">{upcoming?.title}</p>
-                          <p className="date">
-                            <span>{upcoming?.startDate} ~ </span>
-                            <span style={{ textAlign: "right" }}>
-                              {upcoming?.endDate}
-                            </span>
-                          </p>
-                        </div>
+                        <div className="ticketSub" />
                       </div>
-                      <div className="ticketSub" />
-                    </div>
+                    </picture>
                   </RightInsideContent>
                 )}
                 {isProgress === 2 && upcoming && (

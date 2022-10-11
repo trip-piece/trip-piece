@@ -19,7 +19,7 @@ import axiosInstance from "../../utils/apis/api";
 import { isLoggedinState, UserInfoState } from "../../store/atom";
 
 const injected = new InjectedConnector({ supportedChainIds: [5] });
-//const injected = new InjectedConnector({});
+// const injected = new InjectedConnector({});
 /**
 connector: 현재 dapp에 연결된 월렛의 connector 값
 library: web3 provider 제공
@@ -79,7 +79,7 @@ export default function LandingPage() {
   const [userInfo, setUserInfo] = useRecoilState(UserInfoState);
   const [isLoggedIn, setIsLoggedIn] = useRecoilState(isLoggedinState);
 
-  //console.log(active);
+  // console.log(active);
 
   // console.log(`첫 렌더링: 지갑.. ${account}`);
   const moveToMain = () => {
@@ -126,7 +126,7 @@ export default function LandingPage() {
 
     if (active) {
       if (account.length !== 0) {
-        //console.log("메타마스크 연결되있는데 지갑길이 받아온 상태");
+        // console.log("메타마스크 연결되있는데 지갑길이 받아온 상태");
         moveToMain();
         // login({ walletAddress: account });
       } else {

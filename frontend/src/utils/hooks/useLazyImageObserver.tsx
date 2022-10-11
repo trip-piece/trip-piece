@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import skeleton from "../../assets/images/sticker-skeleton.png";
+import skeleton from "../../assets/image/sticker-skeleton.png";
 
 interface UseLazyImageObserverProps {
   src: string;
