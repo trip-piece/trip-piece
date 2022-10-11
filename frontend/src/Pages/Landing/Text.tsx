@@ -2,6 +2,7 @@ import React from "react";
 import styled from "@emotion/styled";
 import { pixelToRem } from "../../utils/functions/util";
 import trippieceLogo from "../../assets/image/trippiece_logo.png";
+import trippieceLogoWebp from "../../assets/image/trippiece_logo.webp";
 
 const Container = styled.div`
   display: flex;
@@ -25,6 +26,7 @@ const Text = styled.h2`
 
 const LogoImg = styled.img`
   width: 45%;
+  height: 100%;
 `;
 
 function Content() {
@@ -32,7 +34,15 @@ function Content() {
     <Container>
       <Textbox>
         <Text>
-          <LogoImg src={trippieceLogo} />
+          <picture>
+            <source srcSet={trippieceLogoWebp} type="image/webp" />
+            <LogoImg
+              src={trippieceLogo}
+              alt="trippiece-logo"
+              width="340"
+              height="98"
+            />
+          </picture>
           으로
         </Text>
         <Text>당신의 기록을</Text>

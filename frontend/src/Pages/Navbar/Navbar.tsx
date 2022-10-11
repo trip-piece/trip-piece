@@ -19,10 +19,10 @@ import { FaBook, FaEthereum } from "react-icons/fa";
 import { BsFillBookmarkHeartFill } from "react-icons/bs";
 import { useNavigate } from "react-router-dom";
 import AppBar from "@mui/material/AppBar";
-import { useRecoilState, useResetRecoilState } from "recoil";
+import { useRecoilState } from "recoil";
 import { motion } from "framer-motion";
 import { useWeb3React } from "@web3-react/core";
-import React, { useLayoutEffect, useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { AxiosError, AxiosResponse } from "axios";
 import { useQuery } from "react-query";
 import { ReactJSXElement } from "@emotion/react/types/jsx-namespace";
@@ -32,18 +32,17 @@ import {
   changeDateFormatToHyphen,
   pixelToRem,
 } from "../../utils/functions/util";
-import { isLoggedinState, IUserInfo, UserInfoState } from "../../store/atom";
+import { isLoggedinState, UserInfoState } from "../../store/atom";
 import trippieceLogo from "../../assets/image/trippiece_logo.png";
-// import { ReactComponent as EtherIcon } from "../../assets/svgs/etherIcon.svg";
+import trippieceLogoWebp from "../../assets/image/trippiece_logo.webp";
 import axiosInstance from "../../utils/apis/api";
 import { ITrip } from "../../utils/interfaces/trips.interface";
 import tripApis from "../../utils/apis/tripsApis";
 import { REGIONLIST } from "../../utils/constants/constant";
 import { CodeProps } from "../../utils/interfaces/qrscan.inteface";
 import NestedModal from "../MyPage/Modal";
-import { getCookie, removeCookie, setCookie } from "../../utils/cookie";
-import userApis, { Idata, IUserData } from "../../utils/apis/userApis";
-import { NFTContract } from "../../utils/common/NFT_ABI";
+import { getCookie, removeCookie } from "../../utils/cookie";
+import userApis, { IUserData } from "../../utils/apis/userApis";
 
 const DrawerHeader = styled.div`
   display: flex;
@@ -377,15 +376,10 @@ export default function Navbar() {
   const [isLoggedIn, setIsLoggedIn] = useRecoilState(isLoggedinState);
   const mounted = useRef(false);
 
-  // console.log(`nav active ${active}`);
   const getUserInfo = () => {
     axiosInstance
       .get(userApis.getUser)
       .then((response: { data: IUserData }) => {
-        // console.log(response.data);
-
-        //console.log(userInfo);
-
         setUserInfo((prev) => ({
           ...prev,
           address: response.data.walletAddress,
@@ -601,11 +595,16 @@ export default function Navbar() {
               onClick={moveToMain}
               style={{ background: "transparent" }}
             >
-              <img
-                src={trippieceLogo}
-                alt="기본이미지"
-                style={{ width: "100%" }}
-              />
+              <picture>
+                <source srcSet={trippieceLogoWebp} type="image/webp" />
+                <img
+                  src={trippieceLogo}
+                  alt="기본이미지"
+                  style={{ width: "100%", height: "100%" }}
+                  width="340"
+                  height="98"
+                />
+              </picture>
             </motion.button>
           </div>
           <div style={{ width: "33%", textAlign: "right" }}>
